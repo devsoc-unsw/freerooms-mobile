@@ -7,10 +7,14 @@
 
 import CoreLocation
 
-public protocol LocationManager {
+@objc public protocol LocationManager {
   // MARK: Internal
-  var delegate: CLLocationManagerDelegate? { get set }
+  var delegate: LocationManagerDelegate? { get set }
   var authorizationStatus: CLAuthorizationStatus { get }
-
+  
   func requestWhenInUseAuthorization()
+}
+
+@objc public protocol LocationManagerDelegate: NSObjectProtocol {
+  @objc optional func locationManagerDidChangeAuthorization(_ manager: LocationManager)
 }
