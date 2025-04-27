@@ -2,24 +2,59 @@ import CoreLocation
 import Testing
 @testable import Location
 
-@Test
-func request_location_permission_denial() async throws {
-  // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-}
+// MARK: - LocationServicePermissionTest
 
-@Test
-func request_location_permission_granted() async throws {
-  // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-}
+struct LocationServicePermissionTest {
 
-// MARK: - LocationManager
+  @Test("user deny access on authorize")
+  func requestLocationPermissionDeniedWhenAuthorized() async throws {
+    // set mock manager authorization status to be denied
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .denied)
 
-protocol LocationManager {
-  // MARK: Internal
-  var delegate: CLLocationManagerDelegate? { get set }
-  var authorizationStatus: CLAuthorizationStatus { get }
+    let sut = LocationService(locationManager: mockLocationManager)
 
-  func requestWhenInUseAuthorization()
+    // initial state verification
+    #expect(sut.currentPermissionState == LocationPermission.unrequested)
+
+    // when request location denied
+    let isPermissionGranted = sut.requestLocationPermissions()
+
+    // Assert
+    #expect(isPermissionGranted == false)
+    #expect(sut.currentPermissionState == .denied)
+  }
+
+  @Test("user grant access on authorize")
+  func requestLocationPermissionGrantedWhenAuthorized() async throws {
+    // set mock manager authorization status to be granted
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+
+    let sut = LocationService(locationManager: mockLocationManager)
+
+    // initial state verification
+    #expect(sut.currentPermissionState == LocationPermission.unrequested)
+
+    // when request location denied
+    let isPermissionGranted = sut.requestLocationPermissions()
+
+    // Assert
+    #expect(isPermissionGranted == true)
+    #expect(sut.currentPermissionState == .granted)
+  }
+
+  @Test("location service should be unrequested on startup")
+  func locationPermissionUnrequestedOnStartup() async throws {
+    // mock setup
+    let mockLocationManager = MockLocationManager()
+
+    let sut = LocationService(locationManager: mockLocationManager)
+    let sutCurrentPermission = sut.currentPermissionState
+
+    #expect(sutCurrentPermission == .unrequested)
+  }
+
 }
 
 // MARK: - MockLocationManager
