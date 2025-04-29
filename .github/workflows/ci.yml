@@ -9,19 +9,29 @@ on:
 env:
   DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@v4
     - name: GitHub Action for SwiftLint
-      uses: norio-nomura/action-swiftlint@3.2.1
+      # SHA to 3.2.1
+      uses: norio-nomura/action-swiftlint@9f4dcd7
       with:
         args: --strict
   tests:
     name: Tests
     runs-on: macos-15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: ios
@@ -39,6 +49,7 @@ jobs:
   build:
     name: Build
     runs-on: macos-15
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: ios
