@@ -11,12 +11,12 @@ final class BuildingInteractor {
   func getBuildingsSortedByAvailableRooms() -> [Building] {
     fatalError("TODO: Implement")
   }
-  
-  func getBuildingsSortedAlphabetically(inAscendingOrder isAscending: Bool) -> [Building] {
+
+  func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
     fatalError("TODO: Implement")
   }
-  
-  func getBuildingsSortedByDistance(inAscendingOrder isAscending: Bool) -> [Building] {
+
+  func getBuildingsSortedByDistance(inAscendingOrder _: Bool) -> [Building] {
     fatalError("TODO: Implement")
   }
 }

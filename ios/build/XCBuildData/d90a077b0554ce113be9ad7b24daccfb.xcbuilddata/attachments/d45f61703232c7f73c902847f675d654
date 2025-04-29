@@ -1,0 +1,25 @@
+{
+  "" : {
+    "const-values" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.swiftconstvalues",
+    "dependencies" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.d",
+    "diagnostics" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.dia",
+    "emit-module-dependencies" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master-emit-module.dia",
+    "swift-dependencies" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.swiftdeps"
+  },
+  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/HTTPClient.swift" : {
+    "index-unit-output-path" : "/Networking.build/Release/Networking.build/Objects-normal/arm64/HTTPClient.o",
+    "llvm-bc" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/HTTPClient.bc",
+    "object" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/HTTPClient.o"
+  },
+  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/NetworkCodableLoader.swift" : {
+    "index-unit-output-path" : "/Networking.build/Release/Networking.build/Objects-normal/arm64/NetworkCodableLoader.o",
+    "llvm-bc" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/NetworkCodableLoader.bc",
+    "object" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/NetworkCodableLoader.o"
+  },
+  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/URLSessionHTTPClient.swift" : {
+    "index-unit-output-path" : "/Networking.build/Release/Networking.build/Objects-normal/arm64/URLSessionHTTPClient.o",
+    "llvm-bc" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/URLSessionHTTPClient.bc",
+    "object" : "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/URLSessionHTTPClient.o"
+  }
+}
