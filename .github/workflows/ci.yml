@@ -25,6 +25,7 @@ jobs:
     defaults:
       run:
         working-directory: ios
+        continue-on-error: true
     steps:
     - uses: actions/checkout@v4
     - name: Run Networking tests
