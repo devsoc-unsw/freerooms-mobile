@@ -7,8 +7,10 @@
 
 import Foundation
 
-struct URLSessionHTTPClient: HTTPClient {
-  func get(from url: URL) async -> HTTPClient.Result {
+public struct URLSessionHTTPClient: HTTPClient {
+  public init() { }
+
+  public func get(from _: URL) async -> HTTPClient.Result {
     fatalError("TODO: Implement")
   }
 }

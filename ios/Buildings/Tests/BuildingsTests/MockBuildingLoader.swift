@@ -8,19 +8,27 @@
 import Buildings
 
 public class MockBuildingLoader: BuildingLoader {
-  private let buildings: [Building]
-  private let error: Swift.Error?
 
-  init(loads Buildings: [Building] = [], error: Swift.Error? = nil) {
-    self.buildings = Buildings
+  // MARK: Lifecycle
+
+  init(loads buildings: [RemoteBuilding] = [], throws error: Swift.Error? = nil) {
+    self.buildings = buildings
     self.error = error
   }
 
-  public func fetch() async -> Result<[Building], Swift.Error> {
+  // MARK: Public
+
+  public func fetch() async -> Result<[RemoteBuilding], Swift.Error> {
     if let error {
       return .failure(error)
     }
-    
+
     return .success(buildings)
   }
+
+  // MARK: Private
+
+  private let buildings: [RemoteBuilding]
+  private let error: Swift.Error?
+
 }

@@ -7,7 +7,17 @@
 
 import Foundation
 
-public class NetworkCodableLoader<T: Codable> {
+// MARK: - CodableLoader
+
+public protocol CodableLoader {
+  associatedtype Generic: Codable
+
+  func fetch() async -> Swift.Result<Generic, Swift.Error>
+}
+
+// MARK: - NetworkCodableLoader
+
+public class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   // MARK: Lifecycle
 
