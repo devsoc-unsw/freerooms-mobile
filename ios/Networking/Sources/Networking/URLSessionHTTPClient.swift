@@ -8,7 +8,7 @@
 import Foundation
 
 struct URLSessionHTTPClient: HTTPClient {
-  func get(from url: URL) async -> HTTPClient.Result {
+  func get(from _: URL) async -> HTTPClient.Result {
     fatalError("TODO: Implement")
   }
 }
