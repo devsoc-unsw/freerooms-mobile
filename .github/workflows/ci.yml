@@ -22,7 +22,6 @@ jobs:
   tests:
     name: Tests
     runs-on: macos-15
-    continue-on-error: true
     defaults:
       run:
         working-directory: ios
@@ -30,10 +29,13 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run Networking tests
       run: xcodebuild test -scheme Networking
+      if: always()
     - name: Run Location tests
       run: xcodebuild test -scheme Location
+      if: always()
     - name: Run Buildings tests
       run: xcodebuild test -scheme Buildings
+      if: always()
   build:
     name: Build
     runs-on: macos-15
