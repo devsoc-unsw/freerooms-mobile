@@ -7,8 +7,15 @@
 
 import Foundation
 
-class BuildingService {
-  func getBuildings() -> [Building] {
+public final class BuildingService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getBuildings() -> [Building] {
     fatalError("TODO: Implement")
   }
 }

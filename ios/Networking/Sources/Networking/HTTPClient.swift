@@ -19,4 +19,5 @@ public protocol HTTPClient {
 
 public enum HTTPClientError: Error {
   case networkFailure
+  case invalidHTTPResponse
 }
