@@ -9,8 +9,9 @@ import Foundation
 
 // MARK: - LocationService
 
-class LocationService {
-  func getCurrentLocation() throws -> Location {
+public class LocationService {
+  public init() {}
+  public func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
 
