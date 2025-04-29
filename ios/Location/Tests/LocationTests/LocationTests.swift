@@ -6,26 +6,86 @@ import Testing
 
 struct LocationServicePermissionTest {
 
+  @Test("userAuthorizationStatus denied on initiliaze")
+  func requestLocationPermissionDeniedOnInitialize() async throws {
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .denied)
+
+    // when UserAuthorizationStatus not denied on initialise
+    let sut = LocationService(locationManager: mockLocationManager)
+    #expect(sut.currentPermissionState == .denied)
+  }
+
+  @Test("userAuthorizationStatus unrequested on initialize")
+  func requestLocationPermissionUnrequestedOnInitialize() async throws {
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
+
+    // when UserAuthorizationStatus not determied on initialise
+    let sut = LocationService(locationManager: mockLocationManager)
+    #expect(sut.currentPermissionState == .unrequested)
+  }
+
+  @Test("userAuthorizationStatus granted on initialize")
+  func requestLocationPermissionGrantedOnInitialize() async throws {
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+
+    // when UserAuthorizationStatus granted on initialise
+    let sut = LocationService(locationManager: mockLocationManager)
+    #expect(sut.currentPermissionState == .granted)
+  }
+
+  @Test("user request permission on pending permissionState")
+  func requestLocationPermissionOnPendingState() async throws {
+    let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
+
+    let sut = LocationService(locationManager: mockLocationManager)
+
+    // request user location permission
+    #expect(throws: Never.self) {
+      let hasPermissionBeenGranted = try sut.requestLocationPermissions()
+
+      #expect(hasPermissionBeenGranted == true)
+      #expect(sut.currentPermissionState == .pending)
+    }
+
+    #expect(throws: Never.self) {
+      // request user location permission again
+      let hasPermissionBeenGranted = try sut.requestLocationPermissions()
+
+      // expect early false return
+      #expect(hasPermissionBeenGranted == false)
+      #expect(sut.currentPermissionState == .pending)
+    }
+  }
+
   @Test("user deny access on authorize")
   func requestLocationPermissionDeniedWhenAuthorized() async throws {
     // set mock manager authorization status to be denied
     let mockLocationManager = MockLocationManager()
+    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
 
     let sut = LocationService(locationManager: mockLocationManager)
 
     // initial state verification
-    #expect(sut.currentPermissionState == LocationPermission.unrequested)
+    #expect(sut.locationManager.authorizationStatus == .notDetermined)
 
     // when request location denied
-    let isPermissionGranted = sut.requestLocationPermissions()
-    #expect(isPermissionGranted == true)
-    #expect(sut.currentPermissionState == .pending)
+    #expect(throws: Never.self) {
+      let hasPermissionBeenGranted = try sut.requestLocationPermissions()
+      #expect(hasPermissionBeenGranted == true)
+      #expect(sut.currentPermissionState == .pending)
+    }
 
     // mock to simulate denied permission
     mockLocationManager.simulateAuthorizationStatus(to: .denied)
 
     // Assert
-    #expect(sut.currentPermissionState == .denied)
+    #expect(throws: LocationServiceError.locationPermissionsDenied) {
+      try sut.requestLocationPermissions()
+    }
   }
 
   @Test("user grant access on authorize")
@@ -38,9 +98,11 @@ struct LocationServicePermissionTest {
     #expect(sut.currentPermissionState == LocationPermission.unrequested)
 
     // when request location denied
-    let isPermissionGranted = sut.requestLocationPermissions()
-    #expect(isPermissionGranted == true)
-    #expect(sut.currentPermissionState == .pending)
+    #expect(throws: Never.self) {
+      let hasPermissionBeenGranted = try sut.requestLocationPermissions()
+      #expect(hasPermissionBeenGranted == true)
+      #expect(sut.currentPermissionState == .pending)
+    }
 
     // set mock manager authorization status to be granted
     mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
@@ -49,31 +111,6 @@ struct LocationServicePermissionTest {
     #expect(sut.currentPermissionState == .granted)
   }
 
-  @Test("location service should be unrequested on startup")
-  func locationPermissionUnrequestedOnStartup() async throws {
-    // mock setup
-    let mockLocationManager = MockLocationManager()
-
-    let sut = LocationService(locationManager: mockLocationManager)
-    let sutCurrentPermission = sut.currentPermissionState
-
-    #expect(sutCurrentPermission == .unrequested)
-  }
-
-  @Test("Test multiple permission requests")
-  func multiplePermissionRequestsReturnFalse() async throws {
-    let mockLocationManager = MockLocationManager()
-
-    let sut = LocationService(locationManager: mockLocationManager)
-
-    var isPending = sut.requestLocationPermissions()
-    #expect(isPending == true)
-    #expect(sut.currentPermissionState == .pending)
-
-    isPending = sut.requestLocationPermissions()
-    #expect(isPending == false)
-    #expect(sut.currentPermissionState == .pending)
-  }
 }
 
 // MARK: - MockLocationManager
