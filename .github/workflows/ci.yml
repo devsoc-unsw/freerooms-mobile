@@ -16,6 +16,10 @@ concurrency:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: ios
+
 jobs:
   lint:
     name: Lint
@@ -32,9 +36,6 @@ jobs:
     name: Tests
     runs-on: macos-15
     timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: ios
     steps:
     - uses: actions/checkout@v4
     - name: Run Networking tests
@@ -50,9 +51,6 @@ jobs:
     name: Build
     runs-on: macos-15
     timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: ios
     steps:
     - uses: actions/checkout@v4
     - name: build swift project
