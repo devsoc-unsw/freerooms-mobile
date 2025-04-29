@@ -35,8 +35,8 @@ class LocationService: NSObject, LocationManagerDelegate {
   /// - Returns: returns true if `AuthorizationStatus` undetermined  and no undelying request, `false` if:
   ///   - A request is already pending
   ///   - The user has already granted permissions (either "when in use" or "always")
-  /// - Throws: `LocationServiceError` if `authorizationStatus` is denied or restricted because the API doens't allow permission request
-  ///   - if permission is denied / restricted
+  /// - Throws: `LocationServiceError` if `authorizationStatus` is denied or restricted
+  ///   - because the API doens't allow permission request if permission is denied / restricted
   func requestLocationPermissions() throws -> Bool {
     let authorizationStatus = locationManager.authorizationStatus
 
