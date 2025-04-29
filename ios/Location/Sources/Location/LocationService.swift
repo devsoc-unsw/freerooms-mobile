@@ -18,18 +18,36 @@ class LocationService: NSObject, LocationManagerDelegate {
     self.locationManager = locationManager
     super.init()
     self.locationManager.delegate = self
+
+    locationManagerDidChangeAuthorization(locationManager)
   }
 
   // MARK: Internal
 
   var currentPermissionState = LocationPermission.unrequested
 
+  let locationManager: LocationManager
+
   func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
 
-  func requestLocationPermissions() -> Bool {
-    if currentPermissionState == .pending {
+  /// - Returns: returns true if `AuthorizationStatus` undetermined  and no undelying request, `false` if:
+  ///   - A request is already pending
+  ///   - The user has already granted permissions (either "when in use" or "always")
+  /// - Throws: `LocationServiceError` if `authorizationStatus` is denied or restricted because the API doens't allow permission request if permission is denied / restricted
+  func requestLocationPermissions() throws -> Bool {
+    let authorizationStatus = locationManager.authorizationStatus
+
+    guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+      throw LocationServiceError.locationPermissionsDenied
+    }
+
+    guard currentPermissionState != .pending else {
+      return false
+    }
+
+    guard authorizationStatus != .authorizedAlways || authorizationStatus != .authorizedWhenInUse else {
       return false
     }
 
@@ -48,10 +66,6 @@ class LocationService: NSObject, LocationManagerDelegate {
       currentPermissionState = .unrequested
     }
   }
-
-  // MARK: Private
-
-  private var locationManager: LocationManager
 
 }
 
