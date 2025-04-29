@@ -26,10 +26,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v4
+      # SHA to v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: GitHub Action for SwiftLint
       # SHA to 3.2.1
-      uses: norio-nomura/action-swiftlint@9f4dcd7
+      uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684
       with:
         args: --strict
   tests:
