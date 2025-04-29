@@ -32,9 +32,6 @@ struct MapView: UIViewRepresentable {
       return annotation
     }
 
-    // Add all annotations to the map
-    uiView.addAnnotations(annotations)
-
     // Zoom the map to show all pins
     uiView.showAnnotations(annotations, animated: true)
   }
