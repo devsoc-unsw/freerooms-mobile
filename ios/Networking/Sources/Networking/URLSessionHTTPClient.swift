@@ -7,10 +7,43 @@
 
 import Foundation
 
-public struct URLSessionHTTPClient: HTTPClient {
-  public init() { }
+// MARK: - URLSessionHTTPClient
 
-  public func get(from _: URL) async -> HTTPClient.Result {
-    fatalError("TODO: Implement")
+@available(macOS 12.0, *)
+public struct URLSessionHTTPClient: HTTPClient {
+
+  // MARK: Lifecycle
+
+  public init(session: HTTPSession) {
+    self.session = session
   }
+
+  // MARK: Public
+
+  public func get(from url: URL) async -> HTTPClient.Result {
+    do {
+      let (data, urlResponse) = try await session.data(from: url)
+      guard let httpUrlResponse = urlResponse as? HTTPURLResponse else {
+        return .failure(HTTPClientError.invalidHTTPResponse)
+      }
+      return .success((data, httpUrlResponse))
+    } catch {
+      return .failure(HTTPClientError.networkFailure)
+    }
+  }
+
+  // MARK: Private
+
+  private var session: HTTPSession
 }
+
+// MARK: - HTTPSession
+
+public protocol HTTPSession {
+  func data(from url: URL) async throws -> (Data, URLResponse)
+}
+
+// MARK: - URLSession + HTTPSession
+
+@available(macOS 12.0, *)
+extension URLSession: HTTPSession { }

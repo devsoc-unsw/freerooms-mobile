@@ -7,15 +7,19 @@
 
 import Foundation
 
+// MARK: - LocationService
+
 class LocationService {
   func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
-  
+
   func requestLocationPermissions() -> Bool {
     fatalError("TODO: Implement")
   }
 }
+
+// MARK: - LocationServiceError
 
 enum LocationServiceError: Error {
   case locationPermissionsDenied
