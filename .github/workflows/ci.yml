@@ -22,15 +22,13 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-24.04
+    container: ghcr.io/realm/swiftlint:latest
     timeout-minutes: 5
     steps:
       # SHA to v4
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - name: GitHub Action for SwiftLint
-      # SHA to 3.2.1
-      uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684
-      with:
-        args: --strict
+    - name: Lint
+      run: swiftlint --strict
   tests:
     name: Tests
     runs-on: macos-15
