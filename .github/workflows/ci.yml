@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -38,7 +36,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 20
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Run Networking tests
       run: xcodebuild test -scheme Networking
       if: always()
@@ -53,6 +51,6 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Build swift project
       run: xcodebuild
