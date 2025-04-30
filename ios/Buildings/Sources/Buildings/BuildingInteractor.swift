@@ -5,7 +5,6 @@
 //  Created by Anh Nguyen on 27/4/2025.
 //
 
-import CoreLocation
 import Foundation
 import Location
 
@@ -13,7 +12,8 @@ final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingService = BuildingService(), locationService: LocationService = LocationService()) {
+  init(buildingService: BuildingService = .init(),
+       locationService: LocationService = .init()) {
     self.buildingService = buildingService
     self.locationService = locationService
   }
@@ -24,7 +24,7 @@ final class BuildingInteractor {
     fatalError("TODO: Implement")
   }
 
-  func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
+  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> [Building] {
     fatalError("TODO: Implement")
   }
 
@@ -34,28 +34,18 @@ final class BuildingInteractor {
     do {
       let currentLocation = try locationService.getCurrentLocation()
 
-      let sortedBuildings = buildings.sorted { building1, building2 -> Bool in
-        let distance1 = calculateDistance(from: currentLocation, to: building1)
-        let distance2 = calculateDistance(from: currentLocation, to: building2)
-        return inAscendingOrder ? distance1 < distance2 : distance1 > distance2
-      }
+      // Compute each building’s distance once, then sort
+      let sorted = buildings
+        .map { building -> (Building, Double) in
+          (building, calculateDistance(from: currentLocation, to: building))
+        }
+        .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
+        .map { $0.0 }
 
-      return .success(sortedBuildings)
+      return .success(sorted)
     } catch {
       return .failure(error)
     }
-
-    // // More efficient?
-    // let buildingsWithDistances = buildings.map { building -> (building: Building, distance: CLLocationDistance) in
-    //    let distance = calculateDistance(from: currentLocation, to: building)
-    //    return (building, distance)
-    // }
-    //
-    // let sortedBuildingsWithDistances = buildingsWithDistances.sorted { lhs, rhs in
-    //    return inAscendingOrder ? lhs.distance < rhs.distance : lhs.distance > rhs.distance
-    // }
-    //
-    // return sortedBuildingsWithDistances.map { $0.building }
   }
 
   // MARK: Private
@@ -63,9 +53,10 @@ final class BuildingInteractor {
   private let buildingService: BuildingService
   private let locationService: LocationService
 
-  private func calculateDistance(from location: Location, to building: Building) -> CLLocationDistance {
-    let userLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
-    let buildingLocation = CLLocation(latitude: building.latitude, longitude: building.longitude)
-    return userLocation.distance(from: buildingLocation)
+  
+  private func calculateDistance(from location: Location, to building: Building) -> Double {
+    let dlat = building.latitude  - location.latitude
+    let dlon = building.longitude - location.longitude
+    return sqrt(dlat * dlat + dlon * dlon)
   }
 }
