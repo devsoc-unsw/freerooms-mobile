@@ -7,7 +7,15 @@
 
 import Foundation
 
-public final class BuildingService {
+// MARK: - BuildingServiceProtocol
+
+public protocol BuildingServiceProtocol {
+  func getBuildings() -> [Building]
+}
+
+// MARK: - BuildingService
+
+public final class BuildingService: BuildingServiceProtocol {
 
   // MARK: Lifecycle
 
