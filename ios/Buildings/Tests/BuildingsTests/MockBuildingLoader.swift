@@ -1,5 +1,5 @@
 //
-//  MockBuildingLoader.swift
+//  MockRemoteBuildingLoader.swift
 //  Buildings
 //
 //  Created by Chris Wong on 29/4/2025.
@@ -11,14 +11,14 @@ public class MockBuildingLoader: BuildingLoader {
 
   // MARK: Lifecycle
 
-  init(loads buildings: [RemoteBuilding] = [], throws error: Swift.Error? = nil) {
+  init(loads buildings: [Building] = [], throws error: Swift.Error? = nil) {
     self.buildings = buildings
     self.error = error
   }
 
   // MARK: Public
 
-  public func fetch() async -> Result<[RemoteBuilding], Swift.Error> {
+  public func fetch() async -> Result<[Building], Swift.Error> {
     if let error {
       return .failure(error)
     }
@@ -28,7 +28,7 @@ public class MockBuildingLoader: BuildingLoader {
 
   // MARK: Private
 
-  private let buildings: [RemoteBuilding]
+  private let buildings: [Building]
   private let error: Swift.Error?
 
 }
