@@ -8,23 +8,19 @@
 import Foundation
 
 public struct RemoteBuilding: Equatable, Codable {
-  public let buildingName: String
-  public let buildingId: UUID
-  public let buildingLatitude: Double
-  public let buildingLongitude: Double
-  public let buildingAliases: [String]
+  public let name: String
+  public let id: String
+  public let latitude: Double
+  public let longitude: Double
+  public let aliases: [String]
+  public let numberOfAvailableRooms: Int?
 
-  public init(
-    buildingName: String,
-    buildingId: UUID,
-    buildingLatitude: Double,
-    buildingLongitude: Double,
-    buildingAliases: [String])
-  {
-    self.buildingName = buildingName
-    self.buildingId = buildingId
-    self.buildingLatitude = buildingLatitude
-    self.buildingLongitude = buildingLongitude
-    self.buildingAliases = buildingAliases
+  public init(name: String, id: String, latitude: Double, longitude: Double, aliases: [String], numberOfAvailableRooms: Int?){
+    self.name = name
+    self.id = id
+    self.latitude = latitude
+    self.longitude = longitude
+    self.aliases = aliases
+    self.numberOfAvailableRooms = numberOfAvailableRooms
   }
 }
