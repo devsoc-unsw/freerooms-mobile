@@ -1,9 +1,0 @@
-"/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/HTTPClient.swift":
-  dependencies: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.d"
-  const-values: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.swiftconstvalues"
-  swiftmodule: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking.swiftmodule"
-  swiftdoc: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking.swiftdoc"
-  diagnostics: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-master.dia"
-  objc-header: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking-Swift.h"
-  abi-baseline-json: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking.abi.json"
-  swiftsourceinfo: "/Users/cw/repos/freerooms-mobile/ios/Networking/build/Networking.build/Release/Networking.build/Objects-normal/arm64/Networking.swiftsourceinfo"

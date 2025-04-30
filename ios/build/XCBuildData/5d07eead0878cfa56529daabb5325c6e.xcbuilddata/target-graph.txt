@@ -1,6 +1,0 @@
-Target dependency graph (3 targets)
-Target 'Freerooms' in project 'Freerooms'
-➜ Explicit dependency on target 'Buildings' in project 'Buildings'
-Target 'Buildings' in project 'Buildings'
-➜ Explicit dependency on target 'Buildings' in project 'Buildings'
-Target 'Buildings' in project 'Buildings' (no dependencies)

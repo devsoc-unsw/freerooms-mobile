@@ -1,4 +1,0 @@
-module Networking {
-header "Networking-Swift.h"
-export *
-}

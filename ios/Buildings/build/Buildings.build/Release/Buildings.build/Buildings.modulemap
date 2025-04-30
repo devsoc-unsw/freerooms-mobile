@@ -1,4 +1,0 @@
-module Buildings {
-header "Buildings-Swift.h"
-export *
-}

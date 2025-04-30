@@ -1,8 +1,0 @@
-version: "Apple Swift version 6.1 (swiftlang-6.1.0.110.21 clang-1700.0.13.3)"
-options: "fa0025423da5b8f91ac15b049750385c6fcdff045245ed259c37f0dcdb7e72fc"
-build_start_time: [1745933717, 875840000]
-build_end_time: [1745933720, 569480000]
-inputs:
-  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/HTTPClient.swift": [1745932329, 889420680]
-  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/NetworkCodableLoader.swift": [1745927993, 302473224]
-  "/Users/cw/repos/freerooms-mobile/ios/Networking/Sources/Networking/URLSessionHTTPClient.swift": [1745932404, 287841346]
