@@ -38,7 +38,7 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Run tests
-      run: xcodebuild test -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17'
+      run: "xcodebuild test -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17'"
   build:
     name: Build
     runs-on: macos-15
@@ -46,4 +46,4 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Build swift project
-      run: xcodebuild build -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17'
+      run: "xcodebuild build -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17'"
