@@ -23,8 +23,8 @@ public final class BuildingModel: PersistentModel {
     longitude: Double,
     aliases: [String],
     numberOfAvailableRooms: Int?,
-    rooms: [RoomModel] = []
-  ) {
+    rooms: [RoomModel] = [])
+  {
     self.name = name
     self.id = id
     self.latitude = latitude

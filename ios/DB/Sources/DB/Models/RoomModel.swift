@@ -24,8 +24,8 @@ public final class RoomModel: PersistentModel {
     capacity: Int,
     floor: Int,
     roomNumber: String,
-    buildingCode: String
-  ) {
+    buildingCode: String)
+  {
     self.name = name
     self.id = id
     self.building = building

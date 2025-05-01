@@ -37,4 +37,3 @@ public protocol PersistentStore {
 public protocol PersistentModel {
   var id: String { get }
 }
-
