@@ -30,6 +30,8 @@ jobs:
     - name: GitHub Action for SwiftLint
       # SHA to 3.2.1
       uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684
+      env:
+        WORKING_DIRECTORY: ios
       with:
         args: --strict --config swiftlint.yml
   tests:
