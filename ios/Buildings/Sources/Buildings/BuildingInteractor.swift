@@ -12,8 +12,7 @@ final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingService = .init(),
-       locationService: LocationService = .init()) {
+  init(buildingService: BuildingService = .init(), locationService: LocationService = .init()) {
     self.buildingService = buildingService
     self.locationService = locationService
   }
@@ -24,7 +23,7 @@ final class BuildingInteractor {
     fatalError("TODO: Implement")
   }
 
-  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> [Building] {
+  func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
     fatalError("TODO: Implement")
   }
 
@@ -53,10 +52,9 @@ final class BuildingInteractor {
   private let buildingService: BuildingService
   private let locationService: LocationService
 
-  
   private func calculateDistance(from location: Location, to building: Building) -> Double {
-    let dlat = building.latitude  - location.latitude
+    let dlat = building.latitude - location.latitude
     let dlon = building.longitude - location.longitude
-    return sqrt(dlat * dlat + dlon * dlon)
+    return dlat * dlat + dlon * dlon
   }
 }
