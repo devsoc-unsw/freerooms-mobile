@@ -56,18 +56,18 @@ struct LocationServicePermissionTest {
 
     // Then
     #expect(throws: Never.self) {
-      let hasPermissionApiBeenGranted = try sut.requestLocationPermissions()
+      let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
 
-      #expect(hasPermissionApiBeenGranted == true)
+      #expect(hasPermissionApiBeenCalled == true)
       #expect(sut.currentPermissionState == .pending)
     }
 
     #expect(throws: Never.self) {
       // request user location permission again
-      let hasPermissionApiBeenGranted = try sut.requestLocationPermissions()
+      let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
 
       // expect early false return
-      #expect(hasPermissionApiBeenGranted == false)
+      #expect(hasPermissionApiBeenCalled == false)
       #expect(sut.currentPermissionState == .pending)
       #expect(mockLocationManager.requestInUseAuthorizationCallTracker == 1)
     }
@@ -84,8 +84,8 @@ struct LocationServicePermissionTest {
     #expect(sut.locationManager.authorizationStatus == .notDetermined)
 
     #expect(throws: Never.self) {
-      let hasPermissionApiBeenGranted = try sut.requestLocationPermissions()
-      #expect(hasPermissionApiBeenGranted == true)
+      let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
+      #expect(hasPermissionApiBeenCalled == true)
       #expect(sut.currentPermissionState == .pending)
     }
 
@@ -107,8 +107,8 @@ struct LocationServicePermissionTest {
     let sut = LocationService(locationManager: mockLocationManager)
     #expect(sut.currentPermissionState == LocationPermission.unrequested)
     #expect(throws: Never.self) {
-      let hasPermissionApiBeenGranted = try sut.requestLocationPermissions()
-      #expect(hasPermissionApiBeenGranted == true)
+      let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
+      #expect(hasPermissionApiBeenCalled == true)
       #expect(sut.currentPermissionState == .pending)
     }
 
