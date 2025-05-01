@@ -38,11 +38,11 @@ public struct URLSessionHTTPClient: HTTPClient {
 
 // MARK: - HTTPSession
 
-@available(iOS 12.0, *)
 public protocol HTTPSession {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
 // MARK: - URLSession + HTTPSession
 
+@available(iOS 13.0, *)
 extension URLSession: HTTPSession { }
