@@ -10,6 +10,10 @@ import Networking
 
 // MARK: - BuildingService
 
+public enum BuildingServiceError: Error {
+  case connectivity
+}
+
 public final class BuildingService {
 
   // MARK: Lifecycle
@@ -24,7 +28,7 @@ public final class BuildingService {
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<[Building], Swift.Error>
+  public typealias Result = Swift.Result<[Building], BuildingServiceError>
 
   // MARK: Internal
 
@@ -33,7 +37,7 @@ public final class BuildingService {
     case .success(let buildings):
       .success(buildings)
     case .failure(_):
-      .failure(Error.connectivity)
+      .failure(.connectivity)
     }
   }
 

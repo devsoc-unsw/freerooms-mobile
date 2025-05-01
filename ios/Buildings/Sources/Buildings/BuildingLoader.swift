@@ -7,26 +7,28 @@
 
 import Networking
 
+public enum BuildingLoaderError: Error {
+  case connectivity
+}
+
 public protocol BuildingLoader {
-  func fetch() async -> Result<[Building], Swift.Error>
+  func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
 public protocol RemoteBuildingLoader {
-  func fetch() async -> Result<[RemoteBuilding], Swift.Error>
+  func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError>
 }
 
 public class LiveBuildingLoader: BuildingLoader {
   private let remoteBuildingLoader: RemoteBuildingLoader
 
-  init(remoteBuildingLoader: RemoteBuildingLoader) {
+  public init(remoteBuildingLoader: RemoteBuildingLoader) {
     self.remoteBuildingLoader = remoteBuildingLoader
   }
   
-  public enum Error: Swift.Error {
-    case connectivity
-  }
+  public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
-  public func fetch() async -> Result<[Building], Swift.Error> {
+  public func fetch() async -> Result {
     switch await remoteBuildingLoader.fetch() {
     case .success(let remoteBuildings):
       let buildings = remoteBuildings.map {
@@ -34,7 +36,7 @@ public class LiveBuildingLoader: BuildingLoader {
       }
       return .success(buildings)
     case .failure(_):
-      return .failure(Error.connectivity)
+      return .failure(.connectivity)
     }
   }
   
