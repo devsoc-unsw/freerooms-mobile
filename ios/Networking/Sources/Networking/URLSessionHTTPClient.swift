@@ -9,7 +9,6 @@ import Foundation
 
 // MARK: - URLSessionHTTPClient
 
-@available(macOS 12.0, *)
 public struct URLSessionHTTPClient: HTTPClient {
 
   // MARK: Lifecycle
@@ -39,11 +38,11 @@ public struct URLSessionHTTPClient: HTTPClient {
 
 // MARK: - HTTPSession
 
+@available(iOS 12.0, *)
 public protocol HTTPSession {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
 // MARK: - URLSession + HTTPSession
 
-@available(macOS 12.0, *)
 extension URLSession: HTTPSession { }
