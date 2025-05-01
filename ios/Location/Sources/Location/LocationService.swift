@@ -9,10 +9,19 @@ import Foundation
 
 // MARK: - LocationService
 
-class LocationService {
-  func getCurrentLocation() throws -> Location {
+public class LocationService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
+
+  // MARK: Internal
 
   func requestLocationPermissions() -> Bool {
     fatalError("TODO: Implement")

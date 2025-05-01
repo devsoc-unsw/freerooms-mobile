@@ -13,7 +13,6 @@ struct MapView: UIViewRepresentable {
   let buildings: [Building]
 
   func makeUIView(context _: Context) -> MKMapView {
-    // Create and return a basic map view
     MKMapView()
   }
 
@@ -24,14 +23,16 @@ struct MapView: UIViewRepresentable {
     // Turn each Building into a map annotation (pin)
     let annotations = buildings.map { building -> MKPointAnnotation in
       let annotation = MKPointAnnotation()
+      let availableRooms = building.numberOfAvailableRooms ?? 0
       annotation.title = building.name
+      annotation.subtitle = "\(availableRooms) rooms available"
       annotation.coordinate = CLLocationCoordinate2D(
         latitude: building.latitude,
         longitude: building.longitude)
       return annotation
     }
 
-    // Display the annotations and zoom the map to show them
+    // Zoom the map to show all pins
     uiView.showAnnotations(annotations, animated: true)
   }
 }
@@ -39,8 +40,8 @@ struct MapView: UIViewRepresentable {
 // MARK: - Preview
 #Preview {
   MapView(buildings: [
-    Building(name: "Quad", id: "quad", latitude: -33.9173, longitude: 151.2312, aliases: []),
-    Building(name: "SLT", id: "slt", latitude: -33.9195, longitude: 151.2245, aliases: []),
+    Building(name: "Quad", id: "quad", latitude: -33.9173, longitude: 151.2312, aliases: [], numberOfAvailableRooms: 3),
+    Building(name: "SLT", id: "slt", latitude: -33.9195, longitude: 151.2245, aliases: [], numberOfAvailableRooms: 5),
   ])
   .ignoresSafeArea()
 }
