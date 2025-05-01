@@ -16,6 +16,7 @@
 		96D65EF52DA3A2400060D06B /* Networking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Networking; sourceTree = "<group>"; };
 		96D65F322DA414120060D06B /* TestingSupport */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestingSupport; sourceTree = "<group>"; };
 		96F9AFCA2D9BCC1200671174 /* Freerooms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freerooms.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C06998882DC35B05008A72FF /* Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +66,7 @@
 		96F9AFC12D9BCC1200671174 = {
 			isa = PBXGroup;
 			children = (
+				C06998882DC35B05008A72FF /* Tests.xctestplan */,
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
