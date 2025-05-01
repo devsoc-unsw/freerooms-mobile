@@ -11,16 +11,16 @@ public class MockRemoteBuildingLoader: RemoteBuildingLoader {
 
   // MARK: Lifecycle
 
-  init(loads remoteBuildings: [RemoteBuilding] = [], throws error: Swift.Error? = nil) {
+  init(loads remoteBuildings: [RemoteBuilding] = [], throws buildingLoaderError: BuildingLoaderError? = nil) {
     self.remoteBuildings = remoteBuildings
-    self.error = error
+    self.buildingLoaderError = buildingLoaderError
   }
 
   // MARK: Public
 
-  public func fetch() async -> Result<[RemoteBuilding], Swift.Error> {
-    if let error {
-      return .failure(error)
+  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
+    if buildingLoaderError != nil {
+      return .failure(.connectivity)
     }
 
     return .success(remoteBuildings)
@@ -29,6 +29,6 @@ public class MockRemoteBuildingLoader: RemoteBuildingLoader {
   // MARK: Private
 
   private let remoteBuildings: [RemoteBuilding]
-  private let error: Swift.Error?
+  private let buildingLoaderError: BuildingLoaderError?
 
 }

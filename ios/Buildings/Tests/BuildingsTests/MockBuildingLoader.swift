@@ -11,16 +11,16 @@ public class MockBuildingLoader: BuildingLoader {
 
   // MARK: Lifecycle
 
-  init(loads buildings: [Building] = [], throws error: Swift.Error? = nil) {
+  init(loads buildings: [Building] = [], throws buildingLoaderError: BuildingLoaderError? = nil) {
     self.buildings = buildings
-    self.error = error
+    self.buildingLoaderError = buildingLoaderError
   }
 
   // MARK: Public
 
-  public func fetch() async -> Result<[Building], Swift.Error> {
-    if let error {
-      return .failure(error)
+  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+    if buildingLoaderError != nil {
+      return .failure(.connectivity)
     }
 
     return .success(buildings)
@@ -29,6 +29,6 @@ public class MockBuildingLoader: BuildingLoader {
   // MARK: Private
 
   private let buildings: [Building]
-  private let error: Swift.Error?
+  private let buildingLoaderError: BuildingLoaderError?
 
 }
