@@ -17,22 +17,24 @@ class LocationService: NSObject, LocationManagerDelegate {
   init(locationManager: LocationManager) {
     self.locationManager = locationManager
     super.init()
-    self.locationManager.delegate = self
+    locationManager.delegate = self
 
     locationManagerDidChangeAuthorization(locationManager)
   }
+
+  // MARK: Package
+
+  package let locationManager: LocationManager
 
   // MARK: Internal
 
   var currentPermissionState = LocationPermission.unrequested
 
-  let locationManager: LocationManager
-
   func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
 
-  /// - Returns: returns true if `AuthorizationStatus` undetermined  and no undelying request, `false` if:
+  /// - Returns: returns true if `AuthorizationStatus` is undetermined  and no ongoing request, `false` if:
   ///   - A request is already pending
   ///   - The user has already granted permissions (either "when in use" or "always")
   /// - Throws: `LocationServiceError` if `authorizationStatus` is denied or restricted
