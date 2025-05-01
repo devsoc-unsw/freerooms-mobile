@@ -10,7 +10,7 @@ import CoreLocation
 // MARK: - LocationManager
 
 @objc
-public protocol LocationManager {
+public protocol LocationManager: AnyObject {
   // MARK: Internal
   var delegate: LocationManagerDelegate? { get set }
   var authorizationStatus: CLAuthorizationStatus { get }
