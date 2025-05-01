@@ -37,15 +37,8 @@ jobs:
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - name: Run Networking tests
-      run: xcodebuild test -scheme Networking
-      if: always()
-    - name: Run Location tests
-      run: xcodebuild test -scheme Location
-      if: always()
-    - name: Run Buildings tests
-      run: xcodebuild test -scheme Buildings
-      if: always()
+    - name: Run tests
+      run: xcodebuild test -scheme Tests
   build:
     name: Build
     runs-on: macos-15
