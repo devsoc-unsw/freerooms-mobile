@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: ios
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # SHA to v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+    - name: GitHub Action for SwiftLint
+      # SHA to 3.2.1
+      uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684
+      env:
+        WORKING_DIRECTORY: ios
+      with:
+        args: --strict --config swiftlint.yml
+  tests:
+    name: Tests
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+    - name: Run tests
+      run: "xcodebuild test -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 16'"
+  build:
+    name: Build
+    runs-on: macos-15
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+    - name: Build swift project
+      run: "xcodebuild build -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 16'"
