@@ -11,7 +11,9 @@ import Testing
 @testable import Buildings
 
 struct BuildingServiceTests {
-  
+
+  // MARK: Internal
+
   @Test("Building service fetches zero buildings")
   func fetchZeroBuildingsFromBuildingService() async {
     // Given
@@ -25,11 +27,11 @@ struct BuildingServiceTests {
     // Then
     expect(res, toFetch: buildings)
   }
-  
-  @Test("Building service fetches one buildings")
+
+  @Test("Building service fetches one building")
   func fetchOneBuildingsFromBuildingService() async {
     // Given
-    let buildings = createBuilding(1)
+    let buildings = createBuildings(1)
     let mockBuildingLoader = MockBuildingLoader(loads: buildings)
     let sut = BuildingService(buildingLoader: mockBuildingLoader)
 
@@ -39,11 +41,11 @@ struct BuildingServiceTests {
     // Then
     expect(res, toFetch: buildings)
   }
-  
+
   @Test("Building service fetches one hundred buildings")
   func fetchHundredBuildingsFromBuildingService() async {
     // Given
-    let buildings = createBuilding(100)
+    let buildings = createBuildings(100)
     let mockBuildingLoader = MockBuildingLoader(loads: buildings)
     let sut = BuildingService(buildingLoader: mockBuildingLoader)
 
@@ -53,7 +55,7 @@ struct BuildingServiceTests {
     // Then
     expect(res, toFetch: buildings)
   }
-  
+
   @Test("Building service returns a connectivity error when loader fails")
   func buildingServiceReturnsConnectivityError() async {
     // Given
@@ -64,12 +66,12 @@ struct BuildingServiceTests {
     let res = await sut.getBuildings()
 
     // Then
-    expect(res, toThrow: BuildingServiceError.connectivity)
+    expect(res, toThrow: BuildingService.FetchBuildingsError.getBuildingsConnectivity)
   }
 
   // MARK: Private
 
-  private func expect(_ res: BuildingService.Result, toThrow error: BuildingServiceError) {
+  private func expect(_ res: BuildingService.GetBuildingsResult, toThrow _: BuildingService.FetchBuildingsError) {
     switch res {
     case .failure(let error):
       #expect(error == error)
@@ -78,7 +80,7 @@ struct BuildingServiceTests {
     }
   }
 
-  private func expect(_ res: BuildingService.Result, toFetch _: [Building]) {
+  private func expect(_ res: BuildingService.GetBuildingsResult, toFetch _: [Building]) {
     switch res {
     case .success(let buildings):
       #expect(buildings == buildings)
@@ -87,18 +89,10 @@ struct BuildingServiceTests {
     }
   }
 
-  private func createRemoteBuildings(_ count: Int) -> [RemoteBuilding] {
-    var remoteBuildings: [RemoteBuilding] = []
-    for _ in 0..<count {
-      remoteBuildings.append(RemoteBuilding(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"], numberOfAvailableRooms: 10))
-    }
-    return remoteBuildings
-  }
-  
-  private func createBuilding(_ count: Int) -> [Building] {
+  private func createBuildings(_ count: Int) -> [Building] {
     var buildings: [Building] = []
     for _ in 0..<count {
-      buildings.append(Building(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"], numberOfAvailableRooms: 10))
+      buildings.append(Building(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"]))
     }
     return buildings
   }

@@ -7,38 +7,53 @@
 
 import Networking
 
+// MARK: - BuildingLoaderError
+
 public enum BuildingLoaderError: Error {
   case connectivity
 }
+
+// MARK: - BuildingLoader
 
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
+// MARK: - RemoteBuildingLoader
+
 public protocol RemoteBuildingLoader {
   func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError>
 }
 
+// MARK: - LiveBuildingLoader
+
 public class LiveBuildingLoader: BuildingLoader {
-  private let remoteBuildingLoader: RemoteBuildingLoader
+
+  // MARK: Lifecycle
 
   public init(remoteBuildingLoader: RemoteBuildingLoader) {
     self.remoteBuildingLoader = remoteBuildingLoader
   }
-  
+
+  // MARK: Public
+
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func fetch() async -> Result {
     switch await remoteBuildingLoader.fetch() {
     case .success(let remoteBuildings):
       let buildings = remoteBuildings.map {
-        Building(name: $0.name, id: $0.id, latitude: $0.latitude, longitude: $0.longitude, aliases: $0.aliases, numberOfAvailableRooms: $0.numberOfAvailableRooms)
+        Building(name: $0.name, id: $0.id, latitude: $0.latitude, longitude: $0.longitude, aliases: $0.aliases)
       }
       return .success(buildings)
-    case .failure(_):
+
+    case .failure:
       return .failure(.connectivity)
     }
   }
-  
-  
+
+  // MARK: Private
+
+  private let remoteBuildingLoader: RemoteBuildingLoader
+
 }

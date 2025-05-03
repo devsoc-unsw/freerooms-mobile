@@ -10,10 +10,6 @@ import Networking
 
 // MARK: - BuildingService
 
-public enum BuildingServiceError: Error {
-  case connectivity
-}
-
 public final class BuildingService {
 
   // MARK: Lifecycle
@@ -21,23 +17,21 @@ public final class BuildingService {
   init(buildingLoader: any BuildingLoader) {
     self.buildingLoader = buildingLoader
   }
-  
-  public enum Error: Swift.Error {
-    case connectivity
-  }
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<[Building], BuildingServiceError>
+  public enum FetchBuildingsError: Error {
+    case getBuildingsConnectivity
+  }
 
-  // MARK: Internal
+  public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
-  func getBuildings() async -> Result {
+  public func getBuildings() async -> GetBuildingsResult {
     switch await buildingLoader.fetch() {
     case .success(let buildings):
       .success(buildings)
-    case .failure(_):
-      .failure(.connectivity)
+    case .failure:
+      .failure(.getBuildingsConnectivity)
     }
   }
 
