@@ -56,8 +56,8 @@ struct BuildingServiceTests {
     expect(res, toFetch: buildings)
   }
 
-  @Test("Building service returns a connectivity error when loader fails")
-  func buildingServiceReturnsConnectivityError() async {
+  @Test("Building service returns a getBuildingsConnectivity error when loader fails")
+  func buildingServiceReturnsGetBuildingsConnectivityError() async {
     // Given
     let mockBuildingLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
     let sut = BuildingService(buildingLoader: mockBuildingLoader)
