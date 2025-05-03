@@ -15,7 +15,7 @@ final class MapViewModel {
   // MARK: Lifecycle
 
   /// Custom BuildingService (for example, a mock for testing), or use the default one for normal app usage.
-  init(buildingService: BuildingService = BuildingService()) {
+  init(buildingService: BuildingService) {
     self.buildingService = buildingService
   }
 
@@ -23,8 +23,13 @@ final class MapViewModel {
 
   var buildings: [Building] = []
 
-  func loadBuildings() {
-    buildings = buildingService.getBuildings()
+  func loadBuildings() async throws(BuildingService.FetchBuildingsError) {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      self.buildings = buildings
+    case .failure(let error):
+      throw error
+    }
   }
 
   // MARK: Private

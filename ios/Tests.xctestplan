@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "56911ECE-21EC-4641-9739-B6CFAF308366",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Networking",
+        "identifier" : "NetworkingTests",
+        "name" : "NetworkingTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Buildings",
+        "identifier" : "BuildingsTests",
+        "name" : "BuildingsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Location",
+        "identifier" : "LocationTests",
+        "name" : "LocationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TestingSupport",
+        "identifier" : "TestingSupportTests",
+        "name" : "TestingSupportTests"
+      }
+    }
+  ],
+  "version" : 1
+}
