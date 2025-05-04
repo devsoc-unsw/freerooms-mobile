@@ -32,7 +32,7 @@ public struct Building: Equatable {
   public let numberOfAvailableRooms: Int?
 
   public var gridReference: GridReference? {
-    GridReference.fromBuildingId(buildingId: id)
+    GridReference.fromBuildingID(buildingID: id)
   }
 
 }
@@ -45,40 +45,29 @@ public struct GridReference {
   public let sectionNumber: Int
   public let campusSection: CampusSection
 
-  public static func fromBuildingId(buildingId: String) -> GridReference? {
-    let splitId = buildingId.split(separator: "-").map { String($0) }
-    guard splitId.count >= 2 else { return nil }
+  public static func fromBuildingID(buildingID: String) -> GridReference? {
+    let splitID = buildingID.split(separator: "-").map { String($0) }
+    guard splitID.count == 2 else { return nil }
 
-    let campus = splitId[0]
-    let section = splitId[1]
+    let campusCode = splitID[0]
+    let section = splitID[1]
 
-    do {
-      // regex grouping:
-      // 1. number for sectionNumber
-      // 2. letter for sectionCode
-      let regex = try NSRegularExpression(pattern: "([A-Z]+)([0-9]+)")
-      let range = NSRange(section.startIndex..<section.endIndex, in: section)
+    let startIndex = section.startIndex
+    let secondIndex = section.index(after: startIndex)
 
-      if let match = regex.firstMatch(in: section, range: range) {
-        let sectionLetter = String(section[Range(match.range(at: 1), in: section)!])
-        let sectionNumberStr = String(section[Range(match.range(at: 2), in: section)!])
-
-        guard let sectionNumber = Int(sectionNumberStr) else { return nil }
-        let campusSection = CampusSection.fromNumber(sectionNumber)
-
-        return GridReference(
-          campusCode: campus,
-          sectionCode: sectionLetter,
-          sectionNumber: sectionNumber,
-          campusSection: campusSection)
-      }
-    } catch {
-      print("Regex error: \(error)")
+    let sectionLetter = String(section[startIndex])
+    guard let sectionNumber = Int(String(section[secondIndex...])) else {
+      return nil
     }
 
-    return nil
-  }
+    let campusSection = CampusSection.fromNumber(sectionNumber)
 
+    return GridReference(
+      campusCode: campusCode,
+      sectionCode: sectionLetter,
+      sectionNumber: sectionNumber,
+      campusSection: campusSection)
+  }
 }
 
 // MARK: - CampusSection
