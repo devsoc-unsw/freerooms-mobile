@@ -12,7 +12,7 @@ final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingService = .init(), locationService: LocationService = .init()) {
+  init(buildingService: BuildingService, locationService: LocationService) {
     self.buildingService = buildingService
     self.locationService = locationService
   }
@@ -27,22 +27,25 @@ final class BuildingInteractor {
     fatalError("TODO: Implement")
   }
 
-  func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    let buildings = buildingService.getBuildings()
+  func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      do {
+        let currentLocation = try locationService.getCurrentLocation()
 
-    do {
-      let currentLocation = try locationService.getCurrentLocation()
+        // Compute each building’s distance once, then sort
+        let sorted = buildings
+          .map { (building: Building) -> (Building, Double) in
+            (building, calculateDistance(from: currentLocation, to: building))
+          }
+          .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
+          .map { $0.0 }
+        return .success(sorted)
+      } catch {
+        return .failure(error)
+      }
 
-      // Compute each building’s distance once, then sort
-      let sorted = buildings
-        .map { building -> (Building, Double) in
-          (building, calculateDistance(from: currentLocation, to: building))
-        }
-        .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
-        .map { $0.0 }
-
-      return .success(sorted)
-    } catch {
+    case .failure(let error):
       return .failure(error)
     }
   }

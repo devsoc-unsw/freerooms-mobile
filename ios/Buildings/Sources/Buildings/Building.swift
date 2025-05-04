@@ -15,14 +15,14 @@ public struct Building: Equatable {
     latitude: Double,
     longitude: Double,
     aliases: [String],
-    numberOfAvailableRooms: Int?)
+    numberOfAvaliableRooms: Int? = nil)
   {
     self.name = name
     self.id = id
     self.latitude = latitude
     self.longitude = longitude
     self.aliases = aliases
-    self.numberOfAvailableRooms = numberOfAvailableRooms
+    self.numberOfAvaliableRooms = numberOfAvaliableRooms
   }
 
   // MARK: Public
@@ -32,6 +32,5 @@ public struct Building: Equatable {
   public let latitude: Double
   public let longitude: Double
   public let aliases: [String]
-  public let numberOfAvailableRooms: Int?
-
+  public var numberOfAvaliableRooms: Int?
 }
