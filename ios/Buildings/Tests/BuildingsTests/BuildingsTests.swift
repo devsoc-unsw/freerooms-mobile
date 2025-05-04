@@ -4,9 +4,8 @@ import Testing
 // MARK: - GetBuildingByCampusSectionTest
 
 struct GetBuildingByCampusSectionTest {
-  @Test
+  @Test("Building interactor returns buildings in ascending order by campus reference")
   func sortByAscending() {
-    // Given
     let mockBuildingService = MockBuildingService()
     mockBuildingService.addBuilding(createUpperCampusBuilding())
     mockBuildingService.addBuilding(createLowerCampusBuilding())
@@ -24,7 +23,7 @@ struct GetBuildingByCampusSectionTest {
     #expect(buildings[2].gridReference?.campusSection == .upper) // Upper campus building should be last
   }
 
-  @Test
+  @Test("Building interactor returns buildings in descending order by campus reference")
   func sortByDescending() {
     // Given
     let mockBuildingService = MockBuildingService()
@@ -79,8 +78,8 @@ struct GetBuildingByCampusSectionTest {
 // MARK: - GridReferenceTest
 
 struct GridReferenceTest {
-  @Test
-  func upperCampusBuildingTest() {
+  @Test("Grid reference properly identifies upper campus building")
+  func upperCampusBuildingParsingTest() {
     // Given
     let building = Building(
       name: "Patricia O Shane",
@@ -100,8 +99,8 @@ struct GridReferenceTest {
     #expect(sut.campusSection == CampusSection.upper)
   }
 
-  @Test
-  func middleCampusBuildingTest() {
+  @Test("Grid reference properly identify middle campus building")
+  func middleCampusBuildingParsingTest() {
     // Given
     let building = Building(
       name: "Quadrangle",
@@ -121,8 +120,8 @@ struct GridReferenceTest {
     #expect(sut.campusSection == CampusSection.middle)
   }
 
-  @Test
-  func lowerCampusBuildingTest() {
+  @Test("Grid reference properly identify lower campus building")
+  func lowerCampusBuildingParsingTest() {
     // Given
     let building = Building(
       name: "Law Library",
@@ -142,7 +141,7 @@ struct GridReferenceTest {
     #expect(sut.campusSection == CampusSection.lower)
   }
 
-  @Test
+  @Test("campus section enum sorts correctly in ascending order")
   func testCampusSectionSortingAscending() {
     // Given
     var sut: [CampusSection] = [.upper, .middle, .lower]
@@ -154,7 +153,7 @@ struct GridReferenceTest {
     #expect(sut == [.lower, .middle, .upper])
   }
 
-  @Test
+  @Test("campus section enum sorts correctly in descending order")
   func testCampusSectionSortingDescending() {
     // Given
     var sut: [CampusSection] = [.middle, .upper, .lower]
