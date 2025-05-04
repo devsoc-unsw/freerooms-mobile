@@ -21,7 +21,7 @@ public final class BuildingService {
   // MARK: Public
 
   public enum FetchBuildingsError: Error {
-    case getBuildingsConnectivity
+    case connectivity
   }
 
   public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
@@ -31,7 +31,7 @@ public final class BuildingService {
     case .success(let buildings):
       .success(buildings)
     case .failure:
-      .failure(.getBuildingsConnectivity)
+      .failure(.connectivity)
     }
   }
 

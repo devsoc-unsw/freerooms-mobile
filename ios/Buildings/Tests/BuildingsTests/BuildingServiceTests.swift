@@ -66,7 +66,7 @@ struct BuildingServiceTests {
     let res = await sut.getBuildings()
 
     // Then
-    expect(res, toThrow: BuildingService.FetchBuildingsError.getBuildingsConnectivity)
+    expect(res, toThrow: BuildingService.FetchBuildingsError.connectivity)
   }
 
   // MARK: Private
