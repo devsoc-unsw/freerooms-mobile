@@ -41,19 +41,19 @@ class LocationService: NSObject, LocationManagerDelegate {
   ///   - because the API doens't allow permission request if permission is denied / restricted
   func requestLocationPermissions() throws -> Bool {
     let authorizationStatus = locationManager.authorizationStatus
-
+    
     guard authorizationStatus != .denied && authorizationStatus != .restricted else {
       throw LocationServiceError.locationPermissionsDenied
     }
-
+    
     guard currentPermissionState != .pending else {
       return false
     }
-
+    
     guard authorizationStatus != .authorizedAlways || authorizationStatus != .authorizedWhenInUse else {
       return false
     }
-
+    
     currentPermissionState = .pending
     locationManager.requestWhenInUseAuthorization()
     return true

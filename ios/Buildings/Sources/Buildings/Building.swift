@@ -6,19 +6,31 @@
 //
 
 public struct Building: Equatable {
-  public let name: String
-  public let id: String
-  public let latitude: Double
-  public let longitude: Double
-  public let aliases: [String]
-  public let numberOfAvailableRooms: Int?
 
-  public init(name: String, id: String, latitude: Double, longitude: Double, aliases: [String], numberOfAvailableRooms: Int?) {
+  // MARK: Lifecycle
+
+  public init(
+    name: String,
+    id: String,
+    latitude: Double,
+    longitude: Double,
+    aliases: [String],
+    numberOfAvaliableRooms: Int? = nil)
+  {
     self.name = name
     self.id = id
     self.latitude = latitude
     self.longitude = longitude
     self.aliases = aliases
-    self.numberOfAvailableRooms = numberOfAvailableRooms
+    self.numberOfAvaliableRooms = numberOfAvaliableRooms
   }
+
+  // MARK: Public
+
+  public let name: String
+  public let id: String
+  public let latitude: Double
+  public let longitude: Double
+  public let aliases: [String]
+  public var numberOfAvaliableRooms: Int?
 }
