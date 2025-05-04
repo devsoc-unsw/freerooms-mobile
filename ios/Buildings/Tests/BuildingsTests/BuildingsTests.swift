@@ -140,6 +140,42 @@ struct GridReferenceTest {
     #expect(sut.sectionNumber == 8)
     #expect(sut.campusSection == CampusSection.lower)
   }
+  
+  @Test("initialize grid reference with multiple dashes in building ID")
+  func invalidBuildingIDWithDashesParsingTest() {
+    // Given
+    let building = Building(
+      name: "Law Library",
+      id: "K-F-C",
+      latitude: 0.0,
+      longitude: 0.0,
+      aliases: ["Leon Town"],
+      numberOfAvailableRooms: 0)
+    
+    // When
+    let sut = building.gridReference
+    
+    // Then
+    #expect(sut == nil)
+  }
+  
+  @Test("initialize grid reference with invalid building ID")
+  func invalidBuildingIDParsingTest() {
+    // Given
+    let building = Building(
+      name: "Safety Culture",
+      id: "M-CD",
+      latitude: 0.0,
+      longitude: 0.0,
+      aliases: ["Hanoi"],
+      numberOfAvailableRooms: 0)
+    
+    // When
+    let sut = building.gridReference
+    
+    // Then
+    #expect(sut == nil)
+  }
 
   @Test("campus section enum sorts correctly in ascending order")
   func testCampusSectionSortingAscending() {
@@ -147,7 +183,7 @@ struct GridReferenceTest {
     var sut: [CampusSection] = [.upper, .middle, .lower]
 
     // When
-    sut.sort(by: <)
+    sut = sut.sorted {$0.rawValue < $1.rawValue}
 
     // Then
     #expect(sut == [.lower, .middle, .upper])
@@ -159,7 +195,7 @@ struct GridReferenceTest {
     var sut: [CampusSection] = [.middle, .upper, .lower]
 
     // When
-    sut.sort(by: >)
+    sut = sut.sorted {$0.rawValue > $1.rawValue}
 
     // Then
     #expect(sut == [.upper, .middle, .lower])
@@ -169,7 +205,7 @@ struct GridReferenceTest {
 
 // MARK: - MockBuildingService
 
-class MockBuildingService: BuildingServiceProtocol {
+class MockBuildingService: BuildingService {
 
   // MARK: Internal
 
