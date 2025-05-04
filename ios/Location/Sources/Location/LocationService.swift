@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - LocationService
 
-class LocationService: NSObject, LocationManagerDelegate {
+public class LocationService: NSObject, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
@@ -30,7 +30,7 @@ class LocationService: NSObject, LocationManagerDelegate {
 
   var currentPermissionState = LocationPermission.unrequested
 
-  func getCurrentLocation() throws -> Location {
+  public func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
   }
 
@@ -39,27 +39,27 @@ class LocationService: NSObject, LocationManagerDelegate {
   ///   - The user has already granted permissions (either "when in use" or "always")
   /// - Throws: `LocationServiceError` if `authorizationStatus` is denied or restricted
   ///   - because the API doens't allow permission request if permission is denied / restricted
-  func requestLocationPermissions() throws -> Bool {
+  public func requestLocationPermissions() throws -> Bool {
     let authorizationStatus = locationManager.authorizationStatus
-    
+
     guard authorizationStatus != .denied && authorizationStatus != .restricted else {
       throw LocationServiceError.locationPermissionsDenied
     }
-    
+
     guard currentPermissionState != .pending else {
       return false
     }
-    
+
     guard authorizationStatus != .authorizedAlways || authorizationStatus != .authorizedWhenInUse else {
       return false
     }
-    
+
     currentPermissionState = .pending
     locationManager.requestWhenInUseAuthorization()
     return true
   }
 
-  func locationManagerDidChangeAuthorization(_: LocationManager) {
+  public func locationManagerDidChangeAuthorization(_: LocationManager) {
     switch locationManager.authorizationStatus {
     case .authorizedWhenInUse:
       currentPermissionState = .granted
