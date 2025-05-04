@@ -31,7 +31,7 @@ public struct Building: Equatable {
   public let aliases: [String]
   public let numberOfAvailableRooms: Int?
 
-  public var gridReference: GridReference? {
+  public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
 
@@ -45,9 +45,9 @@ public struct GridReference {
   public let sectionNumber: Int
   public let campusSection: CampusSection
 
-  public static func fromBuildingID(buildingID: String) -> GridReference? {
+  public static func fromBuildingID(buildingID: String) -> GridReference {
     let splitID = buildingID.split(separator: "-").map { String($0) }
-    guard splitID.count == 2 else { return nil }
+    guard splitID.count == 2 else { return defaultGridReference() }
 
     let campusCode = splitID[0]
     let section = splitID[1]
@@ -57,10 +57,10 @@ public struct GridReference {
 
     let sectionLetter = String(section[startIndex])
     guard let sectionNumber = Int(String(section[secondIndex...])) else {
-      return nil
+      return defaultGridReference()
     }
 
-    let campusSection = CampusSection.fromNumber(sectionNumber)
+    let campusSection = CampusSection(sectionNumber)
 
     return GridReference(
       campusCode: campusCode,
@@ -68,36 +68,34 @@ public struct GridReference {
       sectionNumber: sectionNumber,
       campusSection: campusSection)
   }
+
+  public static func defaultGridReference() -> GridReference {
+    GridReference(
+      campusCode: "?",
+      sectionCode: "?",
+      sectionNumber: 0,
+      campusSection: .upper)
+  }
 }
 
 // MARK: - CampusSection
 
-public enum CampusSection: Comparable {
-  case lower
-  case middle
-  case upper
+public enum CampusSection: Int {
+  case lower, middle, upper
 
-  // MARK: Internal
+  // MARK: Lifecycle
 
-  static func fromNumber(_ number: Int) -> CampusSection {
-    switch number {
-    case lowerRange:
-      .lower
-    case middleRange:
-      .middle
-    case upperRange:
-      .upper
+  /// ranges taken from https://maps-sydney.com/maps-sydney-others/unsw-map
+  public init(_ rawValue: Int) {
+    switch rawValue {
+    case 1...10:
+      self = .lower
+    case 11...18:
+      self = .middle
+    case 19...28:
+      self = .upper
     default:
-      .upper
+      self = .upper
     }
   }
-
-  // MARK: Private
-
-  // Define the ranges
-  // range taken from https://maps-sydney.com/maps-sydney-others/unsw-map
-  private static let lowerRange = 1...10
-  private static let middleRange = 11...18
-  private static let upperRange = 19...28
-
 }
