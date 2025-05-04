@@ -11,7 +11,7 @@ final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingServiceProtocol) {
+  init(buildingService: BuildingService) {
     self.buildingService = buildingService
   }
 
@@ -33,9 +33,9 @@ final class BuildingInteractor {
     var buildings = buildingService.getBuildings()
 
     if inAscendingOrder {
-      buildings = buildings.sorted { $0.gridReference!.campusSection < $1.gridReference!.campusSection }
+      buildings = buildings.sorted { $0.gridReference.campusSection.rawValue < $1.gridReference.campusSection.rawValue }
     } else {
-      buildings = buildings.sorted { $0.gridReference!.campusSection > $1.gridReference!.campusSection }
+      buildings = buildings.sorted { $0.gridReference.campusSection.rawValue > $1.gridReference.campusSection.rawValue }
     }
 
     return buildings
@@ -43,6 +43,6 @@ final class BuildingInteractor {
 
   // MARK: Private
 
-  private let buildingService: BuildingServiceProtocol
+  private let buildingService: BuildingService
 
 }

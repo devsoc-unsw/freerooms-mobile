@@ -18,9 +18,9 @@ struct GetBuildingByCampusSectionTest {
 
     // Then
     #expect(buildings.count == 3)
-    #expect(buildings[0].gridReference?.campusSection == .lower) // Lower campus building should be first
-    #expect(buildings[1].gridReference?.campusSection == .middle) // Middle campus building should be second
-    #expect(buildings[2].gridReference?.campusSection == .upper) // Upper campus building should be last
+    #expect(buildings[0].gridReference.campusSection == .lower) // Lower campus building should be first
+    #expect(buildings[1].gridReference.campusSection == .middle) // Middle campus building should be second
+    #expect(buildings[2].gridReference.campusSection == .upper) // Upper campus building should be last
   }
 
   @Test("Building interactor returns buildings in descending order by campus reference")
@@ -38,9 +38,9 @@ struct GetBuildingByCampusSectionTest {
 
     // Then
     #expect(buildings.count == 3)
-    #expect(buildings[0].gridReference?.campusSection == .upper) // Lower campus building should be first
-    #expect(buildings[1].gridReference?.campusSection == .middle) // Middle campus building should be second
-    #expect(buildings[2].gridReference?.campusSection == .lower) // Upper campus building should be last
+    #expect(buildings[0].gridReference.campusSection == .upper) // Lower campus building should be first
+    #expect(buildings[1].gridReference.campusSection == .middle) // Middle campus building should be second
+    #expect(buildings[2].gridReference.campusSection == .lower) // Upper campus building should be last
   }
 
   /// Helper methods to create test buildings
@@ -90,7 +90,7 @@ struct GridReferenceTest {
       numberOfAvailableRooms: 0)
 
     // When
-    let sut = building.gridReference!
+    let sut = building.gridReference
 
     // Then
     #expect(sut.campusCode == "K")
@@ -111,7 +111,7 @@ struct GridReferenceTest {
       numberOfAvailableRooms: 0)
 
     // When
-    let sut = building.gridReference!
+    let sut = building.gridReference
 
     // Then
     #expect(sut.campusCode == "K")
@@ -132,7 +132,7 @@ struct GridReferenceTest {
       numberOfAvailableRooms: 0)
 
     // When
-    let sut = building.gridReference!
+    let sut = building.gridReference
 
     // Then
     #expect(sut.campusCode == "K")
@@ -140,7 +140,7 @@ struct GridReferenceTest {
     #expect(sut.sectionNumber == 8)
     #expect(sut.campusSection == CampusSection.lower)
   }
-  
+
   @Test("initialize grid reference with multiple dashes in building ID")
   func invalidBuildingIDWithDashesParsingTest() {
     // Given
@@ -151,14 +151,14 @@ struct GridReferenceTest {
       longitude: 0.0,
       aliases: ["Leon Town"],
       numberOfAvailableRooms: 0)
-    
+
     // When
     let sut = building.gridReference
-    
+
     // Then
-    #expect(sut == nil)
+    #expect(sut.campusCode == "?")
   }
-  
+
   @Test("initialize grid reference with invalid building ID")
   func invalidBuildingIDParsingTest() {
     // Given
@@ -169,12 +169,12 @@ struct GridReferenceTest {
       longitude: 0.0,
       aliases: ["Hanoi"],
       numberOfAvailableRooms: 0)
-    
+
     // When
     let sut = building.gridReference
-    
+
     // Then
-    #expect(sut == nil)
+    #expect(sut.campusCode == "?")
   }
 
   @Test("campus section enum sorts correctly in ascending order")
@@ -183,7 +183,7 @@ struct GridReferenceTest {
     var sut: [CampusSection] = [.upper, .middle, .lower]
 
     // When
-    sut = sut.sorted {$0.rawValue < $1.rawValue}
+    sut = sut.sorted { $0.rawValue < $1.rawValue }
 
     // Then
     #expect(sut == [.lower, .middle, .upper])
@@ -195,7 +195,7 @@ struct GridReferenceTest {
     var sut: [CampusSection] = [.middle, .upper, .lower]
 
     // When
-    sut = sut.sorted {$0.rawValue > $1.rawValue}
+    sut = sut.sorted { $0.rawValue > $1.rawValue }
 
     // Then
     #expect(sut == [.upper, .middle, .lower])
