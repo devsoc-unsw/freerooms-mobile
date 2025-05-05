@@ -6,5 +6,5 @@
 //
 
 enum LocationPermission {
-  case granted, denied, unrequested
+  case granted, denied, unrequested, pending
 }
