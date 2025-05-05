@@ -19,16 +19,11 @@ public class LocationService: NSObject, LocationManagerDelegate {
     super.init()
     locationManager.delegate = self
 
+    // Initialize permission state by checking AuthorizationStatus are already granted/denied/unrequested
     locationManagerDidChangeAuthorization(locationManager)
   }
 
-  // MARK: Package
-
-  package let locationManager: LocationManager
-
-  // MARK: Internal
-
-  var currentPermissionState = LocationPermission.unrequested
+  // MARK: Public
 
   public func getCurrentLocation() throws -> Location {
     fatalError("TODO: Implement")
@@ -69,6 +64,14 @@ public class LocationService: NSObject, LocationManagerDelegate {
       currentPermissionState = .unrequested
     }
   }
+
+  // MARK: Package
+
+  package let locationManager: LocationManager
+
+  // MARK: Internal
+
+  var currentPermissionState = LocationPermission.unrequested
 
 }
 
