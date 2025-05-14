@@ -7,10 +7,8 @@
 
 import Foundation
 
-
 // MARK: - URLSessionHTTPClient
 
-@available(macOS 12.0, *)
 public struct URLSessionHTTPClient: HTTPClient {
 
   // MARK: Lifecycle
@@ -46,5 +44,5 @@ public protocol HTTPSession {
 
 // MARK: - URLSession + HTTPSession
 
-@available(macOS 12.0, *)
+@available(iOS 13.0, *)
 extension URLSession: HTTPSession { }

@@ -13,7 +13,14 @@ public struct Building: Equatable {
 
   // MARK: Lifecycle
 
-  public init(name: String, id: String, latitude: Double, longitude: Double, aliases: [String], numberOfAvailableRooms: Int?) {
+  public init(
+    name: String,
+    id: String,
+    latitude: Double,
+    longitude: Double,
+    aliases: [String],
+    numberOfAvailableRooms: Int? = nil)
+  {
     self.name = name
     self.id = id
     self.latitude = latitude
@@ -98,4 +105,5 @@ public enum CampusSection: Int {
       self = .upper
     }
   }
+
 }

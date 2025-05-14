@@ -13,7 +13,6 @@ struct MapView: UIViewRepresentable {
   let buildings: [Building]
 
   func makeUIView(context _: Context) -> MKMapView {
-    // Create and return a basic map view
     MKMapView()
   }
 
@@ -31,7 +30,7 @@ struct MapView: UIViewRepresentable {
       return annotation
     }
 
-    // Display the annotations and zoom the map to show them
+    // Zoom the map to show all pins
     uiView.showAnnotations(annotations, animated: true)
   }
 }
