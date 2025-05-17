@@ -1,7 +1,7 @@
 import Testing
 @testable import Buildings
 @testable import Location
-@testable import LocationTests
+@testable import LocationTestsUtils
 
 // MARK: - GetBuildingByCampusSectionTest
 

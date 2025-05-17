@@ -1,6 +1,7 @@
 import CoreLocation
 import Testing
 @testable import Location
+@testable import LocationTestsUtils
 
 // MARK: - LocationServicePermissionTest
 

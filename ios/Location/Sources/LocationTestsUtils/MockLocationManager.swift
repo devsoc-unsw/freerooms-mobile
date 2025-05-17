@@ -5,6 +5,7 @@
 //  Created by Dicko Evaldo on 14/5/2025.
 //
 import CoreLocation
+import Location
 
 class MockLocationManager: LocationManager {
 
