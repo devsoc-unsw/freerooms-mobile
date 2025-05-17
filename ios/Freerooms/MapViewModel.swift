@@ -23,7 +23,7 @@ final class MapViewModel {
 
   var buildings: [Building] = []
 
-  func loadBuildings() async throws(BuildingService.FetchBuildingsError) {
+  func loadBuildings() async throws(FetchBuildingsError) {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
       self.buildings = buildings

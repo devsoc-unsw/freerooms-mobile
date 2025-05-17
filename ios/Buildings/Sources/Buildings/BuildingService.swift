@@ -8,9 +8,23 @@
 import Foundation
 import Networking
 
+public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
+
+// MARK: - FetchBuildingsError
+
+public enum FetchBuildingsError: Error {
+  case connectivity
+}
+
 // MARK: - BuildingService
 
-public final class BuildingService {
+public protocol BuildingService {
+  func getBuildings() async -> GetBuildingsResult
+}
+
+// MARK: - LiveBuildingService
+
+public final class LiveBuildingService: BuildingService {
 
   // MARK: Lifecycle
 
@@ -19,10 +33,6 @@ public final class BuildingService {
   }
 
   // MARK: Public
-
-  public enum FetchBuildingsError: Error {
-    case connectivity
-  }
 
   public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 

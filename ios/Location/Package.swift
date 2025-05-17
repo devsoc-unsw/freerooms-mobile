@@ -10,13 +10,18 @@ let package = Package(
     .library(
       name: "Location",
       targets: ["Location"]),
+    .library(
+      name: "LocationTestsUtils", targets: ["LocationTestsUtils"]),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "Location"),
+    .target(
+      name: "LocationTestsUtils",
+      dependencies: ["Location"]),
     .testTarget(
       name: "LocationTests",
-      dependencies: ["Location"]),
+      dependencies: ["Location", "LocationTestsUtils"]),
   ])

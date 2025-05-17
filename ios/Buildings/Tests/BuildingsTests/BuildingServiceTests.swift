@@ -19,7 +19,7 @@ struct BuildingServiceTests {
     // Given
     let buildings = [Building]()
     let mockBuildingLoader = MockBuildingLoader(loads: buildings)
-    let sut = BuildingService(buildingLoader: mockBuildingLoader)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
     let res = await sut.getBuildings()
@@ -33,7 +33,7 @@ struct BuildingServiceTests {
     // Given
     let buildings = createBuildings(1)
     let mockBuildingLoader = MockBuildingLoader(loads: buildings)
-    let sut = BuildingService(buildingLoader: mockBuildingLoader)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
     let res = await sut.getBuildings()
@@ -47,7 +47,7 @@ struct BuildingServiceTests {
     // Given
     let buildings = createBuildings(100)
     let mockBuildingLoader = MockBuildingLoader(loads: buildings)
-    let sut = BuildingService(buildingLoader: mockBuildingLoader)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
     let res = await sut.getBuildings()
@@ -60,18 +60,18 @@ struct BuildingServiceTests {
   func buildingServiceReturnsGetBuildingsConnectivityError() async {
     // Given
     let mockBuildingLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
-    let sut = BuildingService(buildingLoader: mockBuildingLoader)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
     let res = await sut.getBuildings()
 
     // Then
-    expect(res, toThrow: BuildingService.FetchBuildingsError.connectivity)
+    expect(res, toThrow: FetchBuildingsError.connectivity)
   }
 
   // MARK: Private
 
-  private func expect(_ res: BuildingService.GetBuildingsResult, toThrow _: BuildingService.FetchBuildingsError) {
+  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toThrow _: FetchBuildingsError) {
     switch res {
     case .failure(let error):
       #expect(error == error)
@@ -80,7 +80,7 @@ struct BuildingServiceTests {
     }
   }
 
-  private func expect(_ res: BuildingService.GetBuildingsResult, toFetch _: [Building]) {
+  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toFetch _: [Building]) {
     switch res {
     case .success(let buildings):
       #expect(buildings == buildings)
