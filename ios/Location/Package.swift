@@ -19,7 +19,8 @@ let package = Package(
     .target(
       name: "Location"),
     .target(
-      name: "LocationTestsUtils"),
+      name: "LocationTestsUtils",
+      dependencies: ["Location"]),
     .testTarget(
       name: "LocationTests",
       dependencies: ["Location", "LocationTestsUtils"]),
