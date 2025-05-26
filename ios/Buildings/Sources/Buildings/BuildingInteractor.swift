@@ -50,6 +50,23 @@ final class BuildingInteractor {
     }
   }
 
+  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      var sorted = buildings
+      if inAscendingOrder {
+        sorted = buildings.sorted { $0.gridReference.campusSection.rawValue < $1.gridReference.campusSection.rawValue }
+      } else {
+        sorted = buildings.sorted { $0.gridReference.campusSection.rawValue > $1.gridReference.campusSection.rawValue }
+      }
+
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
   // MARK: Private
 
   private let buildingService: BuildingService
@@ -60,4 +77,5 @@ final class BuildingInteractor {
     let dlon = building.longitude - location.longitude
     return dlat * dlat + dlon * dlon
   }
+
 }

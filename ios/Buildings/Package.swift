@@ -24,7 +24,7 @@ let package = Package(
       dependencies: ["Location", "Networking"]),
     .testTarget(
       name: "BuildingsTests",
-      dependencies: ["Buildings"]),
+      dependencies: ["Buildings", .product(name: "LocationTestsUtils", package: "Location")]),
   ])
 
 // swiftlint:enable trailing_comma
