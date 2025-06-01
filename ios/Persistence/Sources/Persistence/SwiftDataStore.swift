@@ -1,6 +1,6 @@
 //
 //  SwiftDataStore.swift
-//  DB
+//  Persistence
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //
@@ -12,17 +12,14 @@ import SwiftData
 
 /// A concrete implementation of the PersistentStore protocol using SwiftData.
 /// Manages the model container and handles all persistence operations.
-public final class SwiftDataStore: PersistentStore {
+/// Generic over a single model type that conforms to PersistentModel.
+public final class SwiftDataStore<Model: PersistentModel>: PersistentStore {
 
   // MARK: Lifecycle
 
   /// Initializes the SwiftData stack with model schema and configuration.
   public init() throws {
-    let schema = Schema([
-      BuildingModel.self,
-      RoomModel.self,
-    ])
-
+    let schema = Schema([Model.self])
     let modelConfiguration = ModelConfiguration(schema: schema)
     modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
     modelContext = ModelContext(modelContainer)
@@ -32,15 +29,11 @@ public final class SwiftDataStore: PersistentStore {
 
   /// Saves a single item to the persistent store.
   public func save(_ item: some PersistentModel) throws {
-    if let building = item as? BuildingModel {
-      modelContext.insert(building)
-      try modelContext.save()
-    } else if let room = item as? RoomModel {
-      modelContext.insert(room)
-      try modelContext.save()
-    } else {
+    guard let typedItem = item as? Model else {
       throw PersistentStoreError.invalidModelType
     }
+    modelContext.insert(typedItem)
+    try modelContext.save()
   }
 
   /// Saves multiple items to the persistent store.
@@ -50,55 +43,37 @@ public final class SwiftDataStore: PersistentStore {
     }
   }
 
-  /// Fetches all items of a specific model type.
+  /// Fetches all items of the model type.
   public func fetch<T: PersistentModel>() throws -> [T] {
-    if T.self == BuildingModel.self {
-      let descriptor = FetchDescriptor<BuildingModel>()
-      let results = try modelContext.fetch(descriptor)
-      guard let typedResults = results as? [T] else {
-        throw PersistentStoreError.typeCastFailure
-      }
-      return typedResults
-    } else if T.self == RoomModel.self {
-      let descriptor = FetchDescriptor<RoomModel>()
-      let results = try modelContext.fetch(descriptor)
-      guard let typedResults = results as? [T] else {
-        throw PersistentStoreError.typeCastFailure
-      }
-      return typedResults
-    } else {
+    guard T.self == Model.self else {
       throw PersistentStoreError.unregisteredModelType
     }
+    let descriptor = FetchDescriptor<Model>()
+    let results = try modelContext.fetch(descriptor)
+    guard let typedResults = results as? [T] else {
+      throw PersistentStoreError.typeCastFailure
+    }
+    return typedResults
   }
 
   /// Fetches a specific item by its unique identifier.
   public func fetch<T: PersistentModel>(id: String) throws -> T? {
-    if T.self == BuildingModel.self {
-      let descriptor = FetchDescriptor<BuildingModel>(
-        predicate: #Predicate<BuildingModel> { $0.id == id })
-      let result = try modelContext.fetch(descriptor).first
-      return result as? T
-    } else if T.self == RoomModel.self {
-      let descriptor = FetchDescriptor<RoomModel>(
-        predicate: #Predicate<RoomModel> { $0.id == id })
-      let result = try modelContext.fetch(descriptor).first
-      return result as? T
-    } else {
+    guard T.self == Model.self else {
       throw PersistentStoreError.unregisteredModelType
     }
+    let descriptor = FetchDescriptor<Model>(
+      predicate: #Predicate<Model> { $0.id == id })
+    let result = try modelContext.fetch(descriptor).first
+    return result as? T
   }
 
   /// Deletes a single item from the persistent store.
   public func delete(_ item: some PersistentModel) throws {
-    if let building = item as? BuildingModel {
-      modelContext.delete(building)
-      try modelContext.save()
-    } else if let room = item as? RoomModel {
-      modelContext.delete(room)
-      try modelContext.save()
-    } else {
+    guard let typedItem = item as? Model else {
       throw PersistentStoreError.invalidModelType
     }
+    modelContext.delete(typedItem)
+    try modelContext.save()
   }
 
   /// Deletes multiple items from the persistent store.

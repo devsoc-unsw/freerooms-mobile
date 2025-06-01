@@ -1,6 +1,6 @@
 //
 //  BuildingModel.swift
-//  DB
+//  Persistence
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //

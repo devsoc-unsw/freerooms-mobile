@@ -1,5 +1,5 @@
 import Testing
-@testable import DB
+@testable import Persistence
 
 @Test
 func example() async throws {
