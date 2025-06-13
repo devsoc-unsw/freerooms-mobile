@@ -5,18 +5,19 @@ import PackageDescription
 
 let package = Package(
   name: "Persistence",
+  platforms: [.iOS(.v17)],
   products: [
     .library(
       name: "Persistence",
       targets: ["Persistence"]),
   ],
   dependencies: [
-    .package(path: "../Buildings"),
+    .package(name: "Buildings", path: "../Buildings"),
   ],
   targets: [
     .target(
       name: "Persistence",
-      dependencies: ["Buildings"])
+      dependencies: ["Buildings"]),
       .testTarget(
         name: "PersistenceTests",
         dependencies: ["Persistence"]),
