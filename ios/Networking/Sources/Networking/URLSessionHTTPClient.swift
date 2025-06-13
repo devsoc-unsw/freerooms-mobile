@@ -44,5 +44,4 @@ public protocol HTTPSession {
 
 // MARK: - URLSession + HTTPSession
 
-@available(iOS 13.0, *)
 extension URLSession: HTTPSession { }
