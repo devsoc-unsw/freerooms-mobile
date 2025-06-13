@@ -6,7 +6,8 @@
 //
 
 import Testing
-import Location
+@testable import Location
+@testable import LocationTestsUtils
 @testable import Buildings
 
 struct GetBuildingByAvailableRoomsTest {
@@ -21,11 +22,17 @@ struct GetBuildingByAvailableRoomsTest {
 
           let mockLoader = MockBuildingLoader(loads: buildings)
           let buildingService = LiveBuildingService(buildingLoader: mockLoader)
+          let locationManager = MockLocationManager()
+          let locationService = LocationService(locationManager: locationManager)
+          let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+          
 
         // When
-          
-          
-        // Then
-        let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
+          let result = await sut.getBuildingsSortedByAvaliableRooms()
+
+          // Then
+          let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
+          let actualOrder = result.map(\.name)
+          #expect(actualOrder == expectedOrder)
       }
 }
