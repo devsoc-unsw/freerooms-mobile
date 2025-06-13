@@ -6,15 +6,17 @@ import PackageDescription
 
 let package = Package(
   name: "Buildings",
+  platforms: [.iOS(.v17)],
   products: [
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Buildings",
-      targets: ["Buildings"]),
+      targets: ["Buildings", "Views"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Location", path: "../Location"),
+    .package(name: "CommonUI", path: "../CommonUI"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -22,6 +24,9 @@ let package = Package(
     .target(
       name: "Buildings",
       dependencies: ["Location", "Networking"]),
+    .target(
+      name: "Views",
+      dependencies: ["Buildings", "CommonUI"]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: ["Buildings", .product(name: "LocationTestsUtils", package: "Location")]),
