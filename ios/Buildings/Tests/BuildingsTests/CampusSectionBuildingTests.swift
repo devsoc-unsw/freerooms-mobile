@@ -218,27 +218,3 @@ struct GridReferenceTest {
   }
 
 }
-
-// MARK: - MockBuildingService
-
-class MockBuildingService: BuildingService {
-
-  // MARK: Internal
-
-  func getBuildings() -> GetBuildingsResult {
-    .success(buildings)
-  }
-
-  func addBuilding(_ building: Building) {
-    buildings.append(building)
-  }
-
-  func clearBuildings() {
-    buildings.removeAll()
-  }
-
-  // MARK: Private
-
-  private var buildings: [Building] = []
-
-}

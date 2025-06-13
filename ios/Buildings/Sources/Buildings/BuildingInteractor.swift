@@ -19,7 +19,7 @@ final class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms() -> [Building] {
+  func getBuildingsSortedByAvaliableRooms() async -> [Building] {
     fatalError("TODO: Implement")
   }
 

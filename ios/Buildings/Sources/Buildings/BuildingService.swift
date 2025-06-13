@@ -34,7 +34,6 @@ public final class LiveBuildingService: BuildingService {
 
   // MARK: Public
 
-  public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
   public func getBuildings() async -> GetBuildingsResult {
     switch await buildingLoader.fetch() {
