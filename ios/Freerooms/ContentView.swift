@@ -26,4 +26,5 @@ struct ContentView: View {
 #Preview {
   ContentView()
     .environment(Theme.light)
+    .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
 }

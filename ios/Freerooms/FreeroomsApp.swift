@@ -12,10 +12,15 @@ import SwiftUI
 struct FreeroomsApp: App {
   @State private var theme = Theme.light
 
+  init() {
+    Theme.registerFont(named: .ttCommonsPro)
+  }
+
   var body: some Scene {
     WindowGroup {
       ContentView()
         .environment(theme)
+        .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
     }
   }
 }

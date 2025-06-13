@@ -5,8 +5,13 @@
 //  Created by Anh Nguyen on 13/6/2025.
 //
 
+import CoreGraphics
+import CoreText
 import Observation
 import SwiftUI
+import UIKit
+
+// MARK: - Theme
 
 @Observable
 @MainActor
@@ -36,4 +41,20 @@ public final class Theme {
 
   public var accent: Accent
 
+  public static func registerFont(named name: String) {
+    guard
+      let asset = NSDataAsset(name: "Fonts/\(name)", bundle: Bundle.module),
+      let provider = CGDataProvider(data: asset.data as NSData),
+      let font = CGFont(provider),
+      CTFontManagerRegisterGraphicsFont(font, nil)
+    else {
+      fatalError("Could not register font file.")
+    }
+  }
+}
+
+extension String {
+  public static var ttCommonsPro: Self {
+    "TT Commons Pro Trial Variable"
+  }
 }
