@@ -41,14 +41,19 @@ public final class Theme {
 
   public var accent: Accent
 
+  /// DO NOT CALL IN PREVIEWS
   public static func registerFont(named name: String) {
-    guard
-      let asset = NSDataAsset(name: "Fonts/\(name)", bundle: Bundle.module),
-      let provider = CGDataProvider(data: asset.data as NSData),
-      let font = CGFont(provider),
-      CTFontManagerRegisterGraphicsFont(font, nil)
-    else {
-      fatalError("Could not register font file.")
+    guard let asset = NSDataAsset(name: "Fonts/\(name)", bundle: Bundle.module) else {
+      fatalError("Could not find font asset.")
+    }
+    guard let provider = CGDataProvider(data: asset.data as NSData) else {
+      fatalError("Could not create data provider for font file.")
+    }
+    guard let font = CGFont(provider) else {
+      fatalError("Could not create CGFont.")
+    }
+    guard CTFontManagerRegisterGraphicsFont(font, nil) else {
+      fatalError("Could not set font.")
     }
   }
 }
@@ -56,5 +61,22 @@ public final class Theme {
 extension String {
   public static var ttCommonsPro: Self {
     "TT Commons Pro Trial Variable"
+  }
+}
+
+// MARK: - DefaultTheme
+
+struct DefaultTheme: ViewModifier {
+  func body(content: Content) -> some View {
+    content
+      .environment(Theme.light)
+      .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
+  }
+}
+
+extension View {
+  /// Adds default theming for previews.
+  public func defaultTheme() -> some View {
+    modifier(DefaultTheme())
   }
 }
