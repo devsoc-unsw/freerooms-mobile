@@ -35,4 +35,29 @@ struct GetBuildingByAvailableRoomsTest {
           let actualOrder = result.map(\.name)
           #expect(actualOrder == expectedOrder)
       }
+    
+    @Test("Returns nil buildings at the end of the list, still in descending order")
+    func returnsBuildingsNilAtEndSortedByAvaliableRoomsDescending() async {
+        let buildings = [
+          Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: nil),
+          Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB", "Central Learning Block"], numberOfAvailableRooms: 7),
+          Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0),
+          Building(name: "McGill Library", id: "K-F10", latitude: 0, longitude: 0, aliases: ["McGill Lib"], numberOfAvailableRooms: 5),
+          Building(name: "Main Library" , id: "K-F11", latitude: 0, longitude: 0, aliases: ["Main Lib"], numberOfAvailableRooms: 10),
+        ]
+        
+        let mockLoader = MockBuildingLoader(loads: buildings)
+        let buildingService = LiveBuildingService(buildingLoader: mockLoader)
+        let locationManager = MockLocationManager()
+        let locationService = LocationService(locationManager: locationManager)
+        let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+        
+        // When
+          let result = await sut.getBuildingsSortedByAvaliableRooms()
+
+          // Then
+          let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
+          let actualOrder = result.map(\.name)
+          #expect(actualOrder == expectedOrder)
+    }
 }
