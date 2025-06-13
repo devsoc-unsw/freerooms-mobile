@@ -17,6 +17,7 @@
 		96D65EF52DA3A2400060D06B /* Networking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Networking; sourceTree = "<group>"; };
 		96D65F322DA414120060D06B /* TestingSupport */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestingSupport; sourceTree = "<group>"; };
 		96F9AFCA2D9BCC1200671174 /* Freerooms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freerooms.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C06998882DC35B05008A72FF /* Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -67,6 +68,7 @@
 		96F9AFC12D9BCC1200671174 = {
 			isa = PBXGroup;
 			children = (
+				C06998882DC35B05008A72FF /* Tests.xctestplan */,
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
@@ -171,7 +173,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftformat >/dev/null 2>&1\nthen\n    swiftformat .\nelse\n    echo \"warning: `swiftformat` command not found - run the command: brew install swiftformat\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - run the command: brew install swiftlint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftformat >/dev/null 2>&1\nthen\n    swiftformat .\nelse\n    echo \"warning: `swiftformat` command not found - run the command: brew install swiftformat\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint --config swiftlint.yml\nelse\n    echo \"warning: `swiftlint` command not found - run the command: brew install swiftlint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -325,7 +327,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -354,7 +356,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

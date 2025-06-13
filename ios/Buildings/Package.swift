@@ -13,6 +13,7 @@ let package = Package(
       targets: ["Buildings"]),
   ],
   dependencies: [
+    .package(name: "Networking", path: "../Networking"),
     .package(name: "Location", path: "../Location"),
   ],
   targets: [
@@ -20,10 +21,10 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "Buildings",
-      dependencies: ["Location"]),
+      dependencies: ["Location", "Networking"]),
     .testTarget(
       name: "BuildingsTests",
-      dependencies: ["Buildings"]),
+      dependencies: ["Buildings", .product(name: "LocationTestsUtils", package: "Location")]),
   ])
 
 // swiftlint:enable trailing_comma
