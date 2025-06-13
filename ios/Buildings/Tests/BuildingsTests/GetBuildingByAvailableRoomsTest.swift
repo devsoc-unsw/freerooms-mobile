@@ -28,12 +28,17 @@ struct GetBuildingByAvailableRoomsTest {
           let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
           
 
-        // When
+          // When
           let result = await sut.getBuildingsSortedByAvailableRooms()
 
           // Then
           let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
-          let actualOrder = result.map(\.name)
+          guard case let .success(buildings) = result else {
+            Issue.record("Failure, but expected success")
+            return
+          }
+
+          let actualOrder = buildings.map(\.name)
           #expect(actualOrder == expectedOrder)
       }
     
@@ -54,23 +59,38 @@ struct GetBuildingByAvailableRoomsTest {
         let locationService = LocationService(locationManager: locationManager)
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
-        // When
-          let result = await sut.getBuildingsSortedByAvailableRooms()
+            // When
+            let result = await sut.getBuildingsSortedByAvailableRooms()
 
-          // Then
-          let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
-          let actualOrder = result.map(\.name)
-          #expect(actualOrder == expectedOrder)
+            // Then
+            let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
+            guard case let .success(buildings) = result else {
+                Issue.record("Failure, but expected success")
+                return
+            }
+
+        let actualOrder = buildings.map(\.name)
+        #expect(actualOrder == expectedOrder)
     }
     
     @Test("No buildings should return an empty list")
     func returnsBuildingsEmptyList() async {
+        // Given
         let mockLoader = MockBuildingLoader(loads: [])
         let buildingService = LiveBuildingService(buildingLoader: mockLoader)
         let locationManager = MockLocationManager()
         let locationService = LocationService(locationManager: locationManager)
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
-        #expect(await sut.getBuildingsSortedByAvailableRooms() == [])
+        // When
+        let result = await sut.getBuildingsSortedByAvailableRooms()
+
+        // Then
+        guard case let .success(buildings) = result else {
+            Issue.record("Expected success but got failure.")
+            return
+        }
+
+        #expect(buildings.isEmpty)
     }
 }
