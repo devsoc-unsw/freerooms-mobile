@@ -59,11 +59,8 @@
 		96D65EDD2DA39EA30060D06B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< persistant-DB
 				855865392DC3E3CA00FD9A1D /* Persistence */,
-=======
 				96DE0C302DFBD45C00C77DD5 /* CommonUI */,
->>>>>>> main
 				960DCBC32DB76060003D848F /* Location */,
 				96D65F322DA414120060D06B /* TestingSupport */,
 				96D65EF52DA3A2400060D06B /* Networking */,
