@@ -10,6 +10,7 @@ import Testing
 @testable import LocationTestsUtils
 @testable import Buildings
 
+// MARK: Black Box Tests
 struct GetBuildingByAvailableRoomsTest {
     @Test("Returns buildings sorted in descending order by number of available rooms")
       func returnsBuildingsSortedByAvailableRoomsDescending() async {
@@ -28,7 +29,7 @@ struct GetBuildingByAvailableRoomsTest {
           
 
         // When
-          let result = await sut.getBuildingsSortedByAvaliableRooms()
+          let result = await sut.getBuildingsSortedByAvailableRooms()
 
           // Then
           let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
@@ -38,6 +39,7 @@ struct GetBuildingByAvailableRoomsTest {
     
     @Test("Returns nil buildings at the end of the list, still in descending order")
     func returnsBuildingsNilAtEndSortedByAvaliableRoomsDescending() async {
+        // Given
         let buildings = [
           Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: nil),
           Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB", "Central Learning Block"], numberOfAvailableRooms: 7),
@@ -53,11 +55,22 @@ struct GetBuildingByAvailableRoomsTest {
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
         // When
-          let result = await sut.getBuildingsSortedByAvaliableRooms()
+          let result = await sut.getBuildingsSortedByAvailableRooms()
 
           // Then
           let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
           let actualOrder = result.map(\.name)
           #expect(actualOrder == expectedOrder)
+    }
+    
+    @Test("No buildings should return an empty list")
+    func returnsBuildingsEmptyList() async {
+        let mockLoader = MockBuildingLoader(loads: [])
+        let buildingService = LiveBuildingService(buildingLoader: mockLoader)
+        let locationManager = MockLocationManager()
+        let locationService = LocationService(locationManager: locationManager)
+        let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+        
+        #expect(await sut.getBuildingsSortedByAvailableRooms() == [])
     }
 }
