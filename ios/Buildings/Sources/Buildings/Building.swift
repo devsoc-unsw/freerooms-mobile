@@ -19,7 +19,8 @@ public struct Building: Equatable {
     latitude: Double,
     longitude: Double,
     aliases: [String],
-    numberOfAvailableRooms: Int? = nil) {
+    numberOfAvailableRooms: Int? = nil)
+  {
     self.name = name
     self.id = id
     self.latitude = latitude
