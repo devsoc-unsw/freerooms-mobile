@@ -39,7 +39,7 @@ struct MapView: UIViewRepresentable {
 #Preview {
   MapView(buildings: [
     Building(name: "Quad", id: "quad", latitude: -33.9173, longitude: 151.2312, aliases: []),
-    Building(name: "SLT", id: "slt", latitude: -33.9195, longitude: 151.2245, aliases: []),
+    Building(name: "SLT", id: "slt", latitude: -33.9195, longitude: 151.2245, aliases: [])
   ])
   .ignoresSafeArea()
 }

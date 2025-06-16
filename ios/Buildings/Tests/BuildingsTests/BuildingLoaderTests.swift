@@ -75,7 +75,12 @@ struct BuildingLoaderTests {
   private func createRemoteBuildings(_ count: Int) -> [RemoteBuilding] {
     var remoteBuildings: [RemoteBuilding] = []
     for _ in 0..<count {
-      remoteBuildings.append(RemoteBuilding(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"]))
+      remoteBuildings.append(RemoteBuilding(
+        name: "name",
+        id: "123",
+        latitude: 1.0,
+        longitude: 1.0,
+        aliases: ["A", "B"]))
     }
     return remoteBuildings
   }

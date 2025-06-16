@@ -1,5 +1,6 @@
 // swift-tools-version: 6.1
 // The swift-tools-version declares the minimum version of Swift required to build this package.
+// swiftlint:disable trailing_comma
 
 import PackageDescription
 
@@ -26,3 +27,5 @@ let package = Package(
       name: "LocationTests",
       dependencies: ["Location", "LocationTestsUtils"]),
   ])
+
+// swiftlint:enable trailing_comma

@@ -24,8 +24,7 @@ public final class RoomModel: PersistentModel {
     capacity: Int,
     floor: Int,
     roomNumber: String,
-    buildingCode: String)
-  {
+    buildingCode: String) {
     self.name = name
     self.id = id
     self.building = building
@@ -60,7 +59,7 @@ public final class RoomModel: PersistentModel {
   public var roomNumber: String
   public var buildingCode: String
 
-  /// Converts the persistence model back to the domain `Room` type. This needs to be created similar to how Building struct is.
+  /// Converts the persistence model back to the domain `Room` type.
   public func toRoom() -> Room {
     Room(
       name: name,
