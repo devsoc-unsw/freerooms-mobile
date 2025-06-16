@@ -19,6 +19,7 @@
 		96D65F322DA414120060D06B /* TestingSupport */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestingSupport; sourceTree = "<group>"; };
 		96DE0C302DFBD45C00C77DD5 /* CommonUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CommonUI; sourceTree = "<group>"; };
 		96F9AFCA2D9BCC1200671174 /* Freerooms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freerooms.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		96FF8A022E0025E500BC4365 /* Rooms */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Rooms; sourceTree = "<group>"; };
 		C06998882DC35B05008A72FF /* Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,6 +60,7 @@
 		96D65EDD2DA39EA30060D06B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				96FF8A022E0025E500BC4365 /* Rooms */,
 				855865392DC3E3CA00FD9A1D /* Persistence */,
 				96DE0C302DFBD45C00C77DD5 /* CommonUI */,
 				960DCBC32DB76060003D848F /* Location */,
