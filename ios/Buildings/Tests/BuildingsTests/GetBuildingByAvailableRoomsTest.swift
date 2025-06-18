@@ -42,8 +42,8 @@ struct GetBuildingByAvailableRoomsTest {
           #expect(actualOrder == expectedOrder)
       }
     
-    @Test("Returns nil buildings at the end of the list, still in descending order")
-    func returnsBuildingsNilAtEndSortedByAvaliableRoomsDescending() async {
+    @Test("Zero and null treated the same, still in descending order")
+    func returnsBuildingsZeroAndNullSortedByAvaliableRoomsDescending() async {
         // Given
         let buildings = [
           Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: nil),
@@ -59,15 +59,17 @@ struct GetBuildingByAvailableRoomsTest {
         let locationService = LocationService(locationManager: locationManager)
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
-            // When
-            let result = await sut.getBuildingsSortedByAvailableRooms()
+        // When
+        let result = await sut.getBuildingsSortedByAvailableRooms()
 
-            // Then
-            let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
-            guard case let .success(buildings) = result else {
-                Issue.record("Failure, but expected success")
-                return
-            }
+        // Then
+        
+        // treats 0 and null as the same
+        let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Quadrangle", "Law Library"]
+        guard case let .success(buildings) = result else {
+            Issue.record("Failure, but expected success")
+            return
+        }
 
         let actualOrder = buildings.map(\.name)
         #expect(actualOrder == expectedOrder)
