@@ -12,8 +12,8 @@ import SwiftData
 
 /// A concrete implementation of the PersistentStore protocol using SwiftData.
 /// Manages the model container and handles all persistence operations.
-/// Generic over a single model type that conforms to PersistentModel.
-public final class SwiftDataStore<Model: PersistentModel>: PersistentStore {
+/// Generic over a single model type that conforms to PersistentModel and IdentifiableModel.
+public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: PersistentStore {
 
   // MARK: Lifecycle
 
@@ -28,56 +28,39 @@ public final class SwiftDataStore<Model: PersistentModel>: PersistentStore {
   // MARK: Public
 
   /// Saves a single item to the persistent store.
-  public func save(_ item: some PersistentModel) throws {
-    guard let typedItem = item as? Model else {
-      throw PersistentStoreError.invalidModelType
-    }
-    modelContext.insert(typedItem)
+  public func save(_ item: Model) throws {
+    modelContext.insert(item)
     try modelContext.save()
   }
 
   /// Saves multiple items to the persistent store.
-  public func save(_ items: [some PersistentModel]) throws {
+  public func save(_ items: [Model]) throws {
     for item in items {
       try save(item)
     }
   }
 
   /// Fetches all items of the model type.
-  public func fetch<T: PersistentModel>() throws -> [T] {
-    guard T.self == Model.self else {
-      throw PersistentStoreError.unregisteredModelType
-    }
+  public func fetchAll() throws -> [Model] {
     let descriptor = FetchDescriptor<Model>()
-    let results = try modelContext.fetch(descriptor)
-    guard let typedResults = results as? [T] else {
-      throw PersistentStoreError.typeCastFailure
-    }
-    return typedResults
+    return try modelContext.fetch(descriptor)
   }
 
   /// Fetches a specific item by its unique identifier.
-  public func fetch<T: PersistentModel>(id: String) throws -> T? {
-    guard T.self == Model.self else {
-      throw PersistentStoreError.unregisteredModelType
-    }
+  public func fetch(id: String) throws -> Model? {
     let descriptor = FetchDescriptor<Model>(
-      predicate: #Predicate<Model> { $0.id == id })
-    let result = try modelContext.fetch(descriptor).first
-    return result as? T
+      predicate: #Predicate { $0.stringID == id })
+    return try modelContext.fetch(descriptor).first
   }
 
   /// Deletes a single item from the persistent store.
-  public func delete(_ item: some PersistentModel) throws {
-    guard let typedItem = item as? Model else {
-      throw PersistentStoreError.invalidModelType
-    }
-    modelContext.delete(typedItem)
+  public func delete(_ item: Model) throws {
+    modelContext.delete(item)
     try modelContext.save()
   }
 
   /// Deletes multiple items from the persistent store.
-  public func delete(_ items: [some PersistentModel]) throws {
+  public func delete(_ items: [Model]) throws {
     for item in items {
       try delete(item)
     }
@@ -87,13 +70,4 @@ public final class SwiftDataStore<Model: PersistentModel>: PersistentStore {
 
   private let modelContainer: ModelContainer
   private let modelContext: ModelContext
-}
-
-// MARK: - PersistentStoreError
-
-/// Errors that can occur during persistent store operations.
-public enum PersistentStoreError: Error {
-  case invalidModelType
-  case unregisteredModelType
-  case typeCastFailure
 }

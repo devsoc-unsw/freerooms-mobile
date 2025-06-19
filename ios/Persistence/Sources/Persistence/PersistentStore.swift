@@ -9,28 +9,29 @@
 
 /// Defines an interface for saving, retrieving, and deleting persistent data.
 public protocol PersistentStore {
+  associatedtype Model
   /// Saves a single item.
-  func save<T: PersistentModel>(_ item: T) throws
+  func save(_ item: Model) throws
 
   /// Saves multiple items.
-  func save<T: PersistentModel>(_ items: [T]) throws
+  func save(_ items: [Model]) throws
 
   /// Fetches all items of a given type.
-  func fetch<T: PersistentModel>() throws -> [T]
+  func fetchAll() throws -> [Model]
 
   /// Fetches a single item by ID.
-  func fetch<T: PersistentModel>(id: String) throws -> T?
+  func fetch(id: String) throws -> Model?
 
   /// Deletes a single item.
-  func delete<T: PersistentModel>(_ item: T) throws
+  func delete(_ item: Model) throws
 
   /// Deletes multiple items.
-  func delete<T: PersistentModel>(_ items: [T]) throws
+  func delete(_ items: [Model]) throws
 }
 
-// MARK: - PersistentModel
+// MARK: - IdentifiableModel
 
 /// A minimal protocol for models to be stored persistently.
-public protocol PersistentModel {
-  var id: String { get }
+public protocol IdentifiableModel {
+  var stringID: String { get }
 }
