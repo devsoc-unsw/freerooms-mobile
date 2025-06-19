@@ -12,12 +12,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		855865392DC3E3CA00FD9A1D /* Persistence */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Persistence; sourceTree = "<group>"; };
 		960DCBC32DB76060003D848F /* Location */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Location; sourceTree = "<group>"; };
 		96D65EDC2DA39DDA0060D06B /* Buildings */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Buildings; sourceTree = "<group>"; };
 		96D65EF52DA3A2400060D06B /* Networking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Networking; sourceTree = "<group>"; };
 		96D65F322DA414120060D06B /* TestingSupport */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestingSupport; sourceTree = "<group>"; };
 		96DE0C302DFBD45C00C77DD5 /* CommonUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CommonUI; sourceTree = "<group>"; };
 		96F9AFCA2D9BCC1200671174 /* Freerooms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freerooms.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		96FF8A022E0025E500BC4365 /* Rooms */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Rooms; sourceTree = "<group>"; };
 		C06998882DC35B05008A72FF /* Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,6 +60,8 @@
 		96D65EDD2DA39EA30060D06B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				96FF8A022E0025E500BC4365 /* Rooms */,
+				855865392DC3E3CA00FD9A1D /* Persistence */,
 				96DE0C302DFBD45C00C77DD5 /* CommonUI */,
 				960DCBC32DB76060003D848F /* Location */,
 				96D65F322DA414120060D06B /* TestingSupport */,
@@ -123,7 +127,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					96F9AFC92D9BCC1200671174 = {
 						CreatedOnToolsVersion = 16.2;
@@ -176,7 +180,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftformat >/dev/null 2>&1\nthen\n    swiftformat .\nelse\n    echo \"warning: `swiftformat` command not found - run the command: brew install swiftformat\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint --config swiftlint.yml\nelse\n    echo \"warning: `swiftlint` command not found - run the command: brew install swiftlint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftformat >/dev/null 2>&1\nthen\n    swiftformat .\nelse\n    echo \"warning: `swiftformat` command not found - run the command: brew install swiftformat\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint --config .swiftlint.yml\nelse\n    echo \"warning: `swiftlint` command not found - run the command: brew install swiftlint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -225,6 +229,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -288,6 +293,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -318,6 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -347,6 +354,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
