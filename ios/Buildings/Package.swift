@@ -25,7 +25,8 @@ let package = Package(
       dependencies: ["Location", "Networking"]),
     .target(
       name: "Views",
-      dependencies: ["Buildings", "CommonUI"]),
+      dependencies: ["Buildings", "CommonUI"],
+      resources: [.process("Resources")]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: ["Buildings", .product(name: "LocationTestsUtils", package: "Location")]),
