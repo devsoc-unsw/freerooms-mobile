@@ -110,7 +110,6 @@ struct ContentView: View {
 
   var buildingsTab: some View {
     NavigationStack(path: $path) {
-      Button("Buildings in ascending order: \(viewModel.buildingsInAscendingOrder)", action: viewModel.getBuildingsInOrder)
       List {
         buildingsView(for: "Upper campus", from: viewModel.upperCampusBuildings)
 
@@ -139,6 +138,11 @@ struct ContentView: View {
         viewModel.onAppear()
       }
       .navigationTitle("Buildings")
+    }
+    .overlay(alignment: .bottom) {
+      Button("Buildings in ascending order: \(viewModel.buildingsInAscendingOrder)", action: viewModel.getBuildingsInOrder)
+        .buttonStyle(.borderedProminent)
+        .padding(.bottom)
     }
     .tabItem {
       Label("Buildings", systemImage: "building")
