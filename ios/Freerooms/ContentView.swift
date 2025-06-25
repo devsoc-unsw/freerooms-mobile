@@ -92,7 +92,8 @@ struct Room: Hashable {
 
 /// No logic, only UI
 struct ContentView: View {
-  @Environment(Theme.self) private var theme
+
+  // MARK: Internal
 
   @State var viewModel = ViewModel()
   @State var path = NavigationPath()
@@ -116,6 +117,10 @@ struct ContentView: View {
         buildingsView(for: "Middle campus", from: viewModel.middleCampusBuildings)
       }
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+      .shadow(
+        color: theme.label.primary.opacity(0.2),
+        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
       .navigationDestination(for: Building.self) { building in
         // Renders the view for displaying a building that has been clicked on
         Button {
@@ -206,37 +211,14 @@ struct ContentView: View {
           building == buildings.last ? 0 : -10) // Hide the bottom padding on the row unless this is the last row
     )
   }
+
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
+
 }
 
 #Preview {
-  // Modify large navigation title
-  let largeTitlePointSize = UIFont.preferredFont(forTextStyle: .largeTitle).pointSize
-  var largeTitleFont = UIFont(name: .ttCommonsPro, size: largeTitlePointSize)
-  if let largeTitleBoldFontDescriptor = largeTitleFont?.fontDescriptor.withSymbolicTraits(.traitBold) {
-    largeTitleFont = UIFont(descriptor: largeTitleBoldFontDescriptor, size: largeTitlePointSize) // Make it bold
-  }
-  let largeTitleTextAttributes = [
-    NSAttributedString.Key.font: largeTitleFont as Any,
-    NSAttributedString.Key.foregroundColor: UIColor(Theme.light.label.primary),
-  ]
-  UINavigationBar.appearance().largeTitleTextAttributes = largeTitleTextAttributes
-
-  // Modify regular navigation title
-  let titlePointSize = UIFont.preferredFont(forTextStyle: .body).pointSize
-  var titleFont = UIFont(name: .ttCommonsPro, size: titlePointSize)
-  if let titleBoldFontDescriptor = titleFont?.fontDescriptor.withSymbolicTraits(.traitBold) {
-    titleFont = UIFont(descriptor: titleBoldFontDescriptor, size: titlePointSize) // Make it bold
-  }
-  let titleTextAttributes = [
-    NSAttributedString.Key.font: titleFont as Any,
-    NSAttributedString.Key.foregroundColor: UIColor(Theme.light.label.primary),
-  ]
-  UINavigationBar.appearance().titleTextAttributes = titleTextAttributes
-
-  // Modify tab bar item labels
-  UITabBarItem.appearance().setTitleTextAttributes(
-    [.font: UIFont(name: .ttCommonsPro, size: UIFont.preferredFont(forTextStyle: .caption2).pointSize) as Any],
-    for: .normal)
-  return ContentView()
+  ContentView()
     .defaultTheme()
 }

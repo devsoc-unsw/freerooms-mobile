@@ -13,8 +13,8 @@ import UIKit
 
 // MARK: - Theme
 
-@Observable
 @MainActor
+@Observable
 public final class Theme {
 
   // MARK: Lifecycle
@@ -99,6 +99,49 @@ extension String {
   public static var ttCommonsPro: Self {
     "TT Commons Pro Trial Variable"
   }
+}
+
+/// This cannot be called directly in preview, but you may call it in a view initialiser if it is required for correct preview
+@MainActor
+public func setFontOnToolbars(_ font: String) {
+  setFontOnNavigationBarLargeTitle(font)
+  setFontOnNavigationBarTitle(font)
+  setFontOnTabBar(font)
+}
+
+@MainActor
+func setFontOnNavigationBarLargeTitle(_ font: String) {
+  let largeTitlePointSize = UIFont.preferredFont(forTextStyle: .largeTitle).pointSize
+  var largeTitleFont = UIFont(name: font, size: largeTitlePointSize)
+  if let largeTitleBoldFontDescriptor = largeTitleFont?.fontDescriptor.withSymbolicTraits(.traitBold) {
+    largeTitleFont = UIFont(descriptor: largeTitleBoldFontDescriptor, size: largeTitlePointSize) // Make it bold
+  }
+  let largeTitleTextAttributes = [
+    NSAttributedString.Key.font: largeTitleFont as Any,
+    NSAttributedString.Key.foregroundColor: UIColor(Theme.light.label.primary),
+  ]
+  UINavigationBar.appearance().largeTitleTextAttributes = largeTitleTextAttributes
+}
+
+@MainActor
+func setFontOnNavigationBarTitle(_ font: String) {
+  let titlePointSize = UIFont.preferredFont(forTextStyle: .body).pointSize
+  var titleFont = UIFont(name: font, size: titlePointSize)
+  if let titleBoldFontDescriptor = titleFont?.fontDescriptor.withSymbolicTraits(.traitBold) {
+    titleFont = UIFont(descriptor: titleBoldFontDescriptor, size: titlePointSize) // Make it bold
+  }
+  let titleTextAttributes = [
+    NSAttributedString.Key.font: titleFont as Any,
+    NSAttributedString.Key.foregroundColor: UIColor(Theme.light.label.primary),
+  ]
+  UINavigationBar.appearance().titleTextAttributes = titleTextAttributes
+}
+
+@MainActor
+func setFontOnTabBar(_ font: String) {
+  UITabBarItem.appearance().setTitleTextAttributes(
+    [.font: UIFont(name: font, size: UIFont.preferredFont(forTextStyle: .caption2).pointSize) as Any],
+    for: .normal)
 }
 
 // MARK: - DefaultTheme

@@ -10,17 +10,27 @@ import SwiftUI
 
 @main
 struct FreeroomsApp: App {
-  @State private var theme = Theme.light
+
+  // MARK: Lifecycle
 
   init() {
     Theme.registerFont(named: .ttCommonsPro)
+    setFontOnToolbars(.ttCommonsPro)
   }
+
+  // MARK: Internal
 
   var body: some Scene {
     WindowGroup {
       ContentView()
+        .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
     }
   }
+
+  // MARK: Private
+
+  @State private var theme = Theme.light
+
 }
