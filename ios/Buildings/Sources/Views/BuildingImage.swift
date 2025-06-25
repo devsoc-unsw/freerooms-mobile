@@ -8,7 +8,7 @@
 import SwiftUI
 
 public enum BuildingImage {
-  static subscript(buildingID: String) -> Image {
+  public static subscript(buildingID: String) -> Image {
     Image(buildingID, bundle: .module)
   }
 }
