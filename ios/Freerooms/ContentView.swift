@@ -72,9 +72,19 @@ class ViewModel {
 
   var buildingsInAscendingOrder = true
 
+  var isLoading = false
+
   func getBuildingsInOrder() {
+    isLoading = true
     buildingsInAscendingOrder.toggle()
     (upperCampusBuildings, middleCampusBuildings) = interactor.getBuildings(inAscendingOrder: buildingsInAscendingOrder)
+
+    // Simulate delay from fetching buildings
+    DispatchQueue.main.async { [weak self] in
+      guard let self else { return }
+
+      isLoading = false
+    }
   }
 
   func onAppear() {
@@ -134,6 +144,7 @@ struct ContentView: View {
         Text(room.name)
           .navigationTitle(room.name)
       }
+      .opacity(viewModel.isLoading ? 0 : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
       .onAppear {
         viewModel.onAppear()
       }
@@ -170,7 +181,9 @@ struct ContentView: View {
   }
 
   func buildingView(for building: Building, in buildings: [Building]) -> some View {
-    Button {
+    let index = buildings.firstIndex(of: building)!
+
+    return Button {
       path.append(building)
     } label: {
       HStack(spacing: 0) {
@@ -208,7 +221,13 @@ struct ContentView: View {
     .listRowBackground(
       RoundedRectangle(cornerRadius: 10)
         .fill(.background)
-        .strokeBorder(theme.accent.secondary)
+        .strokeBorder(LinearGradient(
+          colors: [
+            theme.accent.primary.opacity(1 - Double(buildings.count - index) / Double(buildings.count * 2)),
+            theme.accent.primary.opacity(1 - Double(buildings.count - index - 1) / Double(buildings.count * 2)),
+          ],
+          startPoint: .top,
+          endPoint: .bottom))
         .padding(.top, building == buildings.first ? 0 : -10) // Hide the top padding on the row unless this is the first row
         .padding(
           .bottom,
