@@ -17,7 +17,7 @@ struct JSONLoaderTests {
   func loadsBuildingsFromJSONFile() {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsJSON)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(decodes: "buildings.json", with: mockFileLoader)
+    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
@@ -31,7 +31,7 @@ struct JSONLoaderTests {
   func throwsErrorOnFileNotExisting() {
     // Given
     let mockFileLoader = MockFileLoader(throws: FileLoaderError.fileNotFound)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(decodes: "buildings.json", with: mockFileLoader)
+    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
@@ -44,7 +44,7 @@ struct JSONLoaderTests {
   func throwsErrorOnMalformedJSON() {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsMalformedJSON)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(decodes: "buildings.json", with: mockFileLoader)
+    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")

@@ -27,8 +27,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
   // MARK: Lifecycle
 
-  init(decodes fileName: String, with fileLoader: FileLoader = LiveFileLoader()) {
-    self.fileName = fileName
+  init(using fileLoader: FileLoader = LiveFileLoader()) {
     liveFileLoader = fileLoader
   }
 
@@ -50,7 +49,6 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
   // MARK: Private
 
-  private let fileName: String
   private let liveFileLoader: FileLoader
 
 }
