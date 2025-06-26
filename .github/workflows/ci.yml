@@ -32,7 +32,7 @@ jobs:
       env:
         WORKING_DIRECTORY: ios
       with:
-        args: --strict --config swiftlint.yml
+        args: --strict --config .swiftlint.yml
   tests:
     name: Tests
     runs-on: macos-15

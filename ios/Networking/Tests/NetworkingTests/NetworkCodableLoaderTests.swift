@@ -156,7 +156,7 @@ private class MockHTTPClient: HTTPClient {
 
   var networkCallCount = 0
   var returnedStringData: Data?
-  // swiftlint:disable implicitly_unwrapped_optional
+  // swiftlint:disable:next implicitly_unwrapped_optional
   var returnedStatusCode: Int!
 
   func setNextRequestToFailWithClientError() {
