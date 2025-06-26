@@ -36,8 +36,16 @@ final class BuildingInteractor {
       }
   }
 
-  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> async -> Result<[Building], Error> {
-      
+  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+      switch await buildingService.getBuildings() {
+      case .success (let buildings):
+          let sorted = buildings.sorted { a,b in
+              inAscendingOrder ? a.name < b.name : a.name > b.name
+          }
+          return .success(sorted)
+      case .failure(let error):
+          return .failure(error)
+      }
   }
 
   func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
