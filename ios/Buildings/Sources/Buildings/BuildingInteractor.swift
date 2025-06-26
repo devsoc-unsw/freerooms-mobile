@@ -19,7 +19,7 @@ final class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms() async -> Result<[Building], Error>  {
+    func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error>  {
       switch await buildingService.getBuildings() {
       case .success (let buildings):
           // no valid data, return as is
@@ -27,7 +27,8 @@ final class BuildingInteractor {
             return .success(buildings)
           }
           let sorted = buildings.sorted { (a: Building, b: Building) in
-            (a.numberOfAvailableRooms ?? 0) > (b.numberOfAvailableRooms ?? 0)
+              inAscendingOrder ? (a.numberOfAvailableRooms ?? 0) < (b.numberOfAvailableRooms ?? 0) :
+              (a.numberOfAvailableRooms ?? 0) > (b.numberOfAvailableRooms ?? 0)
           }
           return .success(sorted)
       case .failure(let error):

@@ -29,7 +29,7 @@ struct GetBuildingByAvailableRoomsTest {
           
 
           // When
-          let result = await sut.getBuildingsSortedByAvailableRooms()
+          let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
           // Then
           let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
@@ -60,11 +60,10 @@ struct GetBuildingByAvailableRoomsTest {
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
         // When
-        let result = await sut.getBuildingsSortedByAvailableRooms()
+        let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
         // Then
         
-        // treats 0 and null as the same
         let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Quadrangle", "Law Library"]
         guard case let .success(buildings) = result else {
             Issue.record("Failure, but expected success")
@@ -85,7 +84,7 @@ struct GetBuildingByAvailableRoomsTest {
         let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
         
         // When
-        let result = await sut.getBuildingsSortedByAvailableRooms()
+        let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
         // Then
         guard case let .success(buildings) = result else {
@@ -94,5 +93,38 @@ struct GetBuildingByAvailableRoomsTest {
         }
 
         #expect(buildings.isEmpty)
+    }
+    
+    @Test("Sort Buildings in Ascending Order of Available Rooms")
+    func returnsBuildingsInAscendingSortedByAvailableRooms() async {
+        // Given
+        let buildings = [
+          Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 4),
+          Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB", "Central Learning Block"], numberOfAvailableRooms: 7),
+          Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0),
+          Building(name: "McGill Library", id: "K-F10", latitude: 0, longitude: 0, aliases: ["McGill Lib"], numberOfAvailableRooms: 5),
+          Building(name: "Main Library" , id: "K-F11", latitude: 0, longitude: 0, aliases: ["Main Lib"], numberOfAvailableRooms: 6),
+        ]
+        
+        let mockLoader = MockBuildingLoader(loads: buildings)
+        let buildingService = LiveBuildingService(buildingLoader: mockLoader)
+        let locationManager = MockLocationManager()
+        let locationService = LocationService(locationManager: locationManager)
+        let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+        
+        // When
+        let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
+        
+        
+        // Then
+        let expectedOrder = ["Law Library",  "Quadrangle", "McGill Library", "Main Library", "Patricia O Shane"]
+        guard case let .success(buildings) = result else {
+          Issue.record("Failure, but expected success")
+          return
+        }
+
+        let actualOrder = buildings.map(\.name)
+        #expect(actualOrder == expectedOrder)
+        
     }
 }
