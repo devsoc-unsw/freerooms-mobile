@@ -36,8 +36,8 @@ final class BuildingInteractor {
       }
   }
 
-  func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
-    fatalError("TODO: Implement")
+  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> async -> Result<[Building], Error> {
+      
   }
 
   func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
