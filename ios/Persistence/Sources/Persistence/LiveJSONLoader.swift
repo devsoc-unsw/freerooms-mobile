@@ -6,6 +6,7 @@
 //
 
 import Buildings
+import Foundation
 
 // MARK: - LiveJSONLoaderError
 
@@ -17,25 +18,39 @@ public enum LiveJSONLoaderError: Error {
 
 public protocol JSONLoader {
   associatedtype T: Decodable
-  func load(from file: String) -> Result<T, LiveJSONLoaderError> where T: Decodable
+  func load(from file: String) -> Result<T, LiveJSONLoaderError>
 }
 
 // MARK: - LiveJSONLoader
 
 public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
+  // MARK: Lifecycle
+
   init(decodes fileName: String, with fileLoader: FileLoader = LiveFileLoader()) {
     self.fileName = fileName
     liveFileLoader = fileLoader
   }
 
-  private let fileName: String
-  private let liveFileLoader: FileLoader
+  // MARK: Public
 
   public typealias Result = Swift.Result<T, LiveJSONLoaderError>
 
-  public func load(from _: String) -> Result {
-    .failure(.fileNotFound)
+  public func load(from fileName: String) -> Result {
+    guard let data = try? liveFileLoader.loadFile(at: fileName) else {
+      return .failure(.fileNotFound)
+    }
+
+    if let decodedData = try? JSONDecoder().decode(T.self, from: data) {
+      return .success(decodedData)
+    } else {
+      return .failure(.malformedJSON)
+    }
   }
+
+  // MARK: Private
+
+  private let fileName: String
+  private let liveFileLoader: FileLoader
 
 }

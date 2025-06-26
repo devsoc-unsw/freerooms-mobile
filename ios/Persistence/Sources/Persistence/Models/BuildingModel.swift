@@ -11,7 +11,7 @@ import SwiftData
 
 /// A SwiftData model representing a building, including location and associated rooms.
 @Model
-public final class BuildingModel: PersistentModel {
+public final class BuildingModel {
 
   // MARK: Lifecycle
 
