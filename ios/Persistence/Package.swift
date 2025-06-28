@@ -13,11 +13,12 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "Buildings", path: "../Buildings"),
+    .package(name: "Rooms", path: "../Rooms"),
   ],
   targets: [
     .target(
       name: "Persistence",
-      dependencies: ["Buildings"]),
+      dependencies: ["Buildings", "Rooms"]),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence"]),
