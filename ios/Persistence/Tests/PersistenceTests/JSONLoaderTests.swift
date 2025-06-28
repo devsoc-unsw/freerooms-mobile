@@ -13,25 +13,25 @@ struct JSONLoaderTests {
 
   // MARK: Internal
 
-  @Test("JSON loader decodes json file into platform type [PlatformBuildings]")
+  @Test("JSON loader decodes json file into platform type [DecodableBuildings]")
   func loadsBuildingsFromJSONFile() {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsJSON)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
 
     // Then
-    let platformBuildings = createPlatformBuildings(2)
-    expect(res, toFetch: platformBuildings)
+    let decodableBuildings = createDecodableBuildings(2)
+    expect(res, toFetch: decodableBuildings)
   }
 
   @Test("Throws an error when file does not exist")
   func throwsErrorOnFileNotExisting() {
     // Given
     let mockFileLoader = MockFileLoader(throws: FileLoaderError.fileNotFound)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
@@ -44,13 +44,27 @@ struct JSONLoaderTests {
   func throwsErrorOnMalformedJSON() {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsMalformedJSON)
-    let sut = LiveJSONLoader<[PlatformBuilding]>(using: mockFileLoader)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
 
     // Then
     expect(res, toThrow: .malformedJSON)
+  }
+
+  @Test("JSON Loader decodes empty buildings json file into empty platform type [DecodableBuilding]")
+  func loadsEmptyArrayFromEmptyJSONFile() {
+    // Given
+    let mockFileLoader = MockFileLoader(loads: emptyJSON)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+
+    // When
+    let res = sut.load(from: "fakeFilePath/fake")
+
+    // Then
+    let emptyDecodeableBuildings = [DecodableBuilding]()
+    expect(res, toFetch: emptyDecodeableBuildings)
   }
 
   // MARK: Private
@@ -93,7 +107,11 @@ struct JSONLoaderTests {
     ]
     """
 
-  private func expect(_ res: LiveJSONLoader<[PlatformBuilding]>.Result, toThrow _: LiveJSONLoaderError) {
+  private let emptyJSON = """
+    []
+    """
+
+  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toThrow _: LiveJSONLoaderError) {
     switch res {
     case .failure(let error):
       #expect(error == error)
@@ -102,7 +120,7 @@ struct JSONLoaderTests {
     }
   }
 
-  private func expect(_ res: LiveJSONLoader<[PlatformBuilding]>.Result, toFetch _: [PlatformBuilding]) {
+  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toFetch _: [DecodableBuilding]) {
     switch res {
     case .success(let buildings):
       #expect(buildings == buildings)
@@ -111,12 +129,12 @@ struct JSONLoaderTests {
     }
   }
 
-  private func createPlatformBuildings(_ count: Int) -> [PlatformBuilding] {
-    var platformBuildings: [PlatformBuilding] = []
+  private func createDecodableBuildings(_ count: Int) -> [DecodableBuilding] {
+    var decodableBuildings: [DecodableBuilding] = []
     for _ in 0..<count {
-      platformBuildings.append(PlatformBuilding(name: "name", id: "123", lat: 1.0, long: 1.0, aliases: ["A", "B"]))
+      decodableBuildings.append(DecodableBuilding(name: "name", id: "123", lat: 1.0, long: 1.0, aliases: ["A", "B"]))
     }
-    return platformBuildings
+    return decodableBuildings
   }
 
 }
