@@ -1,11 +1,11 @@
 //
-//  PlatformBuilding.swift
+//  DecodableBuilding.swift
 //  Persistence
 //
 //  Created by Chris Wong on 22/6/2025.
 //
 
-public struct PlatformBuilding: Decodable, Equatable {
+public struct DecodableBuilding: Decodable, Equatable {
   public let name: String
   public let id: String
   public let lat: Double

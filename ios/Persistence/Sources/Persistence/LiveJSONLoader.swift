@@ -28,7 +28,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
   // MARK: Lifecycle
 
   init(using fileLoader: FileLoader = LiveFileLoader()) {
-    liveFileLoader = fileLoader
+    self.fileLoader = fileLoader
   }
 
   // MARK: Public
@@ -36,7 +36,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
   public typealias Result = Swift.Result<T, LiveJSONLoaderError>
 
   public func load(from fileName: String) -> Result {
-    guard let data = try? liveFileLoader.loadFile(at: fileName) else {
+    guard let data = try? fileLoader.loadFile(at: fileName) else {
       return .failure(.fileNotFound)
     }
 
@@ -49,6 +49,6 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
   // MARK: Private
 
-  private let liveFileLoader: FileLoader
+  private let fileLoader: FileLoader
 
 }
