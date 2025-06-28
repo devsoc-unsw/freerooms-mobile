@@ -12,15 +12,15 @@ import SwiftData
 
 /// A SwiftData model representing a room, linked to a building and used for persistence.
 @Model
-public final class RoomModel {
+public final class SwiftDataRoom {
 
   // MARK: Lifecycle
 
-  /// Initializes a new RoomModel with all required properties.
+  /// Initializes a new SwiftDataRoom with all required properties.
   public init(
     name: String,
     id: String,
-    building: BuildingModel,
+    building: SwiftDataBuilding,
     abbreviation: String,
     capacity: Int,
     usage: String,
@@ -36,8 +36,8 @@ public final class RoomModel {
     self.school = school
   }
 
-  /// Initializes RoomModel from a domain `Room` and related `BuildingModel`.
-  public convenience init(from room: Room, building: BuildingModel) {
+  /// Initializes SwiftDataRoom from a domain `Room` and related `SwiftDataBuilding`.
+  public convenience init(from room: Room, building: SwiftDataBuilding) {
     self.init(
       name: room.name,
       id: room.id,
@@ -55,7 +55,7 @@ public final class RoomModel {
   public var abbreviation: String
   public var usage: String
   public var school: String
-  @Relationship public var building: BuildingModel
+  @Relationship public var building: SwiftDataBuilding
   public var capacity: Int
 
   /// Converts the persistence model back to the domain `Room` type.
