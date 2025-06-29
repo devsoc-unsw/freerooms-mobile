@@ -35,11 +35,3 @@ public protocol PersistentStore {
 public protocol IdentifiableModel {
   var stringID: String { get }
 }
-
-// MARK: - PersistentModel
-
-/// A marker protocol for models that can be stored persistently.
-/// This protocol is satisfied by SwiftData's @Model annotation.
-public protocol PersistentModel {
-  // This protocol is already satisfied by SwiftData's @Model
-}
