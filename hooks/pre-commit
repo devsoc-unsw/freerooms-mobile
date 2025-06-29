@@ -14,7 +14,7 @@ fi
 if command -v swiftlint >/dev/null 2>&1
 then
     echo "Running SwiftLint"
-    swiftlint --config ../ios/swiftlint.yml
+    swiftlint
 else
     echo "Warning: `swiftlint` command not found - run the command: brew install swiftlint"
 fi

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Building
 
-public struct Building: Equatable {
+public struct Building: Equatable, Identifiable, Hashable {
 
   // MARK: Lifecycle
 
