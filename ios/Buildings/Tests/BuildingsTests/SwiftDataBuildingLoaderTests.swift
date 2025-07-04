@@ -6,6 +6,7 @@
 //
 
 import Buildings
+import Foundation
 import Persistence
 import Testing
 
@@ -17,7 +18,7 @@ struct SwiftDataBuildingLoaderTests {
   func swiftDataBuildingLoaderFetchBuildingsHappyPath() async {
     // Given
     let swiftDataBuildings = createSwiftDataBuildings(3)
-    let mockSwiftDataStore = MockSwiftDataStore(loads: swiftDataBuildings)
+    let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: swiftDataBuildings)
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
@@ -31,7 +32,7 @@ struct SwiftDataBuildingLoaderTests {
   @Test("SwiftDataBuildingLoader fetch buildings command sad path 1")
   func swiftDataBuildingLoaderFetchBuildingsSadPath1() async {
     // Given
-    let mockSwiftDataStore = MockSwiftDataStore(loads: [])
+    let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: [])
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
@@ -45,7 +46,7 @@ struct SwiftDataBuildingLoaderTests {
   func swiftDataBuildingLoaderFetchBuildingsSadPath2() async {
     // Given
     let mockError = NSError(domain: "TestError", code: 1, userInfo: nil)
-    let mockSwiftDataStore = MockSwiftDataStore(throws: mockError)
+    let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(throws: mockError)
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
@@ -58,7 +59,7 @@ struct SwiftDataBuildingLoaderTests {
   @Test("SwiftDataBuildingLoader returns empty array when no buildings available")
   func swiftDataBuildingLoaderReturnsEmptyArrayWhenNoBuildings() async {
     // Given
-    let mockSwiftDataStore = MockSwiftDataStore(loads: [])
+    let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: [])
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
@@ -72,7 +73,7 @@ struct SwiftDataBuildingLoaderTests {
   func swiftDataBuildingLoaderReturnsSingleBuilding() async {
     // Given
     let swiftDataBuildings = createSwiftDataBuildings(1)
-    let mockSwiftDataStore = MockSwiftDataStore(loads: swiftDataBuildings)
+    let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: swiftDataBuildings)
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
@@ -115,7 +116,7 @@ struct SwiftDataBuildingLoaderTests {
     return buildings
   }
 
-  private func expect(_ result: SwiftDataBuildingLoader.Result, toFetch expectedBuildings: [Building]) {
+  private func expect(_ result: Result<[Building], BuildingLoaderError>, toFetch expectedBuildings: [Building]) {
     switch result {
     case .success(let buildings):
       #expect(buildings == expectedBuildings)
@@ -124,7 +125,7 @@ struct SwiftDataBuildingLoaderTests {
     }
   }
 
-  private func expect(_ result: SwiftDataBuildingLoader.Result, toThrow expectedError: BuildingLoaderError) {
+  private func expect(_ result: Result<[Building], BuildingLoaderError>, toThrow expectedError: BuildingLoaderError) {
     switch result {
     case .failure(let error):
       #expect(error == expectedError)
