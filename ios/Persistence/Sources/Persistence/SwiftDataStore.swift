@@ -18,14 +18,15 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
   // MARK: Lifecycle
 
   /// Initializes the SwiftData stack with model schema and configuration.
-  public init() throws {
-    let schema = Schema([Model.self])
-    let modelConfiguration = ModelConfiguration(schema: schema)
-    modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-    modelContext = ModelContext(modelContainer)
+  public init(modelContext: ModelContext) throws {
+    self.modelContext = modelContext
   }
 
   // MARK: Public
+
+  public func deleteAll() throws {
+    try modelContext.delete(model: Self.Model)
+  }
 
   /// Saves a single item to the persistent store.
   public func save(_ item: Model) throws {
@@ -66,6 +67,5 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
 
   // MARK: Private
 
-  private let modelContainer: ModelContainer
   private let modelContext: ModelContext
 }
