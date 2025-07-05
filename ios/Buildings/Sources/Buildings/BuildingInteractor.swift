@@ -8,22 +8,24 @@
 import Foundation
 import Location
 
-final class BuildingInteractor {
+package final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingService, locationService: LocationService) {
+  package init(buildingService: BuildingService, locationService: LocationService) {
     self.buildingService = buildingService
     self.locationService = locationService
+  }
+
+  // MARK: Package
+
+  package func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
+    fatalError("TODO: Implement")
   }
 
   // MARK: Internal
 
   func getBuildingsSortedByAvailableRooms() -> [Building] {
-    fatalError("TODO: Implement")
-  }
-
-  func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
     fatalError("TODO: Implement")
   }
 
