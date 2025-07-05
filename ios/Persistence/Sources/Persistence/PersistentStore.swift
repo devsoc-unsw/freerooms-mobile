@@ -8,7 +8,7 @@
 // MARK: - PersistentStore
 
 /// Defines an interface for saving, retrieving, and deleting persistent data.
-public protocol PersistentStore {
+public protocol PersistentStore<Model> {
   associatedtype Model
   /// Saves a single item.
   func save(_ item: Model) throws
