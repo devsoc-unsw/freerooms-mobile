@@ -14,8 +14,8 @@ struct SwiftDataBuildingLoaderTests {
 
   // MARK: Internal
 
-  @Test("SwiftDataBuildingLoader fetch buildings command happy path")
-  func swiftDataBuildingLoaderFetchBuildingsHappyPath() async {
+  @Test("SwiftDataBuildingLoader fetches three buildings from its store")
+  func fetchBuildingsFromSwiftDataBuildingLoader() async {
     // Given
     let swiftDataBuildings = createSwiftDataBuildings(3)
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: swiftDataBuildings)
@@ -29,8 +29,8 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toFetch: expectedBuildings)
   }
 
-  @Test("SwiftDataBuildingLoader fetch buildings command sad path 1")
-  func swiftDataBuildingLoaderFetchBuildingsSadPath1() async {
+  @Test("SwiftDataBuildingLoader throws noDataAvailable error when its store is empty")
+  func fetchBuildingsThrowsNoDataErrorOnEmptyStore() async {
     // Given
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: [])
     let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
@@ -42,8 +42,8 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toThrow: BuildingLoaderError.noDataAvailable)
   }
 
-  @Test("SwiftDataBuildingLoader fetch buildings command sad path 2")
-  func swiftDataBuildingLoaderFetchBuildingsSadPath2() async {
+  @Test("SwiftDataBuildingLoader throws persistenceError on store failure")
+  func fetchBuildingsThrowsPersistenceErrorOnStoreFailure() async {
     // Given
     let mockError = NSError(domain: "TestError", code: 1, userInfo: nil)
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(throws: mockError)

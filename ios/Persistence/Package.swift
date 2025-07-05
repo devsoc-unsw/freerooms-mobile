@@ -11,13 +11,9 @@ let package = Package(
       name: "Persistence",
       targets: ["Persistence"]),
   ],
-  dependencies: [
-    // Empty array - persistence layer should be feature-agnostic
-  ],
   targets: [
     .target(
-      name: "Persistence",
-      dependencies: []),
+      name: "Persistence"),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence"]),
