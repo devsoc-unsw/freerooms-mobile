@@ -244,7 +244,8 @@ struct BuildingListRowView: View {
 
           Image(systemName: "chevron.right")
         }
-        .background(GeometryReader { geometry in // In a background the GeometryReader expands to the bounds of the foreground view
+        .background(GeometryReader { geometry in
+          // In a background the GeometryReader expands to the bounds of the foreground view
           Color.clear.preference(
             key: HeightPreferenceKey.self, // This saves the height into the HeightPreferenceKey
             value: geometry.size.height)
