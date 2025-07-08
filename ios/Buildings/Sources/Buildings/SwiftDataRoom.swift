@@ -1,12 +1,12 @@
 //
 //  SwiftDataRoom.swift
-//  Persistence
+//  Buildings
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //
 
-import Buildings
 import Foundation
+import Persistence
 import Rooms
 import SwiftData
 
