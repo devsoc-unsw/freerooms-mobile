@@ -17,11 +17,17 @@ struct Room: Hashable {
 
 // MARK: - BuildingsTabView
 
-package struct BuildingsTabView: View {
+public struct BuildingsTabView: View {
 
-  // MARK: Package
+  // MARK: Lifecycle
 
-  package var body: some View {
+  public init(viewModel: BuildingViewModel) {
+    self.viewModel = viewModel
+  }
+
+  // MARK: Public
+
+  public var body: some View {
     NavigationStack(path: $path) {
       List {
         buildingsView(for: "Upper campus", from: viewModel.upperCampusBuildings)

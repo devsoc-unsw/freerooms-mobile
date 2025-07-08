@@ -10,6 +10,8 @@ import SwiftUI
 public struct RoomsTabView: View {
   @State var selectedTab = "Buildings"
 
+  public init() { }
+
   public var body: some View {
     Text("Rooms tab")
       .tabItem {
@@ -21,5 +23,4 @@ public struct RoomsTabView: View {
 
 #Preview {
   RoomsTabView()
-    .defaultTheme()
 }

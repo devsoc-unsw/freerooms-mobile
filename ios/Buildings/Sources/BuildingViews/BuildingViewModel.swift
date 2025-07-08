@@ -12,7 +12,7 @@ import Observation
 // MARK: - BuildingViewModel
 
 @MainActor
-protocol BuildingViewModel {
+public protocol BuildingViewModel {
   var upperCampusBuildings: [Building] { get set }
 
   var middleCampusBuildings: [Building] { get }
@@ -44,21 +44,19 @@ package class LiveBuildingViewModel: BuildingViewModel {
     isLoading
   }
 
-  // MARK: Internal
+  // MARK: Package
 
-  var interactor: BuildingInteractor
+  package var upperCampusBuildings: [Building] = []
 
-  var upperCampusBuildings: [Building] = []
+  package var middleCampusBuildings: [Building] = []
 
-  var middleCampusBuildings: [Building] = []
+  package var buildingsInAscendingOrder = true
 
-  var buildingsInAscendingOrder = true
+  package var isLoading = false
 
-  var isLoading = false
+  package func onAppear() { }
 
-  func onAppear() { }
-
-  func getBuildingsInOrder() {
+  package func getBuildingsInOrder() {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
@@ -70,12 +68,23 @@ package class LiveBuildingViewModel: BuildingViewModel {
     }
   }
 
+  // MARK: Internal
+
+  var interactor: BuildingInteractor
+
 }
 
 // MARK: - PreviewBuildingViewModel
 
-package class PreviewBuildingViewModel: BuildingViewModel {
-  var upperCampusBuildings: [Building] = [
+public class PreviewBuildingViewModel: BuildingViewModel {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public var upperCampusBuildings: [Building] = [
     Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
     Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
     Building(
@@ -88,19 +97,19 @@ package class PreviewBuildingViewModel: BuildingViewModel {
     Building(name: "Matthews Building", id: "K-E12", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
   ]
 
-  var middleCampusBuildings: [Building] = [
+  public var middleCampusBuildings: [Building] = [
     Building(name: "AGSM", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
     Building(name: "Biological Sciences", id: "K-F10", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
     Building(name: "Biological Sciences (West)", id: "K-F12", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 3),
     Building(name: "Matthews Building", id: "K-F13", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
   ]
 
-  var buildingsInAscendingOrder = true
+  public var buildingsInAscendingOrder = true
 
-  var isLoading = false
+  public var isLoading = false
 
-  func getBuildingsInOrder() { }
+  public func getBuildingsInOrder() { }
 
-  func onAppear() { }
+  public func onAppear() { }
 
 }
