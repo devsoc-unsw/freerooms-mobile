@@ -62,6 +62,13 @@ public class MockSwiftDataStore<Model: PersistentModel & IdentifiableModel>: Per
     // Mock implementation - no actual deletion needed
   }
 
+  public func deleteAll() throws {
+    if let error {
+      throw error
+    }
+    // Mock implementation - no actual deletion needed
+  }
+
   // MARK: Private
 
   private let items: [Model]
