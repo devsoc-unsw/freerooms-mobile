@@ -1,17 +1,17 @@
 //
 //  SwiftDataBuilding.swift
-//  Persistence
+//  Buildings
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //
 
-import Buildings
 import Foundation
+import Persistence
 import SwiftData
 
 /// A SwiftData model representing a building, including location and associated rooms.
 @Model
-public final class SwiftDataBuilding {
+public final class SwiftDataBuilding: IdentifiableModel {
 
   // MARK: Lifecycle
 
@@ -57,6 +57,12 @@ public final class SwiftDataBuilding {
   /// Associated rooms; cascade delete ensures related rooms are deleted with the building.
   @Relationship(deleteRule: .cascade)
   public var rooms: [SwiftDataRoom]
+
+  // MARK: - IdentifiableModel
+
+  public var stringID: String {
+    id
+  }
 
   /// Converts the persistence model back to a domain `Building`.
   public func toBuilding() -> Building {
