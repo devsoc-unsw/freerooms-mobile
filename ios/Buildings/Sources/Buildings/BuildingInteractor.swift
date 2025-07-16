@@ -47,7 +47,7 @@ final class BuildingInteractor {
           return .failure(error)
       }
   }
-
+    
   func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
