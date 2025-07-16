@@ -84,7 +84,7 @@ struct BuildingInteractorTests {
 
             // Then
             
-            let expectedOrder = ["Quadrangle", "Law Library", "McGill Library", "Patricia O Shane", "Main Library"]
+            let expectedOrder = ["Quadrangle", "Law Library", "McGill Library", "Patricia O Shane", "Main Library"]g
             guard case let .success(buildings) = result else {
                 Issue.record("Failure, but expected success")
                 return
