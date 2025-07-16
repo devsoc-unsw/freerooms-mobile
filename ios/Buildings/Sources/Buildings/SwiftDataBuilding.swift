@@ -1,21 +1,21 @@
 //
-//  BuildingModel.swift
-//  Persistence
+//  SwiftDataBuilding.swift
+//  Buildings
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //
 
-import Buildings
 import Foundation
+import Persistence
 import SwiftData
 
 /// A SwiftData model representing a building, including location and associated rooms.
 @Model
-public final class BuildingModel: PersistentModel {
+public final class SwiftDataBuilding: IdentifiableModel {
 
   // MARK: Lifecycle
 
-  /// Initializes a new BuildingModel with all required properties.
+  /// Initializes a new SwiftDataBuilding with all required properties.
   public init(
     name: String,
     id: String,
@@ -23,7 +23,7 @@ public final class BuildingModel: PersistentModel {
     longitude: Double,
     aliases: [String],
     numberOfAvailableRooms: Int?,
-    rooms: [RoomModel] = [])
+    rooms: [SwiftDataRoom] = [])
   {
     self.name = name
     self.id = id
@@ -34,7 +34,7 @@ public final class BuildingModel: PersistentModel {
     self.rooms = rooms
   }
 
-  /// Initializes BuildingModel from a domain `Building`.
+  /// Initializes SwiftDataBuilding from a domain `Building`.
   public convenience init(from building: Building) {
     self.init(
       name: building.name,
@@ -56,7 +56,13 @@ public final class BuildingModel: PersistentModel {
 
   /// Associated rooms; cascade delete ensures related rooms are deleted with the building.
   @Relationship(deleteRule: .cascade)
-  public var rooms: [RoomModel]
+  public var rooms: [SwiftDataRoom]
+
+  // MARK: - IdentifiableModel
+
+  public var stringID: String {
+    id
+  }
 
   /// Converts the persistence model back to a domain `Building`.
   public func toBuilding() -> Building {

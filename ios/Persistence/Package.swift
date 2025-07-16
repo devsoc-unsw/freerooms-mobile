@@ -11,13 +11,9 @@ let package = Package(
       name: "Persistence",
       targets: ["Persistence"]),
   ],
-  dependencies: [
-    .package(name: "Buildings", path: "../Buildings"),
-  ],
   targets: [
     .target(
-      name: "Persistence",
-      dependencies: ["Buildings"]),
+      name: "Persistence"),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence"]),

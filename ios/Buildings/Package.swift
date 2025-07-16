@@ -16,13 +16,15 @@ let package = Package(
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Location", path: "../Location"),
     .package(name: "CommonUI", path: "../CommonUI"),
+    .package(name: "Persistence", path: "../Persistence"),
+    .package(name: "Rooms", path: "../Rooms"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "Buildings",
-      dependencies: ["Location", "Networking"]),
+      dependencies: ["Location", "Networking", "Persistence", "Rooms"]),
     .target(
       name: "Views",
       dependencies: ["Buildings", "CommonUI"],

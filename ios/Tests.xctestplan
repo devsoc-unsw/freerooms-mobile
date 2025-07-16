@@ -14,13 +14,6 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Networking",
-        "identifier" : "NetworkingTests",
-        "name" : "NetworkingTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Buildings",
         "identifier" : "BuildingsTests",
         "name" : "BuildingsTests"
@@ -38,6 +31,27 @@
         "containerPath" : "container:TestingSupport",
         "identifier" : "TestingSupportTests",
         "name" : "TestingSupportTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Persistence",
+        "identifier" : "PersistenceTests",
+        "name" : "PersistenceTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Rooms",
+        "identifier" : "RoomsTests",
+        "name" : "RoomsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Networking",
+        "identifier" : "NetworkingTests",
+        "name" : "NetworkingTests"
       }
     }
   ],
