@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */ = {isa = PBXBuildFile; productRef = 30FB13AB2E1CDFAE0089793E /* Rooms */; };
 		96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */ = {isa = PBXBuildFile; productRef = 96D65EDE2DA39EA30060D06B /* Buildings */; };
 		96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 96DE0C312DFBD4C200C77DD5 /* CommonUI */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */,
 				96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */,
 				96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */,
 			);
@@ -114,6 +116,7 @@
 			packageProductDependencies = (
 				96D65EDE2DA39EA30060D06B /* Buildings */,
 				96DE0C312DFBD4C200C77DD5 /* CommonUI */,
+				30FB13AB2E1CDFAE0089793E /* Rooms */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -143,6 +146,9 @@
 			);
 			mainGroup = 96F9AFC12D9BCC1200671174;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
 			projectDirPath = "";
@@ -400,7 +406,18 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Rooms;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Rooms;
+		};
 		96D65EDE2DA39EA30060D06B /* Buildings */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Buildings;

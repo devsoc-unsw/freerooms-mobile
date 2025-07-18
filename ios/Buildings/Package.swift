@@ -10,7 +10,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Buildings",
-      targets: ["Buildings", "Views"]),
+      targets: ["Buildings", "BuildingViews"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
@@ -26,7 +26,7 @@ let package = Package(
       name: "Buildings",
       dependencies: ["Location", "Networking", "Persistence", "Rooms"]),
     .target(
-      name: "Views",
+      name: "BuildingViews",
       dependencies: ["Buildings", "CommonUI"],
       resources: [.process("Resources")]),
     .testTarget(

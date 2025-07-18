@@ -8,18 +8,16 @@
 import Foundation
 import Location
 
-final class BuildingInteractor {
+package final class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  init(buildingService: BuildingService, locationService: LocationService) {
+  package init(buildingService: BuildingService, locationService: LocationService) {
     self.buildingService = buildingService
     self.locationService = locationService
   }
-
-  // MARK: Internal
-
-    func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error>  {
+  
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error>  {
       switch await buildingService.getBuildings() {
       case .success (let buildings):
           // no valid data, return as is
@@ -36,7 +34,7 @@ final class BuildingInteractor {
       }
   }
 
-  func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
       switch await buildingService.getBuildings() {
       case .success (let buildings):
           let sorted = buildings.sorted { a,b in
