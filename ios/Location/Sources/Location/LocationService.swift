@@ -14,7 +14,7 @@ public class LocationService: NSObject, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
-  init(locationManager: LocationManager) {
+  public init(locationManager: LocationManager) {
     self.locationManager = locationManager
     super.init()
     locationManager.delegate = self

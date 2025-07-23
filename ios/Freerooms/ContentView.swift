@@ -11,6 +11,7 @@ import CommonUI
 import Rooms
 import RoomViews
 import SwiftUI
+//import Location
 
 // MARK: - ContentView
 
@@ -19,7 +20,7 @@ struct ContentView: View {
 
   // MARK: Internal
 
-  @State var viewModel: BuildingViewModel
+  var viewModel: BuildingViewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {

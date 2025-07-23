@@ -25,3 +25,29 @@ public protocol LocationManagerDelegate: NSObjectProtocol {
   @objc
   optional func locationManagerDidChangeAuthorization(_ manager: LocationManager)
 }
+
+// MARK: - LiveLocationManager
+
+public class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDelegate {
+    public weak var delegate: LocationManagerDelegate?
+    private let clLocationManager: CLLocationManager
+
+    public override init() {
+        self.clLocationManager = CLLocationManager()
+        super.init()
+        self.clLocationManager.delegate = self
+    }
+
+    public var authorizationStatus: CLAuthorizationStatus {
+      return clLocationManager.authorizationStatus
+    }
+
+    public func requestWhenInUseAuthorization() {
+        clLocationManager.requestWhenInUseAuthorization()
+    }
+
+    // CLLocationManagerDelegate
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        delegate?.locationManagerDidChangeAuthorization?(self)
+    }
+}

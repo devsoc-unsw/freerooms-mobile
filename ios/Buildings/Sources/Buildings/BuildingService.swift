@@ -28,7 +28,7 @@ public final class LiveBuildingService: BuildingService {
 
   // MARK: Lifecycle
 
-  init(buildingLoader: any BuildingLoader) {
+  public init(buildingLoader: any BuildingLoader) {
     self.buildingLoader = buildingLoader
   }
 

@@ -30,11 +30,11 @@ public protocol BuildingViewModel {
 // MARK: - LiveBuildingViewModel
 
 @Observable
-package class LiveBuildingViewModel: BuildingViewModel {
+public class LiveBuildingViewModel: BuildingViewModel {
 
   // MARK: Lifecycle
 
-  init(interactor: BuildingInteractor) {
+  public init(interactor: BuildingInteractor) {
     self.interactor = interactor
   }
 
@@ -44,19 +44,17 @@ package class LiveBuildingViewModel: BuildingViewModel {
     isLoading
   }
 
-  // MARK: Package
+  public var upperCampusBuildings: [Building] = []
 
-  package var upperCampusBuildings: [Building] = []
+  public var middleCampusBuildings: [Building] = []
 
-  package var middleCampusBuildings: [Building] = []
+  public var buildingsInAscendingOrder = true
 
-  package var buildingsInAscendingOrder = true
+  public var isLoading = false
 
-  package var isLoading = false
+  public func onAppear() { }
 
-  package func onAppear() { }
-
-  package func getBuildingsInOrder() {
+  public func getBuildingsInOrder() {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 

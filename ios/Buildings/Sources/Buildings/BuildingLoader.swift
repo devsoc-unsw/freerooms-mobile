@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 29/4/2025.
 //
 
+import Foundation
 import Networking
 
 // MARK: - BuildingLoaderError
@@ -58,4 +59,27 @@ public class LiveBuildingLoader: BuildingLoader {
 
   private let remoteBuildingLoader: RemoteBuildingLoader
 
+}
+
+// MARK: - LiveRemoteBuildingLoader
+
+public class LiveRemoteBuildingLoader: RemoteBuildingLoader {
+    private let url: URL
+
+    public init(url: URL) {
+        self.url = url
+    }
+
+    public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                return .failure(.connectivity)
+            }
+            let buildings = try JSONDecoder().decode([RemoteBuilding].self, from: data)
+            return .success(buildings)
+        } catch {
+            return .failure(.connectivity)
+        }
+    }
 }
