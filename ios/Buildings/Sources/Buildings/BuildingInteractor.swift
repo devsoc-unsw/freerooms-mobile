@@ -19,14 +19,38 @@ public final class BuildingInteractor {
 
   // MARK: Package
 
-  package func getBuildingsSortedAlphabetically(inAscendingOrder _: Bool) -> [Building] {
-    fatalError("TODO: Implement")
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let sorted = buildings.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
   }
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms() -> [Building] {
-    fatalError("TODO: Implement")
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      // no valid data, return as is
+      guard buildings.contains(where: { $0.numberOfAvailableRooms != nil }) else {
+        return .success(buildings)
+      }
+      let sorted = buildings.sorted { (a: Building, b: Building) in
+        inAscendingOrder
+          ? (a.numberOfAvailableRooms ?? 0) < (b.numberOfAvailableRooms ?? 0)
+          : (a.numberOfAvailableRooms ?? 0) > (b.numberOfAvailableRooms ?? 0)
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
   }
 
   func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
