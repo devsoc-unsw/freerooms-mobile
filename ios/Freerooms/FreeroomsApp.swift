@@ -5,6 +5,8 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import Buildings
+import BuildingViews
 import CommonUI
 import SwiftUI
 
@@ -22,7 +24,7 @@ struct FreeroomsApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      ContentView(viewModel: PreviewBuildingViewModel())
         .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))

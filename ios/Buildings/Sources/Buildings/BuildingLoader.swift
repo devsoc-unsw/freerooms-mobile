@@ -11,6 +11,8 @@ import Networking
 
 public enum BuildingLoaderError: Error {
   case connectivity
+  case noDataAvailable
+  case persistenceError
 }
 
 // MARK: - BuildingLoader
