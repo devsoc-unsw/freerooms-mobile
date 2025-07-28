@@ -93,10 +93,15 @@ struct BuildingLoaderTests {
     return buildings
   }
 
-  private func expect(_ res: LiveBuildingLoader.Result, toThrow _: BuildingLoaderError) {
+  private func expect(_ res: LiveBuildingLoader.Result, toThrow expected: BuildingLoaderError) {
     switch res {
     case .failure(let error):
-      #expect(error == error)
+      if let actual = error as? BuildingLoaderError, actual == expected {
+        // test passed
+      } else {
+        Issue.record("Expected \(expected), but got \(error)")
+      }
+
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }

@@ -16,7 +16,7 @@ public enum BuildingLoaderError: Error {
 // MARK: - BuildingLoader
 
 public protocol BuildingLoader {
-  func fetch() async -> Result<[Building], BuildingLoaderError>
+  func fetch() async -> Result<[Building], Error>
 }
 
 // MARK: - RemoteBuildingLoader
@@ -37,7 +37,7 @@ public class LiveBuildingLoader: BuildingLoader {
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<[Building], BuildingLoaderError>
+  public typealias Result = Swift.Result<[Building], Error>
 
   public func fetch() async -> Result {
     switch await remoteBuildingLoader.fetch() {
@@ -48,7 +48,7 @@ public class LiveBuildingLoader: BuildingLoader {
       return .success(buildings)
 
     case .failure:
-      return .failure(.connectivity)
+      return .failure(BuildingLoaderError.connectivity)
     }
   }
 
