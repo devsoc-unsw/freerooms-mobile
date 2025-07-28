@@ -8,17 +8,17 @@
 import Buildings
 import Foundation
 
-// MARK: - LiveJSONLoaderError
+// MARK: - JSONLoaderError
 
-public enum LiveJSONLoaderError: Error {
+public enum JSONLoaderError: Error, Equatable {
   case fileNotFound, malformedJSON
 }
 
 // MARK: - JSONLoader
 
-public protocol JSONLoader {
+public protocol JSONLoader<T> {
   associatedtype T: Decodable
-  func load(from file: String) -> Result<T, LiveJSONLoaderError>
+  func load(from file: String) -> Result<T, JSONLoaderError>
 }
 
 // MARK: - LiveJSONLoader
@@ -33,7 +33,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<T, LiveJSONLoaderError>
+  public typealias Result = Swift.Result<T, JSONLoaderError>
 
   public func load(from fileName: String) -> Result {
     guard let data = try? fileLoader.loadFile(at: fileName) else {
