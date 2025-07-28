@@ -31,4 +31,4 @@ See the [ios](ios), and [android](android) directories for instructions on setti
 
 # Our Team
 
-We are a team that is part of CSESoc Development. See [TEAM.md](./TEAM.md) for more information on the current and previous team that contributed to the development of Freerooms.
+We are a team that is part of DevSoc Development. See [TEAM.md](./TEAM.md) for more information on the current and previous team that contributed to the development of Freerooms.
