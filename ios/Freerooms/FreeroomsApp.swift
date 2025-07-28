@@ -40,10 +40,7 @@ struct FreeroomsApp: App {
     let locationService = LocationService(locationManager: locationManager)
 
     // TODO: Replace with actual API endpoint
-    // let remoteBuildingLoader = LiveRemoteBuildingLoader(url: URL(string: "/api/buildings")!)
-
-    // Use mock data for development with sample buildings
-    let remoteBuildingLoader = MockRemoteBuildingLoader()
+    let remoteBuildingLoader = LiveRemoteBuildingLoader(url: URL(string: "/api/buildings")!)
     let buildingLoader = LiveBuildingLoader(remoteBuildingLoader: remoteBuildingLoader)
     let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
 
