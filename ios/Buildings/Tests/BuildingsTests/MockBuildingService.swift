@@ -14,7 +14,7 @@ class MockBuildingService: BuildingService {
   // MARK: Internal
 
   func getBuildings() async -> GetBuildingsResult {
-    .success(buildings)
+    return .success(buildings)
   }
 
   func addBuilding(_ building: Building) {
