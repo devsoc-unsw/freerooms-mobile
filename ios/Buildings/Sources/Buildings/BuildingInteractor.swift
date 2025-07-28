@@ -8,7 +8,9 @@
 import Foundation
 import Location
 
-public final class BuildingInteractor {
+// MARK: - BuildingInteractor
+
+public class BuildingInteractor {
 
   // MARK: Lifecycle
 
@@ -104,4 +106,12 @@ public final class BuildingInteractor {
     return dlat * dlat + dlon * dlon
   }
 
+}
+
+// MARK: - PreviewBuildingInteractor
+
+public final class PreviewBuildingInteractor: BuildingInteractor {
+  public init() {
+    super.init(buildingService: PreviewBuildingService(), locationService: PreviewLocationService())
+  }
 }

@@ -11,7 +11,8 @@ import CommonUI
 import Rooms
 import RoomViews
 import SwiftUI
-//import Location
+
+// import Location
 
 // MARK: - ContentView
 
@@ -20,7 +21,7 @@ struct ContentView: View {
 
   // MARK: Internal
 
-  var viewModel: BuildingViewModel
+  @Environment(\.buildingViewModel) var viewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {
@@ -38,7 +39,12 @@ struct ContentView: View {
 
 }
 
+extension EnvironmentValues {
+  @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+}
+
 #Preview {
-  ContentView(viewModel: PreviewBuildingViewModel())
+  ContentView()
     .defaultTheme()
+    .environment(\.buildingViewModel, PreviewBuildingViewModel())
 }

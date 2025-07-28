@@ -49,3 +49,11 @@ public final class LiveBuildingService: BuildingService {
 
   private var buildingLoader: any BuildingLoader
 }
+
+// MARK: - PreviewBuildingService
+
+public final class PreviewBuildingService: BuildingService {
+  public func getBuildings() async -> GetBuildingsResult {
+    .success([])
+  }
+}

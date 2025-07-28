@@ -67,7 +67,7 @@ public class LocationService: NSObject, LocationManagerDelegate {
 
   // MARK: Package
 
-  package let locationManager: LocationManager
+  package var locationManager: LocationManager
 
   // MARK: Internal
 
@@ -79,4 +79,12 @@ public class LocationService: NSObject, LocationManagerDelegate {
 
 enum LocationServiceError: Error {
   case locationPermissionsDenied
+}
+
+// MARK: - PreviewLocationService
+
+public class PreviewLocationService: LocationService {
+  public init() {
+    super.init(locationManager: LiveLocationManager())
+  }
 }

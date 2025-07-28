@@ -64,22 +64,47 @@ public class LiveBuildingLoader: BuildingLoader {
 // MARK: - LiveRemoteBuildingLoader
 
 public class LiveRemoteBuildingLoader: RemoteBuildingLoader {
-    private let url: URL
 
-    public init(url: URL) {
-        self.url = url
-    }
+  // MARK: Lifecycle
 
-    public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                return .failure(.connectivity)
-            }
-            let buildings = try JSONDecoder().decode([RemoteBuilding].self, from: data)
-            return .success(buildings)
-        } catch {
-            return .failure(.connectivity)
-        }
+  public init(url: URL) {
+    self.url = url
+  }
+
+  // MARK: Public
+
+  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
+    do {
+      let (data, response) = try await URLSession.shared.data(from: url)
+      guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        return .failure(.connectivity)
+      }
+      let buildings = try JSONDecoder().decode([RemoteBuilding].self, from: data)
+      return .success(buildings)
+    } catch {
+      return .failure(.connectivity)
     }
+  }
+
+  // MARK: Private
+
+  private let url: URL
+}
+
+// MARK: - MockRemoteBuildingLoader
+
+public class MockRemoteBuildingLoader: RemoteBuildingLoader {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
+    .success([
+      RemoteBuilding(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: []),
+      RemoteBuilding(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: []),
+    ])
+  }
 }
