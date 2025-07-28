@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - JSONLoaderError
 
-public enum JSONLoaderError: Error, Equatable {
+public enum JSONLoaderError: Error {
   case fileNotFound, malformedJSON
 }
 
