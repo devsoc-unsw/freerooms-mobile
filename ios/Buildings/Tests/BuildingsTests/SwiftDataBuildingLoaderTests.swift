@@ -9,6 +9,7 @@ import Buildings
 import Foundation
 import Persistence
 import Testing
+import TestingSupport
 
 struct SwiftDataBuildingLoaderTests {
 
@@ -116,7 +117,7 @@ struct SwiftDataBuildingLoaderTests {
     return buildings
   }
 
-  private func expect(_ result: Result<[Building], BuildingLoaderError>, toFetch expectedBuildings: [Building]) {
+  private func expect(_ result: Result<[Building], Error>, toFetch expectedBuildings: [Building]) {
     switch result {
     case .success(let buildings):
       #expect(buildings == expectedBuildings)
@@ -125,10 +126,10 @@ struct SwiftDataBuildingLoaderTests {
     }
   }
 
-  private func expect(_ result: Result<[Building], BuildingLoaderError>, toThrow expectedError: BuildingLoaderError) {
+  private func expect(_ result: Result<[Building], Error>, toThrow expectedError: BuildingLoaderError) {
     switch result {
     case .failure(let error):
-      #expect(error == expectedError)
+      #expect(checkErrorEquals(error, equals: expectedError, as: BuildingLoaderError.self) == true)
     case .success(let buildings):
       Issue.record("Expected error \(expectedError) but got success with \(buildings)")
     }

@@ -8,6 +8,7 @@
 import Buildings
 import Testing
 @testable import Persistence
+@testable import TestingSupport
 
 struct JSONBuildingLoaderTests {
 
@@ -74,13 +75,7 @@ struct JSONBuildingLoaderTests {
   private func expect(_ res: LiveJSONBuildingLoader.Result, toThrow expected: JSONLoaderError) {
     switch res {
     case .failure(let error):
-      if let actual = error as? JSONLoaderError, actual == expected {
-        // test passed - unsure if better way here (since result uses protocol error type instead of concrete enum)
-      } else {
-        Issue.record("Expected \(expected), but got \(error)")
-      }
-      #expect(1 == 1)
-
+      #expect(checkErrorEquals(error, equals: expected, as: JSONLoaderError.self) == true)
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }

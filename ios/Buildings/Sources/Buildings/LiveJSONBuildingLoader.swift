@@ -5,21 +5,21 @@
 //  Created by Chris Wong on 30/6/2025.
 //
 
-import Buildings
+import Persistence
 
-struct LiveJSONBuildingLoader: BuildingLoader {
+public struct LiveJSONBuildingLoader: BuildingLoader {
 
   // MARK: Lifecycle
 
-  init(using loader: any JSONLoader<[DecodableBuilding]>) {
+  public init(using loader: any JSONLoader<[DecodableBuilding]>) {
     self.loader = loader
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  typealias Result = Swift.Result<[Building], Error>
+  public typealias Result = Swift.Result<[Building], Error>
 
-  func decode(from filename: String) -> Result {
+  public func decode(from filename: String) -> Result {
     switch loader.load(from: filename) {
     case .success(let decodedBuildings):
       let buildings = decodedBuildings.map {
@@ -32,7 +32,7 @@ struct LiveJSONBuildingLoader: BuildingLoader {
     }
   }
 
-  func fetch() -> Result {
+  public func fetch() -> Result {
     switch loader.load(from: "/path") {
     case .success(let decodedBuildings):
       let buildings = decodedBuildings.map {
