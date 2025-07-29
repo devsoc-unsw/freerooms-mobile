@@ -20,19 +20,19 @@ public final class SwiftDataBuildingLoader: BuildingLoader {
 
   // MARK: Public
 
-  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+  public func fetch() async -> Result<[Building], Error> {
     do {
       let swiftDataBuildings = try swiftDataStore.fetchAll()
 
       if swiftDataBuildings.isEmpty {
-        return .failure(.noDataAvailable)
+        return .failure(BuildingLoaderError.noDataAvailable)
       }
 
       let buildings = swiftDataBuildings.map { $0.toBuilding() }
       return .success(buildings)
 
     } catch {
-      return .failure(.persistenceError)
+      return .failure(BuildingLoaderError.persistenceError)
     }
   }
 
