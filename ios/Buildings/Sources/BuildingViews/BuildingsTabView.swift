@@ -5,7 +5,8 @@
 //  Created by Yanlin Li  on 3/7/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingViewModels
 import CommonUI
 import SwiftUI
 

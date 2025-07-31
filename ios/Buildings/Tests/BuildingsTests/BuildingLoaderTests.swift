@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 1/5/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 import Testing
 
 struct BuildingLoaderTests {

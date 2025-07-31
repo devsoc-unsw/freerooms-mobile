@@ -5,7 +5,8 @@
 //  Created by Muqueet Mohsen Chowdhury on 29/6/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 import Foundation
 import Persistence
 import Testing

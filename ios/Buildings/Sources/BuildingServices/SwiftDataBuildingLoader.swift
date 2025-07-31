@@ -5,6 +5,7 @@
 //  Created by Muqueet Mohsen Chowdhury on 29/6/2025.
 //
 
+import BuildingModels
 import Foundation
 import Persistence
 
