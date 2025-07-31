@@ -5,7 +5,8 @@
 //  Created by MUQUEET MOHSEN CHOWDHURY on 26/4/25.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 import Foundation
 import Observation
 

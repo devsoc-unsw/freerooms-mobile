@@ -1,5 +1,9 @@
+
+
 import Testing
-@testable import Buildings
+@testable import BuildingInteractors
+@testable import BuildingModels
+@testable import BuildingServices
 @testable import Location
 @testable import LocationTestsUtils
 

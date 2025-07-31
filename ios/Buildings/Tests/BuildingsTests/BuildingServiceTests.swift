@@ -5,10 +5,11 @@
 //  Created by Chris Wong on 1/5/2025.
 //
 
+import BuildingModels
 import Foundation
 import Networking
 import Testing
-@testable import Buildings
+@testable import BuildingServices
 
 struct BuildingServiceTests {
 
