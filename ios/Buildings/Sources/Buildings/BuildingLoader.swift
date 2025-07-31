@@ -90,21 +90,3 @@ public class LiveRemoteBuildingLoader: RemoteBuildingLoader {
 
   private let url: URL
 }
-
-// MARK: - MockRemoteBuildingLoader
-
-public class MockRemoteBuildingLoader: RemoteBuildingLoader {
-
-  // MARK: Lifecycle
-
-  public init() { }
-
-  // MARK: Public
-
-  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
-    .success([
-      RemoteBuilding(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: []),
-      RemoteBuilding(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: []),
-    ])
-  }
-}
