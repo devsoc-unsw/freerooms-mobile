@@ -7,6 +7,7 @@
 
 import Buildings
 import Foundation
+import Location
 import Observation
 
 // MARK: - BuildingViewModel
@@ -78,7 +79,9 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendable {
 
   public init() {
-    super.init(interactor: PreviewBuildingInteractor())
+    super.init(interactor: BuildingInteractor(
+      buildingService: PreviewBuildingService(),
+      locationService: LocationService(locationManager: LiveLocationManager())))
     upperCampusBuildings = [
       Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
       Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),

@@ -80,11 +80,3 @@ public class LocationService: NSObject, LocationManagerDelegate {
 enum LocationServiceError: Error {
   case locationPermissionsDenied
 }
-
-// MARK: - PreviewLocationService
-
-public class PreviewLocationService: LocationService {
-  public init() {
-    super.init(locationManager: LiveLocationManager())
-  }
-}

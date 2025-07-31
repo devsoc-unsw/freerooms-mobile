@@ -107,11 +107,3 @@ public class BuildingInteractor {
   }
 
 }
-
-// MARK: - PreviewBuildingInteractor
-
-public final class PreviewBuildingInteractor: BuildingInteractor {
-  public init() {
-    super.init(buildingService: PreviewBuildingService(), locationService: PreviewLocationService())
-  }
-}
