@@ -28,14 +28,13 @@ public final class LiveBuildingService: BuildingService {
 
   // MARK: Lifecycle
 
-  init(buildingLoader: any BuildingLoader) {
+  public init(buildingLoader: any BuildingLoader) {
     self.buildingLoader = buildingLoader
   }
 
-// MARK: Public
+  // MARK: Public
 
-public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
-
+  public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
   public func getBuildings() async -> GetBuildingsResult {
     switch await buildingLoader.fetch() {
@@ -49,4 +48,19 @@ public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsErr
   // MARK: Private
 
   private var buildingLoader: any BuildingLoader
+}
+
+// MARK: - PreviewBuildingService
+
+public final class PreviewBuildingService: BuildingService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getBuildings() async -> GetBuildingsResult {
+    .success([])
+  }
 }
