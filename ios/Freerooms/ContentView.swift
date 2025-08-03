@@ -12,8 +12,6 @@ import Rooms
 import RoomViews
 import SwiftUI
 
-// import Location
-
 // MARK: - ContentView
 
 /// No logic, only UI
