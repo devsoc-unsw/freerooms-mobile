@@ -5,7 +5,7 @@
 //  Created by MUQUEET MOHSEN CHOWDHURY on 24/4/25.
 //
 
-import Buildings
+import BuildingModels
 import MapKit
 import SwiftUI
 

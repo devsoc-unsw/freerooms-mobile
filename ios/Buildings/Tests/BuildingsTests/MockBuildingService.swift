@@ -5,7 +5,8 @@
 //  Created by Shabinda Sarkaria on 13/6/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 
 // MARK: - MockBuildingService
 
@@ -14,7 +15,7 @@ class MockBuildingService: BuildingService {
   // MARK: Internal
 
   func getBuildings() async -> GetBuildingsResult {
-    return .success(buildings)
+    .success(buildings)
   }
 
   func addBuilding(_ building: Building) {
