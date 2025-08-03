@@ -5,7 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
-import Buildings
+import BuildingViewModels
 import BuildingViews
 import CommonUI
 import Location

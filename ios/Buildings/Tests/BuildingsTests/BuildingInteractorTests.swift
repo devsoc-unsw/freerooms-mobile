@@ -5,8 +5,10 @@
 //  Created by Shabinda Sarkaria on 11/6/2025.
 //
 
+import BuildingModels
 import Testing
-@testable import Buildings
+@testable import BuildingInteractors
+@testable import BuildingServices
 @testable import Location
 @testable import LocationTestsUtils
 
@@ -202,7 +204,9 @@ enum BuildingInteractorTests {
 
     @Test(
       "Return buildings sorted by alphabetical order in descending order")
-    func returnsBuildingsAlphabeticallySortedDescendingOrder() async {
+    func returnsBuildingsAlphabeticallySortedDescendingOrder()
+      async
+    {
       // Given
       let buildings = [
         Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
@@ -258,7 +262,9 @@ enum BuildingInteractorTests {
 
     @Test(
       "Return buildings sorted by alphabetical order in ascending order")
-    func returnsBuildingsAlphabeticallySortedAscendingOrder() async {
+    func returnsBuildingsAlphabeticallySortedAscendingOrder()
+      async
+    {
       // Given
       let buildings = [
         Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),

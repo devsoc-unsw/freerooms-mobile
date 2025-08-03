@@ -5,7 +5,8 @@
 //  Created by Yanlin Li  on 3/7/2025.
 //
 
-import Buildings
+import BuildingInteractors
+import BuildingModels
 import Foundation
 import Location
 import Observation

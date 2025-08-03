@@ -5,7 +5,8 @@
 //  Created by Shabinda Sarkaria on 13/6/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 
 // MARK: - MockBuildingService
 
