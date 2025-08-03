@@ -10,11 +10,13 @@ import BuildingServices
 import Foundation
 import Location
 
-package final class BuildingInteractor {
+// MARK: - BuildingInteractor
+
+public class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  package init(buildingService: BuildingService, locationService: LocationService) {
+  public init(buildingService: BuildingService, locationService: LocationService) {
     self.buildingService = buildingService
     self.locationService = locationService
   }

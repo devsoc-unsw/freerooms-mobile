@@ -19,7 +19,7 @@ struct ContentView: View {
 
   // MARK: Internal
 
-  @State var viewModel: BuildingViewModel
+  @Environment(\.buildingViewModel) var viewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {
@@ -37,7 +37,12 @@ struct ContentView: View {
 
 }
 
+extension EnvironmentValues {
+  @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+}
+
 #Preview {
-  ContentView(viewModel: PreviewBuildingViewModel())
+  ContentView()
     .defaultTheme()
+    .environment(\.buildingViewModel, PreviewBuildingViewModel())
 }
