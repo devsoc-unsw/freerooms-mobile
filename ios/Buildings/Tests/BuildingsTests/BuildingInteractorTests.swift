@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import Foundation
 import Testing
 @testable import BuildingInteractors
 @testable import BuildingServices
@@ -316,6 +317,175 @@ enum BuildingInteractorTests {
 
       let actualOrder = buildings.map(\.name)
       #expect(actualOrder == expectedOrder)
+    }
+  }
+
+  struct CampusFilteringTest {
+    @Test("Filter buildings returns only lower campus buildings")
+    func getBuildingsFilteredByLowerCampus() async {
+      // Given
+      let buildings = [
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
+        Building(
+          name: "McGill Library",
+          id: "K-F10",
+          latitude: 0,
+          longitude: 0,
+          aliases: ["McGill Lib"],
+          numberOfAvailableRooms: 5), // Lower (F10 = section 10)
+      ]
+
+      let sut = makeSUT(loadBuildings: buildings)
+
+      // When
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+
+      // Then
+      guard case .success(let filteredBuildings) = result else {
+        Issue.record("Expected success but got failure")
+        return
+      }
+
+      #expect(filteredBuildings.count == 2)
+      #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.lower })
+
+      let buildingNames = filteredBuildings.map(\.name).sorted()
+      #expect(buildingNames == ["Law Library", "McGill Library"])
+    }
+
+    @Test("Filter buildings returns only upper campus buildings")
+    func getBuildingsFilteredByUpperCampus() async {
+      // Given
+      let buildings = [
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
+        Building(name: "AGSM", id: "K-G27", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0),
+        // Upper (G27 = section 27)
+      ]
+
+      let sut = makeSUT(loadBuildings: buildings)
+
+      // When
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.upper)
+
+      // Then
+      guard case .success(let filteredBuildings) = result else {
+        Issue.record("Expected success but got failure")
+        return
+      }
+
+      #expect(filteredBuildings.count == 2)
+      #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.upper })
+
+      let buildingNames = filteredBuildings.map(\.name).sorted()
+      #expect(buildingNames == ["AGSM", "Patricia O Shane"])
+    }
+
+    @Test("Filter buildings returns only middle campus buildings")
+    func getBuildingsFilteredByMiddleCampus() async {
+      // Given
+      let buildings = [
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(
+          name: "Anita B. Lawrence Centre",
+          id: "K-H13",
+          latitude: 0,
+          longitude: 0,
+          aliases: ["The Red Centre"],
+          numberOfAvailableRooms: 6), // Middle (H13 = section 13)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
+      ]
+
+      let sut = makeSUT(loadBuildings: buildings)
+
+      // When
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.middle)
+
+      // Then
+      guard case .success(let filteredBuildings) = result else {
+        Issue.record("Expected success but got failure")
+        return
+      }
+
+      #expect(filteredBuildings.count == 2)
+      #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.middle })
+
+      let buildingNames = filteredBuildings.map(\.name).sorted()
+      #expect(buildingNames == ["Anita B. Lawrence Centre", "Quadrangle"])
+    }
+
+    @Test("Filter buildings returns empty array when no buildings match campus section")
+    func getBuildingsFilteredByEmptyResult() async {
+      // Given - only upper campus buildings
+      let buildings = [
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper
+        Building(name: "AGSM", id: "K-G27", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0), // Upper
+      ]
+
+      let sut = makeSUT(loadBuildings: buildings)
+
+      // When - filter for lower campus
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+
+      // Then
+      guard case .success(let filteredBuildings) = result else {
+        Issue.record("Expected success but got failure")
+        return
+      }
+
+      #expect(filteredBuildings.isEmpty)
+    }
+
+    @Test("Filter buildings returns empty array when input is empty")
+    func getBuildingsFilteredByEmptyInput() async {
+      // Given
+      let sut = makeSUT(loadBuildings: [])
+
+      // When
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+
+      // Then
+      guard case .success(let filteredBuildings) = result else {
+        Issue.record("Expected success but got failure")
+        return
+      }
+
+      #expect(filteredBuildings.isEmpty)
+    }
+
+    @Test("Filter buildings propagates service error")
+    func getBuildingsFilteredPropagatesServiceError() async {
+      // Given
+      let mockLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
+      let buildingService = LiveBuildingService(buildingLoader: mockLoader)
+      let locationManager = MockLocationManager()
+      let locationService = LocationService(locationManager: locationManager)
+      let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+
+      // When
+      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+
+      // Then
+      guard case .failure = result else {
+        Issue.record("Expected failure but got success")
+        return
+      }
+
+      // Test passes if we get here (failure case)
     }
   }
 }

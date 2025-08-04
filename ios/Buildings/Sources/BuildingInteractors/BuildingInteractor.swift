@@ -97,6 +97,17 @@ public class BuildingInteractor {
     }
   }
 
+  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
+      return .success(filtered)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
   // MARK: Private
 
   private let buildingService: BuildingService
