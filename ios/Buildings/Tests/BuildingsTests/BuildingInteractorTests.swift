@@ -325,10 +325,19 @@ enum BuildingInteractorTests {
     func getBuildingsFilteredByLowerCampus() async {
       // Given
       let buildings = [
-        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1), // Lower (F8 = section 8)
-        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3), // Middle (E15 = section 15)
-        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7), // Upper (E19 = section 19)
-        Building(name: "McGill Library", id: "K-F10", latitude: 0, longitude: 0, aliases: ["McGill Lib"], numberOfAvailableRooms: 5), // Lower (F10 = section 10)
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
+        Building(
+          name: "McGill Library",
+          id: "K-F10",
+          latitude: 0,
+          longitude: 0,
+          aliases: ["McGill Lib"],
+          numberOfAvailableRooms: 5), // Lower (F10 = section 10)
       ]
 
       let sut = makeSUT(loadBuildings: buildings)
@@ -353,10 +362,14 @@ enum BuildingInteractorTests {
     func getBuildingsFilteredByUpperCampus() async {
       // Given
       let buildings = [
-        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1), // Lower (F8 = section 8)
-        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3), // Middle (E15 = section 15)
-        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7), // Upper (E19 = section 19)
-        Building(name: "AGSM", id: "K-G27", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0), // Upper (G27 = section 27)
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
+        Building(name: "AGSM", id: "K-G27", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0),
+        // Upper (G27 = section 27)
       ]
 
       let sut = makeSUT(loadBuildings: buildings)
@@ -381,10 +394,19 @@ enum BuildingInteractorTests {
     func getBuildingsFilteredByMiddleCampus() async {
       // Given
       let buildings = [
-        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1), // Lower (F8 = section 8)
-        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3), // Middle (E15 = section 15)
-        Building(name: "Anita B. Lawrence Centre", id: "K-H13", latitude: 0, longitude: 0, aliases: ["The Red Centre"], numberOfAvailableRooms: 6), // Middle (H13 = section 13)
-        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7), // Upper (E19 = section 19)
+        Building(name: "Law Library", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+        // Lower (F8 = section 8)
+        Building(name: "Quadrangle", id: "K-E15", latitude: 0, longitude: 0, aliases: ["Quad"], numberOfAvailableRooms: 3),
+        // Middle (E15 = section 15)
+        Building(
+          name: "Anita B. Lawrence Centre",
+          id: "K-H13",
+          latitude: 0,
+          longitude: 0,
+          aliases: ["The Red Centre"],
+          numberOfAvailableRooms: 6), // Middle (H13 = section 13)
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper (E19 = section 19)
       ]
 
       let sut = makeSUT(loadBuildings: buildings)
@@ -409,7 +431,8 @@ enum BuildingInteractorTests {
     func getBuildingsFilteredByEmptyResult() async {
       // Given - only upper campus buildings
       let buildings = [
-        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7), // Upper
+        Building(name: "Patricia O Shane", id: "K-E19", latitude: 0, longitude: 0, aliases: ["CLB"], numberOfAvailableRooms: 7),
+        // Upper
         Building(name: "AGSM", id: "K-G27", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 0), // Upper
       ]
 
