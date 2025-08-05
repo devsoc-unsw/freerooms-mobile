@@ -7,42 +7,42 @@
 
 import Foundation
 
-public typealias GetRoomsResult = Swift.Result<[Room], FetchRoomsError>
+public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 
-// MARK: - FetchRoomsError
+// MARK: - FetchRoomError
 
-public enum FetchRoomsError: Error, Equatable {
+public enum FetchRoomError: Error, Equatable {
   case connectivity
   case invalidBuildingId
 }
 
-// MARK: - RoomsService
+// MARK: - RoomService
 
-public protocol RoomsService {
-  func getRooms(buildingId: String) async -> GetRoomsResult
+public protocol RoomService {
+  func getRooms(buildingId: String) async -> GetRoomResult
 }
 
-// MARK: - LiveRoomsService
+// MARK: - LiveRoomService
 
-public final class LiveRoomsService: RoomsService {
+public final class LiveRoomService: RoomService {
 
   // MARK: Lifecycle
 
-  public init(roomsLoader: any RoomsLoader) {
-    self.roomsLoader = roomsLoader
+  public init(roomLoader: any RoomLoader) {
+    self.roomLoader = roomLoader
   }
 
   // MARK: Public
 
-  public typealias GetRoomsResult = Swift.Result<[Room], FetchRoomsError>
+  public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 
-  public func getRooms(buildingId: String) async -> GetRoomsResult {
+  public func getRooms(buildingId: String) async -> GetRoomResult {
     // Validate input
     guard !buildingId.isEmpty else {
       return .failure(.invalidBuildingId)
     }
 
-    switch await roomsLoader.fetch(buildingId: buildingId) {
+    switch await roomLoader.fetch(buildingId: buildingId) {
     case .success(let rooms):
       return .success(rooms)
     case .failure:
@@ -52,18 +52,18 @@ public final class LiveRoomsService: RoomsService {
 
   // MARK: Private
 
-  private var roomsLoader: any RoomsLoader
+  private var roomLoader: any RoomLoader
 }
 
-// MARK: - RoomsLoader
+// MARK: - RoomLoader
 
-public protocol RoomsLoader {
-  func fetch(buildingId: String) async -> Result<[Room], RoomsLoaderError>
+public protocol RoomLoader {
+  func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
 }
 
-// MARK: - PreviewRoomsService
+// MARK: - PreviewRoomService
 
-public final class PreviewRoomsService: RoomsService {
+public final class PreviewRoomService: RoomService {
 
   // MARK: Lifecycle
 
@@ -71,7 +71,7 @@ public final class PreviewRoomsService: RoomsService {
 
   // MARK: Public
 
-  public func getRooms(buildingId: String) async -> GetRoomsResult {
+  public func getRooms(buildingId: String) async -> GetRoomResult {
     // Return mock data for previews
     let mockRooms = [
       Room(name: "Ainsworth G03", id: "\(buildingId)-G03", abbreviation: "Mock G03", capacity: 350, usage: "LEC", school: "UNSW"),
@@ -83,9 +83,9 @@ public final class PreviewRoomsService: RoomsService {
   }
 }
 
-// MARK: - RoomsLoaderError
+// MARK: - RoomLoaderError
 
-public enum RoomsLoaderError: Error {
+public enum RoomLoaderError: Error {
   case connectivity
   case noDataAvailable
 }
