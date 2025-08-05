@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 29/4/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 
 public class MockBuildingLoader: BuildingLoader {
 

@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 30/4/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 
 public class MockRemoteBuildingLoader: RemoteBuildingLoader {
 

@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 22/4/2025.
 //
 
+import BuildingModels
 import Foundation
 import Networking
 
@@ -28,7 +29,7 @@ public final class LiveBuildingService: BuildingService {
 
   // MARK: Lifecycle
 
-  init(buildingLoader: any BuildingLoader) {
+  public init(buildingLoader: any BuildingLoader) {
     self.buildingLoader = buildingLoader
   }
 
@@ -48,4 +49,19 @@ public final class LiveBuildingService: BuildingService {
   // MARK: Private
 
   private var buildingLoader: any BuildingLoader
+}
+
+// MARK: - PreviewBuildingService
+
+public final class PreviewBuildingService: BuildingService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getBuildings() async -> GetBuildingsResult {
+    .success([])
+  }
 }

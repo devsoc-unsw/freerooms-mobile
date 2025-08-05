@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 30/6/2025.
 //
 
-import Buildings
+import BuildingModels
+import BuildingServices
 import Testing
 @testable import Persistence
 @testable import TestingSupport

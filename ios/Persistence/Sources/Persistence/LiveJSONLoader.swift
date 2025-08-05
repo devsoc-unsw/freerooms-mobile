@@ -35,7 +35,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
   public typealias Result = Swift.Result<T, JSONLoaderError>
 
   public func load(from fileName: String) -> Result {
-    guard let data = try? fileLoader.loadFile(at: fileName) else {
+    guard let data = try? fileLoader.load(at: fileName) else {
       return .failure(.fileNotFound)
     }
 

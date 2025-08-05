@@ -10,7 +10,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Buildings",
-      targets: ["Buildings", "BuildingViews"]),
+      targets: ["BuildingViews", "BuildingViewModels", "BuildingInteractors", "BuildingServices", "BuildingModels"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
@@ -24,13 +24,31 @@ let package = Package(
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
-      name: "Buildings",
-      dependencies: ["Location", "Networking", "Persistence", "Rooms"]),
-    .target(
       name: "BuildingViews",
-      dependencies: ["Buildings", "CommonUI"],
+      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels"],
       resources: [.process("Resources")]),
+    .target(
+      name: "BuildingViewModels",
+      dependencies: ["BuildingInteractors", "BuildingModels"]),
+    .target(
+      name: "BuildingInteractors",
+      dependencies: ["BuildingServices", "Location"]),
+    .target(
+      name: "BuildingServices",
+      dependencies: ["Networking", "Persistence", "BuildingModels"]),
+    .target(
+      name: "BuildingModels",
+      dependencies: ["Persistence", "Rooms"]),
     .testTarget(
       name: "BuildingsTests",
-      dependencies: ["Buildings", .product(name: "LocationTestsUtils", package: "Location"), "Persistence", "TestingSupport"]),
+      dependencies: [
+        "BuildingViews",
+        "BuildingViewModels",
+        "BuildingInteractors",
+        "BuildingServices",
+        "BuildingModels",
+        "Persistence",
+        "TestingSupport",
+        .product(name: "LocationTestsUtils", package: "Location"),
+      ]),
   ])

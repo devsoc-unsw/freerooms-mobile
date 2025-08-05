@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 30/6/2025.
 //
 
+import BuildingModels
 import Persistence
 
 public struct LiveJSONBuildingLoader: BuildingLoader {

@@ -5,14 +5,18 @@
 //  Created by Anh Nguyen on 27/4/2025.
 //
 
+import BuildingModels
+import BuildingServices
 import Foundation
 import Location
 
-package final class BuildingInteractor {
+// MARK: - BuildingInteractor
+
+public class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  package init(buildingService: BuildingService, locationService: LocationService) {
+  public init(buildingService: BuildingService, locationService: LocationService) {
     self.buildingService = buildingService
     self.locationService = locationService
   }
@@ -87,6 +91,17 @@ package final class BuildingInteractor {
       }
 
       return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
+      return .success(filtered)
 
     case .failure(let error):
       return .failure(error)

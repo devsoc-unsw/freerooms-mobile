@@ -18,7 +18,7 @@ struct MockFileLoader: FileLoader {
     self.fileLoaderError = fileLoaderError
   }
 
-  func loadFile(at _: String) throws -> Data {
+  func load(at _: String) throws -> Data {
     if fileLoaderError != nil {
       throw fileLoaderError!
     }
