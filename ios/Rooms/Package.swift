@@ -12,11 +12,15 @@ let package = Package(
       name: "Rooms",
       targets: ["Rooms", "RoomViews"]),
   ],
+  dependencies: [
+    .package(path: "../Networking"),
+  ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
-      name: "Rooms"),
+      name: "Rooms",
+      dependencies: ["Networking"]),
     .target(
       name: "RoomViews",
       dependencies: ["Rooms"]),
