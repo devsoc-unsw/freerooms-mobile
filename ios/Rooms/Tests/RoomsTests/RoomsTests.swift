@@ -1,5 +1,4 @@
 import Testing
-@testable import Rooms
 
 @Test
 func example() async throws {
