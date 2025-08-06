@@ -18,6 +18,7 @@ let package = Package(
     .package(name: "Location", path: "../Location"),
     .package(name: "CommonUI", path: "../CommonUI"),
     .package(name: "Persistence", path: "../Persistence"),
+    .package(name: "Rooms", path: "../Rooms"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -37,7 +38,7 @@ let package = Package(
       dependencies: ["Networking", "Persistence", "BuildingModels"]),
     .target(
       name: "BuildingModels",
-      dependencies: ["Persistence"]),
+      dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
