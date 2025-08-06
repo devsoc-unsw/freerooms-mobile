@@ -1,11 +1,13 @@
 //
-//  Room.swift
-//  Persistence
+//  RemoteRoom.swift
+//  Rooms
 //
-//  Created by Chris Wong on 26/6/2025.
+//  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
-public struct Room: Equatable {
+import Foundation
+
+public struct RemoteRoom: Codable, Equatable {
   public let name: String
   public let id: String
   public let abbreviation: String
