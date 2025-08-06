@@ -77,35 +77,3 @@ struct LiveRoomLoaderTests {
     }
   }
 }
-
-// MARK: - MockRemoteRoomLoader
-
-private class MockRemoteRoomLoader: RemoteRoomLoader {
-
-  // MARK: Internal
-
-  func stubRemoteRooms(_ remoteRooms: [RemoteRoom], for buildingId: String) {
-    stubbedRemoteRooms[buildingId] = remoteRooms
-  }
-
-  func stubError(_ error: RemoteRoomLoaderError) {
-    stubbedError = error
-  }
-
-  func fetch(buildingId: String) async -> Result<[RemoteRoom], RemoteRoomLoaderError> {
-    if let error = stubbedError {
-      return .failure(error)
-    }
-
-    if let remoteRooms = stubbedRemoteRooms[buildingId] {
-      return .success(remoteRooms)
-    }
-    return .failure(.connectivity)
-  }
-
-  // MARK: Private
-
-  private var stubbedRemoteRooms: [String: [RemoteRoom]] = [:]
-  private var stubbedError: RemoteRoomLoaderError?
-
-}

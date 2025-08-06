@@ -12,8 +12,6 @@ import Testing
 
 struct RoomServiceTests {
 
-  // MARK: - RED Phase: First failing test
-
   @Test("RoomService returns rooms for valid building ID")
   func returnsRoomsForValidBuildingId() async {
     // Given
@@ -136,36 +134,4 @@ struct RoomServiceTests {
       #expect(error == .invalidBuildingId)
     }
   }
-}
-
-// MARK: - MockRoomLoader
-
-private class MockRoomLoader: RoomLoader {
-
-  // MARK: Internal
-
-  func stubRooms(_ rooms: [Room], for buildingId: String) {
-    stubbedRooms[buildingId] = rooms
-  }
-
-  func stubError(_ error: RoomLoaderError) {
-    stubbedError = error
-  }
-
-  func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
-    if let error = stubbedError {
-      return .failure(error)
-    }
-
-    if let rooms = stubbedRooms[buildingId] {
-      return .success(rooms)
-    }
-    return .failure(.noDataAvailable)
-  }
-
-  // MARK: Private
-
-  private var stubbedRooms: [String: [Room]] = [:]
-  private var stubbedError: RoomLoaderError?
-
 }
