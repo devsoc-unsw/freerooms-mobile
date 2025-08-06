@@ -10,7 +10,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(name: "RoomModels", targets: ["RoomModels"]), // Add this product
     .library(name: "RoomViews", targets: ["RoomViews"]), // Add this product
-    .library(name: "Rooms", targets: ["RoomModels", "RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
+    .library(name: "Rooms", targets: ["RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
     // Keep combined if needed
   ],
   dependencies: [
@@ -39,11 +39,6 @@ let package = Package(
     .testTarget(
       name: "RoomsTests",
       dependencies: [
-        "RoomViews",
-        "RoomViewModels",
-        "RoomInteractors",
-        "RoomServices",
         "RoomModels",
-        .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])
