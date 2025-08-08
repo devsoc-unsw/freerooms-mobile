@@ -15,11 +15,11 @@ public enum BuildingLoaderError: Error {
   /// From Networking
   case connectivity
 
-  // From SwiftData
+  /// From SwiftData
   case persistenceError
   case noDataAvailable
 
-  // From JSONLoader
+  /// From JSONLoader
   case fileNotFound
   case malformedJSON
 }
