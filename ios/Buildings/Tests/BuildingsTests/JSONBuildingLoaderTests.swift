@@ -55,7 +55,7 @@ struct JSONBuildingLoaderTests {
     let res = sut.decode(from: "blahblah")
 
     // Then
-    expect(res, toThrow: JSONLoaderError.fileNotFound)
+    expect(res, toThrow: .fileNotFound)
   }
 
   @Test("Live JSON building loader returns error when JSON loader cannot read malformed JSON")
@@ -68,15 +68,15 @@ struct JSONBuildingLoaderTests {
     let res = sut.decode(from: "blahblah")
 
     // Then
-    expect(res, toThrow: JSONLoaderError.malformedJSON)
+    expect(res, toThrow: .malformedJSON)
   }
 
   // MARK: Private
 
-  private func expect(_ res: LiveJSONBuildingLoader.Result, toThrow expected: JSONLoaderError) {
+  private func expect(_ res: LiveJSONBuildingLoader.Result, toThrow expected: BuildingLoaderError) {
     switch res {
     case .failure(let error):
-      #expect(checkErrorEquals(error, equals: expected, as: JSONLoaderError.self) == true)
+      #expect(error == expected)
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }

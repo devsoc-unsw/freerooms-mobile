@@ -12,15 +12,22 @@ import Networking
 // MARK: - BuildingLoaderError
 
 public enum BuildingLoaderError: Error {
+  /// From Networking
   case connectivity
-  case noDataAvailable
+
+  // From SwiftData
   case persistenceError
+  case noDataAvailable
+
+  // From JSONLoader
+  case fileNotFound
+  case malformedJSON
 }
 
 // MARK: - BuildingLoader
 
 public protocol BuildingLoader {
-  func fetch() async -> Result<[Building], Error>
+  func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - RemoteBuildingLoader
@@ -41,7 +48,7 @@ public class LiveBuildingLoader: BuildingLoader {
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<[Building], Error>
+  public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func fetch() async -> Result {
     switch await remoteBuildingLoader.fetch() {
@@ -52,7 +59,7 @@ public class LiveBuildingLoader: BuildingLoader {
       return .success(buildings)
 
     case .failure:
-      return .failure(BuildingLoaderError.connectivity)
+      return .failure(.connectivity)
     }
   }
 

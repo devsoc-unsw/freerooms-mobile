@@ -18,7 +18,7 @@ public struct LiveJSONBuildingLoader: BuildingLoader {
 
   // MARK: Public
 
-  public typealias Result = Swift.Result<[Building], Error>
+  public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func decode(from filename: String) -> Result {
     switch loader.load(from: filename) {
@@ -28,8 +28,11 @@ public struct LiveJSONBuildingLoader: BuildingLoader {
       }
       return .success(buildings)
 
-    case .failure(let failure):
-      return .failure(failure)
+    case .failure(.fileNotFound):
+      return .failure(.fileNotFound)
+
+    case .failure(.malformedJSON):
+      return .failure(.malformedJSON)
     }
   }
 
@@ -41,8 +44,11 @@ public struct LiveJSONBuildingLoader: BuildingLoader {
       }
       return .success(buildings)
 
-    case .failure(let failure):
-      return .failure(failure)
+    case .failure(.fileNotFound):
+      return .failure(.fileNotFound)
+
+    case .failure(.malformedJSON):
+      return .failure(.malformedJSON)
     }
   }
 

@@ -19,7 +19,7 @@ public class MockBuildingLoader: BuildingLoader {
 
   // MARK: Public
 
-  public func fetch() async -> Result<[Building], Error> {
+  public func fetch() async -> Result<[Building], BuildingLoaderError> {
     if buildingLoaderError != nil {
       return .failure(buildingLoaderError!)
     }
