@@ -110,7 +110,7 @@ struct JSONLoaderTests {
     []
     """
 
-  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toThrow _: LiveJSONLoaderError) {
+  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toThrow _: JSONLoaderError) {
     switch res {
     case .failure(let error):
       #expect(error == error)

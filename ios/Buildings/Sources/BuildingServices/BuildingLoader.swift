@@ -12,9 +12,16 @@ import Networking
 // MARK: - BuildingLoaderError
 
 public enum BuildingLoaderError: Error {
+  /// From Networking
   case connectivity
-  case noDataAvailable
+
+  /// From SwiftData
   case persistenceError
+  case noDataAvailable
+
+  /// From JSONLoader
+  case fileNotFound
+  case malformedJSON
 }
 
 // MARK: - BuildingLoader

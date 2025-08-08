@@ -10,6 +10,7 @@ import BuildingServices
 import Foundation
 import Persistence
 import Testing
+import TestingSupport
 
 struct SwiftDataBuildingLoaderTests {
 

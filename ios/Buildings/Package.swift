@@ -19,6 +19,7 @@ let package = Package(
     .package(name: "CommonUI", path: "../CommonUI"),
     .package(name: "Persistence", path: "../Persistence"),
     .package(name: "Rooms", path: "../Rooms"),
+    .package(name: "TestingSupport", path: "../TestingSupport"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -45,6 +46,8 @@ let package = Package(
         "BuildingServices",
         "BuildingInteractors",
         "BuildingModels",
+        "Persistence",
+        "TestingSupport",
         .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])
