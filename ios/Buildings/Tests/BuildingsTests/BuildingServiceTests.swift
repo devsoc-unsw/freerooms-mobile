@@ -72,19 +72,19 @@ struct BuildingServiceTests {
 
   // MARK: Private
 
-  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toThrow _: FetchBuildingsError) {
+  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toThrow expected: FetchBuildingsError) {
     switch res {
     case .failure(let error):
-      #expect(error == error)
+      #expect(error == expected)
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }
   }
 
-  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toFetch _: [Building]) {
+  private func expect(_ res: LiveBuildingService.GetBuildingsResult, toFetch expected: [Building]) {
     switch res {
     case .success(let buildings):
-      #expect(buildings == buildings)
+      #expect(buildings == expected)
     case .failure(let error):
       Issue.record("Expected success but got \(error)")
     }
