@@ -1,5 +1,5 @@
 //
-//  SwiftDataBuildingLoader.swift
+//  LiveSwiftDataBuildingLoader.swift
 //  Buildings
 //
 //  Created by Muqueet Mohsen Chowdhury on 29/6/2025.
@@ -11,26 +11,40 @@ import Persistence
 
 // MARK: - SwiftDataBuildingLoader
 
-public final class SwiftDataBuildingLoader: BuildingLoader {
+public protocol SwiftDataBuildingLoader {
+  func fetch() async -> Result<[Building], BuildingLoaderError>
+  func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError>
+}
+
+// MARK: - LiveSwiftDataBuildingLoader
+
+public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
 
   // MARK: Lifecycle
 
   public init(swiftDataStore: some PersistentStore<SwiftDataBuilding>) {
     self.swiftDataStore = swiftDataStore
   }
-  
-  public func seed(buildings: [Building]) async -> Result<Void, BuildingLoaderError> {
+
+  // MARK: Public
+
+  public func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError> {
     do {
       try swiftDataStore.save(buildings.map {
-        SwiftDataBuilding(name: $0.name, id: $0.id, latitude: $0.latitude, longitude: $0.longitude, aliases: $0.aliases, numberOfAvailableRooms: $0.numberOfAvailableRooms, rooms: [])
+        SwiftDataBuilding(
+          name: $0.name,
+          id: $0.id,
+          latitude: $0.latitude,
+          longitude: $0.longitude,
+          aliases: $0.aliases,
+          numberOfAvailableRooms: $0.numberOfAvailableRooms,
+          rooms: [])
       })
       return .success(())
-    } catch  {
+    } catch {
       return .failure(.persistenceError)
     }
   }
-
-  // MARK: Public
 
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
     do {
