@@ -33,7 +33,7 @@ struct JSONBuildingLoaderTests {
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.decode(from: "blahblah")
+    let res = sut.fetch()
 
     // Then
     let buildings = createBuildings(10)
@@ -48,7 +48,7 @@ struct JSONBuildingLoaderTests {
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.decode(from: "blahblah")
+    let res = sut.fetch()
 
     // Then
     let buildings = [Building]()
@@ -62,7 +62,7 @@ struct JSONBuildingLoaderTests {
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.decode(from: "blahblah")
+    let res = sut.fetch()
 
     // Then
     expect(res, toThrow: .fileNotFound)
@@ -75,7 +75,7 @@ struct JSONBuildingLoaderTests {
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.decode(from: "blahblah")
+    let res = sut.fetch()
 
     // Then
     expect(res, toThrow: .malformedJSON)

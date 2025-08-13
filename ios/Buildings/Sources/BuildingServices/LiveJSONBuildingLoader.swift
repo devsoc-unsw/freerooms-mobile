@@ -12,7 +12,6 @@ import Persistence
 // MARK: - JSONBuildingLoader
 
 public protocol JSONBuildingLoader {
-  func decode(from filename: String) -> Swift.Result<[Building], BuildingLoaderError>
   func fetch() -> Swift.Result<[Building], BuildingLoaderError>
 }
 
@@ -32,22 +31,6 @@ public struct LiveJSONBuildingLoader: JSONBuildingLoader {
 
   public var buildingsSeedJSONPath: String? {
     Bundle.module.path(forResource: "BuildingsSeed", ofType: "json")
-  }
-
-  public func decode(from filename: String) -> Result {
-    switch loader.load(from: filename) {
-    case .success(let decodedBuildings):
-      let buildings = decodedBuildings.data.buildings.map {
-        Building(name: $0.name, id: $0.id, latitude: $0.lat, longitude: $0.long, aliases: $0.aliases)
-      }
-      return .success(buildings)
-
-    case .failure(.fileNotFound):
-      return .failure(.fileNotFound)
-
-    case .failure(.malformedJSON):
-      return .failure(.malformedJSON)
-    }
   }
 
   public func fetch() -> Result {
