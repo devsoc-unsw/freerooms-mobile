@@ -21,8 +21,10 @@ public protocol FileLoader {
 
 // MARK: - LiveFileLoader
 
-struct LiveFileLoader: FileLoader {
-  func load(at path: String) throws -> Data {
+public struct LiveFileLoader: FileLoader {
+  public init() { }
+
+  public func load(at path: String) throws -> Data {
     try Data(contentsOf: URL(fileURLWithPath: path))
   }
 }

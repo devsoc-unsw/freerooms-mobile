@@ -26,7 +26,7 @@ public struct LiveJSONLoader<T: Decodable>: JSONLoader {
 
   // MARK: Lifecycle
 
-  init(using fileLoader: FileLoader = LiveFileLoader()) {
+  public init(using fileLoader: FileLoader = LiveFileLoader()) {
     self.fileLoader = fileLoader
   }
 

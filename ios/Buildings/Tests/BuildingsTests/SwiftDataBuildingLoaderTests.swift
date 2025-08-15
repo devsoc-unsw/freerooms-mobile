@@ -1,5 +1,5 @@
 //
-//  SwiftDataBuildingLoaderTests.swift
+//  LiveSwiftDataBuildingLoaderTests.swift
 //  Buildings
 //
 //  Created by Muqueet Mohsen Chowdhury on 29/6/2025.
@@ -12,16 +12,16 @@ import Persistence
 import Testing
 import TestingSupport
 
-struct SwiftDataBuildingLoaderTests {
+struct LiveSwiftDataBuildingLoaderTests {
 
   // MARK: Internal
 
-  @Test("SwiftDataBuildingLoader fetches three buildings from its store")
-  func fetchBuildingsFromSwiftDataBuildingLoader() async {
+  @Test("LiveSwiftDataBuildingLoader fetches three buildings from its store")
+  func fetchBuildingsFromLiveSwiftDataBuildingLoader() async {
     // Given
     let swiftDataBuildings = createSwiftDataBuildings(3)
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: swiftDataBuildings)
-    let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
+    let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
     let result = await sut.fetch()
@@ -31,11 +31,11 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toFetch: expectedBuildings)
   }
 
-  @Test("SwiftDataBuildingLoader throws noDataAvailable error when its store is empty")
+  @Test("LiveSwiftDataBuildingLoader throws noDataAvailable error when its store is empty")
   func fetchBuildingsThrowsNoDataErrorOnEmptyStore() async {
     // Given
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: [])
-    let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
+    let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
     let result = await sut.fetch()
@@ -44,12 +44,12 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toThrow: BuildingLoaderError.noDataAvailable)
   }
 
-  @Test("SwiftDataBuildingLoader throws persistenceError on store failure")
+  @Test("LiveSwiftDataBuildingLoader throws persistenceError on store failure")
   func fetchBuildingsThrowsPersistenceErrorOnStoreFailure() async {
     // Given
     let mockError = NSError(domain: "TestError", code: 1, userInfo: nil)
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(throws: mockError)
-    let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
+    let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
     let result = await sut.fetch()
@@ -58,11 +58,11 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toThrow: BuildingLoaderError.persistenceError)
   }
 
-  @Test("SwiftDataBuildingLoader returns empty array when no buildings available")
-  func swiftDataBuildingLoaderReturnsEmptyArrayWhenNoBuildings() async {
+  @Test("LiveSwiftDataBuildingLoader returns empty array when no buildings available")
+  func LiveSwiftDataBuildingLoaderReturnsEmptyArrayWhenNoBuildings() async {
     // Given
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: [])
-    let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
+    let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
     let result = await sut.fetch()
@@ -71,12 +71,12 @@ struct SwiftDataBuildingLoaderTests {
     expect(result, toThrow: BuildingLoaderError.noDataAvailable)
   }
 
-  @Test("SwiftDataBuildingLoader returns single building successfully")
-  func swiftDataBuildingLoaderReturnsSingleBuilding() async {
+  @Test("LiveSwiftDataBuildingLoader returns single building successfully")
+  func LiveSwiftDataBuildingLoaderReturnsSingleBuilding() async {
     // Given
     let swiftDataBuildings = createSwiftDataBuildings(1)
     let mockSwiftDataStore = MockSwiftDataStore<SwiftDataBuilding>(loads: swiftDataBuildings)
-    let sut = SwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
+    let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
     let result = await sut.fetch()
