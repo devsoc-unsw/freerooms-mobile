@@ -8,6 +8,8 @@
 import Testing
 @testable import Persistence
 
+// MARK: - JSONLoaderTests
+
 struct JSONLoaderTests {
 
   // MARK: Internal
@@ -66,63 +68,44 @@ struct JSONLoaderTests {
     expect(res, toFetch: emptyDecodeableBuildings)
   }
 
+  @Test("JSON Loader successfully decodes buildings seed JSON")
+  func loadsJSONFromFakeBuildingsSeedJSONSuccessfully() async throws {
+    // Given
+    let mockFileLoader = MockFileLoader(loads: fakeBuildingsSeedJSON)
+    let sut = LiveJSONLoader<DecodableBuildingData>(using: mockFileLoader)
+
+    // When
+    let res = sut.load(from: "fakeFilePath/fake")
+
+    // Then
+    let decodableBuildings = createDecodableBuildings(2)
+    expect(res, toFetch: decodableBuildings)
+  }
+
   // MARK: Private
 
-  private let fakeBuildingsJSON = """
-    [
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          },
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          }
-    ]
-    """
-
-  private let fakeBuildingsMalformedJSON = """
-     "buil [
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          },
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          }
-    ]
-    """
-
-  private let emptyJSON = """
-    []
-    """
-
-  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toThrow _: LiveJSONLoaderError) {
+  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toThrow expected: JSONLoaderError) {
     switch res {
     case .failure(let error):
-      #expect(error == error)
+      #expect(error == expected)
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }
   }
 
-  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toFetch _: [DecodableBuilding]) {
+  private func expect(_ res: LiveJSONLoader<[DecodableBuilding]>.Result, toFetch expected: [DecodableBuilding]) {
     switch res {
     case .success(let buildings):
-      #expect(buildings == buildings)
+      #expect(buildings == expected)
+    case .failure(let error):
+      Issue.record("Expected success but got \(error)")
+    }
+  }
+
+  private func expect(_ res: LiveJSONLoader<DecodableBuildingData>.Result, toFetch expected: [DecodableBuilding]) {
+    switch res {
+    case .success(let decodableBuildingsData):
+      #expect(decodableBuildingsData.data.buildings == expected)
     case .failure(let error):
       Issue.record("Expected success but got \(error)")
     }
@@ -137,3 +120,68 @@ struct JSONLoaderTests {
   }
 
 }
+
+private let fakeBuildingsJSON = """
+  [
+        {
+          "aliases": ["A", "B"],
+          "id": "123",
+          "lat": 1.0,
+          "name": "name",
+          "long": 1.0
+        },
+        {
+          "aliases": ["A", "B"],
+          "id": "123",
+          "lat": 1.0,
+          "name": "name",
+          "long": 1.0
+        }
+  ]
+  """
+
+private let fakeBuildingsMalformedJSON = """
+   "buil [
+        {
+          "aliases": ["A", "B"],
+          "id": "123",
+          "lat": 1.0,
+          "name": "name",
+          "long": 1.0
+        },
+        {
+          "aliases": ["A", "B"],
+          "id": "123",
+          "lat": 1.0,
+          "name": "name",
+          "long": 1.0
+        }
+  ]
+  """
+
+private let emptyJSON = """
+  []
+  """
+
+private let fakeBuildingsSeedJSON = """
+  {
+    "data": {
+      "buildings": [
+          {
+            "aliases": ["A", "B"],
+            "id": "123",
+            "lat": 1.0,
+            "name": "name",
+            "long": 1.0
+          },
+          {
+            "aliases": ["A", "B"],
+            "id": "123",
+            "lat": 1.0,
+            "name": "name",
+            "long": 1.0
+          }
+      ]
+    }
+  }
+  """
