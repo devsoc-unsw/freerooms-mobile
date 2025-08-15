@@ -8,6 +8,7 @@
 import BuildingModels
 import Foundation
 import Networking
+import Persistence
 
 // MARK: - BuildingLoaderError
 
@@ -52,7 +53,7 @@ public class LiveBuildingLoader: BuildingLoader {
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func fetch() async -> Result {
-    let hasSavedData = UserDefaults.standard.bool(forKey: "hasSavedData")
+    let hasSavedData = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedData)
 
     if !hasSavedData {
       switch JSONBuildingLoader.fetch() {
@@ -60,7 +61,7 @@ public class LiveBuildingLoader: BuildingLoader {
         if case .failure(let err) = await swiftDataBuildingLoader.seed(buildings) {
           return .failure(err)
         }
-        UserDefaults.standard.set(true, forKey: "hasSavedData")
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedData)
         return .success(buildings)
 
       case .failure(let err):
