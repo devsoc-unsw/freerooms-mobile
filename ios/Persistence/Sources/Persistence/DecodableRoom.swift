@@ -1,24 +1,24 @@
 //
-//  Room.swift
+//  DecodableRoom.swift
 //  Persistence
 //
-//  Created by Chris Wong on 26/6/2025.
+//  Created by Chris Wong on 15/8/2025.
 //
 
-public struct Room: Equatable, Identifiable, Hashable {
+public struct DecodableRoom: Decodable, Equatable {
 
   // MARK: Lifecycle
 
   public init(
-    abbreviation: String,
+    abbr: String,
     accessibility: String,
-    audioVisual: String,
+    audiovisual: String,
     buildingId: String,
     capacity: Int,
     floor: String,
     id: String,
-    latitude: Double,
-    longitude: Double,
+    lat: Double,
+    long: Double,
     microphone: [String],
     name: String,
     school: String,
@@ -27,15 +27,15 @@ public struct Room: Equatable, Identifiable, Hashable {
     service: [String],
     writingMedia: [String])
   {
-    self.abbreviation = abbreviation
+    self.abbr = abbr
     self.accessibility = accessibility
-    self.audioVisual = audioVisual
+    self.audiovisual = audiovisual
     self.buildingId = buildingId
     self.capacity = capacity
     self.floor = floor
     self.id = id
-    self.latitude = latitude
-    self.longitude = longitude
+    self.lat = lat
+    self.long = long
     self.microphone = microphone
     self.name = name
     self.school = school
@@ -47,15 +47,15 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Public
 
-  public let abbreviation: String
+  public let abbr: String
   public let accessibility: String
-  public let audioVisual: String
+  public let audiovisual: String
   public let buildingId: String
   public let capacity: Int
   public let floor: String
   public let id: String
-  public let latitude: Double
-  public let longitude: Double
+  public let lat: Double
+  public let long: Double
   public let microphone: [String]
   public let name: String
   public let school: String
@@ -63,4 +63,5 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
+
 }
