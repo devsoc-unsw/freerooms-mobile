@@ -5,7 +5,7 @@
 //  Created by Chris Wong on 26/6/2025.
 //
 
-public struct Room: Equatable {
+public struct Room: Equatable, Identifiable, Hashable {
   public let name: String
   public let id: String
   public let abbreviation: String

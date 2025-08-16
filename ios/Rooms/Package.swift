@@ -7,24 +7,34 @@ let package = Package(
   name: "Rooms",
   platforms: [.iOS(.v17)],
   products: [
-    // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(
-      name: "Rooms",
-      targets: ["Rooms", "RoomViews"]),
+    .library(name: "RoomModels", targets: ["RoomModels"]),
+    .library(name: "RoomViews", targets: ["RoomViews"]),
+    .library(name: "Rooms", targets: ["RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels", "RoomModels"]),
   ],
   dependencies: [
     .package(path: "../Networking"),
+    .package(path: "../Location"),
+    .package(path: "../CommonUI"),
+    .package(path: "../Persistence"),
   ],
   targets: [
-    // Targets are the basic building blocks of a package, defining a module or a test suite.
-    // Targets can depend on other targets in this package and products from dependencies.
-    .target(
-      name: "Rooms",
-      dependencies: ["Networking"]),
     .target(
       name: "RoomViews",
-      dependencies: ["Rooms"]),
+      dependencies: ["RoomModels", "CommonUI"],
+      resources: [.process("Resources")]),
+    .target(
+      name: "RoomViewModels",
+      dependencies: ["RoomInteractors", "RoomModels"]),
+    .target(
+      name: "RoomInteractors",
+      dependencies: ["RoomServices", "Location"]),
+    .target(
+      name: "RoomServices",
+      dependencies: ["Networking", "Persistence", "RoomModels"]),
+    .target(name: "RoomModels", dependencies: ["Networking"]),
     .testTarget(
       name: "RoomsTests",
-      dependencies: ["Rooms"]),
+      dependencies: [
+        "RoomModels",
+      ]),
   ])

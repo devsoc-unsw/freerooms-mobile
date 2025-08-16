@@ -8,13 +8,21 @@
 import BuildingModels
 import Foundation
 import Networking
+import Persistence
 
 // MARK: - BuildingLoaderError
 
 public enum BuildingLoaderError: Error {
+  /// From Networking
   case connectivity
-  case noDataAvailable
+
+  /// From SwiftData
   case persistenceError
+  case noDataAvailable
+
+  /// From JSONLoader
+  case fileNotFound
+  case malformedJSON
 }
 
 // MARK: - BuildingLoader
@@ -35,8 +43,9 @@ public class LiveBuildingLoader: BuildingLoader {
 
   // MARK: Lifecycle
 
-  public init(remoteBuildingLoader: RemoteBuildingLoader) {
-    self.remoteBuildingLoader = remoteBuildingLoader
+  public init(swiftDataBuildingLoader: SwiftDataBuildingLoader, JSONBuildingLoader: JSONBuildingLoader) {
+    self.swiftDataBuildingLoader = swiftDataBuildingLoader
+    self.JSONBuildingLoader = JSONBuildingLoader
   }
 
   // MARK: Public
@@ -44,21 +53,34 @@ public class LiveBuildingLoader: BuildingLoader {
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func fetch() async -> Result {
-    switch await remoteBuildingLoader.fetch() {
-    case .success(let remoteBuildings):
-      let buildings = remoteBuildings.map {
-        Building(name: $0.name, id: $0.id, latitude: $0.latitude, longitude: $0.longitude, aliases: $0.aliases)
-      }
-      return .success(buildings)
+    let hasSavedData = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedData)
 
-    case .failure:
-      return .failure(.connectivity)
+    if !hasSavedData {
+      switch JSONBuildingLoader.fetch() {
+      case .success(let buildings):
+        if case .failure(let err) = await swiftDataBuildingLoader.seed(buildings) {
+          return .failure(err)
+        }
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedData)
+        return .success(buildings)
+
+      case .failure(let err):
+        return .failure(err)
+      }
+    } else {
+      switch await swiftDataBuildingLoader.fetch() {
+      case .success(let buildings):
+        return .success(buildings)
+      case .failure(let err):
+        return .failure(err)
+      }
     }
   }
 
   // MARK: Private
 
-  private let remoteBuildingLoader: RemoteBuildingLoader
+  private let swiftDataBuildingLoader: SwiftDataBuildingLoader
+  private let JSONBuildingLoader: JSONBuildingLoader
 
 }
 

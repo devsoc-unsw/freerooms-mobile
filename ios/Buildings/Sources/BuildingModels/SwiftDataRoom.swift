@@ -7,7 +7,7 @@
 
 import Foundation
 import Persistence
-import Rooms
+import RoomModels
 import SwiftData
 
 /// A SwiftData model representing a room, linked to a building and used for persistence.

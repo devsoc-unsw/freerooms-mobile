@@ -21,7 +21,7 @@ public class MockBuildingLoader: BuildingLoader {
 
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
     if buildingLoaderError != nil {
-      return .failure(.connectivity)
+      return .failure(buildingLoaderError!)
     }
 
     return .success(buildings)
