@@ -34,11 +34,14 @@ let package = Package(
       dependencies: ["RoomServices", "Location"]),
     .target(
       name: "RoomServices",
-      dependencies: ["Networking", "Persistence", "RoomModels"]),
+      dependencies: ["Networking", "Persistence", "RoomModels"],
+      resources: [.process("Resources")]),
     .target(name: "RoomModels", dependencies: ["Persistence"]),
     .testTarget(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        "Persistence",
+        "RoomServices",
       ]),
   ])
