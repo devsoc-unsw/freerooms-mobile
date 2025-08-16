@@ -20,21 +20,39 @@ let package = Package(
   targets: [
     .target(
       name: "RoomViews",
-      dependencies: ["RoomModels", "CommonUI"],
+      dependencies: [
+        "RoomModels",
+        .product(name: "CommonUI", package: "CommonUI"),
+      ],
       resources: [.process("Resources")]),
     .target(
       name: "RoomViewModels",
-      dependencies: ["RoomInteractors", "RoomModels"]),
+      dependencies: [
+        "RoomInteractors",
+        "RoomModels",
+      ]),
     .target(
       name: "RoomInteractors",
-      dependencies: ["RoomServices", "Location"]),
+      dependencies: [
+        "RoomServices",
+        .product(name: "Location", package: "Location"),
+      ]),
     .target(
       name: "RoomServices",
-      dependencies: ["Networking", "Persistence", "RoomModels"]),
-    .target(name: "RoomModels", dependencies: ["Networking"]),
+      dependencies: [
+        .product(name: "Networking", package: "Networking"),
+        .product(name: "Persistence", package: "Persistence"),
+        "RoomModels",
+      ]),
+    .target(
+      name: "RoomModels",
+      dependencies: [
+        .product(name: "Networking", package: "Networking"),
+      ]),
     .testTarget(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        .product(name: "Networking", package: "Networking"),
       ]),
   ])

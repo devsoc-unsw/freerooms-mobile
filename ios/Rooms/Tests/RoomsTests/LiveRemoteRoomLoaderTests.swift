@@ -8,7 +8,7 @@
 import Foundation
 import Networking
 import Testing
-@testable import Rooms
+@testable import RoomModels
 
 // MARK: - LiveRemoteRoomLoaderTests
 

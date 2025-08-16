@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import Rooms
+@testable import RoomModels
 
 // MARK: - MockRoomLoader
 

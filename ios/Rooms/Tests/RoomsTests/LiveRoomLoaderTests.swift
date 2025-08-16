@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import Rooms
+@testable import RoomModels
 
 // MARK: - LiveRoomLoaderTests
 
