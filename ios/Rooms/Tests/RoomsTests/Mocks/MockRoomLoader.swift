@@ -11,30 +11,30 @@ import Foundation
 // MARK: - MockRoomLoader
 
 public class MockRoomLoader: RoomLoader {
-  
-  // MARK: Internal
-  
+
+  // MARK: Public
+
   public func stubRooms(_ rooms: [Room], for buildingId: String) {
     stubbedRooms[buildingId] = rooms
   }
-  
+
   public func stubError(_ error: RoomLoaderError) {
     stubbedError = error
   }
-  
+
   public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
     if let error = stubbedError {
       return .failure(error)
     }
-    
+
     if let rooms = stubbedRooms[buildingId] {
       return .success(rooms)
     }
     return .failure(.noDataAvailable)
   }
-  
+
   // MARK: Private
-  
+
   private var stubbedRooms: [String: [Room]] = [:]
   private var stubbedError: RoomLoaderError?
-} 
+}
