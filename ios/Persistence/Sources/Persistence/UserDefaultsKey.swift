@@ -6,5 +6,6 @@
 //
 
 public enum UserDefaultsKeys {
-  public static let hasSavedData = "hasSavedData"
+  public static let hasSavedBuildingsData = "hasSavedBuildingsData"
+  public static let hasSavedRoomsData = "hasSavedRoomsData"
 }
