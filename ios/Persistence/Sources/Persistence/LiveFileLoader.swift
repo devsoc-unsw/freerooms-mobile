@@ -16,13 +16,15 @@ public enum FileLoaderError: Error {
 // MARK: - FileLoader
 
 public protocol FileLoader {
-  func loadFile(at path: String) throws -> Data
+  func load(at path: String) throws -> Data
 }
 
 // MARK: - LiveFileLoader
 
-struct LiveFileLoader: FileLoader {
-  func loadFile(at path: String) throws -> Data {
+public struct LiveFileLoader: FileLoader {
+  public init() { }
+
+  public func load(at path: String) throws -> Data {
     try Data(contentsOf: URL(fileURLWithPath: path))
   }
 }

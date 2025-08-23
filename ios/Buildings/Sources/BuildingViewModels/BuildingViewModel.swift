@@ -76,6 +76,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 }
 
 // MARK: - PreviewBuildingViewModel
+
 @Observable
 // swiftlint:disable:next no_unchecked_sendable
 public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendable {

@@ -6,11 +6,14 @@
 //
 
 import BuildingInteractors
+import BuildingModels
 import BuildingServices
 import BuildingViewModels
 import BuildingViews
 import CommonUI
 import Location
+import Persistence
+import SwiftData
 import SwiftUI
 
 // MARK: - FreeroomsApp
@@ -41,14 +44,28 @@ struct FreeroomsApp: App {
     let locationManager = LiveLocationManager()
     let locationService = LocationService(locationManager: locationManager)
 
-    // TODO: Replace with actual API endpoint
-    let remoteBuildingLoader = LiveRemoteBuildingLoader(url: URL(string: "/api/buildings")!)
-    let buildingLoader = LiveBuildingLoader(remoteBuildingLoader: remoteBuildingLoader)
-    let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+    let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<DecodableBuildingData>())
 
-    let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+    do {
+      let schema = Schema([SwiftDataBuilding.self])
+      let modelConfiguration = ModelConfiguration(schema: schema)
+      let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+      let modelContext = ModelContext(modelContainer)
+      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
+      let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-    return LiveBuildingViewModel(interactor: interactor)
+      let buildingLoader = LiveBuildingLoader(
+        swiftDataBuildingLoader: swiftDataBuildingLoader,
+        JSONBuildingLoader: JSONBuildingLoader)
+
+      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+
+      let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+
+      return LiveBuildingViewModel(interactor: interactor)
+    } catch {
+      fatalError("Failed to create LiveBuildingViewModel: \(error)")
+    }
   }
 
   // MARK: Private
