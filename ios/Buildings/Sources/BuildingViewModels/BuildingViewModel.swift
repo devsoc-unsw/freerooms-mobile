@@ -17,6 +17,8 @@ import Observation
 public protocol BuildingViewModel {
   var upperCampusBuildings: [Building] { get set }
 
+  var lowerCampusBuildings: [Building] { get }
+
   var middleCampusBuildings: [Building] { get }
 
   var buildingsInAscendingOrder: Bool { get }
@@ -30,7 +32,6 @@ public protocol BuildingViewModel {
 }
 
 // MARK: - LiveBuildingViewModel
-
 @Observable
 // swiftlint:disable:next no_unchecked_sendable
 public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
@@ -45,9 +46,11 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public var upperCampusBuildings: [Building] = []
 
+  public var lowerCampusBuildings: [Building] = []
+
   public var middleCampusBuildings: [Building] = []
 
-  public var buildingsInAscendingOrder = true
+  public var buildingsInAscendingOrder = false
 
   public var isLoading = false
 
@@ -55,11 +58,59 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading
   }
 
-  public func onAppear() { }
+  public func onAppear() {
+    // Load buildings when the view appears
+    Task {
+      await loadBuildings()
+    }
+  }
+
+  /// New method to load buildings asynchronously
+  public func loadBuildings() async {
+    isLoading = true
+
+    // Load all campus sections concurrently
+    async let upperResult = await interactor.getBuildingsFilteredByCampusSection(.upper)
+    async let lowerResult = await interactor.getBuildingsFilteredByCampusSection(.lower)
+    async let middleResult = await interactor.getBuildingsFilteredByCampusSection(.middle)
+
+    // Wait for all results
+    let results = await (upperResult, lowerResult, middleResult)
+
+    switch results.0 {
+    case .success(let buildings):
+      upperCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading upper campus buildings: \(error)")
+    }
+
+    switch results.1 {
+    case .success(let buildings):
+      lowerCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading lower campus buildings: \(error)")
+    }
+
+    switch results.2 {
+    case .success(let buildings):
+      middleCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading middle campus buildings: \(error)")
+    }
+
+    isLoading = false
+  }
 
   public func getBuildingsInOrder() {
     isLoading = true
     buildingsInAscendingOrder.toggle()
+
+    upperCampusBuildings = sortBuildingsInOrder(buildings: upperCampusBuildings, order: buildingsInAscendingOrder)
+    lowerCampusBuildings = sortBuildingsInOrder(buildings: lowerCampusBuildings, order: buildingsInAscendingOrder)
+    middleCampusBuildings = sortBuildingsInOrder(buildings: middleCampusBuildings, order: buildingsInAscendingOrder)
 
     // Simulate delay from fetching buildings
     DispatchQueue.main.async { [weak self] in
@@ -69,9 +120,15 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     }
   }
 
-  // MARK: Internal
+  // MARK: Private
 
-  var interactor: BuildingInteractor
+  private var interactor: BuildingInteractor
+
+  private func sortBuildingsInOrder(buildings: [Building], order: Bool) -> [Building] {
+    buildings.sorted { a, b in
+      order ? a.name < b.name : a.name > b.name
+    }
+  }
 
 }
 
@@ -85,29 +142,5 @@ public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendabl
     super.init(interactor: BuildingInteractor(
       buildingService: PreviewBuildingService(),
       locationService: LocationService(locationManager: LiveLocationManager())))
-    upperCampusBuildings = [
-      Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
-      Building(
-        name: "Biological Sciences (West)",
-        id: "K-E10",
-        latitude: 0,
-        longitude: 0,
-        aliases: [],
-        numberOfAvailableRooms: 3),
-      Building(name: "Matthews Building", id: "K-E12", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
-    ]
-    middleCampusBuildings = [
-      Building(name: "AGSM", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      Building(name: "Biological Sciences", id: "K-F10", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
-      Building(
-        name: "Biological Sciences (West)",
-        id: "K-F12",
-        latitude: 0,
-        longitude: 0,
-        aliases: [],
-        numberOfAvailableRooms: 3),
-      Building(name: "Matthews Building", id: "K-F13", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
-    ]
   }
 }
