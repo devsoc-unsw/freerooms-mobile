@@ -82,7 +82,14 @@ public struct BuildingsTabView: View {
   func buildingsView(for campus: String, from buildings: [Building]) -> some View {
     Section {
       ForEach(buildings) { building in
-        BuildingListRowView(path: $path, rowHeight: $rowHeight, building: building, buildings: buildings)
+        GenericListRowView(
+          path: $path,
+          rowHeight: $rowHeight,
+          building: building,
+          buildings: buildings,
+          imageProvider: { buildingID in
+            BuildingImage[buildingID] // This closure captures BuildingImage
+          })
           .padding(.vertical, 5)
       }
     } header: {

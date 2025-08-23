@@ -10,13 +10,16 @@ import SwiftUI
 
 // MARK: - HeightPreferenceKey
 
-private struct HeightPreferenceKey: PreferenceKey {
-  static let defaultValue: CGFloat = 0
+public struct HeightPreferenceKey: PreferenceKey {
+  public static let defaultValue: CGFloat = 0
 
-  static func reduce(
-    value _: inout CGFloat,
-    nextValue _: () -> CGFloat)
-  { }
+  public static func reduce(
+    value: inout CGFloat,
+    nextValue: () -> CGFloat)
+  {
+    // Take the maximum height from all child views
+    value = max(value, nextValue())
+  }
 }
 
 // MARK: - HasName
@@ -29,22 +32,24 @@ public protocol HasName {
 
 extension Room: HasName { }
 
-// MARK: - ItemDataRow
+// MARK: - Building + HasName
 
-struct ItemDataRow<T: Equatable & Hashable & Identifiable & HasName>: View {
+extension Building: HasName { }
+
+// MARK: - GenericItemDataRow
+
+public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasName>: View {
 
   // MARK: Lifecycle
 
-  init(rowHeight: Binding<CGFloat?>, item: T) {
+  public init(rowHeight: Binding<CGFloat?>, item: T) {
     _rowHeight = rowHeight
     self.item = item
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  @Binding var rowHeight: CGFloat?
-
-  var body: some View {
+  public var body: some View {
     HStack(spacing: 0) {
       VStack(alignment: .leading) {
         Text(item.name)
@@ -84,6 +89,8 @@ struct ItemDataRow<T: Equatable & Hashable & Identifiable & HasName>: View {
 
   @Environment(Theme.self) private var theme
 
+  @Binding private var rowHeight: CGFloat?
+
   private let item: T
 
 }
@@ -91,7 +98,7 @@ struct ItemDataRow<T: Equatable & Hashable & Identifiable & HasName>: View {
 #Preview {
   @Previewable @State var height: CGFloat? = nil
 
-  ItemDataRow(
+  GenericItemDataRow(
     rowHeight: $height,
     item: Room(name: "Room 101", id: "K-101", abbreviation: "T-101", capacity: 20, usage: "Classroom", school: "UNSW"))
     .defaultTheme()

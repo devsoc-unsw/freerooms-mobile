@@ -25,12 +25,14 @@ public struct RoomsTabView: View {
       List {
         Section {
           ForEach(rooms) { room in
-            GenericListRowView<Room>(
+            GenericListRowView(
               path: $path,
               rowHeight: $rowHeight,
-              item: room,
-              items: rooms,
-              bundle: .module)
+              room: room,
+              rooms: rooms,
+              imageProvider: { roomID in
+                RoomImage[roomID] // This closure captures RoomImage
+              })
               .padding(.vertical, 5)
           }
         }
@@ -77,9 +79,9 @@ public struct RoomsTabView: View {
   let rooms: [Room] = [
     Room(name: "Ainsworth 101", id: "K-B16", abbreviation: "A-101", capacity: 10, usage: "Goon", school: "UNSW"),
     Room(name: "Ainsworth 201", id: "K-C20", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 301", id: "K-B16", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 401", id: "K-B16", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 501", id: "K-B16", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
+    Room(name: "Ainsworth 301", id: "K-B17", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
+    Room(name: "Ainsworth 401", id: "K-B18", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
+    Room(name: "Ainsworth 501", id: "K-B19", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
   ]
 
   // MARK: Private
