@@ -33,7 +33,6 @@ struct ContentView: View {
   // MARK: Private
 
   @Environment(Theme.self) private var theme
-
 }
 
 extension EnvironmentValues {
