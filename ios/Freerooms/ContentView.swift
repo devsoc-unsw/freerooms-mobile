@@ -8,6 +8,7 @@
 import BuildingViewModels
 import BuildingViews
 import CommonUI
+import RoomViewModels
 import RoomViews
 import SwiftUI
 
@@ -18,14 +19,15 @@ struct ContentView: View {
 
   // MARK: Internal
 
-  @Environment(\.buildingViewModel) var viewModel
+  @Environment(\.buildingViewModel) var buildingViewModel
+  @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(viewModel: viewModel)
+      BuildingsTabView(viewModel: buildingViewModel)
 
-      RoomsTabView()
+      RoomsTabView(viewModel: roomViewModel)
     }
     .tint(theme.accent.primary)
   }
@@ -37,10 +39,12 @@ struct ContentView: View {
 
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+  @Entry var roomViewModel = LiveRoomViewModel()
 }
 
 #Preview {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(\.roomViewModel, LiveRoomViewModel())
 }

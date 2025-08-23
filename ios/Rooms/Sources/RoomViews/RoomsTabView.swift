@@ -7,6 +7,7 @@
 
 import CommonUI
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - RoomsTabView
@@ -16,26 +17,16 @@ public struct RoomsTabView: View {
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
-  public init() { }
+  public init(viewModel: RoomViewModel) {
+    self.viewModel = viewModel
+  }
 
   // MARK: Public
 
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        Section {
-          ForEach(rooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: rooms,
-              imageProvider: { roomID in
-                RoomImage[roomID] // This closure captures RoomImage
-              })
-              .padding(.vertical, 5)
-          }
-        }
+        roomsView(viewModel.rooms)
       }
       .background(Color.gray.opacity(0.1))
       .padding(.top, 1)
@@ -60,8 +51,14 @@ public struct RoomsTabView: View {
         .navigationTitle(room.name)
         .navigationBarTitleDisplayMode(.inline)
       }
+      .onAppear(perform: viewModel.onAppear)
       .navigationTitle("Rooms")
       .searchable(text: $searchText, prompt: "Search...")
+    }
+    .overlay(alignment: .bottom) {
+      Button("Rooms in ascending order: \(viewModel.roomsInAscendingOrder)", action: viewModel.getRoomsInOrder)
+        .buttonStyle(.borderedProminent)
+        .padding(.bottom)
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -71,18 +68,27 @@ public struct RoomsTabView: View {
 
   // MARK: Internal
 
-  @State var selectedTab = "Buildings"
+  @State var viewModel: RoomViewModel
+  @State var selectedTab = "Rooms"
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
   @State var searchText = ""
 
-  let rooms: [Room] = [
-    Room(name: "Ainsworth 101", id: "K-B16", abbreviation: "A-101", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 201", id: "K-C20", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 301", id: "K-B17", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 401", id: "K-B18", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 501", id: "K-B19", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-  ]
+  func roomsView(_ rooms: [Room]) -> some View {
+    Section {
+      ForEach(rooms) { room in
+        GenericListRowView(
+          path: $path,
+          rowHeight: $rowHeight,
+          room: room,
+          rooms: rooms,
+          imageProvider: { roomID in
+            RoomImage[roomID] // This closure captures RoomImage
+          })
+          .padding(.vertical, 5)
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -91,6 +97,6 @@ public struct RoomsTabView: View {
 }
 
 #Preview {
-  RoomsTabView()
+  RoomsTabView(viewModel: LiveRoomViewModel())
     .defaultTheme()
 }

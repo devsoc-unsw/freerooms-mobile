@@ -110,10 +110,8 @@ public struct BuildingsTabView: View {
   // MARK: Internal
 
   @State var viewModel: BuildingViewModel
-
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
-
   @State var searchText = ""
 
   func buildingsView(for campus: String, from buildings: [Building]) -> some View {

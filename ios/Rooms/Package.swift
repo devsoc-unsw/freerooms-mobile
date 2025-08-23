@@ -21,7 +21,7 @@ let package = Package(
     .target(
       name: "RoomViews",
       dependencies: [
-        "RoomModels",
+        "RoomModels", "RoomViewModels",
         .product(name: "CommonUI", package: "CommonUI"),
       ],
       resources: [.process("Resources")]),
