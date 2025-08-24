@@ -39,7 +39,7 @@ struct ContentView: View {
 
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
-  @Entry var roomViewModel = LiveRoomViewModel()
+  @Entry var roomViewModel: LiveRoomViewModel = LiveRoomViewModel()
 }
 
 #Preview {

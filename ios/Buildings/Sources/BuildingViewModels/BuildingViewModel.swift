@@ -65,8 +65,8 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     }
   }
 
-  /// New method to load buildings asynchronously
-  public func loadBuildings() async {
+  /// Load buildings asynchronously
+  private func loadBuildings() async {
     isLoading = true
 
     // Load all campus sections concurrently

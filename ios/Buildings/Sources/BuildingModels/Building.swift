@@ -7,15 +7,9 @@
 
 import Foundation
 
-// MARK: - HasName
-
-public protocol HasName {
-  var name: String { get }
-}
-
 // MARK: - Building
 
-public struct Building: Equatable, Identifiable, Hashable, HasName {
+public struct Building: Equatable, Identifiable, Hashable {
 
   // MARK: Lifecycle
 
