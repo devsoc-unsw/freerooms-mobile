@@ -11,6 +11,7 @@ import Foundation
 import Persistence
 import Testing
 import TestingSupport
+@testable import PersistenceTestUtils
 
 struct LiveSwiftDataBuildingLoaderTests {
 
