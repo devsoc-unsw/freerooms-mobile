@@ -147,7 +147,7 @@ class BuildingLoaderTests {
     // Given
     let realBuildings = createRealBuildings()
     let liveFileLoader = LiveFileLoader()
-    let liveJSONLoader = LiveJSONLoader<DecodableBuildingData>(using: liveFileLoader)
+    let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     let schema = Schema([SwiftDataBuilding.self])
@@ -174,7 +174,7 @@ class BuildingLoaderTests {
     // Given
     let realBuildings = createRealBuildings()
     let liveFileLoader = LiveFileLoader()
-    let liveJSONLoader = LiveJSONLoader<DecodableBuildingData>(using: liveFileLoader)
+    let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     let schema = Schema([SwiftDataBuilding.self])

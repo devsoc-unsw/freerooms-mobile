@@ -72,7 +72,7 @@ struct JSONLoaderTests {
   func loadsJSONFromFakeBuildingsSeedJSONSuccessfully() async throws {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsSeedJSON)
-    let sut = LiveJSONLoader<DecodableBuildingData>(using: mockFileLoader)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
@@ -97,15 +97,6 @@ struct JSONLoaderTests {
     switch res {
     case .success(let buildings):
       #expect(buildings == expected)
-    case .failure(let error):
-      Issue.record("Expected success but got \(error)")
-    }
-  }
-
-  private func expect(_ res: LiveJSONLoader<DecodableBuildingData>.Result, toFetch expected: [DecodableBuilding]) {
-    switch res {
-    case .success(let decodableBuildingsData):
-      #expect(decodableBuildingsData.data.buildings == expected)
     case .failure(let error):
       Issue.record("Expected success but got \(error)")
     }

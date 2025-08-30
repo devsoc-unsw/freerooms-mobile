@@ -21,7 +21,7 @@ public struct LiveJSONBuildingLoader: JSONBuildingLoader {
 
   // MARK: Lifecycle
 
-  public init(using loader: any JSONLoader<DecodableBuildingData>) {
+  public init(using loader: any JSONLoader<[DecodableBuilding]>) {
     self.loader = loader
   }
 
@@ -40,7 +40,7 @@ public struct LiveJSONBuildingLoader: JSONBuildingLoader {
 
     switch loader.load(from: buildingsSeedJSONPath) {
     case .success(let JSONBuildingsResponse):
-      let buildings = JSONBuildingsResponse.data.buildings.map {
+      let buildings = JSONBuildingsResponse.map {
         Building(name: $0.name, id: $0.id, latitude: $0.lat, longitude: $0.long, aliases: $0.aliases)
       }
       return .success(buildings)
@@ -55,6 +55,6 @@ public struct LiveJSONBuildingLoader: JSONBuildingLoader {
 
   // MARK: Private
 
-  private let loader: any JSONLoader<DecodableBuildingData>
+  private let loader: any JSONLoader<[DecodableBuilding]>
 
 }
