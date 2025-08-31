@@ -35,7 +35,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
       // Then
       let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
@@ -74,7 +74,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
       // Then
 
@@ -114,7 +114,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
+      let result = sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
 
       // Then
 
@@ -134,7 +134,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
 
       // Then
       guard case .success(let buildings) = result else {
@@ -171,7 +171,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
+      let result = sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
 
       // Then
       let expectedOrder = ["Law Library", "Quadrangle", "McGill Library", "Main Library", "Patricia O Shane"]
@@ -192,7 +192,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
+      let result = sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
 
       // Then
       guard case .success(let buildings) = result else {
@@ -240,7 +240,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
+      let result = sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
 
       // Then
       let expectedOrder = [
@@ -298,7 +298,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: true)
+      let result = sut.getBuildingsSortedAlphabetically(inAscendingOrder: true)
 
       // Then
       let expectedOrder = [
@@ -343,7 +343,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
 
       // Then
       guard case .success(let filteredBuildings) = result else {
@@ -375,7 +375,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.upper)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.upper)
 
       // Then
       guard case .success(let filteredBuildings) = result else {
@@ -412,7 +412,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.middle)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.middle)
 
       // Then
       guard case .success(let filteredBuildings) = result else {
@@ -439,7 +439,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When - filter for lower campus
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
 
       // Then
       guard case .success(let filteredBuildings) = result else {
@@ -456,7 +456,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
 
       // Then
       guard case .success(let filteredBuildings) = result else {
@@ -477,7 +477,7 @@ enum BuildingInteractorTests {
       let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let result = sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
 
       // Then
       guard case .failure = result else {

@@ -12,8 +12,8 @@ import Persistence
 // MARK: - SwiftDataBuildingLoader
 
 public protocol SwiftDataBuildingLoader {
-  func fetch() async -> Result<[Building], BuildingLoaderError>
-  func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError>
+  func fetch() -> Result<[Building], BuildingLoaderError>
+  func seed(_ buildings: [Building]) -> Result<Void, BuildingLoaderError>
 }
 
 // MARK: - LiveSwiftDataBuildingLoader
@@ -28,7 +28,7 @@ public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
 
   // MARK: Public
 
-  public func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError> {
+  public func seed(_ buildings: [Building]) -> Result<Void, BuildingLoaderError> {
     do {
       try swiftDataStore.save(buildings.map {
         SwiftDataBuilding(
@@ -46,7 +46,7 @@ public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
     }
   }
 
-  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+  public func fetch() -> Result<[Building], BuildingLoaderError> {
     do {
       let swiftDataBuildings = try swiftDataStore.fetchAll()
 

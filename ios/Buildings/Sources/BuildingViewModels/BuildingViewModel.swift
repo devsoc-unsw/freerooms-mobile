@@ -32,6 +32,7 @@ public protocol BuildingViewModel {
 }
 
 // MARK: - LiveBuildingViewModel
+
 @Observable
 // swiftlint:disable:next no_unchecked_sendable
 public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
@@ -60,22 +61,20 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public func onAppear() {
     // Load buildings when the view appears
-    Task {
-      await loadBuildings()
-    }
+    loadBuildings()
   }
 
   /// New method to load buildings asynchronously
-  public func loadBuildings() async {
+  public func loadBuildings() {
     isLoading = true
 
     // Load all campus sections concurrently
-    async let upperResult = await interactor.getBuildingsFilteredByCampusSection(.upper)
-    async let lowerResult = await interactor.getBuildingsFilteredByCampusSection(.lower)
-    async let middleResult = await interactor.getBuildingsFilteredByCampusSection(.middle)
+    let upperResult = interactor.getBuildingsFilteredByCampusSection(.upper)
+    let lowerResult = interactor.getBuildingsFilteredByCampusSection(.lower)
+    let middleResult = interactor.getBuildingsFilteredByCampusSection(.middle)
 
     // Wait for all results
-    let results = await (upperResult, lowerResult, middleResult)
+    let results = (upperResult, lowerResult, middleResult)
 
     switch results.0 {
     case .success(let buildings):

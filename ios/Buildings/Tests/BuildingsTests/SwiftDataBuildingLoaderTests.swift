@@ -24,7 +24,7 @@ struct LiveSwiftDataBuildingLoaderTests {
     let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
-    let result = await sut.fetch()
+    let result = sut.fetch()
 
     // Then
     let expectedBuildings = createBuildings(3)
@@ -38,7 +38,7 @@ struct LiveSwiftDataBuildingLoaderTests {
     let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
-    let result = await sut.fetch()
+    let result = sut.fetch()
 
     // Then
     expect(result, toThrow: BuildingLoaderError.noDataAvailable)
@@ -52,7 +52,7 @@ struct LiveSwiftDataBuildingLoaderTests {
     let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
-    let result = await sut.fetch()
+    let result = sut.fetch()
 
     // Then
     expect(result, toThrow: BuildingLoaderError.persistenceError)
@@ -65,7 +65,7 @@ struct LiveSwiftDataBuildingLoaderTests {
     let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
-    let result = await sut.fetch()
+    let result = sut.fetch()
 
     // Then
     expect(result, toThrow: BuildingLoaderError.noDataAvailable)
@@ -79,7 +79,7 @@ struct LiveSwiftDataBuildingLoaderTests {
     let sut = LiveSwiftDataBuildingLoader(swiftDataStore: mockSwiftDataStore)
 
     // When
-    let result = await sut.fetch()
+    let result = sut.fetch()
 
     // Then
     let expectedBuildings = createBuildings(1)
