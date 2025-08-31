@@ -7,6 +7,7 @@
 
 import Testing
 @testable import RoomModels
+@testable import RoomTestUtils
 
 // MARK: - RoomServiceTests
 

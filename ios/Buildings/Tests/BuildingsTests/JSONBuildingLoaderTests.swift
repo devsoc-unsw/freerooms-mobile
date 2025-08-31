@@ -9,7 +9,7 @@ import BuildingModels
 import Testing
 @testable import BuildingServices
 @testable import Persistence
-@testable import TestingSupport
+@testable import PersistenceTestUtils
 
 struct JSONBuildingLoaderTests {
 

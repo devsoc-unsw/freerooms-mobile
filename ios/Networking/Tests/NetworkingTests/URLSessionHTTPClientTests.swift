@@ -8,6 +8,7 @@
 import Foundation
 import Networking
 import Testing
+@testable import NetworkingTestUtils
 
 struct URLSessionHTTPClientTests {
 

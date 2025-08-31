@@ -7,6 +7,7 @@
 import SwiftData
 import Testing
 @testable import Persistence
+@testable import PersistenceTestUtils
 
 @Suite(.serialized)
 class DataStoreTest {
