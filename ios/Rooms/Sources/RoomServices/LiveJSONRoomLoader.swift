@@ -9,21 +9,15 @@ import Foundation
 import Persistence
 import RoomModels
 
-// MARK: - RoomLoaderError
+// MARK: - JSONRoomLoader
 
-public enum RoomLoaderError: Error {
-  case malformedJSON, fileNotFound
-}
-
-// MARK: - JSONBuildingLoader
-
-public protocol JSONBuildingLoader {
+public protocol JSONRoomLoader {
   func fetch() -> Swift.Result<[Room], RoomLoaderError>
 }
 
 // MARK: - LiveJSONRoomLoader
 
-public struct LiveJSONRoomLoader: JSONBuildingLoader {
+public struct LiveJSONRoomLoader: JSONRoomLoader {
 
   // MARK: Lifecycle
 

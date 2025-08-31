@@ -7,6 +7,7 @@
 
 import Testing
 @testable import Persistence
+@testable import PersistenceTestUtils
 
 // MARK: - JSONLoaderTests
 

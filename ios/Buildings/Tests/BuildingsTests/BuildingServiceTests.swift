@@ -10,6 +10,7 @@ import Foundation
 import Networking
 import Testing
 @testable import BuildingServices
+@testable import BuildingTestUtils
 
 struct BuildingServiceTests {
 

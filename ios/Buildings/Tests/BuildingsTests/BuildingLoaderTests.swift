@@ -9,8 +9,10 @@ import BuildingModels
 import BuildingServices
 import Foundation
 import Persistence
+import PersistenceTestUtils
 import SwiftData
 import Testing
+@testable import BuildingTestUtils
 
 @Suite(.serialized)
 class BuildingLoaderTests {

@@ -7,11 +7,13 @@ let package = Package(
   name: "Rooms",
   platforms: [.iOS(.v17)],
   products: [
-    // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(name: "RoomModels", targets: ["RoomModels"]), // Add this product
-    .library(name: "RoomViews", targets: ["RoomViews"]), // Add this product
-    .library(name: "Rooms", targets: ["RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
-    // Keep combined if needed
+    .library(name: "RoomModels", targets: ["RoomModels"]),
+    .library(name: "RoomViews", targets: ["RoomViews"]),
+    .library(name: "RoomInteractors", targets: ["RoomInteractors"]),
+    .library(name: "RoomServices", targets: ["RoomServices"]),
+    .library(name: "RoomViewModels", targets: ["RoomViewModels"]),
+    .library(name: "RoomTestUtils", targets: ["RoomTestUtils"]),
+    .library(name: "Rooms", targets: ["RoomModels", "RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
@@ -20,28 +22,46 @@ let package = Package(
     .package(name: "Persistence", path: "../Persistence"),
   ],
   targets: [
-    // Targets are the basic building blocks of a package, defining a module or a test suite.
-    // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "RoomViews",
-      dependencies: ["RoomModels", "CommonUI"],
+      dependencies: [
+        "RoomModels",
+        .product(name: "CommonUI", package: "CommonUI"),
+      ],
       resources: [.process("Resources")]),
     .target(
       name: "RoomViewModels",
-      dependencies: ["RoomInteractors", "RoomModels"]),
+      dependencies: [
+        "RoomInteractors",
+        "RoomModels",
+      ]),
     .target(
       name: "RoomInteractors",
-      dependencies: ["RoomServices", "Location"]),
+      dependencies: [
+        "RoomServices",
+        .product(name: "Location", package: "Location"),
+      ]),
     .target(
       name: "RoomServices",
-      dependencies: ["Networking", "Persistence", "RoomModels"],
+      dependencies: [
+        .product(name: "Networking", package: "Networking"),
+        .product(name: "Persistence", package: "Persistence"),
+        "RoomModels",
+      ],
       resources: [.process("Resources")]),
-    .target(name: "RoomModels", dependencies: ["Persistence"]),
+    .target(
+      name: "RoomModels",
+      dependencies: [
+        .product(name: "Networking", package: "Networking"),
+      ]),
+    .target(name: "RoomTestUtils", dependencies: ["RoomServices", "RoomModels"]),
     .testTarget(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
-        "Persistence",
+        "RoomTestUtils",
         "RoomServices",
+        "Persistence",
+        .product(name: "PersistenceTestUtils", package: "Persistence"),
       ]),
   ])
