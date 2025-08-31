@@ -9,7 +9,11 @@ let package = Package(
   products: [
     .library(name: "RoomModels", targets: ["RoomModels"]),
     .library(name: "RoomViews", targets: ["RoomViews"]),
-    .library(name: "Rooms", targets: ["RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels", "RoomModels"]),
+    .library(name: "RoomInteractors", targets: ["RoomInteractors"]),
+    .library(name: "RoomServices", targets: ["RoomServices"]),
+    .library(name: "RoomViewModels", targets: ["RoomViewModels"]),
+    .library(name: "RoomTestUtils", targets: ["RoomTestUtils"]),
+    .library(name: "Rooms", targets: ["RoomModels", "RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
   ],
   dependencies: [
     .package(path: "../Networking"),
@@ -49,10 +53,13 @@ let package = Package(
       dependencies: [
         .product(name: "Networking", package: "Networking"),
       ]),
+    .target(name: "RoomTestUtils", dependencies: ["Networking", "RoomModels"]),
     .testTarget(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        "RoomTestUtils",
+        .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "Networking", package: "Networking"),
       ]),
   ])
