@@ -96,11 +96,6 @@ public struct BuildingsTabView: View {
         .navigationTitle("Buildings")
         .searchable(text: $searchText, prompt: "Search...")
     }
-//    .overlay(alignment: .bottom) {
-//      Button("Buildings in ascending order: \(viewModel.buildingsInAscendingOrder)", action: viewModel.getBuildingsInOrder)
-//        .buttonStyle(.borderedProminent)
-//        .padding(.bottom)
-//    }
     .tabItem {
       Label("Buildings", systemImage: "building")
     }

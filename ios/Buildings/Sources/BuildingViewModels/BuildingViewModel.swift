@@ -51,7 +51,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public var middleCampusBuildings: [Building] = []
 
-  public var buildingsInAscendingOrder = false
+  public var buildingsInAscendingOrder = true
 
   public var isLoading = false
 
@@ -78,7 +78,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch results.0 {
     case .success(let buildings):
-      upperCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading upper campus buildings: \(error)")
@@ -86,7 +86,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch results.1 {
     case .success(let buildings):
-      lowerCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading lower campus buildings: \(error)")
@@ -94,7 +94,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch results.2 {
     case .success(let buildings):
-      middleCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading middle campus buildings: \(error)")
@@ -107,9 +107,15 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    upperCampusBuildings = sortBuildingsInOrder(buildings: upperCampusBuildings, order: buildingsInAscendingOrder)
-    lowerCampusBuildings = sortBuildingsInOrder(buildings: lowerCampusBuildings, order: buildingsInAscendingOrder)
-    middleCampusBuildings = sortBuildingsInOrder(buildings: middleCampusBuildings, order: buildingsInAscendingOrder)
+    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: upperCampusBuildings,
+      order: buildingsInAscendingOrder)
+    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: lowerCampusBuildings,
+      order: buildingsInAscendingOrder)
+    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: middleCampusBuildings,
+      order: buildingsInAscendingOrder)
 
     // Simulate delay from fetching buildings
     DispatchQueue.main.async { [weak self] in
@@ -122,13 +128,6 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   // MARK: Private
 
   private var interactor: BuildingInteractor
-
-  private func sortBuildingsInOrder(buildings: [Building], order: Bool) -> [Building] {
-    buildings.sorted { a, b in
-      order ? a.name < b.name : a.name > b.name
-    }
-  }
-
 }
 
 // MARK: - PreviewBuildingViewModel

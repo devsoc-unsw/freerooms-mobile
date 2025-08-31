@@ -57,6 +57,12 @@ public class BuildingInteractor {
     }
   }
 
+  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) -> [Building] {
+    buildings.sorted { a, b in
+      order ? a.name < b.name : a.name > b.name
+    }
+  }
+
   // MARK: Package
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
