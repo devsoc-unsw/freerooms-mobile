@@ -83,9 +83,6 @@ struct FreeroomsApp: App {
 
     let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("Rooms: \(interactor.getAllRoomsSortedAlphabetically(inAscendingOrder: true))")
-
     return LiveRoomViewModel(interactor: interactor)
   }
 

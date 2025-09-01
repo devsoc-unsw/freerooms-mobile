@@ -54,13 +54,7 @@ public final class LiveRoomLoader: RoomLoader {
   }
 
   public func fetch() -> Result {
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("am i \(!hasSavedData)")
-
     if !hasSavedData {
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("hi im in roomloader fetch()")
-
       switch JSONRoomLoader.fetch() {
       case .success(let rooms):
         return .success(rooms)

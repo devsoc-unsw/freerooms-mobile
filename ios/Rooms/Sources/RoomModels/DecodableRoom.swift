@@ -15,7 +15,7 @@ public struct DecodableRoom: Decodable, Equatable {
     audiovisual: [String],
     buildingId: String,
     capacity: Int,
-    floor: String,
+    floor: String?,
     id: String,
     infotechnology: [String],
     lat: Double,
@@ -23,7 +23,7 @@ public struct DecodableRoom: Decodable, Equatable {
     microphone: [String],
     name: String,
     school: String,
-    seating: String,
+    seating: String?,
     usage: String,
     service: [String],
     writingMedia: [String])
@@ -54,7 +54,7 @@ public struct DecodableRoom: Decodable, Equatable {
   public let audiovisual: [String]
   public let buildingId: String
   public let capacity: Int
-  public let floor: String
+  public let floor: String?
   public let id: String
   public let infotechnology: [String]
   public let lat: Double
@@ -62,7 +62,7 @@ public struct DecodableRoom: Decodable, Equatable {
   public let microphone: [String]
   public let name: String
   public let school: String
-  public let seating: String
+  public let seating: String?
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]

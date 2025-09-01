@@ -53,14 +53,11 @@ public final class LiveRoomService: RoomService {
   }
 
   public func getRooms() -> GetRoomResult {
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("hi im in getRooms service")
-
     switch roomLoader.fetch() {
     case .success(let rooms):
-      return .success(rooms)
+      .success(rooms)
     case .failure:
-      return .failure(.connectivity)
+      .failure(.connectivity)
     }
   }
 
