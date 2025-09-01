@@ -32,6 +32,7 @@ public protocol BuildingViewModel {
 }
 
 // MARK: - LiveBuildingViewModel
+
 @Observable
 // swiftlint:disable:next no_unchecked_sendable
 public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
@@ -50,7 +51,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public var middleCampusBuildings: [Building] = []
 
-  public var buildingsInAscendingOrder = false
+  public var buildingsInAscendingOrder = true
 
   public var isLoading = false
 
@@ -60,42 +61,35 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public func onAppear() {
     // Load buildings when the view appears
-    Task {
-      await loadBuildings()
-    }
+    loadBuildings()
   }
 
-  /// Load buildings asynchronously
-  private func loadBuildings() async {
+  public func loadBuildings() {
     isLoading = true
 
-    // Load all campus sections concurrently
-    async let upperResult = await interactor.getBuildingsFilteredByCampusSection(.upper)
-    async let lowerResult = await interactor.getBuildingsFilteredByCampusSection(.lower)
-    async let middleResult = await interactor.getBuildingsFilteredByCampusSection(.middle)
+    let upperResult = interactor.getBuildingsFilteredByCampusSection(.upper)
+    let lowerResult = interactor.getBuildingsFilteredByCampusSection(.lower)
+    let middleResult = interactor.getBuildingsFilteredByCampusSection(.middle)
 
-    // Wait for all results
-    let results = await (upperResult, lowerResult, middleResult)
-
-    switch results.0 {
+    switch upperResult {
     case .success(let buildings):
-      upperCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading upper campus buildings: \(error)")
     }
 
-    switch results.1 {
+    switch lowerResult {
     case .success(let buildings):
-      lowerCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading lower campus buildings: \(error)")
     }
 
-    switch results.2 {
+    switch middleResult {
     case .success(let buildings):
-      middleCampusBuildings = sortBuildingsInOrder(buildings: buildings, order: buildingsInAscendingOrder)
+      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading middle campus buildings: \(error)")
@@ -108,28 +102,22 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    upperCampusBuildings = sortBuildingsInOrder(buildings: upperCampusBuildings, order: buildingsInAscendingOrder)
-    lowerCampusBuildings = sortBuildingsInOrder(buildings: lowerCampusBuildings, order: buildingsInAscendingOrder)
-    middleCampusBuildings = sortBuildingsInOrder(buildings: middleCampusBuildings, order: buildingsInAscendingOrder)
+    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: upperCampusBuildings,
+      order: buildingsInAscendingOrder)
+    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: lowerCampusBuildings,
+      order: buildingsInAscendingOrder)
+    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: middleCampusBuildings,
+      order: buildingsInAscendingOrder)
 
-    // Simulate delay from fetching buildings
-    DispatchQueue.main.async { [weak self] in
-      guard let self else { return }
-
-      isLoading = false
-    }
+    isLoading = false
   }
 
   // MARK: Private
 
   private var interactor: BuildingInteractor
-
-  private func sortBuildingsInOrder(buildings: [Building], order: Bool) -> [Building] {
-    buildings.sorted { a, b in
-      order ? a.name < b.name : a.name > b.name
-    }
-  }
-
 }
 
 // MARK: - PreviewBuildingViewModel

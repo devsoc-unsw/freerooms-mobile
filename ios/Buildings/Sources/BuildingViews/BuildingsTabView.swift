@@ -94,13 +94,8 @@ public struct BuildingsTabView: View {
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
         .onAppear(perform: viewModel.onAppear)
         .navigationTitle("Buildings")
-        .searchable(text: $searchText, prompt: "Search...")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
-//    .overlay(alignment: .bottom) {
-//      Button("Buildings in ascending order: \(viewModel.buildingsInAscendingOrder)", action: viewModel.getBuildingsInOrder)
-//        .buttonStyle(.borderedProminent)
-//        .padding(.bottom)
-//    }
     .tabItem {
       Label("Buildings", systemImage: "building")
     }
