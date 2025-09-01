@@ -4,6 +4,7 @@ import Testing
 @testable import BuildingInteractors
 @testable import BuildingModels
 @testable import BuildingServices
+@testable import BuildingTestUtils
 @testable import Location
 @testable import LocationTestsUtils
 
