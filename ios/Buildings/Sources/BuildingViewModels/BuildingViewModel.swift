@@ -64,19 +64,14 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     loadBuildings()
   }
 
-  /// New method to load buildings asynchronously
   public func loadBuildings() {
     isLoading = true
 
-    // Load all campus sections concurrently
     let upperResult = interactor.getBuildingsFilteredByCampusSection(.upper)
     let lowerResult = interactor.getBuildingsFilteredByCampusSection(.lower)
     let middleResult = interactor.getBuildingsFilteredByCampusSection(.middle)
 
-    // Wait for all results
-    let results = (upperResult, lowerResult, middleResult)
-
-    switch results.0 {
+    switch upperResult {
     case .success(let buildings):
       upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
@@ -84,7 +79,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
       print("Error loading upper campus buildings: \(error)")
     }
 
-    switch results.1 {
+    switch lowerResult {
     case .success(let buildings):
       lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
@@ -92,7 +87,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
       print("Error loading lower campus buildings: \(error)")
     }
 
-    switch results.2 {
+    switch middleResult {
     case .success(let buildings):
       middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
@@ -117,12 +112,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
       buildings: middleCampusBuildings,
       order: buildingsInAscendingOrder)
 
-    // Simulate delay from fetching buildings
-    DispatchQueue.main.async { [weak self] in
-      guard let self else { return }
-
-      isLoading = false
-    }
+    isLoading = false
   }
 
   // MARK: Private
