@@ -5,26 +5,6 @@
 //  Created by Chris Wong on 22/6/2025.
 //
 
-// MARK: - DecodableBuildingData
-
-public struct DecodableBuildingData: Decodable {
-  public let data: DecodableBuildings
-
-  public init(data: DecodableBuildings) {
-    self.data = data
-  }
-}
-
-// MARK: - DecodableBuildings
-
-public struct DecodableBuildings: Decodable {
-  public let buildings: [DecodableBuilding]
-
-  public init(buildings: [DecodableBuilding]) {
-    self.buildings = buildings
-  }
-}
-
 // MARK: - DecodableBuilding
 
 public struct DecodableBuilding: Decodable, Equatable {
