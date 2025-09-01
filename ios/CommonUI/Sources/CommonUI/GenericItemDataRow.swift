@@ -100,6 +100,6 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
   GenericItemDataRow(
     rowHeight: $height,
-    item: Room(name: "Room 101", id: "K-101", abbreviation: "T-101", capacity: 20, usage: "Classroom", school: "UNSW"))
+    item: Room.exampleOne)
     .defaultTheme()
 }

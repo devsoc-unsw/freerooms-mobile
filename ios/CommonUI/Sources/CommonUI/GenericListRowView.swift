@@ -127,12 +127,7 @@ struct PreviewWrapper: View {
   @State private var path = NavigationPath()
   @State private var rowHeight: CGFloat?
 
-  let rooms: [Room] = [
-    Room(name: "Ainsworth 101", id: "K-B16", abbreviation: "A-101", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 201", id: "K-B17", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 201", id: "K-B20", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    Room(name: "Ainsworth 201", id: "K-B12", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-  ]
+  let rooms: [Room] = [Room.exampleOne, Room.exampleTwo]
 
   var body: some View {
     List {

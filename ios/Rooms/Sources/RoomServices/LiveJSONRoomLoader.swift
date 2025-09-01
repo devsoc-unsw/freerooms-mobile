@@ -34,6 +34,9 @@ public struct LiveJSONRoomLoader: JSONRoomLoader {
       fatalError("Rooms seed JSON file not bundled")
     }
 
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("rooms json file path: \(roomsSeedJSONPath)")
+
     switch loader.load(from: roomsSeedJSONPath) {
     case .success(let decodableRooms):
       let rooms = decodableRooms.map {

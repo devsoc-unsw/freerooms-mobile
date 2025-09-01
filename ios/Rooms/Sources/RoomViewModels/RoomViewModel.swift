@@ -15,6 +15,8 @@ import RoomServices
 // MARK: - RoomViewModel
 
 public protocol RoomViewModel {
+  var buildingId: String? { get set }
+
   var rooms: [Room] { get set }
 
   var roomsInAscendingOrder: Bool { get }
@@ -27,6 +29,66 @@ public protocol RoomViewModel {
 
 }
 
+// MARK: - RoomInteractor
+
+// TODO: change this to live room interactor!
+public class RoomInteractor {
+
+  // MARK: Lifecycle
+
+  public init(buildingId: String, roomService: RoomService, locationService: LocationService) {
+    self.buildingId = buildingId
+    self.roomService = roomService
+    self.locationService = locationService
+  }
+
+  public init(roomService: RoomService, locationService: LocationService) {
+    self.roomService = roomService
+    self.locationService = locationService
+    buildingId = ""
+  }
+
+  // MARK: Public
+
+  public func sortRoomsInOrder(rooms: [Room], order: Bool) -> [Room] {
+    rooms.sorted { a, b in
+      order ? a.name < b.name : a.name > b.name
+    }
+  }
+
+  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Room], Error> {
+    switch roomService.getRooms(buildingId: buildingId) {
+    case .success(let rooms):
+      let sorted = rooms.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  public func getAllRoomsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Room], Error> {
+    switch roomService.getRooms() {
+    case .success(let rooms):
+      let sorted = rooms.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  // MARK: Private
+
+  private let buildingId: String
+  private let roomService: RoomService
+  private let locationService: LocationService
+}
+
 // MARK: - LiveRoomViewModel
 
 @Observable
@@ -35,13 +97,18 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   // MARK: Lifecycle
 
-  public init() { }
+  public init(interactor: RoomInteractor) {
+    self.interactor = interactor
+    buildingId = "123"
+  }
 
   // MARK: Public
 
+  public var buildingId: String?
+
   public var rooms: [Room] = []
 
-  public var roomsInAscendingOrder = false
+  public var roomsInAscendingOrder = true
 
   public var isLoading = false
 
@@ -51,23 +118,22 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public func onAppear() {
     // Load Rooms when the view appears
-    Task {
-      await loadRooms()
-    }
+    loadRooms()
   }
 
   /// New method to load Rooms asynchronously
-  public func loadRooms() async {
+  public func loadRooms() {
     isLoading = true
 
-    let mockRooms: [Room] = [
-      Room(name: "Ainsworth 801", id: "K-B16", abbreviation: "A-101", capacity: 10, usage: "Goon", school: "UNSW"),
-      Room(name: "Ainsworth 201", id: "K-C20", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-      Room(name: "Ainsworth 301", id: "K-B17", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-      Room(name: "Ainsworth 101", id: "K-B18", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-      Room(name: "Ainsworth 501", id: "K-B19", abbreviation: "A-201", capacity: 10, usage: "Goon", school: "UNSW"),
-    ]
-    rooms = sortRoomsInOrder(rooms: mockRooms, order: roomsInAscendingOrder)
+    let result = interactor.getAllRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
+
+    switch result {
+    case .success(let roomsData):
+      rooms = interactor.sortRoomsInOrder(rooms: roomsData, order: roomsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading rooms: \(error)")
+    }
 
     isLoading = false
   }
@@ -75,25 +141,26 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public func getRoomsInOrder() {
     isLoading = true
     roomsInAscendingOrder.toggle()
-
-    rooms = sortRoomsInOrder(rooms: rooms, order: roomsInAscendingOrder)
-
-    // Simulate delay from fetching buildings
-    DispatchQueue.main.async { [weak self] in
-      guard let self else { return }
-
-      isLoading = false
-    }
+    rooms = interactor.sortRoomsInOrder(rooms: rooms, order: roomsInAscendingOrder)
+    isLoading = false
   }
 
   // MARK: Private
 
-//  private var interactor: RoomInteractor
+  private var interactor: RoomInteractor
 
-  private func sortRoomsInOrder(rooms: [Room], order: Bool) -> [Room] {
-    rooms.sorted { a, b in
-      order ? a.name < b.name : a.name > b.name
-    }
+}
+
+// MARK: - PreviewRoomViewModel
+
+@Observable
+// swiftlint:disable:next no_unchecked_sendable
+public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
+
+  public init() {
+    super.init(interactor: RoomInteractor(
+      buildingId: "K-B16",
+      roomService: PreviewRoomService(),
+      locationService: LocationService(locationManager: LiveLocationManager())))
   }
-
 }

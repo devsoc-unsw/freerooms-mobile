@@ -11,8 +11,8 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   public init(
     abbreviation: String,
-    accessibility: String,
-    audioVisual: String,
+    accessibility: [String],
+    audioVisual: [String],
     buildingId: String,
     capacity: Int,
     floor: String,
@@ -47,9 +47,72 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Public
 
+  nonisolated(unsafe) static public let exampleOne = Room(
+    abbreviation: "Col LG01",
+    accessibility: [
+      "Ventilation - Air conditioning",
+      "Weekend Access",
+      "Wheelchair access - teaching",
+      "Wheelchair access - student",
+      "Power at Wall",
+    ],
+    audioVisual: [
+      "Document camera",
+    ],
+    buildingId: "K-B16",
+    capacity: 48,
+    floor: "Flat",
+    id: "K-B16-LG01",
+    latitude: -33.916155183912196,
+    longitude: 151.23130187740358,
+    microphone: [
+      "IT laptop connection",
+      "IT Lectern",
+      "Video data projector",
+      "Web Camera with Microphone",
+    ],
+    name: "Colombo LG01",
+    school: "UNSW",
+    seating: "Movable",
+    usage: "TUSM",
+    service: [],
+    writingMedia: [
+      "Whiteboard",
+    ])
+
+  nonisolated(unsafe) static public let exampleTwo = Room(
+    abbreviation: "Col LG02",
+    accessibility: [
+      "Ventilation - Air conditioning",
+      "Weekend Access",
+      "Wheelchair access - teaching",
+      "Wheelchair access - student",
+      "Power at Wall",
+    ],
+    audioVisual: [
+      "Document camera",
+    ],
+    buildingId: "K-B16",
+    capacity: 56,
+    floor: "Flat",
+    id: "K-B16-LG02",
+    latitude: -33.91602605723141,
+    longitude: 151.2313272230597,
+    microphone: [
+      "Dual Radio Microphones",
+    ],
+    name: "Colombo LG02",
+    school: "UNSW",
+    seating: "Movable",
+    usage: "TUSM",
+    service: [],
+    writingMedia: [
+      "Whiteboard",
+    ])
+
   public let abbreviation: String
-  public let accessibility: String
-  public let audioVisual: String
+  public let accessibility: [String]
+  public let audioVisual: [String]
   public let buildingId: String
   public let capacity: Int
   public let floor: String
@@ -63,4 +126,5 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
+
 }

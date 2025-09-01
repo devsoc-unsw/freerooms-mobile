@@ -13,6 +13,10 @@ import BuildingViews
 import CommonUI
 import Location
 import Persistence
+import RoomInteractors
+import RoomModels
+import RoomServices
+import RoomViewModels
 import SwiftData
 import SwiftUI
 
@@ -36,7 +40,8 @@ struct FreeroomsApp: App {
         .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
-        .environment(\.buildingViewModel, viewModel)
+        .environment(\.buildingViewModel, buildingViewModel)
+        .environment(\.roomViewModel, roomViewModel)
     }
   }
 
@@ -68,10 +73,26 @@ struct FreeroomsApp: App {
     }
   }
 
+  static func makeLiveRoomViewModel() -> LiveRoomViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LocationService(locationManager: locationManager)
+
+    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+    let roomLoader = LiveRoomLoader(JSONBuildingLoader: JSONRoomLoader)
+    let roomService = LiveRoomService(roomLoader: roomLoader)
+
+    let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
+
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("Rooms: \(interactor.getAllRoomsSortedAlphabetically(inAscendingOrder: true))")
+
+    return LiveRoomViewModel(interactor: interactor)
+  }
+
   // MARK: Private
 
-  @State private var viewModel = FreeroomsApp.makeLiveBuildingViewModel()
-
+  @State private var buildingViewModel = FreeroomsApp.makeLiveBuildingViewModel()
+  @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 
 }

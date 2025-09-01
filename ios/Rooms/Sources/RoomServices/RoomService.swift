@@ -20,7 +20,8 @@ public enum FetchRoomError: Error, Equatable {
 // MARK: - RoomService
 
 public protocol RoomService {
-  func getRooms(buildingId: String) async -> GetRoomResult
+  func getRooms() -> GetRoomResult
+  func getRooms(buildingId: String) -> GetRoomResult
 }
 
 // MARK: - LiveRoomService
@@ -37,7 +38,7 @@ public final class LiveRoomService: RoomService {
 
   public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 
-  public func getRooms(buildingId: String) async -> GetRoomResult {
+  public func getRooms(buildingId: String) -> GetRoomResult {
     // Validate input
     guard !buildingId.isEmpty else {
       return .failure(.invalidBuildingId)
@@ -51,12 +52,15 @@ public final class LiveRoomService: RoomService {
     }
   }
 
-  public func getRooms() async -> GetRoomResult {
+  public func getRooms() -> GetRoomResult {
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("hi im in getRooms service")
+
     switch roomLoader.fetch() {
     case .success(let rooms):
-      .success(rooms)
+      return .success(rooms)
     case .failure:
-      .failure(.connectivity)
+      return .failure(.connectivity)
     }
   }
 
@@ -65,6 +69,21 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
 }
 
-// MARK: - RoomLoader
+// MARK: - PreviewRoomService
 
-// MARK: - RoomLoaderError
+public final class PreviewRoomService: RoomService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getRooms() -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+
+  public func getRooms(buildingId _: String) -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+}

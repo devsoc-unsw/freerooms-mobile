@@ -38,13 +38,7 @@ public struct RoomsTabView: View {
       .navigationDestination(for: Room.self) { room in
         // Renders the view for displaying a building that has been clicked on
         Button {
-          path.append(Room(
-            name: "Ainsworth 101",
-            id: "K-B16",
-            abbreviation: "A-101",
-            capacity: 10,
-            usage: "Goon",
-            school: "UNSW"))
+          path.append(Room.exampleOne)
         } label: {
           Text("bruh test test")
         }
@@ -75,7 +69,7 @@ public struct RoomsTabView: View {
   @State var searchText = ""
 
   func roomsView(_ rooms: [Room]) -> some View {
-    Section {
+    Section("Building one") {
       ForEach(rooms) { room in
         GenericListRowView(
           path: $path,
@@ -83,7 +77,7 @@ public struct RoomsTabView: View {
           room: room,
           rooms: rooms,
           imageProvider: { roomID in
-            RoomImage[roomID] // This closure captures RoomImage
+            RoomImage[roomID]
           })
           .padding(.vertical, 5)
       }
@@ -97,6 +91,6 @@ public struct RoomsTabView: View {
 }
 
 #Preview {
-  RoomsTabView(viewModel: LiveRoomViewModel())
+  RoomsTabView(viewModel: PreviewRoomViewModel())
     .defaultTheme()
 }

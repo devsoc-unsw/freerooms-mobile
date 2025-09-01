@@ -11,8 +11,8 @@ public struct DecodableRoom: Decodable, Equatable {
 
   public init(
     abbr: String,
-    accessibility: String,
-    audiovisual: String,
+    accessibility: [String],
+    audiovisual: [String],
     buildingId: String,
     capacity: Int,
     floor: String,
@@ -48,8 +48,8 @@ public struct DecodableRoom: Decodable, Equatable {
   // MARK: Public
 
   public let abbr: String
-  public let accessibility: String
-  public let audiovisual: String
+  public let accessibility: [String]
+  public let audiovisual: [String]
   public let buildingId: String
   public let capacity: Int
   public let floor: String

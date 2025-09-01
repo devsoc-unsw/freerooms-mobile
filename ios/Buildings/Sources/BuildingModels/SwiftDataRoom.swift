@@ -19,8 +19,8 @@ public final class SwiftDataRoom {
   /// Initializes a new SwiftDataRoom with all required properties.
   public init(
     abbreviation: String,
-    accessibility: String,
-    audioVisual: String,
+    accessibility: [String],
+    audioVisual: [String],
     buildingId: String,
     capacity: Int,
     floor: String,
@@ -80,8 +80,8 @@ public final class SwiftDataRoom {
   // MARK: Public
 
   public var abbreviation: String
-  public var accessibility: String
-  public var audioVisual: String
+  public var accessibility: [String]
+  public var audioVisual: [String]
   public var buildingId: String
   public var capacity: Int
   public var floor: String
