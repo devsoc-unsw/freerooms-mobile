@@ -24,7 +24,7 @@ public struct SwiftDataBuildingLoaderMock: SwiftDataBuildingLoader {
 
   // MARK: Public
 
-  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+  public func fetch() -> Result<[Building], BuildingLoaderError> {
     if fetchError != nil {
       return .failure(fetchError!)
     }
@@ -32,7 +32,7 @@ public struct SwiftDataBuildingLoaderMock: SwiftDataBuildingLoader {
     return .success(buildings)
   }
 
-  public func seed(_: [Building]) async -> Result<Void, BuildingLoaderError> {
+  public func seed(_: [Building]) -> Result<Void, BuildingLoaderError> {
     if seedError != nil {
       return .failure(seedError!)
     }

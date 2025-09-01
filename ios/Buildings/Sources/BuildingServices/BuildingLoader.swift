@@ -28,13 +28,13 @@ public enum BuildingLoaderError: Error {
 // MARK: - BuildingLoader
 
 public protocol BuildingLoader {
-  func fetch() async -> Result<[Building], BuildingLoaderError>
+  func fetch() -> Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - RemoteBuildingLoader
 
 public protocol RemoteBuildingLoader {
-  func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError>
+  func fetch() -> Result<[RemoteBuilding], BuildingLoaderError>
 }
 
 // MARK: - LiveBuildingLoader
@@ -52,23 +52,21 @@ public class LiveBuildingLoader: BuildingLoader {
 
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
-  public func fetch() async -> Result {
-    let hasSavedData = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedData)
-
+  public func fetch() -> Result {
     if !hasSavedData {
       switch JSONBuildingLoader.fetch() {
       case .success(let buildings):
-        if case .failure(let err) = await swiftDataBuildingLoader.seed(buildings) {
+        if case .failure(let err) = swiftDataBuildingLoader.seed(buildings) {
           return .failure(err)
         }
-        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedData)
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
         return .success(buildings)
 
       case .failure(let err):
         return .failure(err)
       }
     } else {
-      switch await swiftDataBuildingLoader.fetch() {
+      switch swiftDataBuildingLoader.fetch() {
       case .success(let buildings):
         return .success(buildings)
       case .failure(let err):
@@ -82,34 +80,8 @@ public class LiveBuildingLoader: BuildingLoader {
   private let swiftDataBuildingLoader: SwiftDataBuildingLoader
   private let JSONBuildingLoader: JSONBuildingLoader
 
-}
-
-// MARK: - LiveRemoteBuildingLoader
-
-public class LiveRemoteBuildingLoader: RemoteBuildingLoader {
-
-  // MARK: Lifecycle
-
-  public init(url: URL) {
-    self.url = url
+  private var hasSavedData: Bool {
+    UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
   }
 
-  // MARK: Public
-
-  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
-    do {
-      let (data, response) = try await URLSession.shared.data(from: url)
-      guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-        return .failure(.connectivity)
-      }
-      let buildings = try JSONDecoder().decode([RemoteBuilding].self, from: data)
-      return .success(buildings)
-    } catch {
-      return .failure(.connectivity)
-    }
-  }
-
-  // MARK: Private
-
-  private let url: URL
 }

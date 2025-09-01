@@ -18,7 +18,7 @@ struct JSONBuildingLoaderTests {
   @Test("Check buildings bundle string exists")
   func checkBuildingsBundleStringExists() async throws {
     let decodableBuildings = createDecodableBuildings(0)
-    let mockJSONLoader = MockJSONLoader<DecodableBuildingData>(loads: decodableBuildings)
+    let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(loads: decodableBuildings)
     let JSONBuildingLoader = LiveJSONBuildingLoader(using: mockJSONLoader)
     if JSONBuildingLoader.buildingsSeedJSONPath == nil {
       Issue.record("Buildings Seed JSON not found in bundle")
@@ -29,7 +29,7 @@ struct JSONBuildingLoaderTests {
   func liveJSONBuildingLoaderSuccessfullyDecodesJSON() {
     // Given
     let decodableBuildings = createDecodableBuildings(10)
-    let mockJSONLoader = MockJSONLoader<DecodableBuildingData>(loads: decodableBuildings)
+    let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(loads: decodableBuildings)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
@@ -44,7 +44,7 @@ struct JSONBuildingLoaderTests {
   func liveJSONBuildingLoaderSuccessfullyDecodesEmptyJSON() {
     // Given
     let decodableBuildings = createDecodableBuildings(0)
-    let mockJSONLoader = MockJSONLoader<DecodableBuildingData>(loads: decodableBuildings)
+    let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(loads: decodableBuildings)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
@@ -58,7 +58,7 @@ struct JSONBuildingLoaderTests {
   @Test("Live JSON building loader returns error when JSON loader cannot find file")
   func liveJSONBuildingLoaderThrowsErrorOnNoFileFound() {
     // Given
-    let mockJSONLoader = MockJSONLoader<DecodableBuildingData>(throws: JSONLoaderError.fileNotFound)
+    let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(throws: JSONLoaderError.fileNotFound)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
@@ -71,7 +71,7 @@ struct JSONBuildingLoaderTests {
   @Test("Live JSON building loader returns error when JSON loader cannot read malformed JSON")
   func liveJSONBuildingLoaderThrowsErrorOnMalformedJson() {
     // Given
-    let mockJSONLoader = MockJSONLoader<DecodableBuildingData>(throws: JSONLoaderError.malformedJSON)
+    let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(throws: JSONLoaderError.malformedJSON)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
@@ -86,7 +86,7 @@ struct JSONBuildingLoaderTests {
     // Given
     let realBuildingsData = createRealBuildings()
     let liveFileLoader = LiveFileLoader()
-    let liveJSONLoader = LiveJSONLoader<DecodableBuildingData>(using: liveFileLoader)
+    let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     // When
@@ -116,13 +116,12 @@ struct JSONBuildingLoaderTests {
     }
   }
 
-  private func createDecodableBuildings(_ count: Int) -> DecodableBuildingData {
+  private func createDecodableBuildings(_ count: Int) -> [DecodableBuilding] {
     var decodableBuildings: [DecodableBuilding] = []
     for _ in 0..<count {
       decodableBuildings.append(DecodableBuilding(name: "name", id: "123", lat: 1.0, long: 1.0, aliases: ["A", "B"]))
     }
-    let decodableBuildingsKey = DecodableBuildings(buildings: decodableBuildings)
-    return DecodableBuildingData(data: decodableBuildingsKey)
+    return decodableBuildings
   }
 
   private func createBuildings(_ count: Int) -> [Building] {

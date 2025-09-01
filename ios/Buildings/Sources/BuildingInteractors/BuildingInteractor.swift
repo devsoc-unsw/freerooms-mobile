@@ -23,8 +23,8 @@ public class BuildingInteractor {
 
   // MARK: Package
 
-  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
-    switch await buildingService.getBuildings() {
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
     case .success(let buildings):
       let sorted = buildings.sorted { a, b in
         inAscendingOrder ? a.name < b.name : a.name > b.name
@@ -38,8 +38,8 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error> {
-    switch await buildingService.getBuildings() {
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
     case .success(let buildings):
       // no valid data, return as is
       guard buildings.contains(where: { $0.numberOfAvailableRooms != nil }) else {
@@ -57,8 +57,8 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
-    switch await buildingService.getBuildings() {
+  func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
     case .success(let buildings):
       do {
         let currentLocation = try locationService.getCurrentLocation()
@@ -80,8 +80,8 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], Error> {
-    switch await buildingService.getBuildings() {
+  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
     case .success(let buildings):
       var sorted = buildings
       if inAscendingOrder {
@@ -97,8 +97,8 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
-    switch await buildingService.getBuildings() {
+  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
     case .success(let buildings):
       let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
       return .success(filtered)
