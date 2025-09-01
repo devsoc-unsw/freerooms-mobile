@@ -23,7 +23,7 @@ public class BuildingInteractor {
 
   // MARK: Package
 
-  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       let sorted = buildings.sorted { a, b in
@@ -38,7 +38,7 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       // no valid data, return as is
@@ -57,7 +57,7 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       do {
@@ -80,7 +80,7 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       var sorted = buildings
@@ -97,7 +97,7 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
+  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
