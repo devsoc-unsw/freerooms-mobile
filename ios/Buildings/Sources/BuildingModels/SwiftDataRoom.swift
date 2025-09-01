@@ -25,6 +25,7 @@ public final class SwiftDataRoom {
     capacity: Int,
     floor: String,
     id: String,
+    infoTechnology: [String],
     latitude: Double,
     longitude: Double,
     microphone: [String],
@@ -43,6 +44,7 @@ public final class SwiftDataRoom {
     self.capacity = capacity
     self.floor = floor
     self.id = id
+    self.infoTechnology = infoTechnology
     self.latitude = latitude
     self.longitude = longitude
     self.microphone = microphone
@@ -65,6 +67,7 @@ public final class SwiftDataRoom {
       capacity: room.capacity,
       floor: room.floor,
       id: room.id,
+      infoTechnology: room.infoTechnology,
       latitude: room.latitude,
       longitude: room.longitude,
       microphone: room.microphone,
@@ -86,6 +89,7 @@ public final class SwiftDataRoom {
   public var capacity: Int
   public var floor: String
   public var id: String
+  public var infoTechnology: [String]
   public var latitude: Double
   public var longitude: Double
   public var microphone: [String]
@@ -107,6 +111,7 @@ public final class SwiftDataRoom {
       capacity: capacity,
       floor: floor,
       id: id,
+      infoTechnology: infoTechnology,
       latitude: latitude,
       longitude: longitude,
       microphone: microphone,

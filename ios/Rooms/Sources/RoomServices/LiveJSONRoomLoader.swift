@@ -48,6 +48,7 @@ public struct LiveJSONRoomLoader: JSONRoomLoader {
           capacity: $0.capacity,
           floor: $0.floor,
           id: $0.id,
+          infoTechnology: $0.infotechnology,
           latitude: $0.lat,
           longitude: $0.long,
           microphone: $0.microphone,

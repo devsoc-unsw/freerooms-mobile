@@ -17,6 +17,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     capacity: Int,
     floor: String,
     id: String,
+    infoTechnology: [String],
     latitude: Double,
     longitude: Double,
     microphone: [String],
@@ -34,6 +35,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.capacity = capacity
     self.floor = floor
     self.id = id
+    self.infoTechnology = infoTechnology
     self.latitude = latitude
     self.longitude = longitude
     self.microphone = microphone
@@ -63,6 +65,12 @@ public struct Room: Equatable, Identifiable, Hashable {
     capacity: 48,
     floor: "Flat",
     id: "K-B16-LG01",
+    infoTechnology: [
+      "IT laptop connection",
+      "IT Lectern",
+      "Video data projector",
+      "Web Camera with Microphone",
+    ],
     latitude: -33.916155183912196,
     longitude: 151.23130187740358,
     microphone: [
@@ -96,6 +104,13 @@ public struct Room: Equatable, Identifiable, Hashable {
     capacity: 56,
     floor: "Flat",
     id: "K-B16-LG02",
+    infoTechnology: [
+      "Hybrid Teaching Space",
+      "Lecture capture venue",
+      "IT laptop connection",
+      "IT Lectern",
+      "Video data projector",
+    ],
     latitude: -33.91602605723141,
     longitude: 151.2313272230597,
     microphone: [
@@ -117,6 +132,7 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let capacity: Int
   public let floor: String
   public let id: String
+  public let infoTechnology: [String]
   public let latitude: Double
   public let longitude: Double
   public let microphone: [String]

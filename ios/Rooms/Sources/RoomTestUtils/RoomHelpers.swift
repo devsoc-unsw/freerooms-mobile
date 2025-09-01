@@ -12,12 +12,26 @@ func createRooms(_ count: Int) -> [Room] {
   for _ in 0..<count {
     rooms.append(Room(
       abbreviation: "SCI101",
-      accessibility: "Wheelchair accessible, hearing loop available",
-      audioVisual: "Projector, speakers, HDMI connection",
+      accessibility: [
+        "Ventilation - Air conditioning",
+        "Weekend Access",
+        "Wheelchair access - teaching",
+        "Wheelchair access - student",
+        "Power at Wall",
+      ],
+      audioVisual: [
+        "Document camera",
+      ],
       buildingId: "BLDG-2024-007",
       capacity: 45,
       floor: "Ground floor",
       id: "ROOM-12345-ABC",
+      infoTechnology: [
+        "IT laptop connection",
+        "IT Lectern",
+        "Video data projector",
+        "Web Camera with Microphone",
+      ],
       latitude: 40.7589,
       longitude: -73.9851,
       microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
