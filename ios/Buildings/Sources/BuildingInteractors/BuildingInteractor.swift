@@ -99,29 +99,6 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
-    case .success(let buildings):
-      do {
-        let currentLocation = try locationService.getCurrentLocation()
-
-        // Compute each building’s distance once, then sort
-        let sorted = buildings
-          .map { (building: Building) -> (Building, Double) in
-            (building, calculateDistance(from: currentLocation, to: building))
-          }
-          .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
-          .map { $0.0 }
-        return .success(sorted)
-      } catch {
-        return .failure(error)
-      }
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   func getBuildingSortedByCampusSection(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
@@ -133,17 +110,6 @@ public class BuildingInteractor {
       }
 
       return .success(sorted)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
-    case .success(let buildings):
-      let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
-      return .success(filtered)
 
     case .failure(let error):
       return .failure(error)
