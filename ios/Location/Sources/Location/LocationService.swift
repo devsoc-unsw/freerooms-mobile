@@ -8,9 +8,17 @@
 import CoreLocation
 import Foundation
 
+// MARK: - LocationServiceProtocol
+
+public protocol LocationServiceProtocol {
+  func getCurrentLocation() throws -> Location
+  func requestLocationPermissions() throws -> Bool
+  func locationManagerDidChangeAuthorization(_ locationManager: LocationManager)
+}
+
 // MARK: - LocationService
 
-public class LocationService: NSObject, LocationManagerDelegate {
+public class LocationService: NSObject, LocationServiceProtocol, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
