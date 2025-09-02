@@ -20,12 +20,13 @@ let package = Package(
     .package(name: "Location", path: "../Location"),
     .package(name: "CommonUI", path: "../CommonUI"),
     .package(name: "Persistence", path: "../Persistence"),
+    .package(name: "Buildings", path: "../Buildings"),
   ],
   targets: [
     .target(
       name: "RoomViews",
       dependencies: [
-        "RoomModels", "RoomViewModels",
+        "RoomModels", "RoomViewModels", "Buildings",
         .product(name: "CommonUI", package: "CommonUI"),
       ],
       resources: [.process("Resources")]),
@@ -34,6 +35,7 @@ let package = Package(
       dependencies: [
         "RoomInteractors",
         "RoomModels",
+        .product(name: "BuildingModels", package: "buildings"),
       ]),
     .target(
       name: "RoomInteractors",

@@ -9,6 +9,10 @@ import SwiftUI
 
 public enum RoomImage {
   public static subscript(roomID: String) -> Image {
-    Image(roomID, bundle: .module)
+    if let uiImage = UIImage(named: roomID, in: .module, with: nil) {
+      Image(uiImage: uiImage)
+    } else {
+      Image("default", bundle: .module)
+    }
   }
 }

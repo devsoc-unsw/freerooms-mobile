@@ -27,7 +27,7 @@ struct ContentView: View {
     TabView(selection: $selectedTab) {
       BuildingsTabView(viewModel: buildingViewModel)
 
-      RoomsTabView(viewModel: roomViewModel)
+      RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel)
     }
     .tint(theme.accent.primary)
   }

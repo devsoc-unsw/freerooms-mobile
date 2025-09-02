@@ -15,6 +15,8 @@ import Observation
 // MARK: - BuildingViewModel
 
 public protocol BuildingViewModel {
+  var buildings: [Building] { get }
+
   var upperCampusBuildings: [Building] { get set }
 
   var lowerCampusBuildings: [Building] { get }
@@ -44,6 +46,8 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   }
 
   // MARK: Public
+
+  public var buildings: [BuildingModels.Building] = []
 
   public var upperCampusBuildings: [Building] = []
 
@@ -94,6 +98,9 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading middle campus buildings: \(error)")
     }
+
+    let buildingsData = upperCampusBuildings + lowerCampusBuildings + middleCampusBuildings
+    buildings = interactor.getBuildingsSortedAlphabetically(buildings: buildingsData, order: buildingsInAscendingOrder)
 
     isLoading = false
   }

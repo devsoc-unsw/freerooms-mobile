@@ -5,6 +5,8 @@
 //  Created by Yanlin Li  on 3/7/2025.
 //
 
+import BuildingModels
+import BuildingViewModels
 import CommonUI
 import RoomModels
 import RoomViewModels
@@ -17,8 +19,9 @@ public struct RoomsTabView: View {
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
-  public init(viewModel: RoomViewModel) {
-    self.viewModel = viewModel
+  public init(roomViewModel: RoomViewModel, buildingViewModel: BuildingViewModel) {
+    self.roomViewModel = roomViewModel
+    self.buildingViewModel = buildingViewModel
   }
 
   // MARK: Public
@@ -26,7 +29,7 @@ public struct RoomsTabView: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        roomsView(viewModel.rooms)
+        roomsView(roomViewModel.rooms, buildingViewModel.buildings)
       }
       .background(Color.gray.opacity(0.1))
       .padding(.top, 1)
@@ -45,12 +48,17 @@ public struct RoomsTabView: View {
         .navigationTitle(room.name)
         .navigationBarTitleDisplayMode(.inline)
       }
-      .onAppear(perform: viewModel.onAppear)
-      .navigationTitle("Rooms")
-      .searchable(text: $searchText, prompt: "Search...")
+      .opacity(
+        roomViewModel.isLoading
+          ? 0
+          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+        .onAppear(perform: roomViewModel.onAppear)
+        .onAppear(perform: buildingViewModel.onAppear)
+        .navigationTitle("Rooms")
+        .searchable(text: $searchText, prompt: "Search...")
     }
     .overlay(alignment: .bottom) {
-      Button("Rooms in ascending order: \(viewModel.roomsInAscendingOrder)", action: viewModel.getRoomsInOrder)
+      Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
         .buttonStyle(.borderedProminent)
         .padding(.bottom)
     }
@@ -62,24 +70,32 @@ public struct RoomsTabView: View {
 
   // MARK: Internal
 
-  @State var viewModel: RoomViewModel
+  @State var roomViewModel: RoomViewModel
+  @State var buildingViewModel: BuildingViewModel
   @State var selectedTab = "Rooms"
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
   @State var searchText = ""
 
-  func roomsView(_ rooms: [Room]) -> some View {
-    Section("Building one") {
-      ForEach(rooms) { room in
-        GenericListRowView(
-          path: $path,
-          rowHeight: $rowHeight,
-          room: room,
-          rooms: rooms,
-          imageProvider: { roomID in
-            RoomImage[roomID]
-          })
-          .padding(.vertical, 5)
+  func roomsView(_ rooms: [Room], _ buildings: [Building]) -> some View {
+    ForEach(buildings) { building in
+      Section {
+        ForEach(rooms) { room in
+          if room.buildingId == building.id {
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: rooms,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, 5)
+          }
+        }
+      } header: {
+        Text(building.name)
+          .foregroundStyle(theme.label.primary)
       }
     }
   }
@@ -91,6 +107,6 @@ public struct RoomsTabView: View {
 }
 
 #Preview {
-  RoomsTabView(viewModel: PreviewRoomViewModel())
+  RoomsTabView(roomViewModel: PreviewRoomViewModel(), buildingViewModel: PreviewBuildingViewModel())
     .defaultTheme()
 }

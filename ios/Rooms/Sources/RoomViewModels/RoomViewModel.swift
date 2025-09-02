@@ -5,6 +5,7 @@
 //  Created by Yanlin Li  on 6/8/2025.
 //
 
+import BuildingModels
 import Foundation
 import Location
 import Observation
@@ -82,6 +83,26 @@ public class RoomInteractor {
     }
   }
 
+  public func getRoomsFilteredByBuildingId(buildingIds: [String]) -> Result<[String: [Room]], Error> {
+    switch roomService.getRooms() {
+    case .success(let rooms):
+      var result: [String: [Room]] = [:]
+      for id in buildingIds {
+        var filteredRooms: [Room] = []
+        for room in rooms {
+          if room.buildingId == id {
+            filteredRooms.append(room)
+          }
+        }
+        result[id] = filteredRooms
+      }
+      return .success(result)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
   // MARK: Private
 
   private let buildingId: String
@@ -121,7 +142,6 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     loadRooms()
   }
 
-  /// New method to load Rooms asynchronously
   public func loadRooms() {
     isLoading = true
 
@@ -132,7 +152,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       rooms = interactor.sortRoomsInOrder(rooms: roomsData, order: roomsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading rooms: \(error)")
+      fatalError("Error loading rooms: \(error)")
     }
 
     isLoading = false
