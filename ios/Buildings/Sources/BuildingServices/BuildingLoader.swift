@@ -53,15 +53,13 @@ public class LiveBuildingLoader: BuildingLoader {
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
   public func fetch() -> Result {
-    let hasSavedData = UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedData)
-
     if !hasSavedData {
       switch JSONBuildingLoader.fetch() {
       case .success(let buildings):
         if case .failure(let err) = swiftDataBuildingLoader.seed(buildings) {
           return .failure(err)
         }
-        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedData)
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
         return .success(buildings)
 
       case .failure(let err):
@@ -81,5 +79,9 @@ public class LiveBuildingLoader: BuildingLoader {
 
   private let swiftDataBuildingLoader: SwiftDataBuildingLoader
   private let JSONBuildingLoader: JSONBuildingLoader
+
+  private var hasSavedData: Bool {
+    UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
+  }
 
 }

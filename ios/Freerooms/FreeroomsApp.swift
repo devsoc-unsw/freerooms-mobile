@@ -44,7 +44,7 @@ struct FreeroomsApp: App {
     let locationManager = LiveLocationManager()
     let locationService = LocationService(locationManager: locationManager)
 
-    let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<DecodableBuildingData>())
+    let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
 
     do {
       let schema = Schema([SwiftDataBuilding.self])
