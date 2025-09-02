@@ -18,7 +18,7 @@ public typealias RoomStatusResponse = [String: BuildingRoomStatus]
 public struct BuildingRoomStatus: Codable, Equatable {
   public let numAvailable: Int
   public let roomStatuses: [String: RoomStatus]
-  
+
   public init(numAvailable: Int, roomStatuses: [String: RoomStatus]) {
     self.numAvailable = numAvailable
     self.roomStatuses = roomStatuses
@@ -31,7 +31,7 @@ public struct BuildingRoomStatus: Codable, Equatable {
 public struct RoomStatus: Codable, Equatable {
   public let status: String
   public let endtime: String
-  
+
   public init(status: String, endtime: String) {
     self.status = status
     self.endtime = endtime
