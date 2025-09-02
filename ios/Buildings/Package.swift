@@ -37,7 +37,7 @@ let package = Package(
       dependencies: ["BuildingInteractors", "BuildingModels"]),
     .target(
       name: "BuildingInteractors",
-      dependencies: ["BuildingServices", "Location"]),
+      dependencies: ["BuildingServices", "Location", "BuildingModels"]),
     .target(
       name: "BuildingServices",
       dependencies: ["Networking", "Persistence", "BuildingModels"],
