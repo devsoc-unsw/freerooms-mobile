@@ -19,7 +19,7 @@ public class MockRemoteBuildingLoader: RemoteBuildingLoader {
 
   // MARK: Public
 
-  public func fetch() async -> Result<[RemoteBuilding], BuildingLoaderError> {
+  public func fetch() -> Result<[RemoteBuilding], BuildingLoaderError> {
     if buildingLoaderError != nil {
       return .failure(.connectivity)
     }

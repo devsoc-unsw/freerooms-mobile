@@ -10,6 +10,7 @@ import Foundation
 import Testing
 @testable import BuildingInteractors
 @testable import BuildingServices
+@testable import BuildingTestUtils
 @testable import Location
 @testable import LocationTestsUtils
 

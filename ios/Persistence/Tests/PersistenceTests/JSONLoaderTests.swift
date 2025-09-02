@@ -7,6 +7,7 @@
 
 import Testing
 @testable import Persistence
+@testable import PersistenceTestUtils
 
 // MARK: - JSONLoaderTests
 
@@ -72,7 +73,7 @@ struct JSONLoaderTests {
   func loadsJSONFromFakeBuildingsSeedJSONSuccessfully() async throws {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsSeedJSON)
-    let sut = LiveJSONLoader<DecodableBuildingData>(using: mockFileLoader)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
     let res = sut.load(from: "fakeFilePath/fake")
@@ -97,15 +98,6 @@ struct JSONLoaderTests {
     switch res {
     case .success(let buildings):
       #expect(buildings == expected)
-    case .failure(let error):
-      Issue.record("Expected success but got \(error)")
-    }
-  }
-
-  private func expect(_ res: LiveJSONLoader<DecodableBuildingData>.Result, toFetch expected: [DecodableBuilding]) {
-    switch res {
-    case .success(let decodableBuildingsData):
-      #expect(decodableBuildingsData.data.buildings == expected)
     case .failure(let error):
       Issue.record("Expected success but got \(error)")
     }
@@ -164,24 +156,38 @@ private let emptyJSON = """
   """
 
 private let fakeBuildingsSeedJSON = """
-  {
-    "data": {
-      "buildings": [
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          },
-          {
-            "aliases": ["A", "B"],
-            "id": "123",
-            "lat": 1.0,
-            "name": "name",
-            "long": 1.0
-          }
-      ]
+  [
+    {
+      "aliases": ["A", "B"],
+      "id": "123",
+      "lat": 1.0,
+      "name": "name",
+      "long": 1.0
+    },
+    {
+      "aliases": ["A", "B"],
+      "id": "123",
+      "lat": 1.0,
+      "name": "name",
+      "long": 1.0
     }
-  }
+  ]
   """
+
+// MARK: - DecodableBuilding
+
+private struct DecodableBuilding: Decodable, Equatable {
+  public let name: String
+  public let id: String
+  public let lat: Double
+  public let long: Double
+  public let aliases: [String]
+
+  public init(name: String, id: String, lat: Double, long: Double, aliases: [String]) {
+    self.name = name
+    self.id = id
+    self.lat = lat
+    self.long = long
+    self.aliases = aliases
+  }
+}

@@ -9,8 +9,10 @@ import BuildingModels
 import BuildingServices
 import Foundation
 import Persistence
+import PersistenceTestUtils
 import SwiftData
 import Testing
+@testable import BuildingTestUtils
 
 @Suite(.serialized)
 class BuildingLoaderTests {
@@ -18,7 +20,7 @@ class BuildingLoaderTests {
   // MARK: Lifecycle
 
   deinit {
-    UserDefaults.standard.removeObject(forKey: "hasSavedData")
+    UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedBuildingsData)
   }
 
   // MARK: Internal
@@ -33,10 +35,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == true)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
     expect(res, toFetch: buildings)
   }
 
@@ -50,10 +52,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == true)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
     expect(res, toFetch: buildings)
   }
 
@@ -67,10 +69,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == true)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
     expect(res, toFetch: buildings)
   }
 
@@ -83,10 +85,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == false)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == false)
     expect(res, toThrow: .malformedJSON)
   }
 
@@ -100,10 +102,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == false)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == false)
     expect(res, toThrow: .persistenceError)
   }
 
@@ -114,13 +116,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
-    let _ = await sut.fetch()
+    let _ = sut.fetch()
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == true)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
     expect(res, toFetch: buildings)
   }
 
@@ -131,13 +133,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onFetchThrows: .persistenceError)
     let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
-    let _ = await sut.fetch()
+    let _ = sut.fetch()
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
-    #expect(UserDefaults.standard.bool(forKey: "hasSavedData") == true)
+    #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
     expect(res, toThrow: .persistenceError)
   }
 
@@ -147,7 +149,7 @@ class BuildingLoaderTests {
     // Given
     let realBuildings = createRealBuildings()
     let liveFileLoader = LiveFileLoader()
-    let liveJSONLoader = LiveJSONLoader<DecodableBuildingData>(using: liveFileLoader)
+    let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     let schema = Schema([SwiftDataBuilding.self])
@@ -162,7 +164,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: liveJSONBuildingLoader)
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
     expect(res, toFetch: realBuildings)
@@ -174,7 +176,7 @@ class BuildingLoaderTests {
     // Given
     let realBuildings = createRealBuildings()
     let liveFileLoader = LiveFileLoader()
-    let liveJSONLoader = LiveJSONLoader<DecodableBuildingData>(using: liveFileLoader)
+    let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     let schema = Schema([SwiftDataBuilding.self])
@@ -187,10 +189,10 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
       JSONBuildingLoader: liveJSONBuildingLoader)
-    let _ = await sut.fetch()
+    let _ = sut.fetch()
 
     // When
-    let res = await sut.fetch()
+    let res = sut.fetch()
 
     // Then
     expect(res, toFetch: realBuildings)

@@ -10,11 +10,15 @@ let package = Package(
     .library(
       name: "Persistence",
       targets: ["Persistence"]),
+    .library(
+      name: "PersistenceTestUtils",
+      targets: ["PersistenceTestUtils"]),
   ],
   targets: [
     .target(
       name: "Persistence"),
+    .target(name: "PersistenceTestUtils", dependencies: ["Persistence"]),
     .testTarget(
       name: "PersistenceTests",
-      dependencies: ["Persistence"]),
+      dependencies: ["Persistence", "PersistenceTestUtils"]),
   ])

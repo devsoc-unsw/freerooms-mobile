@@ -12,6 +12,10 @@ let package = Package(
       name: "Buildings",
       targets: ["BuildingViews", "BuildingViewModels", "BuildingInteractors", "BuildingServices"]),
     .library(name: "BuildingModels", targets: ["BuildingModels"]),
+    .library(name: "BuildingViews", targets: ["BuildingViews"]),
+    .library(name: "BuildingInteractors", targets: ["BuildingInteractors"]),
+    .library(name: "BuildingServices", targets: ["BuildingServices"]),
+    .library(name: "BuildingTestUtils", targets: ["BuildingTestUtils"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
@@ -41,6 +45,7 @@ let package = Package(
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
+    .target(name: "BuildingTestUtils", dependencies: ["BuildingModels", "BuildingServices"]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
@@ -49,6 +54,8 @@ let package = Package(
         "BuildingModels",
         "Persistence",
         "TestingSupport",
+        "BuildingTestUtils",
+        .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])

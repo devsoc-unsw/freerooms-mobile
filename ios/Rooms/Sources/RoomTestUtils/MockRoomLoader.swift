@@ -7,6 +7,7 @@
 
 import Foundation
 @testable import RoomModels
+@testable import RoomServices
 
 // MARK: - MockRoomLoader
 
@@ -18,11 +19,15 @@ public class MockRoomLoader: RoomLoader {
     stubbedRooms[buildingId] = rooms
   }
 
+  public func stubRooms(_ rooms: [Room]) {
+    allRooms = rooms
+  }
+
   public func stubError(_ error: RoomLoaderError) {
     stubbedError = error
   }
 
-  public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
+  public func fetch(buildingId: String) -> Result<[Room], RoomLoaderError> {
     if let error = stubbedError {
       return .failure(error)
     }
@@ -33,8 +38,17 @@ public class MockRoomLoader: RoomLoader {
     return .failure(.noDataAvailable)
   }
 
+  public func fetch() -> Result<[RoomModels.Room], RoomServices.RoomLoaderError> {
+    if let error = stubbedError {
+      return .failure(error)
+    }
+
+    return .success(allRooms)
+  }
+
   // MARK: Private
 
   private var stubbedRooms: [String: [Room]] = [:]
+  private var allRooms: [Room] = []
   private var stubbedError: RoomLoaderError?
 }

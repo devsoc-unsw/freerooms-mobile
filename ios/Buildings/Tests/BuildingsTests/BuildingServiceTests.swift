@@ -10,6 +10,7 @@ import Foundation
 import Networking
 import Testing
 @testable import BuildingServices
+@testable import BuildingTestUtils
 
 struct BuildingServiceTests {
 
@@ -23,7 +24,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.getBuildings()
+    let res = sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -37,7 +38,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.getBuildings()
+    let res = sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -51,7 +52,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.getBuildings()
+    let res = sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -64,7 +65,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.getBuildings()
+    let res = sut.getBuildings()
 
     // Then
     expect(res, toThrow: FetchBuildingsError.connectivity)

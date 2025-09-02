@@ -5,8 +5,10 @@
 //  Created by Muqueet Mohsen Chowdhury on 5/8/2025.
 //
 
+import RoomServices
 import Testing
 @testable import RoomModels
+@testable import RoomTestUtils
 
 // MARK: - RoomServiceTests
 
@@ -15,9 +17,7 @@ struct RoomServiceTests {
   @Test("RoomService returns rooms for valid building ID")
   func returnsRoomsForValidBuildingId() async {
     // Given
-    let expectedRooms = [
-      Room(name: "Ainsworth G03", id: "K-J17-G03", abbreviation: "Ains G03", capacity: 350, usage: "LEC", school: "UNSW"),
-    ]
+    let expectedRooms = createRooms(1)
     let mockLoader = MockRoomLoader()
     mockLoader.stubRooms(expectedRooms, for: "K-J17")
     let sut = LiveRoomService(roomLoader: mockLoader)
@@ -75,11 +75,7 @@ struct RoomServiceTests {
   @Test("RoomService returns multiple rooms correctly")
   func returnsMultipleRoomsCorrectly() async {
     // Given
-    let expectedRooms = [
-      Room(name: "Ainsworth G03", id: "K-J17-G03", abbreviation: "Ains G03", capacity: 350, usage: "LEC", school: "UNSW"),
-      Room(name: "Ainsworth G04", id: "K-J17-G04", abbreviation: "Ains G04", capacity: 200, usage: "TUT", school: "UNSW"),
-      Room(name: "Ainsworth 201", id: "K-J17-201", abbreviation: "Ains 201", capacity: 50, usage: "LAB", school: "CSE"),
-    ]
+    let expectedRooms = createRooms(3)
     let mockLoader = MockRoomLoader()
     mockLoader.stubRooms(expectedRooms, for: "K-J17")
     let sut = LiveRoomService(roomLoader: mockLoader)
@@ -92,25 +88,6 @@ struct RoomServiceTests {
     case .success(let rooms):
       #expect(rooms.count == 3)
       #expect(rooms == expectedRooms)
-
-    case .failure:
-      Issue.record("Expected success but got failure")
-    }
-  }
-
-  @Test("PreviewRoomService returns mock rooms")
-  func previewServiceReturnsMockRooms() async {
-    // Given
-    let sut = PreviewRoomService()
-
-    // When
-    let result = await sut.getRooms(buildingId: "K-J17")
-
-    // Then
-    switch result {
-    case .success(let rooms):
-      #expect(rooms.count == 3)
-      #expect(rooms.first?.id == "K-J17-G03")
 
     case .failure:
       Issue.record("Expected success but got failure")
