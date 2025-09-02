@@ -18,6 +18,7 @@ public enum RoomStatusError: Error, Equatable {
 
 // MARK: - RoomStatusService
 
+/// @deprecated This service is deprecated. Room status is now handled in BuildingInteractor.
 public protocol RoomStatusService {
   func getFreeRoomCount(buildingId: String) async -> Result<Int, RoomStatusError>
 }
@@ -31,6 +32,8 @@ public struct RemoteRoomStatus: Codable, Equatable {
 
 // MARK: - LiveRoomStatusService
 
+/// @deprecated This service is deprecated. Room status is now handled in BuildingInteractor.
+/// Use BuildingInteractor.getBuildingsWithRoomStatus() instead.
 public final class LiveRoomStatusService: RoomStatusService {
 
   // MARK: Lifecycle
@@ -43,6 +46,7 @@ public final class LiveRoomStatusService: RoomStatusService {
 
   // MARK: Public
 
+  /// @deprecated Use BuildingInteractor.getBuildingsWithRoomStatus() instead
   public func getFreeRoomCount(buildingId: String) async -> Result<Int, RoomStatusError> {
     guard !buildingId.isEmpty else { return .failure(.invalidBuildingId) }
 
