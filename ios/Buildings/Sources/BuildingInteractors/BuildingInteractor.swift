@@ -16,12 +16,53 @@ public class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  public init(buildingService: BuildingService, locationService: LocationService) {
+  public init(
+    buildingService: BuildingService,
+    locationService: LocationServiceProtocol,
+    roomStatusLoader: RoomStatusLoader? = nil)
+  {
     self.buildingService = buildingService
     self.locationService = locationService
+    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Package
+
+  /// Fetches buildings and merges with room status data from the network.
+  /// Falls back to offline data if network request fails.
+  package func getBuildingsWithRoomStatus() async -> Result<[Building], Error> {
+    // First get the offline buildings
+    switch buildingService.getBuildings() {
+    case .success(let offlineBuildings):
+      // Try to fetch room status data if loader is available
+      guard let roomStatusLoader else {
+        return .success(offlineBuildings)
+      }
+
+      switch await roomStatusLoader.fetchRoomStatus() {
+      case .success(let roomStatusResponse):
+        // Merge room status data with offline buildings
+        let buildingsWithStatus = offlineBuildings.map { building in
+          let buildingRoomStatus = roomStatusResponse[building.id]
+          return Building(
+            name: building.name,
+            id: building.id,
+            latitude: building.latitude,
+            longitude: building.longitude,
+            aliases: building.aliases,
+            numberOfAvailableRooms: buildingRoomStatus?.numAvailable ?? building.numberOfAvailableRooms)
+        }
+        return .success(buildingsWithStatus)
+
+      case .failure:
+        // Network failed, return offline data
+        return .success(offlineBuildings)
+      }
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
@@ -111,7 +152,8 @@ public class BuildingInteractor {
   // MARK: Private
 
   private let buildingService: BuildingService
-  private let locationService: LocationService
+  private let locationService: LocationServiceProtocol
+  private let roomStatusLoader: RoomStatusLoader?
 
   private func calculateDistance(from location: Location, to building: Building) -> Double {
     let dlat = building.latitude - location.latitude
