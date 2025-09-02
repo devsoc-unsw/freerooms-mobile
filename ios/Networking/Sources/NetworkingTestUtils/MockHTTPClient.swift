@@ -13,6 +13,8 @@ import Networking
 public class MockHTTPClient: HTTPClient {
 
   // MARK: Public
+  
+  public init() {}
 
   public func stubSuccess(_ data: some Codable, for _: String) {
     stubbedData = try? JSONEncoder().encode(data)

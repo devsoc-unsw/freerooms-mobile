@@ -8,6 +8,7 @@
 import Foundation
 import Testing
 @testable import RoomServices
+import NetworkingTestUtils
 
 struct RoomStatusServiceTests {
 
