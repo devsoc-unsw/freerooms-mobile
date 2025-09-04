@@ -19,7 +19,7 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Public
 
-  public func fetchRoomStatus() async -> Result<RoomStatusResponse, RoomStatusLoaderError> {
+  public func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError> {
     if let stubbedError {
       return .failure(stubbedError)
     }
@@ -31,7 +31,7 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
     return .failure(.connectivity)
   }
 
-  public func stubSuccess(_ response: RoomStatusResponse) {
+  public func stubSuccess(_ response: RemoteRoomStatus) {
     stubbedResponse = response
     stubbedError = nil
   }
@@ -43,6 +43,6 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Private
 
-  private var stubbedResponse: RoomStatusResponse?
+  private var stubbedResponse: RemoteRoomStatus?
   private var stubbedError: RoomStatusLoaderError?
 }

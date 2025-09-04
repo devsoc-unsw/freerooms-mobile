@@ -1,5 +1,5 @@
 //
-//  RoomStatusResponse.swift
+//  RemoteRoomStatus.swift
 //  Buildings
 //
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-// MARK: - RoomStatusResponse
+// MARK: - RemoteRoomStatus
 
 /// Response model for the /api/rooms/status endpoint
-public typealias RoomStatusResponse = [String: BuildingRoomStatus]
+public typealias RemoteRoomStatus = [String: BuildingRoomStatus]
 
 // MARK: - BuildingRoomStatus
 

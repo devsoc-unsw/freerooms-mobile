@@ -474,7 +474,7 @@ enum BuildingInteractorTests {
       let mockLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
       let buildingService = LiveBuildingService(buildingLoader: mockLoader)
       let locationManager = MockLocationManager()
-      let locationService = LocationService(locationManager: locationManager)
+      let locationService = LiveLocationService(locationManager: locationManager)
       let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
 
       // When
@@ -496,6 +496,6 @@ func makeSUT(loadBuildings buildings: [Building]) -> BuildingInteractor {
   let mockLoader = MockBuildingLoader(loads: buildings)
   let buildingService = LiveBuildingService(buildingLoader: mockLoader)
   let locationManager = MockLocationManager()
-  let locationService = LocationService(locationManager: locationManager)
+  let locationService = LiveLocationService(locationManager: locationManager)
   return BuildingInteractor(buildingService: buildingService, locationService: locationService)
 }

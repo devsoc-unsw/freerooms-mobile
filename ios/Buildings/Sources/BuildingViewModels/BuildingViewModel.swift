@@ -84,7 +84,7 @@ public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendabl
   public init() {
     super.init(interactor: BuildingInteractor(
       buildingService: PreviewBuildingService(),
-      locationService: LocationService(locationManager: LiveLocationManager())))
+      locationService: LiveLocationService(locationManager: LiveLocationManager())))
     upperCampusBuildings = [
       Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
       Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),

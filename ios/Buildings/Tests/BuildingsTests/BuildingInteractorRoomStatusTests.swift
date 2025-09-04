@@ -26,7 +26,7 @@ struct BuildingInteractorRoomStatusTests {
     ]
     mockBuildingService.stubSuccess(offlineBuildings)
 
-    let roomStatusResponse: RoomStatusResponse = [
+    let roomStatusResponse: RemoteRoomStatus = [
       "K-G27": BuildingRoomStatus(numAvailable: 7, roomStatuses: [:]),
       "K-J17": BuildingRoomStatus(numAvailable: 16, roomStatuses: [:]),
     ]
@@ -141,7 +141,7 @@ struct BuildingInteractorRoomStatusTests {
     mockBuildingService.stubSuccess(offlineBuildings)
 
     // Only provide room status for one building
-    let roomStatusResponse: RoomStatusResponse = [
+    let roomStatusResponse: RemoteRoomStatus = [
       "K-G27": BuildingRoomStatus(numAvailable: 7, roomStatuses: [:]),
     ]
     mockRoomStatusLoader.stubSuccess(roomStatusResponse)

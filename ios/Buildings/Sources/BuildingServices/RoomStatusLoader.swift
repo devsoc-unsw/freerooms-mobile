@@ -19,7 +19,7 @@ public enum RoomStatusLoaderError: Error, Equatable {
 // MARK: - RoomStatusLoader
 
 public protocol RoomStatusLoader {
-  func fetchRoomStatus() async -> Result<RoomStatusResponse, RoomStatusLoaderError>
+  func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError>
 }
 
 // MARK: - LiveRoomStatusLoader
@@ -36,12 +36,12 @@ public final class LiveRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Public
 
-  public func fetchRoomStatus() async -> Result<RoomStatusResponse, RoomStatusLoaderError> {
+  public func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError> {
     guard let url = URL(string: statusEndpointPath, relativeTo: baseURL) else {
       return .failure(.invalidData)
     }
 
-    let loader = NetworkCodableLoader<RoomStatusResponse>(client: client, url: url)
+    let loader = NetworkCodableLoader<RemoteRoomStatus>(client: client, url: url)
 
     switch await loader.fetch() {
     case .success(let response):
