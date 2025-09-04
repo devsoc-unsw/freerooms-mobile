@@ -28,20 +28,15 @@ public class BuildingInteractor {
 
   // MARK: Package
 
-  /// Fetches buildings and merges with room status data from the network.
-  /// Falls back to offline data if network request fails.
   package func getBuildingsWithRoomStatus() async -> Result<[Building], Error> {
-    // First get the offline buildings
     switch buildingService.getBuildings() {
     case .success(let offlineBuildings):
-      // Try to fetch room status data if loader is available
       guard let roomStatusLoader else {
         return .success(offlineBuildings)
       }
 
       switch await roomStatusLoader.fetchRoomStatus() {
       case .success(let roomStatusResponse):
-        // Merge room status data with offline buildings
         let buildingsWithStatus = offlineBuildings.map { building in
           let buildingRoomStatus = roomStatusResponse[building.id]
           return Building(
@@ -55,7 +50,6 @@ public class BuildingInteractor {
         return .success(buildingsWithStatus)
 
       case .failure:
-        // Network failed, return offline data
         return .success(offlineBuildings)
       }
 
