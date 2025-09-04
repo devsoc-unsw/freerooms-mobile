@@ -17,6 +17,8 @@ import Observation
 public protocol BuildingViewModel {
   var upperCampusBuildings: [Building] { get set }
 
+  var lowerCampusBuildings: [Building] { get }
+
   var middleCampusBuildings: [Building] { get }
 
   var buildingsInAscendingOrder: Bool { get }
@@ -45,6 +47,8 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public var upperCampusBuildings: [Building] = []
 
+  public var lowerCampusBuildings: [Building] = []
+
   public var middleCampusBuildings: [Building] = []
 
   public var buildingsInAscendingOrder = true
@@ -55,24 +59,65 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading
   }
 
-  public func onAppear() { }
+  public func onAppear() {
+    // Load buildings when the view appears
+    loadBuildings()
+  }
+
+  public func loadBuildings() {
+    isLoading = true
+
+    let upperResult = interactor.getBuildingsFilteredByCampusSection(.upper)
+    let lowerResult = interactor.getBuildingsFilteredByCampusSection(.lower)
+    let middleResult = interactor.getBuildingsFilteredByCampusSection(.middle)
+
+    switch upperResult {
+    case .success(let buildings):
+      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading upper campus buildings: \(error)")
+    }
+
+    switch lowerResult {
+    case .success(let buildings):
+      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading lower campus buildings: \(error)")
+    }
+
+    switch middleResult {
+    case .success(let buildings):
+      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loading middle campus buildings: \(error)")
+    }
+
+    isLoading = false
+  }
 
   public func getBuildingsInOrder() {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    // Simulate delay from fetching buildings
-    DispatchQueue.main.async { [weak self] in
-      guard let self else { return }
+    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: upperCampusBuildings,
+      order: buildingsInAscendingOrder)
+    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: lowerCampusBuildings,
+      order: buildingsInAscendingOrder)
+    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings: middleCampusBuildings,
+      order: buildingsInAscendingOrder)
 
-      isLoading = false
-    }
+    isLoading = false
   }
 
-  // MARK: Internal
+  // MARK: Private
 
-  var interactor: BuildingInteractor
-
+  private var interactor: BuildingInteractor
 }
 
 // MARK: - PreviewBuildingViewModel

@@ -36,7 +36,7 @@ struct FreeroomsApp: App {
         .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
-        .environment(viewModel)
+        .environment(\.buildingViewModel, viewModel)
     }
   }
 
