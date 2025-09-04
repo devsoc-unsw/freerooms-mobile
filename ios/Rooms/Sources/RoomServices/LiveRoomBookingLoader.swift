@@ -11,7 +11,7 @@ import RoomModels
 // MARK: - RoomBookingLoaderError
 
 public enum RoomBookingLoaderError: Error {
-  case connectivity, invalidBuildingID
+  case connectivity, invalidBuildingID, invalidURL
 }
 
 // MARK: - RoomBookingLoader
