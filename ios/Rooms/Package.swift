@@ -59,9 +59,11 @@ let package = Package(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        "RoomInteractors",
         "RoomTestUtils",
         "RoomServices",
         "Persistence",
         .product(name: "PersistenceTestUtils", package: "Persistence"),
+        .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])

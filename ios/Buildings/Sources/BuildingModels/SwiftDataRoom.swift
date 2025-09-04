@@ -19,18 +19,19 @@ public final class SwiftDataRoom {
   /// Initializes a new SwiftDataRoom with all required properties.
   public init(
     abbreviation: String,
-    accessibility: String,
-    audioVisual: String,
+    accessibility: [String],
+    audioVisual: [String],
     buildingId: String,
     capacity: Int,
-    floor: String,
+    floor: String?,
     id: String,
+    infoTechnology: [String],
     latitude: Double,
     longitude: Double,
     microphone: [String],
     name: String,
     school: String,
-    seating: String,
+    seating: String?,
     usage: String,
     service: [String],
     writingMedia: [String],
@@ -41,14 +42,15 @@ public final class SwiftDataRoom {
     self.audioVisual = audioVisual
     self.buildingId = buildingId
     self.capacity = capacity
-    self.floor = floor
+    self.floor = floor ?? ""
     self.id = id
+    self.infoTechnology = infoTechnology
     self.latitude = latitude
     self.longitude = longitude
     self.microphone = microphone
     self.name = name
     self.school = school
-    self.seating = seating
+    self.seating = seating ?? ""
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
@@ -63,14 +65,15 @@ public final class SwiftDataRoom {
       audioVisual: room.audioVisual,
       buildingId: room.buildingId,
       capacity: room.capacity,
-      floor: room.floor,
+      floor: room.floor ?? "",
       id: room.id,
+      infoTechnology: room.infoTechnology,
       latitude: room.latitude,
       longitude: room.longitude,
       microphone: room.microphone,
       name: room.name,
       school: room.school,
-      seating: room.seating,
+      seating: room.seating ?? "",
       usage: room.usage,
       service: room.service,
       writingMedia: room.writingMedia,
@@ -80,18 +83,19 @@ public final class SwiftDataRoom {
   // MARK: Public
 
   public var abbreviation: String
-  public var accessibility: String
-  public var audioVisual: String
+  public var accessibility: [String]
+  public var audioVisual: [String]
   public var buildingId: String
   public var capacity: Int
-  public var floor: String
+  public var floor: String?
   public var id: String
+  public var infoTechnology: [String]
   public var latitude: Double
   public var longitude: Double
   public var microphone: [String]
   public var name: String
   public var school: String
-  public var seating: String
+  public var seating: String?
   public var usage: String
   public var service: [String]
   public var writingMedia: [String]
@@ -105,14 +109,15 @@ public final class SwiftDataRoom {
       audioVisual: audioVisual,
       buildingId: buildingId,
       capacity: capacity,
-      floor: floor,
+      floor: floor ?? "",
       id: id,
+      infoTechnology: infoTechnology,
       latitude: latitude,
       longitude: longitude,
       microphone: microphone,
       name: name,
       school: school,
-      seating: seating,
+      seating: seating ?? "",
       usage: usage,
       service: service,
       writingMedia: writingMedia)

@@ -127,12 +127,13 @@ struct JSONRoomLoaderTests {
     for _ in 0..<count {
       decodableRooms.append(DecodableRoom(
         abbr: "SCI101",
-        accessibility: "Wheelchair accessible, hearing loop available",
-        audiovisual: "Projector, speakers, HDMI connection",
+        accessibility: ["Wheelchair accessible", "hearing loop available"],
+        audiovisual: ["Projector", "speakers", "HDMI connection"],
         buildingId: "BLDG-2024-007",
         capacity: 45,
         floor: "Ground floor",
         id: "ROOM-12345-ABC",
+        infoTechnology: [],
         lat: 40.7589,
         long: -73.9851,
         microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
