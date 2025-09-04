@@ -37,7 +37,7 @@ let package = Package(
       dependencies: ["BuildingInteractors", "BuildingModels"]),
     .target(
       name: "BuildingInteractors",
-      dependencies: ["BuildingServices", "Location", "BuildingModels"]),
+      dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")]),
     .target(
       name: "BuildingServices",
       dependencies: ["Networking", "Persistence", "BuildingModels"],
@@ -45,7 +45,7 @@ let package = Package(
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
-    .target(name: "BuildingTestUtils", dependencies: ["BuildingModels", "BuildingServices"]),
+    .target(name: "BuildingTestUtils", dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
@@ -57,5 +57,6 @@ let package = Package(
         "BuildingTestUtils",
         .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "LocationTestsUtils", package: "Location"),
+        .product(name: "RoomTestUtils", package: "Rooms"),
       ]),
   ])

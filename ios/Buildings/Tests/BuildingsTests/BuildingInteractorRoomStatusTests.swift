@@ -10,6 +10,8 @@ import BuildingModels
 import BuildingTestUtils
 import Foundation
 import LocationTestsUtils
+import RoomModels
+import RoomTestUtils
 import Testing
 
 struct BuildingInteractorRoomStatusTests {

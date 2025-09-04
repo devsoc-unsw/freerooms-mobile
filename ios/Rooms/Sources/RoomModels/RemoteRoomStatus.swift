@@ -1,6 +1,6 @@
 //
 //  RemoteRoomStatus.swift
-//  Buildings
+//  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //

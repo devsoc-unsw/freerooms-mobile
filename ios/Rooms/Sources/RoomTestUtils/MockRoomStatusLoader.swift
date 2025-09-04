@@ -1,13 +1,13 @@
 //
 //  MockRoomStatusLoader.swift
-//  BuildingTestUtils
+//  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //
 
-import BuildingModels
-import BuildingServices
 import Foundation
+import RoomModels
+import RoomServices
 
 // MARK: - MockRoomStatusLoader
 

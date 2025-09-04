@@ -1,13 +1,13 @@
 //
 //  RoomStatusLoader.swift
-//  Buildings
+//  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //
 
-import BuildingModels
 import Foundation
 import Networking
+import RoomModels
 
 // MARK: - RoomStatusLoaderError
 
