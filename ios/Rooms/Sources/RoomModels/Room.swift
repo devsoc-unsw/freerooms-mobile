@@ -63,4 +63,5 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
+  
 }

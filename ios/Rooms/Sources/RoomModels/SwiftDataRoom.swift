@@ -7,12 +7,11 @@
 
 import Foundation
 import Persistence
-import RoomModels
 import SwiftData
 
 /// A SwiftData model representing a room, linked to a building and used for persistence.
 @Model
-public final class SwiftDataRoom {
+public final class SwiftDataRoom: IdentifiableModel {
 
   // MARK: Lifecycle
 
@@ -51,7 +50,10 @@ public final class SwiftDataRoom {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
-    self.building = building
+  }
+  
+  public var stringID: String {
+    id
   }
 
   // MARK: Public
