@@ -15,6 +15,7 @@ public enum RoomLoaderError: Error {
   case connectivity
   case noDataAvailable
   case malformedJSON, fileNotFound
+  case persistenceError
 }
 
 // MARK: - RoomLoader
