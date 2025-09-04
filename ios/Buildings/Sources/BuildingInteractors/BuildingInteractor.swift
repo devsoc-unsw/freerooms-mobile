@@ -20,18 +20,16 @@ public class BuildingInteractor {
 
   public init(
     buildingService: BuildingService,
-    locationService: LocationService,
-    roomStatusLoader: RoomStatusLoader? = nil)
+    locationService: LocationService)
   {
     self.buildingService = buildingService
     self.locationService = locationService
-    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Public
 
-  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
       return .success(filtered)
@@ -41,8 +39,8 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       do {
         let currentLocation = try locationService.getCurrentLocation()
@@ -64,7 +62,7 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) -> [Building] {
+  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) async -> [Building] {
     buildings.sorted { a, b in
       order ? a.name < b.name : a.name > b.name
     }
@@ -72,38 +70,8 @@ public class BuildingInteractor {
 
   // MARK: Package
 
-  package func getBuildingsWithRoomStatus() async -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
-    case .success(let offlineBuildings):
-      guard let roomStatusLoader else {
-        return .success(offlineBuildings)
-      }
-
-      switch await roomStatusLoader.fetchRoomStatus() {
-      case .success(let roomStatusResponse):
-        let buildingsWithStatus = offlineBuildings.map { building in
-          let buildingRoomStatus = roomStatusResponse[building.id]
-          return Building(
-            name: building.name,
-            id: building.id,
-            latitude: building.latitude,
-            longitude: building.longitude,
-            aliases: building.aliases,
-            numberOfAvailableRooms: buildingRoomStatus?.numAvailable ?? building.numberOfAvailableRooms)
-        }
-        return .success(buildingsWithStatus)
-
-      case .failure:
-        return .success(offlineBuildings)
-      }
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       let sorted = buildings.sorted { a, b in
         inAscendingOrder ? a.name < b.name : a.name > b.name
@@ -117,8 +85,8 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       // no valid data, return as is
       guard buildings.contains(where: { $0.numberOfAvailableRooms != nil }) else {
@@ -136,8 +104,8 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       var sorted = buildings
       if inAscendingOrder {
@@ -157,7 +125,6 @@ public class BuildingInteractor {
 
   private let buildingService: BuildingService
   private let locationService: LocationService
-  private let roomStatusLoader: RoomStatusLoader?
 
   private func calculateDistance(from location: Location, to building: Building) -> Double {
     let dlat = building.latitude - location.latitude

@@ -25,9 +25,9 @@ public protocol BuildingViewModel {
 
   var isLoading: Bool { get }
 
-  func getBuildingsInOrder()
+  func getBuildingsInOrder() async
 
-  func onAppear()
+  func onAppear() async
 
 }
 
@@ -59,21 +59,21 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading
   }
 
-  public func onAppear() {
+  public func onAppear() async {
     // Load buildings when the view appears
-    loadBuildings()
+    await loadBuildings()
   }
 
-  public func loadBuildings() {
+  public func loadBuildings() async {
     isLoading = true
 
-    let upperResult = interactor.getBuildingsFilteredByCampusSection(.upper)
-    let lowerResult = interactor.getBuildingsFilteredByCampusSection(.lower)
-    let middleResult = interactor.getBuildingsFilteredByCampusSection(.middle)
+    let upperResult = await interactor.getBuildingsFilteredByCampusSection(.upper)
+    let lowerResult = await interactor.getBuildingsFilteredByCampusSection(.lower)
+    let middleResult = await interactor.getBuildingsFilteredByCampusSection(.middle)
 
     switch upperResult {
     case .success(let buildings):
-      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+      upperCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading upper campus buildings: \(error)")
@@ -81,7 +81,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch lowerResult {
     case .success(let buildings):
-      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+      lowerCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading lower campus buildings: \(error)")
@@ -89,7 +89,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch middleResult {
     case .success(let buildings):
-      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+      middleCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading middle campus buildings: \(error)")
@@ -98,17 +98,17 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading = false
   }
 
-  public func getBuildingsInOrder() {
+  public func getBuildingsInOrder() async {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+    upperCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
       buildings: upperCampusBuildings,
       order: buildingsInAscendingOrder)
-    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+    lowerCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
       buildings: lowerCampusBuildings,
       order: buildingsInAscendingOrder)
-    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+    middleCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
       buildings: middleCampusBuildings,
       order: buildingsInAscendingOrder)
 
