@@ -10,24 +10,31 @@ import BuildingServices
 
 // MARK: - MockBuildingService
 
-class MockBuildingService: BuildingService {
+public class MockBuildingService: BuildingService {
 
-  // MARK: Internal
+  // MARK: Lifecycle
 
-  func getBuildings() -> GetBuildingsResult {
+  public init() { }
+
+  // MARK: Public
+
+  public func getBuildings() -> GetBuildingsResult {
     .success(buildings)
   }
 
-  func addBuilding(_ building: Building) {
+  public func addBuilding(_ building: Building) {
     buildings.append(building)
   }
 
-  func clearBuildings() {
+  public func clearBuildings() {
     buildings.removeAll()
+  }
+
+  public func stubSuccess(_ buildings: [Building]) {
+    self.buildings = buildings
   }
 
   // MARK: Private
 
   private var buildings: [Building] = []
-
 }
