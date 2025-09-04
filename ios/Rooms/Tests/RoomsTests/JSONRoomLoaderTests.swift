@@ -140,7 +140,7 @@ struct JSONRoomLoaderTests {
         name: "Science Lecture Hall A",
         school: "Metropolitan University",
         seating: "Theater-style fixed seating",
-        usage: "Lectures, presentations, seminars",
+        usage: "LCTR",
         service: ["IT support", "Cleaning service", "Security monitoring"],
         writingMedia: ["Whiteboard", "Smart board", "Flip chart"]))
     }
