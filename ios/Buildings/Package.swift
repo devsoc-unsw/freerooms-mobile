@@ -45,7 +45,9 @@ let package = Package(
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
-    .target(name: "BuildingTestUtils", dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
+    .target(
+      name: "BuildingTestUtils",
+      dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
