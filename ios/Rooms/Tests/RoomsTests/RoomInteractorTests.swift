@@ -288,14 +288,12 @@ enum RoomInteractorTests {
 /// Function to make the building SUT
 func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil) -> RoomInteractor {
   let locationManager = MockLocationManager()
-  let locationService = LocationService(locationManager: locationManager)
+  let locationService: LocationService = LocationService(locationManager: locationManager)
 
   let mockLoader = MockRoomLoader()
   if roomError != nil {
     mockLoader.stubError(roomError!)
   } else if buildingId != nil {
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("in buildingID \(buildingId)")
     mockLoader.stubRooms(rooms, for: buildingId!)
   } else {
     mockLoader.stubRooms(rooms)
