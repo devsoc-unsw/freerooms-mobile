@@ -72,7 +72,7 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Room], Error> {
+  public func getRoomsFilteredByCampusSection(_ campusSection: RoomModels.CampusSection) -> Result<[Room], Error> {
     switch roomService.getRooms() {
     case .success(let rooms):
       let filtered = rooms.filter { $0.gridReference.campusSection == campusSection }

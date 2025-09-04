@@ -23,7 +23,7 @@ public class BuildingInteractor {
 
   // MARK: Public
 
-  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
+  public func getBuildingsFilteredByCampusSection(_ campusSection: BuildingModels.CampusSection) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
     case .success(let buildings):
       let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
