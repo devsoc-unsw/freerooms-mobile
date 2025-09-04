@@ -8,17 +8,17 @@
 import CoreLocation
 import Foundation
 
-// MARK: - LocationServiceProtocol
+// MARK: - LocationService
 
-public protocol LocationServiceProtocol {
+public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool
   func locationManagerDidChangeAuthorization(_ locationManager: LocationManager)
 }
 
-// MARK: - LocationService
+// MARK: - LiveLocationService
 
-public class LocationService: NSObject, LocationServiceProtocol, LocationManagerDelegate {
+public class LiveLocationService: NSObject, LocationService, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
@@ -85,6 +85,6 @@ public class LocationService: NSObject, LocationServiceProtocol, LocationManager
 
 // MARK: - LocationServiceError
 
-enum LocationServiceError: Error {
+public enum LocationServiceError: Error {
   case locationPermissionsDenied
 }

@@ -18,7 +18,7 @@ public class BuildingInteractor {
 
   public init(
     buildingService: BuildingService,
-    locationService: LocationServiceProtocol,
+    locationService: LocationService,
     roomStatusLoader: RoomStatusLoader? = nil)
   {
     self.buildingService = buildingService
@@ -152,7 +152,7 @@ public class BuildingInteractor {
   // MARK: Private
 
   private let buildingService: BuildingService
-  private let locationService: LocationServiceProtocol
+  private let locationService: LocationService
   private let roomStatusLoader: RoomStatusLoader?
 
   private func calculateDistance(from location: Location, to building: Building) -> Double {

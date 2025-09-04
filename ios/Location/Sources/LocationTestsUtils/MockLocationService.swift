@@ -10,7 +10,7 @@ import Location
 
 // MARK: - MockLocationService
 
-public class MockLocationService: NSObject, LocationServiceProtocol, LocationManagerDelegate {
+public class MockLocationService: NSObject, LocationService, LocationManagerDelegate {
 
   // MARK: Lifecycle
 

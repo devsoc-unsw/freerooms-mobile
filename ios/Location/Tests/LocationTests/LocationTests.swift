@@ -14,7 +14,7 @@ struct LocationServicePermissionTest {
 
     // When
     mockLocationManager.simulateAuthorizationStatus(to: .denied)
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .denied)
@@ -27,7 +27,7 @@ struct LocationServicePermissionTest {
     mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
 
     // when
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .unrequested)
@@ -40,7 +40,7 @@ struct LocationServicePermissionTest {
     mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
 
     // When
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .granted)
@@ -53,7 +53,7 @@ struct LocationServicePermissionTest {
     mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
 
     // When
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // Then
     #expect(throws: Never.self) {
@@ -80,7 +80,7 @@ struct LocationServicePermissionTest {
     let mockLocationManager = MockLocationManager()
     mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
 
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     #expect(sut.locationManager.authorizationStatus == .notDetermined)
 
@@ -105,7 +105,7 @@ struct LocationServicePermissionTest {
     // Given
     let mockLocationManager = MockLocationManager()
 
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
     #expect(sut.currentPermissionState == LocationPermission.unrequested)
     #expect(throws: Never.self) {
       let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
