@@ -62,6 +62,8 @@ let package = Package(
         "RoomTestUtils",
         "RoomServices",
         "Persistence",
+        .product(name: "Networking", package: "Networking"),
+        .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
       ]),
   ])
