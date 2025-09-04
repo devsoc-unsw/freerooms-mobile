@@ -33,8 +33,7 @@ public final class SwiftDataRoom {
     seating: String,
     usage: String,
     service: [String],
-    writingMedia: [String],
-    building: SwiftDataBuilding)
+    writingMedia: [String])
   {
     self.abbreviation = abbreviation
     self.accessibility = accessibility
@@ -55,28 +54,6 @@ public final class SwiftDataRoom {
     self.building = building
   }
 
-  /// Initializes SwiftDataRoom from a domain `Room` and related `SwiftDataBuilding`.
-  public convenience init(from room: Room, building: SwiftDataBuilding) {
-    self.init(
-      abbreviation: room.abbreviation,
-      accessibility: room.accessibility,
-      audioVisual: room.audioVisual,
-      buildingId: room.buildingId,
-      capacity: room.capacity,
-      floor: room.floor,
-      id: room.id,
-      latitude: room.latitude,
-      longitude: room.longitude,
-      microphone: room.microphone,
-      name: room.name,
-      school: room.school,
-      seating: room.seating,
-      usage: room.usage,
-      service: room.service,
-      writingMedia: room.writingMedia,
-      building: building)
-  }
-
   // MARK: Public
 
   public var abbreviation: String
@@ -95,7 +72,6 @@ public final class SwiftDataRoom {
   public var usage: String
   public var service: [String]
   public var writingMedia: [String]
-  @Relationship public var building: SwiftDataBuilding
 
   /// Converts the persistence model back to the domain `Room` type.
   public func toRoom() -> Room {
