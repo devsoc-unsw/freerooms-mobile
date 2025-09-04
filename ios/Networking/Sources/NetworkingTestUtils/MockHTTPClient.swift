@@ -12,6 +12,10 @@ import Networking
 
 public class MockHTTPClient: HTTPClient {
 
+  // MARK: Lifecycle
+
+  public init() { }
+
   // MARK: Public
 
   public func stubSuccess(_ data: some Codable, for _: String) {

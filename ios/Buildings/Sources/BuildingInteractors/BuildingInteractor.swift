@@ -9,6 +9,8 @@ import BuildingModels
 import BuildingServices
 import Foundation
 import Location
+import RoomModels
+import RoomServices
 
 // MARK: - BuildingInteractor
 
@@ -16,9 +18,14 @@ public class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  public init(buildingService: BuildingService, locationService: LocationService) {
+  public init(
+    buildingService: BuildingService,
+    locationService: LocationService,
+    roomStatusLoader: RoomStatusLoader? = nil)
+  {
     self.buildingService = buildingService
     self.locationService = locationService
+    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Public
@@ -64,6 +71,36 @@ public class BuildingInteractor {
   }
 
   // MARK: Package
+
+  package func getBuildingsWithRoomStatus() async -> Result<[Building], Error> {
+    switch buildingService.getBuildings() {
+    case .success(let offlineBuildings):
+      guard let roomStatusLoader else {
+        return .success(offlineBuildings)
+      }
+
+      switch await roomStatusLoader.fetchRoomStatus() {
+      case .success(let roomStatusResponse):
+        let buildingsWithStatus = offlineBuildings.map { building in
+          let buildingRoomStatus = roomStatusResponse[building.id]
+          return Building(
+            name: building.name,
+            id: building.id,
+            latitude: building.latitude,
+            longitude: building.longitude,
+            aliases: building.aliases,
+            numberOfAvailableRooms: buildingRoomStatus?.numAvailable ?? building.numberOfAvailableRooms)
+        }
+        return .success(buildingsWithStatus)
+
+      case .failure:
+        return .success(offlineBuildings)
+      }
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
     switch buildingService.getBuildings() {
@@ -120,6 +157,7 @@ public class BuildingInteractor {
 
   private let buildingService: BuildingService
   private let locationService: LocationService
+  private let roomStatusLoader: RoomStatusLoader?
 
   private func calculateDistance(from location: Location, to building: Building) -> Double {
     let dlat = building.latitude - location.latitude

@@ -19,7 +19,7 @@ struct GetBuildingByCampusSectionTest {
     mockBuildingService.addBuilding(createMiddleCampusBuilding())
 
     let locationManager = MockLocationManager()
-    let locationService = LocationService(locationManager: locationManager)
+    let locationService = LiveLocationService(locationManager: locationManager)
 
     let sut = BuildingInteractor(buildingService: mockBuildingService, locationService: locationService)
 
@@ -46,7 +46,7 @@ struct GetBuildingByCampusSectionTest {
     mockBuildingService.addBuilding(createMiddleCampusBuilding())
 
     let locationManager = MockLocationManager()
-    let locationService = LocationService(locationManager: locationManager)
+    let locationService = LiveLocationService(locationManager: locationManager)
 
     let sut = BuildingInteractor(buildingService: mockBuildingService, locationService: locationService)
 
