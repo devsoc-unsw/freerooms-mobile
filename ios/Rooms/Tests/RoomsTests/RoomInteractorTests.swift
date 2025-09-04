@@ -288,7 +288,7 @@ enum RoomInteractorTests {
 /// Function to make the building SUT
 func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil) -> RoomInteractor {
   let locationManager = MockLocationManager()
-  let locationService: LocationService = LocationService(locationManager: locationManager)
+  let locationService = MockLocationService(locationManager: locationManager)
 
   let mockLoader = MockRoomLoader()
   if roomError != nil {

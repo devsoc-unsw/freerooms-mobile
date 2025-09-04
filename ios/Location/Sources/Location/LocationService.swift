@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - LocationService
 
-public class LocationService: NSObject, LocationManagerDelegate {
+open class LocationService: NSObject, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
