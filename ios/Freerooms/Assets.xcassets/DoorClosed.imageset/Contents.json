@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Freerooms01V.png",
+      "filename" : "FreeroomsClosedSmall.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Freerooms01V (1).png",
+      "filename" : "FreeroomsClosedMedium.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Freerooms01V (2).png",
+      "filename" : "FreeroomsClosedLarge.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
