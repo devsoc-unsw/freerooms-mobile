@@ -11,12 +11,31 @@ import RoomModels
 import SwiftData
 
 /// A SwiftData model representing a room, linked to a building and used for persistence.
+/// Stores detailed room information including facilities, capacity, and location.
 @Model
 public final class SwiftDataRoom {
 
   // MARK: Lifecycle
 
   /// Initializes a new SwiftDataRoom with all required properties.
+  /// - Parameters:
+  ///   - abbreviation: Short code for the room
+  ///   - accessibility: Accessibility features available
+  ///   - audioVisual: Audio-visual equipment available
+  ///   - buildingId: ID of the building containing this room
+  ///   - capacity: Maximum number of people the room can accommodate
+  ///   - floor: Floor level where the room is located
+  ///   - id: Unique identifier for the room
+  ///   - latitude: Geographic latitude coordinate
+  ///   - longitude: Geographic longitude coordinate
+  ///   - microphone: Available microphone types
+  ///   - name: Display name of the room
+  ///   - school: School or faculty that manages the room
+  ///   - seating: Type of seating arrangement
+  ///   - usage: Intended use of the room
+  ///   - service: Additional services available
+  ///   - writingMedia: Available writing surfaces
+  ///   - building: Reference to the parent SwiftDataBuilding
   public init(
     abbreviation: String,
     accessibility: String,
@@ -56,6 +75,9 @@ public final class SwiftDataRoom {
   }
 
   /// Initializes SwiftDataRoom from a domain `Room` and related `SwiftDataBuilding`.
+  /// - Parameters:
+  ///   - room: Domain Room model to convert from
+  ///   - building: SwiftDataBuilding to establish the relationship with
   public convenience init(from room: Room, building: SwiftDataBuilding) {
     self.init(
       abbreviation: room.abbreviation,
@@ -97,7 +119,6 @@ public final class SwiftDataRoom {
   public var writingMedia: [String]
   @Relationship public var building: SwiftDataBuilding
 
-  /// Converts the persistence model back to the domain `Room` type.
   public func toRoom() -> Room {
     Room(
       abbreviation: abbreviation,

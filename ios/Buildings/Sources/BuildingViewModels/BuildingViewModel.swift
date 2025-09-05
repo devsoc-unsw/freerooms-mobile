@@ -18,17 +18,12 @@ public protocol BuildingViewModel {
   var buildings: [Building] { get }
 
   var upperCampusBuildings: [Building] { get set }
-
   var lowerCampusBuildings: [Building] { get }
-
   var middleCampusBuildings: [Building] { get }
-
   var buildingsInAscendingOrder: Bool { get }
-
   var isLoading: Bool { get }
 
   func getBuildingsInOrder()
-
   func onAppear()
 }
 
@@ -49,13 +44,9 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   public var buildings: [Building] = []
 
   public var upperCampusBuildings: [Building] = []
-
   public var lowerCampusBuildings: [Building] = []
-
   public var middleCampusBuildings: [Building] = []
-
   public var buildingsInAscendingOrder = true
-
   public var isLoading = false
 
   public func getLoadingStatus() -> Bool {
