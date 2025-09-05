@@ -28,6 +28,10 @@ public class BuildingInteractor {
 
   // MARK: Public
 
+  public func getBuildingsFilteredByCampusSection(buildings: [Building], _ campusSection: CampusSection) -> [Building] {
+    buildings.filter { $0.gridReference.campusSection == campusSection }
+  }
+
   public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -62,7 +66,7 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) async -> [Building] {
+  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) -> [Building] {
     buildings.sorted { a, b in
       order ? a.name < b.name : a.name > b.name
     }

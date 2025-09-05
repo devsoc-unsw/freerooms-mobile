@@ -50,9 +50,7 @@ public struct BuildingsTabView: View {
             }
 
             Button {
-              Task {
-                await viewModel.getBuildingsInOrder()
-              }
+              viewModel.getBuildingsInOrder()
             } label: {
               Image(systemName: "arrow.up.arrow.down")
                 .resizable()
@@ -94,9 +92,7 @@ public struct BuildingsTabView: View {
         viewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-      .task {
-        await viewModel.onAppear()
-      }
+        .onAppear(perform: viewModel.onAppear)
         .navigationTitle("Buildings")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }

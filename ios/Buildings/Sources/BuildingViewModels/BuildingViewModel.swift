@@ -15,6 +15,8 @@ import Observation
 // MARK: - BuildingViewModel
 
 public protocol BuildingViewModel {
+  var buildings: [Building] { get }
+
   var upperCampusBuildings: [Building] { get set }
 
   var lowerCampusBuildings: [Building] { get }
@@ -25,10 +27,9 @@ public protocol BuildingViewModel {
 
   var isLoading: Bool { get }
 
-  func getBuildingsInOrder() async
+  func getBuildingsInOrder()
 
-  func onAppear() async
-
+  func onAppear()
 }
 
 // MARK: - LiveBuildingViewModel
@@ -45,6 +46,8 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Public
 
+  public var buildings: [Building] = []
+
   public var upperCampusBuildings: [Building] = []
 
   public var lowerCampusBuildings: [Building] = []
@@ -59,56 +62,67 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading
   }
 
-  public func onAppear() async {
-    // Load buildings when the view appears
-    await loadBuildings()
+  public func onAppear() {
+    // Load buildings once when the view appears
+    guard !hasLoaded else { return }
+    hasLoaded = true
+    Task {
+      await loadBuildings()
+    }
   }
 
   public func loadBuildings() async {
+    // Prevent re-entrancy
+    guard !isLoading else { return }
     isLoading = true
 
-    let upperResult = await interactor.getBuildingsFilteredByCampusSection(.upper)
-    let lowerResult = await interactor.getBuildingsFilteredByCampusSection(.lower)
-    let middleResult = await interactor.getBuildingsFilteredByCampusSection(.middle)
+    // Fetch all buildings once, then derive sections in-memory
+    let buildingResult = await interactor.getBuildingsSortedAlphabetically(inAscendingOrder: true)
 
-    switch upperResult {
-    case .success(let buildings):
-      upperCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
+    switch buildingResult {
+    case .success(let fetchedBuildings):
+      let unique = uniqueById(fetchedBuildings)
+      buildings = unique
+
+      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .upper)
+      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .middle)
+      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .lower)
+
+      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+        buildings: upper,
+        order: buildingsInAscendingOrder)
+      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+        buildings: middle,
+        order: buildingsInAscendingOrder)
+      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+        buildings: lower,
+        order: buildingsInAscendingOrder)
+
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading upper campus buildings: \(error)")
-    }
+      print("Error loading buildings: \(error)")
 
-    switch lowerResult {
-    case .success(let buildings):
-      lowerCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
-    case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading lower campus buildings: \(error)")
-    }
-
-    switch middleResult {
-    case .success(let buildings):
-      middleCampusBuildings = await interactor.getBuildingsSortedAlphabetically(buildings: buildings, order: buildingsInAscendingOrder)
-    case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading middle campus buildings: \(error)")
+      buildings = []
+      upperCampusBuildings = []
+      middleCampusBuildings = []
+      lowerCampusBuildings = []
     }
 
     isLoading = false
   }
 
-  public func getBuildingsInOrder() async {
+  public func getBuildingsInOrder() {
+    guard !isLoading else { return }
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    upperCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
+    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
       buildings: upperCampusBuildings,
       order: buildingsInAscendingOrder)
-    lowerCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
+    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
       buildings: lowerCampusBuildings,
       order: buildingsInAscendingOrder)
-    middleCampusBuildings = await interactor.getBuildingsSortedAlphabetically(
+    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
       buildings: middleCampusBuildings,
       order: buildingsInAscendingOrder)
 
@@ -117,7 +131,13 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Private
 
+  private var hasLoaded = false
   private var interactor: BuildingInteractor
+
+  private func uniqueById(_ input: [Building]) -> [Building] {
+    var seen = Set<String>()
+    return input.filter { seen.insert($0.id).inserted }
+  }
 }
 
 // MARK: - PreviewBuildingViewModel
@@ -130,29 +150,5 @@ public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendabl
     super.init(interactor: BuildingInteractor(
       buildingService: PreviewBuildingService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
-    upperCampusBuildings = [
-      Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
-      Building(
-        name: "Biological Sciences (West)",
-        id: "K-E10",
-        latitude: 0,
-        longitude: 0,
-        aliases: [],
-        numberOfAvailableRooms: 3),
-      Building(name: "Matthews Building", id: "K-E12", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
-    ]
-    middleCampusBuildings = [
-      Building(name: "AGSM", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      Building(name: "Biological Sciences", id: "K-F10", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
-      Building(
-        name: "Biological Sciences (West)",
-        id: "K-F12",
-        latitude: 0,
-        longitude: 0,
-        aliases: [],
-        numberOfAvailableRooms: 3),
-      Building(name: "Matthews Building", id: "K-F13", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
-    ]
   }
 }

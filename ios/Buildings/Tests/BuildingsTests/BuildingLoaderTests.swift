@@ -10,9 +10,9 @@ import BuildingServices
 import Foundation
 import Persistence
 import PersistenceTestUtils
+import RoomServices
 import SwiftData
 import Testing
-import RoomServices
 @testable import BuildingTestUtils
 @testable import RoomTestUtils
 
@@ -36,7 +36,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
     let res = await sut.fetch()
@@ -55,7 +58,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
     let res = await sut.fetch()
@@ -74,7 +80,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
     let res = await sut.fetch()
@@ -92,7 +101,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
     let res = await sut.fetch()
@@ -111,7 +123,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
     let res = await sut.fetch()
@@ -129,7 +144,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
     let _ = await sut.fetch()
 
     // When
@@ -148,7 +166,10 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onFetchThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
     let _ = await sut.fetch()
 
     // When
@@ -170,7 +191,6 @@ class BuildingLoaderTests {
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema)
@@ -200,7 +220,6 @@ class BuildingLoaderTests {
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
-
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

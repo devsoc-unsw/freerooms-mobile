@@ -61,7 +61,7 @@ public final class PreviewBuildingService: BuildingService {
 
   // MARK: Public
 
-  public func getBuildings() -> GetBuildingsResult {
+  public func getBuildings() async -> GetBuildingsResult {
     .success([])
   }
 }
