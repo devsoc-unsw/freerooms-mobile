@@ -6,6 +6,7 @@
 //
 
 // MARK: - Room
+import Location
 
 public struct Room: Equatable, Identifiable, Hashable {
 
@@ -145,76 +146,16 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let service: [String]
   public let writingMedia: [String]
 
+  /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {
-    GridReference.fromID(ID: id)
+    GridReference.fromBuildingID(buildingID: buildingId)
   }
 
-}
-
-// MARK: - GridReference
-
-public struct GridReference {
-  public let campusCode: String
-  public let sectionCode: String
-  public let sectionNumber: Int
-  public let campusSection: CampusSection
-  public let roomNumber: String
-
-  public static func fromID(ID: String) -> GridReference {
-    let splitID = ID.split(separator: "-").map { String($0) }
-    guard splitID.count == 3 else { return defaultGridReference() }
-
-    let campusCode = splitID[0]
-    let section = splitID[1]
-    let roomNumber = splitID[2]
-
-    let startIndex = section.startIndex
-    let secondIndex = section.index(after: startIndex)
-
-    let sectionLetter = String(section[startIndex])
-    guard let sectionNumber = Int(String(section[secondIndex...])) else {
-      return defaultGridReference()
-    }
-
-    let campusSection = CampusSection(sectionNumber)
-
-    return GridReference(
-      campusCode: campusCode,
-      sectionCode: sectionLetter,
-      sectionNumber: sectionNumber,
-      campusSection: campusSection,
-      roomNumber: roomNumber)
-  }
-
-  public static func defaultGridReference() -> GridReference {
-    GridReference(
-      campusCode: "?",
-      sectionCode: "?",
-      sectionNumber: 0,
-      campusSection: .upper,
-      roomNumber: "?")
-  }
-}
-
-// MARK: - CampusSection
-
-public enum CampusSection: Int {
-  case lower, middle, upper
-
-  // MARK: Lifecycle
-
-  /// ranges taken from https://maps-sydney.com/maps-sydney-others/unsw-map
-  public init(_ rawValue: Int) {
-    switch rawValue {
-    case 1...10:
-      self = .lower
-    case 11...18:
-      self = .middle
-    case 19...28:
-      self = .upper
-    default:
-      self = .upper
-    }
+  /// Computed room number based on the room ID
+  public var roomNumber: String {
+    let splitID = id.split(separator: "-").map { String($0) }
+    guard splitID.count == 3 else { return "?" }
+    return splitID[2]
   }
 
 }

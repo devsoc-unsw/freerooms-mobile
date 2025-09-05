@@ -14,6 +14,7 @@ import Testing
 @testable import RoomInteractors
 @testable import RoomServices
 @testable import RoomTestUtils
+@testable import TestingSupport
 
 // MARK: - RoomInteractorTests
 
@@ -245,42 +246,101 @@ enum RoomInteractorTests {
 
   struct RoomDurationFiltering {
     @Test("Returns rooms filtered by minimum 30 minutes")
-    func returnsRoomsFilteredBy30MinutesOrMore() {
+    func returnsRoomsFilteredBy30MinutesOrMore() async {
       // Given
       let expectedRooms = createDifferentRooms()
-      // let expectedBookings = createBookings()
+      let roomBookings = createRoomBookingsFromStartToEnd(
+        1,
+        from: Date().addingTimeInterval(40 * 60),
+        to: Date().addingTimeInterval(60 * 60))
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 30)
+      let result = sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
 
       // Then
+      switch result {
+      case .success(let actualResult):
+        #expect(actualResult == expectedRooms)
+        // swiftlint:disable:next no_direct_standard_out_logs
+        print("Booking loader result: \(actualResult)")
+
+      case .failure:
+        Issue.record("Expected success, got failure")
+      }
+    }
+
+    @Test("Returns rooms filtered by minimum 30 minutes with one room booked during current time")
+    func returnsRoomsFilteredBy30MinutesOrMorDuringCurrentTime() async {
+      // Given
+      let expectedRooms = createDifferentRooms()
+      let roomBookings = createRoomBookingsFromStartToEnd(
+        1,
+        from: Date(),
+        to: Date().addingTimeInterval(30 * 60))
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
+      let sut = makeRoomSUT(expect: expectedRooms)
+
+      // When
+      let result = sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+
+      // Then
+      switch result {
+      case .success(let actualResult):
+        #expect(actualResult == expectedRooms.filter { $0.id != "K-G6-105" })
+        // swiftlint:disable:next no_direct_standard_out_logs
+        print("Booking loader result: \(actualResult)")
+
+      case .failure:
+        Issue.record("Expected success, got failure")
+      }
     }
 
     @Test("Returns rooms filtered by minimum 1 hour")
-    func returnsRoomsFilteredByOneHourOrMore() {
+    func returnsRoomsFilteredByOneHourOrMore() async {
       // Given
       let expectedRooms = createDifferentRooms()
-      // let expectedBookings = createBookings()
+      let roomBookings = createRoomBookingsFromStartToEnd(
+        1,
+        from: Date().addingTimeInterval(70 * 60),
+        to: Date().addingTimeInterval(90 * 60))
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 60)
+      let result = sut.getRoomsFilteredByDuration(for: 60, roomBookings: roomBookingsMapped)
 
       // Then
+      switch result {
+      case .success(let actualResult):
+        #expect(actualResult == expectedRooms)
+      case .failure:
+        Issue.record("Expected success, got failure")
+      }
     }
 
     @Test("Returns rooms filtered by minimum 2 hour")
-    func returnsRoomsFilteredByTwoHoursOrMore() {
+    func returnsRoomsFilteredByTwoHoursOrMore() async {
       // Given
       let expectedRooms = createDifferentRooms()
-      // let expectedBookings = createBookings()
+      let roomBookings = createRoomBookingsFromStartToEnd(
+        1,
+        from: Date().addingTimeInterval(130 * 60),
+        to: Date().addingTimeInterval(150 * 60))
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 120)
+      let result = sut.getRoomsFilteredByDuration(for: 120, roomBookings: roomBookingsMapped)
 
       // Then
+      switch result {
+      case .success(let actualResult):
+        #expect(actualResult == expectedRooms)
+      case .failure:
+        Issue.record("Expected success, got failure")
+      }
     }
   }
 }
@@ -289,7 +349,7 @@ enum RoomInteractorTests {
 func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil) -> RoomInteractor {
   let locationManager = MockLocationManager()
   let locationService = LiveLocationService(locationManager: locationManager)
-  
+
   let mockLoader = MockRoomLoader()
   if roomError != nil {
     mockLoader.stubError(roomError!)

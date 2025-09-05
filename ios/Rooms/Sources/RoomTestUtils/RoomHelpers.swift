@@ -59,3 +59,16 @@ func createRoomBookings(_ count: Int) -> [RoomBooking] {
 
   return bookings
 }
+
+func createRoomBookingsFromStartToEnd(_ count: Int, from start: Date, to end: Date) -> [RoomBooking] {
+  var bookings: [RoomBooking] = []
+  for _ in 0..<count {
+    bookings.append(RoomBooking(
+      bookingType: "MISC",
+      end: end,
+      name: "COMM",
+      start: start))
+  }
+
+  return bookings
+}

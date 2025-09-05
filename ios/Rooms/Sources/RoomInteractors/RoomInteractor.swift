@@ -20,15 +20,6 @@ public class RoomInteractor {
 
   // MARK: Public
 
-  // TODO: fix until booking are done
-  public struct RoomBooking {
-    public var name: String
-    public var room: Room
-    public var bookingType: String
-    public var startTime: String
-    public var endTime: String
-  }
-
   public func getRoomsSortedAlphabetically(rooms: [Room], inAscendingOrder: Bool) -> [Room] {
     rooms.sorted { a, b in
       inAscendingOrder ? a.name < b.name : a.name > b.name
@@ -72,10 +63,10 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: RoomModels.CampusSection) -> Result<[Room], Error> {
+  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Room], Error> {
     switch roomService.getRooms() {
     case .success(let rooms):
-      let filtered = rooms.filter { $0.gridReference.campusSection == campusSection }
+      let filtered = rooms.filter { GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection }
       return .success(filtered)
 
     case .failure(let error):
@@ -83,37 +74,21 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByDuration(for minDuration: Int) -> Result<[Room], Error> {
+  public func getRoomsFilteredByDuration(for minDuration: Int, roomBookings: [String: [RoomBooking]]) -> Result<[Room], Error> {
     switch roomService.getRooms() {
     case .success(let rooms):
       var result: [Room] = []
       for room in rooms {
-        let currentTime = Date().formatted()
-        let mockRoomBookings = [
-          RoomBooking(
-            name: "LAWS1052 LEC",
-            room: Room.exampleOne,
-            bookingType: "CLASS",
-            startTime: "2024-02-29T03:00:00+00:00",
-            endTime: "2024-02-29T05:00:00+00:00"),
-          RoomBooking(
-            name: "LAWS1052 LEC",
-            room: Room.exampleTwo,
-            bookingType: "CLASS",
-            startTime: "2024-02-29T06:00:00+00:00",
-            endTime: "2024-02-29T07:00:00+00:00"),
-        ]
+        let currentTime = Date()
 
         // Sort classes by start time, then end time.
-//        let classBookings = roomService.getRoomBooking(room.id)
-        let classBookings = mockRoomBookings
-          .filter { $0.room == room }
-          .sorted { $0.startTime < $1.startTime }
-          .sorted { $0.endTime < $1.endTime }
+        let classBookings: [RoomBooking] = roomBookings[room.id] ?? []
+          .sorted { $0.start < $1.start }
+          .sorted { $0.end < $1.end }
 
         // Find the first class that *ends* after the current time
         // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first { $0.endTime >= currentTime }
+        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first { $0.end >= currentTime }
         if firstClassEndsAfterCurrentTime == nil {
           // class is free indefinitely meaning it is free the whole day from current time onwards
           result.append(room)
@@ -121,12 +96,9 @@ public class RoomInteractor {
         }
 
         /// Check if from current time to the next first class duration satisfy minDuration
-        let start = firstClassEndsAfterCurrentTime!.startTime
+        let start = firstClassEndsAfterCurrentTime!.start
         if currentTime < start {
-          let isoFormat = ISO8601DateFormatter()
-          let startTimeInDateFormat = isoFormat.date(from: firstClassEndsAfterCurrentTime!.startTime)!
-          let currentTimeInDateFormat = isoFormat.date(from: currentTime)!
-          let duration = startTimeInDateFormat.timeIntervalSince(currentTimeInDateFormat) // in seconds
+          let duration = start.timeIntervalSince(currentTime) // in seconds
           let durationInMinutes = Int(duration / 60)
 
           if durationInMinutes >= minDuration {
