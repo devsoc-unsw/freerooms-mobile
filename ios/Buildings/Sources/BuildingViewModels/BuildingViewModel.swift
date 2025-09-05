@@ -18,19 +18,13 @@ public protocol BuildingViewModel {
   var buildings: [Building] { get }
 
   var upperCampusBuildings: [Building] { get set }
-
   var lowerCampusBuildings: [Building] { get }
-
   var middleCampusBuildings: [Building] { get }
-
   var buildingsInAscendingOrder: Bool { get }
-
   var isLoading: Bool { get }
 
   func getBuildingsInOrder()
-
   func onAppear()
-
 }
 
 // MARK: - LiveBuildingViewModel
@@ -50,13 +44,9 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   public var buildings: [BuildingModels.Building] = []
 
   public var upperCampusBuildings: [Building] = []
-
   public var lowerCampusBuildings: [Building] = []
-
   public var middleCampusBuildings: [Building] = []
-
   public var buildingsInAscendingOrder = true
-
   public var isLoading = false
 
   public func getLoadingStatus() -> Bool {
@@ -64,7 +54,6 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   }
 
   public func onAppear() {
-    // Load buildings when the view appears
     loadBuildings()
   }
 
@@ -136,6 +125,30 @@ public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendabl
   public init() {
     super.init(interactor: BuildingInteractor(
       buildingService: PreviewBuildingService(),
-      locationService: LocationService(locationManager: LiveLocationManager())))
+      locationService: LiveLocationService(locationManager: LiveLocationManager())))
+    upperCampusBuildings = [
+      Building(name: "AGSM", id: "K-E4", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+      Building(name: "Biological Sciences", id: "K-E8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
+      Building(
+        name: "Biological Sciences (West)",
+        id: "K-E10",
+        latitude: 0,
+        longitude: 0,
+        aliases: [],
+        numberOfAvailableRooms: 3),
+      Building(name: "Matthews Building", id: "K-E12", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
+    ]
+    middleCampusBuildings = [
+      Building(name: "AGSM", id: "K-F8", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
+      Building(name: "Biological Sciences", id: "K-F10", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 2),
+      Building(
+        name: "Biological Sciences (West)",
+        id: "K-F12",
+        latitude: 0,
+        longitude: 0,
+        aliases: [],
+        numberOfAvailableRooms: 3),
+      Building(name: "Matthews Building", id: "K-F13", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 4),
+    ]
   }
 }
