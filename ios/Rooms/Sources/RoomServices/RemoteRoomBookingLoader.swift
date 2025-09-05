@@ -33,15 +33,15 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
     guard let url = URL(string: statusEndpointPath, relativeTo: baseURL) else {
       return .failure(.invalidURL)
     }
-    let loader = NetworkCodableLoader<[RemoteRoomBooking]>(client: client, url: url)
+    let loader = NetworkCodableLoader<RemoteRoomBookingResponse>(client: client, url: url)
 
     if roomID.isEmpty {
       return .failure(.invalidBuildingID)
     }
 
     switch await loader.fetch() {
-    case .success(let remoteRooms):
-      return .success(remoteRooms)
+    case .success(let remoteRoomsResponse):
+      return .success(remoteRoomsResponse.bookings)
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.connectivity):
       return .failure(.connectivity)
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.invalidData):
