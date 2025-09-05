@@ -16,19 +16,13 @@ import Observation
 
 public protocol BuildingViewModel {
   var upperCampusBuildings: [Building] { get set }
-
   var lowerCampusBuildings: [Building] { get }
-
   var middleCampusBuildings: [Building] { get }
-
   var buildingsInAscendingOrder: Bool { get }
-
   var isLoading: Bool { get }
 
   func getBuildingsInOrder()
-
   func onAppear()
-
 }
 
 // MARK: - LiveBuildingViewModel
@@ -46,13 +40,9 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   // MARK: Public
 
   public var upperCampusBuildings: [Building] = []
-
   public var lowerCampusBuildings: [Building] = []
-
   public var middleCampusBuildings: [Building] = []
-
   public var buildingsInAscendingOrder = true
-
   public var isLoading = false
 
   public func getLoadingStatus() -> Bool {
@@ -60,7 +50,6 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   }
 
   public func onAppear() {
-    // Load buildings when the view appears
     loadBuildings()
   }
 

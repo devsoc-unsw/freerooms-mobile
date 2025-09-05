@@ -13,14 +13,9 @@ import Persistence
 // MARK: - BuildingLoaderError
 
 public enum BuildingLoaderError: Error {
-  /// From Networking
   case connectivity
-
-  /// From SwiftData
   case persistenceError
   case noDataAvailable
-
-  /// From JSONLoader
   case fileNotFound
   case malformedJSON
 }

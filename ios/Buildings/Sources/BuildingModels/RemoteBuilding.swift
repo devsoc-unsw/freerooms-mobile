@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// A building representation received from remote API sources.
 public struct RemoteBuilding: Equatable, Codable {
   public let name: String
   public let id: String
