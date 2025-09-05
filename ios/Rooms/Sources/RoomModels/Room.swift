@@ -5,6 +5,9 @@
 //  Created by Chris Wong on 26/6/2025.
 //
 
+// MARK: - Room
+import Location
+
 public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Lifecycle
@@ -15,7 +18,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     audioVisual: [String],
     buildingId: String,
     capacity: Int,
-    floor: String,
+    floor: String?,
     id: String,
     infoTechnology: [String],
     latitude: Double,
@@ -23,7 +26,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     microphone: [String],
     name: String,
     school: String,
-    seating: String,
+    seating: String?,
     usage: String,
     service: [String],
     writingMedia: [String])
@@ -33,7 +36,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.audioVisual = audioVisual
     self.buildingId = buildingId
     self.capacity = capacity
-    self.floor = floor
+    self.floor = floor ?? ""
     self.id = id
     self.infoTechnology = infoTechnology
     self.latitude = latitude
@@ -41,7 +44,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.microphone = microphone
     self.name = name
     self.school = school
-    self.seating = seating
+    self.seating = seating ?? ""
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
@@ -130,7 +133,7 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let audioVisual: [String]
   public let buildingId: String
   public let capacity: Int
-  public let floor: String
+  public let floor: String?
   public let id: String
   public let infoTechnology: [String]
   public let latitude: Double
@@ -138,9 +141,21 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let microphone: [String]
   public let name: String
   public let school: String
-  public let seating: String
+  public let seating: String?
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
+
+  /// Computed grid reference based on the building ID for campus organization
+  public var gridReference: GridReference {
+    GridReference.fromBuildingID(buildingID: buildingId)
+  }
+
+  /// Computed room number based on the room ID
+  public var roomNumber: String {
+    let splitID = id.split(separator: "-").map { String($0) }
+    guard splitID.count == 3 else { return "?" }
+    return splitID[2]
+  }
 
 }

@@ -42,7 +42,7 @@ public final class SwiftDataRoom {
     audioVisual: [String],
     buildingId: String,
     capacity: Int,
-    floor: String,
+    floor: String?,
     id: String,
     infoTechnology: [String],
     latitude: Double,
@@ -50,7 +50,7 @@ public final class SwiftDataRoom {
     microphone: [String],
     name: String,
     school: String,
-    seating: String,
+    seating: String?,
     usage: String,
     service: [String],
     writingMedia: [String],
@@ -61,7 +61,7 @@ public final class SwiftDataRoom {
     self.audioVisual = audioVisual
     self.buildingId = buildingId
     self.capacity = capacity
-    self.floor = floor
+    self.floor = floor ?? ""
     self.id = id
     self.infoTechnology = infoTechnology
     self.latitude = latitude
@@ -69,7 +69,7 @@ public final class SwiftDataRoom {
     self.microphone = microphone
     self.name = name
     self.school = school
-    self.seating = seating
+    self.seating = seating ?? ""
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
@@ -87,7 +87,7 @@ public final class SwiftDataRoom {
       audioVisual: room.audioVisual,
       buildingId: room.buildingId,
       capacity: room.capacity,
-      floor: room.floor,
+      floor: room.floor ?? "",
       id: room.id,
       infoTechnology: room.infoTechnology,
       latitude: room.latitude,
@@ -95,7 +95,7 @@ public final class SwiftDataRoom {
       microphone: room.microphone,
       name: room.name,
       school: room.school,
-      seating: room.seating,
+      seating: room.seating ?? "",
       usage: room.usage,
       service: room.service,
       writingMedia: room.writingMedia,
@@ -109,7 +109,7 @@ public final class SwiftDataRoom {
   public var audioVisual: [String]
   public var buildingId: String
   public var capacity: Int
-  public var floor: String
+  public var floor: String?
   public var id: String
   public var infoTechnology: [String]
   public var latitude: Double
@@ -117,7 +117,7 @@ public final class SwiftDataRoom {
   public var microphone: [String]
   public var name: String
   public var school: String
-  public var seating: String
+  public var seating: String?
   public var usage: String
   public var service: [String]
   public var writingMedia: [String]
@@ -130,7 +130,7 @@ public final class SwiftDataRoom {
       audioVisual: audioVisual,
       buildingId: buildingId,
       capacity: capacity,
-      floor: floor,
+      floor: floor ?? "",
       id: id,
       infoTechnology: infoTechnology,
       latitude: latitude,
@@ -138,7 +138,7 @@ public final class SwiftDataRoom {
       microphone: microphone,
       name: name,
       school: school,
-      seating: seating,
+      seating: seating ?? "",
       usage: usage,
       service: service,
       writingMedia: writingMedia)

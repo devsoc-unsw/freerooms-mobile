@@ -13,33 +13,20 @@ func createRooms(_ count: Int) -> [Room] {
   for _ in 0..<count {
     rooms.append(Room(
       abbreviation: "SCI101",
-      accessibility: [
-        "Ventilation - Air conditioning",
-        "Weekend Access",
-        "Wheelchair access - teaching",
-        "Wheelchair access - student",
-        "Power at Wall",
-      ],
-      audioVisual: [
-        "Document camera",
-      ],
+      accessibility: ["Wheelchair accessible", "hearing loop available"],
+      audioVisual: ["Projector", "speakers", "HDMI connection"],
       buildingId: "BLDG-2024-007",
       capacity: 45,
       floor: "Ground floor",
       id: "ROOM-12345-ABC",
-      infoTechnology: [
-        "IT laptop connection",
-        "IT Lectern",
-        "Video data projector",
-        "Web Camera with Microphone",
-      ],
+      infoTechnology: [],
       latitude: 40.7589,
       longitude: -73.9851,
       microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
       name: "Science Lecture Hall A",
       school: "Metropolitan University",
       seating: "Theater-style fixed seating",
-      usage: "Lectures, presentations, seminars",
+      usage: "LCTR",
       service: ["IT support", "Cleaning service", "Security monitoring"],
       writingMedia: ["Whiteboard", "Smart board", "Flip chart"]))
   }
@@ -68,6 +55,19 @@ func createRoomBookings(_ count: Int) -> [RoomBooking] {
       end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
       name: "COMM",
       start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!))
+  }
+
+  return bookings
+}
+
+func createRoomBookingsFromStartToEnd(_ count: Int, from start: Date, to end: Date) -> [RoomBooking] {
+  var bookings: [RoomBooking] = []
+  for _ in 0..<count {
+    bookings.append(RoomBooking(
+      bookingType: "MISC",
+      end: end,
+      name: "COMM",
+      start: start))
   }
 
   return bookings
