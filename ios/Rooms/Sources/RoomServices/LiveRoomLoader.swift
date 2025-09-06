@@ -57,9 +57,12 @@ public final class LiveRoomLoader: RoomLoader {
     if !hasSavedData {
       switch JSONRoomLoader.fetch() {
       case .success(let rooms):
-        .success(rooms)
+        return .success(rooms)
       case .failure(let err):
-        .failure(err)
+        // swiftlint:disable:next no_direct_standard_out_logs
+        print("my error \(err)")
+
+        return .failure(err)
       }
     } else {
       fatalError("Swift data not implemented")

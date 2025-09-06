@@ -66,6 +66,21 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
 }
 
-// MARK: - RoomLoader
+// MARK: - PreviewRoomService
 
-// MARK: - RoomLoaderError
+public final class PreviewRoomService: RoomService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getRooms() -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+
+  public func getRooms(buildingId _: String) -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+}

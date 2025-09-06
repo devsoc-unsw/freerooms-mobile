@@ -17,7 +17,7 @@ public struct DecodableRoom: Decodable, Equatable {
     capacity: Int,
     floor: String?,
     id: String,
-    infoTechnology: [String],
+    infotechnology: [String],
     lat: Double,
     long: Double,
     microphone: [String],
@@ -35,7 +35,7 @@ public struct DecodableRoom: Decodable, Equatable {
     self.capacity = capacity
     self.floor = floor ?? ""
     self.id = id
-    self.infoTechnology = infoTechnology
+    self.infotechnology = infotechnology
     self.lat = lat
     self.long = long
     self.microphone = microphone
@@ -56,7 +56,7 @@ public struct DecodableRoom: Decodable, Equatable {
   public let capacity: Int
   public let floor: String?
   public let id: String
-  public let infoTechnology: [String]
+  public let infotechnology: [String]
   public let lat: Double
   public let long: Double
   public let microphone: [String]
