@@ -60,6 +60,7 @@ let package = Package(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        "RoomInteractors",
         "RoomTestUtils",
         "RoomServices",
         "Persistence",
@@ -67,5 +68,6 @@ let package = Package(
         .product(name: "Networking", package: "Networking"),
         .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
+        .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])
