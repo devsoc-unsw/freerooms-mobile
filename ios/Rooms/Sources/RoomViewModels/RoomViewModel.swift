@@ -16,9 +16,9 @@ import RoomServices
 // MARK: - RoomViewModel
 
 public protocol RoomViewModel {
-  var rooms: [Room] { get set }
+  var buildingId: String? { get set }
 
-  var roomsByBuildingId: [String: [Room]] { get set }
+  var rooms: [Room] { get set }
 
   var roomsInAscendingOrder: Bool { get }
 
@@ -28,6 +28,86 @@ public protocol RoomViewModel {
 
   func onAppear()
 
+}
+
+// MARK: - RoomInteractor
+
+// TODO: change this to live room interactor!
+public class RoomInteractor {
+
+  // MARK: Lifecycle
+
+  public init(buildingId: String, roomService: RoomService, locationService: LocationService) {
+    self.buildingId = buildingId
+    self.roomService = roomService
+    self.locationService = locationService
+  }
+
+  public init(roomService: RoomService, locationService: LocationService) {
+    self.roomService = roomService
+    self.locationService = locationService
+    buildingId = ""
+  }
+
+  // MARK: Public
+
+  public func sortRoomsInOrder(rooms: [Room], order: Bool) -> [Room] {
+    rooms.sorted { a, b in
+      order ? a.name < b.name : a.name > b.name
+    }
+  }
+
+  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Room], Error> {
+    switch roomService.getRooms(buildingId: buildingId) {
+    case .success(let rooms):
+      let sorted = rooms.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  public func getAllRoomsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Room], Error> {
+    switch roomService.getRooms() {
+    case .success(let rooms):
+      let sorted = rooms.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  public func getRoomsFilteredByBuildingId(buildingIds: [String]) -> Result<[String: [Room]], Error> {
+    switch roomService.getRooms() {
+    case .success(let rooms):
+      var result: [String: [Room]] = [:]
+      for id in buildingIds {
+        var filteredRooms: [Room] = []
+        for room in rooms {
+          if room.buildingId == id {
+            filteredRooms.append(room)
+          }
+        }
+        result[id] = filteredRooms
+      }
+      return .success(result)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  // MARK: Private
+
+  private let buildingId: String
+  private let roomService: RoomService
+  private let locationService: LocationService
 }
 
 // MARK: - LiveRoomViewModel
@@ -40,11 +120,12 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public init(interactor: RoomInteractor) {
     self.interactor = interactor
+    buildingId = "123"
   }
 
   // MARK: Public
 
-  public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
+  public var buildingId: String?
 
   public var rooms: [Room] = []
 
@@ -64,25 +145,11 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public func loadRooms() {
     isLoading = true
 
-    let resultRooms = interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
-    switch resultRooms {
-    case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
-    case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
-    }
+    let result = interactor.getAllRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
 
-    let resultRoomsByBuildingId = interactor.getRoomsFilteredByAllBuildingId()
-    switch resultRoomsByBuildingId {
+    switch result {
     case .success(let roomsData):
-      roomsByBuildingId = roomsData
-      for key in roomsByBuildingId.keys {
-        roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
-          rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-          inAscendingOrder: roomsInAscendingOrder)
-      }
-
+      rooms = interactor.sortRoomsInOrder(rooms: roomsData, order: roomsInAscendingOrder)
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       fatalError("Error loading rooms: \(error)")
@@ -94,11 +161,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public func getRoomsInOrder() {
     isLoading = true
     roomsInAscendingOrder.toggle()
-    for key in roomsByBuildingId.keys {
-      roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
-        rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-        inAscendingOrder: roomsInAscendingOrder)
-    }
+    rooms = interactor.sortRoomsInOrder(rooms: rooms, order: roomsInAscendingOrder)
     isLoading = false
   }
 
@@ -116,7 +179,8 @@ public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
 
   public init() {
     super.init(interactor: RoomInteractor(
+      buildingId: "K-B16",
       roomService: PreviewRoomService(),
-      locationService: LiveLocationService(locationManager: LiveLocationManager())))
+      locationService: LocationService(locationManager: LiveLocationManager())))
   }
 }

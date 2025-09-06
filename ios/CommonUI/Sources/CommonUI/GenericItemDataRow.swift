@@ -70,7 +70,7 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
       Spacer()
 
-      Text("0.0")
+      Text("4.9")
       Image(systemName: "star.fill")
         .foregroundStyle(theme.yellow)
         .padding(.trailing)
