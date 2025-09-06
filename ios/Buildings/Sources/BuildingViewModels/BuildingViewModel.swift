@@ -41,7 +41,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Public
 
-  public var buildings: [BuildingModels.Building] = []
+  public var buildings: [Building] = []
 
   public var upperCampusBuildings: [Building] = []
   public var lowerCampusBuildings: [Building] = []

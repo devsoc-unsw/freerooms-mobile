@@ -133,7 +133,7 @@ struct JSONRoomLoaderTests {
         capacity: 45,
         floor: "Ground floor",
         id: "ROOM-12345-ABC",
-        infoTechnology: [],
+        infotechnology: [],
         lat: 40.7589,
         long: -73.9851,
         microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
