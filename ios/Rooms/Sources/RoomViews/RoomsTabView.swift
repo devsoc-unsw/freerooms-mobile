@@ -19,10 +19,9 @@ public struct RoomsTabView: View {
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
-  public init(roomViewModel: RoomViewModel, buildingViewModel: BuildingViewModel, selectedTab: Binding<String>) {
+  public init(roomViewModel: RoomViewModel, buildingViewModel: BuildingViewModel) {
     self.roomViewModel = roomViewModel
     self.buildingViewModel = buildingViewModel
-    _selectedTab = selectedTab
   }
 
   // MARK: Public
@@ -30,39 +29,7 @@ public struct RoomsTabView: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.buildings)
-      }
-      .toolbar {
-        // Buttons on the right
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {
-            Button {
-              // action
-            } label: {
-              Image(systemName: "line.3.horizontal.decrease")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
-
-            Button {
-              roomViewModel.getRoomsInOrder()
-            } label: {
-              Image(systemName: "arrow.up.arrow.down")
-                .resizable()
-                .frame(width: 25, height: 20)
-            }
-
-            Button {
-              // action
-            } label: {
-              Image(systemName: "list.bullet")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
-          }
-          .padding(.trailing, 10)
-          .foregroundStyle(theme.label.tertiary)
-        }
+        roomsView(roomViewModel.rooms, buildingViewModel.buildings)
       }
       .background(Color.gray.opacity(0.1))
       .padding(.top, 1)
@@ -105,34 +72,29 @@ public struct RoomsTabView: View {
 
   @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
-  @Binding var selectedTab: String
+  @State var selectedTab = "Rooms"
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
   @State var searchText = ""
 
-  func roomsView(
-    _ roomsByBuildingId: [String: [Room]],
-    _ buildings: [Building])
-    -> some View
-  {
+  func roomsView(_ rooms: [Room], _ buildings: [Building]) -> some View {
     ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
-
       Section {
         ForEach(rooms) { room in
-          GenericListRowView(
-            path: $path,
-            rowHeight: $rowHeight,
-            room: room,
-            rooms: rooms,
-            imageProvider: { roomID in
-              RoomImage[roomID]
-            })
-            .padding(.vertical, 5)
+          if room.buildingId == building.id {
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: rooms,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, 5)
+          }
         }
       } header: {
-        Text(buildingName)
+        Text(building.name)
           .foregroundStyle(theme.label.primary)
       }
     }
@@ -145,9 +107,6 @@ public struct RoomsTabView: View {
 }
 
 #Preview {
-  RoomsTabView(
-    roomViewModel: PreviewRoomViewModel(),
-    buildingViewModel: PreviewBuildingViewModel(),
-    selectedTab: .constant("Rooms"))
+  RoomsTabView(roomViewModel: PreviewRoomViewModel(), buildingViewModel: PreviewBuildingViewModel())
     .defaultTheme()
 }
