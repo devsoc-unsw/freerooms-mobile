@@ -47,6 +47,7 @@ public final class LiveRoomService: RoomService {
     switch roomLoader.fetch(buildingId: buildingId) {
     case .success(let rooms):
       return .success(rooms)
+
     case .failure:
       return .failure(.connectivity)
     }

@@ -75,7 +75,7 @@ struct FreeroomsApp: App {
 
   static func makeLiveRoomViewModel() -> LiveRoomViewModel {
     let locationManager = LiveLocationManager()
-    let locationService = LocationService(locationManager: locationManager)
+    let locationService = LiveLocationService(locationManager: locationManager)
 
     let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
     let roomLoader = LiveRoomLoader(JSONBuildingLoader: JSONRoomLoader)
