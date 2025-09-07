@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Building
 
 /// A building on campus with location information and room availability data.
-public struct Building: Equatable, Identifiable, Hashable {
+public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
