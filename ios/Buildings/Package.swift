@@ -44,7 +44,7 @@ let package = Package(
       resources: [.process("Resources")]),
     .target(
       name: "BuildingModels",
-      dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
+      dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")]),
     .target(
       name: "BuildingTestUtils",
       dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
