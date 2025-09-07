@@ -188,7 +188,6 @@ class BuildingLoaderTests {
     let liveFileLoader = LiveFileLoader()
     let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
 
