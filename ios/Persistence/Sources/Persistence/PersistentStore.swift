@@ -30,6 +30,9 @@ public protocol PersistentStore<Model> {
 
   /// Deletes all items.
   func deleteAll() throws
+
+  /// Fetches size of persistent store.
+  func size() throws -> Int
 }
 
 // MARK: - IdentifiableModel

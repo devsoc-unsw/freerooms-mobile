@@ -20,6 +20,10 @@ public class MockSwiftDataStore<Model: PersistentModel & IdentifiableModel>: Per
 
   // MARK: Public
 
+  public func size() throws -> Int {
+    items.count
+  }
+
   public func save(_: Model) throws {
     if let error {
       throw error

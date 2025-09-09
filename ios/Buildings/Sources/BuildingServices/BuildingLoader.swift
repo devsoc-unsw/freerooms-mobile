@@ -9,6 +9,7 @@ import BuildingModels
 import Foundation
 import Networking
 import Persistence
+import RoomServices
 
 // MARK: - BuildingLoaderError
 
@@ -18,12 +19,13 @@ public enum BuildingLoaderError: Error {
   case noDataAvailable
   case fileNotFound
   case malformedJSON
+  case alreadySeeded
 }
 
 // MARK: - BuildingLoader
 
 public protocol BuildingLoader {
-  func fetch() -> Result<[Building], BuildingLoaderError>
+  func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - RemoteBuildingLoader
@@ -38,35 +40,40 @@ public class LiveBuildingLoader: BuildingLoader {
 
   // MARK: Lifecycle
 
-  public init(swiftDataBuildingLoader: SwiftDataBuildingLoader, JSONBuildingLoader: JSONBuildingLoader) {
+  public init(
+    swiftDataBuildingLoader: SwiftDataBuildingLoader,
+    JSONBuildingLoader: JSONBuildingLoader,
+    roomStatusLoader: RoomStatusLoader)
+  {
     self.swiftDataBuildingLoader = swiftDataBuildingLoader
     self.JSONBuildingLoader = JSONBuildingLoader
+    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Public
 
   public typealias Result = Swift.Result<[Building], BuildingLoaderError>
 
-  public func fetch() -> Result {
+  public func fetch() async -> Result {
     if !hasSavedData {
       switch JSONBuildingLoader.fetch() {
-      case .success(let buildings):
-        if case .failure(let err) = swiftDataBuildingLoader.seed(buildings) {
+      case .success(let offlineBuildings):
+        if case .failure(let err) = await swiftDataBuildingLoader.seed(offlineBuildings) {
           return .failure(err)
         }
         UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
-        return .success(buildings)
+        return await combineLiveAndOfflineData(offlineBuildings)
 
       case .failure(let err):
         return .failure(err)
       }
-    } else {
-      switch swiftDataBuildingLoader.fetch() {
-      case .success(let buildings):
-        return .success(buildings)
-      case .failure(let err):
-        return .failure(err)
-      }
+    }
+    switch swiftDataBuildingLoader.fetch() {
+    case .success(let offlineBuildings):
+      return await combineLiveAndOfflineData(offlineBuildings)
+
+    case .failure(let err):
+      return .failure(err)
     }
   }
 
@@ -74,9 +81,30 @@ public class LiveBuildingLoader: BuildingLoader {
 
   private let swiftDataBuildingLoader: SwiftDataBuildingLoader
   private let JSONBuildingLoader: JSONBuildingLoader
+  private let roomStatusLoader: RoomStatusLoader
 
   private var hasSavedData: Bool {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
+  }
+
+  private func combineLiveAndOfflineData(_ offlineBuildings: [Building]) async -> Result {
+    switch await roomStatusLoader.fetchRoomStatus() {
+    case .success(let roomStatusResponse):
+      let buildingsWithStatus = offlineBuildings.map { building in
+        let buildingRoomStatus = roomStatusResponse[building.id]
+        return Building(
+          name: building.name,
+          id: building.id,
+          latitude: building.latitude,
+          longitude: building.longitude,
+          aliases: building.aliases,
+          numberOfAvailableRooms: buildingRoomStatus?.numAvailable ?? building.numberOfAvailableRooms)
+      }
+      return .success(buildingsWithStatus)
+
+    case .failure:
+      return .success(offlineBuildings)
+    }
   }
 
 }

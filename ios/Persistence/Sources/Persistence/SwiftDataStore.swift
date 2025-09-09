@@ -65,6 +65,12 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
     try modelContext.save()
   }
 
+  /// Fetches the amount of entries in the persistent store
+  public func size() throws -> Int {
+    let descriptor = FetchDescriptor<Model>()
+    return try modelContext.fetchCount(descriptor)
+  }
+
   // MARK: Private
 
   private let modelContext: ModelContext
