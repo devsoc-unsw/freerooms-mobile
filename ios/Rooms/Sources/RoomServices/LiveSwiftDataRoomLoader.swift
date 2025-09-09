@@ -30,6 +30,11 @@ public final class LiveSwiftDataRoomLoader: SwiftDataRoomLoader {
 
   public func seed(_ rooms: [Room]) -> Result<Void, RoomLoaderError> {
     do {
+      /// Ensure seed is only run once
+      guard try swiftDataStore.size() == 0 else {
+        return .failure(.alreadySeeded)
+      }
+      
       try swiftDataStore.save(rooms.map {
         SwiftDataRoom(
           abbreviation: $0.abbreviation,
