@@ -6,13 +6,23 @@
 //
 
 import Foundation
+import Location
 
 // MARK: - Building
 
-public struct Building: Equatable, Identifiable, Hashable {
+/// A building on campus with location information and room availability data.
+public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
+  /// Creates a new building with the specified properties.
+  /// - Parameters:
+  ///   - name: The display name of the building
+  ///   - id: Unique identifier for the building (e.g., "K-J17")
+  ///   - latitude: Geographic latitude coordinate
+  ///   - longitude: Geographic longitude coordinate
+  ///   - aliases: Alternative names or abbreviations for the building
+  ///   - numberOfAvailableRooms: Optional count of currently available rooms
   public init(
     name: String,
     id: String,
@@ -38,72 +48,9 @@ public struct Building: Equatable, Identifiable, Hashable {
   public let aliases: [String]
   public let numberOfAvailableRooms: Int?
 
+  /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
-  }
-
-}
-
-// MARK: - GridReference
-
-public struct GridReference {
-  public let campusCode: String
-  public let sectionCode: String
-  public let sectionNumber: Int
-  public let campusSection: CampusSection
-
-  public static func fromBuildingID(buildingID: String) -> GridReference {
-    let splitID = buildingID.split(separator: "-").map { String($0) }
-    guard splitID.count == 2 else { return defaultGridReference() }
-
-    let campusCode = splitID[0]
-    let section = splitID[1]
-
-    let startIndex = section.startIndex
-    let secondIndex = section.index(after: startIndex)
-
-    let sectionLetter = String(section[startIndex])
-    guard let sectionNumber = Int(String(section[secondIndex...])) else {
-      return defaultGridReference()
-    }
-
-    let campusSection = CampusSection(sectionNumber)
-
-    return GridReference(
-      campusCode: campusCode,
-      sectionCode: sectionLetter,
-      sectionNumber: sectionNumber,
-      campusSection: campusSection)
-  }
-
-  public static func defaultGridReference() -> GridReference {
-    GridReference(
-      campusCode: "?",
-      sectionCode: "?",
-      sectionNumber: 0,
-      campusSection: .upper)
-  }
-}
-
-// MARK: - CampusSection
-
-public enum CampusSection: Int {
-  case lower, middle, upper
-
-  // MARK: Lifecycle
-
-  /// ranges taken from https://maps-sydney.com/maps-sydney-others/unsw-map
-  public init(_ rawValue: Int) {
-    switch rawValue {
-    case 1...10:
-      self = .lower
-    case 11...18:
-      self = .middle
-    case 19...28:
-      self = .upper
-    default:
-      self = .upper
-    }
   }
 
 }

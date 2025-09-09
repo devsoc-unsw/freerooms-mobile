@@ -9,22 +9,37 @@ import BuildingModels
 import BuildingServices
 import Foundation
 import Location
+import RoomModels
+import RoomServices
 
 // MARK: - BuildingInteractor
 
+/// Coordinates building-related operations including filtering, sorting, and room status integration.
+/// Acts as the main interface between the presentation layer and building services.
 public class BuildingInteractor {
 
   // MARK: Lifecycle
 
-  public init(buildingService: BuildingService, locationService: LocationService) {
+  /// Creates a new BuildingInteractor with the required services.
+  /// - Parameters:
+  ///   - buildingService: Service for building data operations
+  ///   - locationService: Service for location-based operations
+  public init(
+    buildingService: BuildingService,
+    locationService: LocationService)
+  {
     self.buildingService = buildingService
     self.locationService = locationService
   }
 
   // MARK: Public
 
-  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  public func getBuildingsFilteredByCampusSection(buildings: [Building], _ campusSection: CampusSection) -> [Building] {
+    buildings.filter { $0.gridReference.campusSection == campusSection }
+  }
+
+  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
       return .success(filtered)
@@ -34,13 +49,13 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       do {
         let currentLocation = try locationService.getCurrentLocation()
 
-        // Compute each building’s distance once, then sort
+        // Compute each building's distance once, then sort
         let sorted = buildings
           .map { (building: Building) -> (Building, Double) in
             (building, calculateDistance(from: currentLocation, to: building))
@@ -65,8 +80,8 @@ public class BuildingInteractor {
 
   // MARK: Package
 
-  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       let sorted = buildings.sorted { a, b in
         inAscendingOrder ? a.name < b.name : a.name > b.name
@@ -80,8 +95,8 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
-  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       // no valid data, return as is
       guard buildings.contains(where: { $0.numberOfAvailableRooms != nil }) else {
@@ -99,8 +114,8 @@ public class BuildingInteractor {
     }
   }
 
-  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) -> Result<[Building], Error> {
-    switch buildingService.getBuildings() {
+  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       var sorted = buildings
       if inAscendingOrder {
@@ -121,6 +136,12 @@ public class BuildingInteractor {
   private let buildingService: BuildingService
   private let locationService: LocationService
 
+  /// Calculates the squared distance between a location and a building.
+  /// Uses squared distance for performance (avoiding square root calculation).
+  /// - Parameters:
+  ///   - location: Starting location
+  ///   - building: Target building
+  /// - Returns: Squared distance value
   private func calculateDistance(from location: Location, to building: Building) -> Double {
     let dlat = building.latitude - location.latitude
     let dlon = building.longitude - location.longitude

@@ -20,7 +20,7 @@ public enum FetchBuildingsError: Error {
 // MARK: - BuildingService
 
 public protocol BuildingService {
-  func getBuildings() -> GetBuildingsResult
+  func getBuildings() async -> GetBuildingsResult
 }
 
 // MARK: - LiveBuildingService
@@ -37,8 +37,8 @@ public final class LiveBuildingService: BuildingService {
 
   public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
-  public func getBuildings() -> GetBuildingsResult {
-    switch buildingLoader.fetch() {
+  public func getBuildings() async -> GetBuildingsResult {
+    switch await buildingLoader.fetch() {
     case .success(let buildings):
       .success(buildings)
     case .failure:
@@ -61,7 +61,7 @@ public final class PreviewBuildingService: BuildingService {
 
   // MARK: Public
 
-  public func getBuildings() -> GetBuildingsResult {
+  public func getBuildings() async -> GetBuildingsResult {
     .success([])
   }
 }

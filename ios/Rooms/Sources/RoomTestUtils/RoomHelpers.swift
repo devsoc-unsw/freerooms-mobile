@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 1/9/2025.
 //
 
+import Foundation
 import RoomModels
 
 func createRooms(_ count: Int) -> [Room] {
@@ -12,19 +13,20 @@ func createRooms(_ count: Int) -> [Room] {
   for _ in 0..<count {
     rooms.append(Room(
       abbreviation: "SCI101",
-      accessibility: "Wheelchair accessible, hearing loop available",
-      audioVisual: "Projector, speakers, HDMI connection",
+      accessibility: ["Wheelchair accessible", "hearing loop available"],
+      audioVisual: ["Projector", "speakers", "HDMI connection"],
       buildingId: "BLDG-2024-007",
       capacity: 45,
       floor: "Ground floor",
       id: "ROOM-12345-ABC",
+      infoTechnology: [],
       latitude: 40.7589,
       longitude: -73.9851,
       microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
       name: "Science Lecture Hall A",
       school: "Metropolitan University",
       seating: "Theater-style fixed seating",
-      usage: "Lectures, presentations, seminars",
+      usage: "LCTR",
       service: ["IT support", "Cleaning service", "Security monitoring"],
       writingMedia: ["Whiteboard", "Smart board", "Flip chart"]))
   }
@@ -37,22 +39,62 @@ func createSwiftDataRooms(_ count: Int) -> [SwiftDataRoom] {
   for _ in 0..<count {
     rooms.append(SwiftDataRoom(
       abbreviation: "SCI101",
-      accessibility: "Wheelchair accessible, hearing loop available",
-      audioVisual: "Projector, speakers, HDMI connection",
+      accessibility: ["Wheelchair accessible", "hearing loop available"],
+      audioVisual: ["Projector", "speakers", "HDMI connection"],
       buildingId: "BLDG-2024-007",
       capacity: 45,
       floor: "Ground floor",
       id: "ROOM-12345-ABC",
+      infoTechnology: [],
       latitude: 40.7589,
       longitude: -73.9851,
       microphone: ["Wireless handheld", "Lapel mic", "Desktop mic"],
       name: "Science Lecture Hall A",
       school: "Metropolitan University",
       seating: "Theater-style fixed seating",
-      usage: "Lectures, presentations, seminars",
+      usage: "LCTR",
       service: ["IT support", "Cleaning service", "Security monitoring"],
       writingMedia: ["Whiteboard", "Smart board", "Flip chart"]))
   }
 
   return rooms
+}
+
+func createRemoteRoomBookings(_ count: Int) -> [RemoteRoomBooking] {
+  var bookings: [RemoteRoomBooking] = []
+  for _ in 0..<count {
+    bookings.append(RemoteRoomBooking(
+      bookingType: "MISC",
+      end: "2024-01-02T10:30:00+00:00",
+      name: "COMM",
+      start: "2024-01-01T20:00:00+00:00"))
+  }
+
+  return bookings
+}
+
+func createRoomBookings(_ count: Int) -> [RoomBooking] {
+  var bookings: [RoomBooking] = []
+  for _ in 0..<count {
+    bookings.append(RoomBooking(
+      bookingType: "MISC",
+      end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
+      name: "COMM",
+      start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!))
+  }
+
+  return bookings
+}
+
+func createRoomBookingsFromStartToEnd(_ count: Int, from start: Date, to end: Date) -> [RoomBooking] {
+  var bookings: [RoomBooking] = []
+  for _ in 0..<count {
+    bookings.append(RoomBooking(
+      bookingType: "MISC",
+      end: end,
+      name: "COMM",
+      start: start))
+  }
+
+  return bookings
 }

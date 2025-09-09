@@ -16,6 +16,7 @@ let package = Package(
     .library(name: "Rooms", targets: ["RoomModels", "RoomViews", "RoomInteractors", "RoomServices", "RoomViewModels"]),
   ],
   dependencies: [
+    .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Location", path: "../Location"),
     .package(name: "CommonUI", path: "../CommonUI"),
@@ -52,6 +53,7 @@ let package = Package(
     .target(
       name: "RoomModels",
       dependencies: [
+        .product(name: "Location", package: "Location"),
         .product(name: "Networking", package: "Networking"),
       ]),
     .target(name: "RoomTestUtils", dependencies: ["RoomServices", "RoomModels"]),
@@ -59,9 +61,14 @@ let package = Package(
       name: "RoomsTests",
       dependencies: [
         "RoomModels",
+        "RoomInteractors",
         "RoomTestUtils",
         "RoomServices",
         "Persistence",
+        "TestingSupport",
+        .product(name: "Networking", package: "Networking"),
+        .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
+        .product(name: "LocationTestsUtils", package: "Location"),
       ]),
   ])

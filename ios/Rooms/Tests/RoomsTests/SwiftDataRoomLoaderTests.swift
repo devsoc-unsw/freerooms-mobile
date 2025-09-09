@@ -5,14 +5,17 @@
 //  Created by Chris Wong on 3/9/2025.
 //
 
-import Testing
+import Foundation
+import RoomModels
 import RoomServices
+import Testing
 @testable import PersistenceTestUtils
 @testable import RoomTestUtils
-import RoomModels
-import Foundation
 
 struct SwiftDataRoomLoaderTests {
+
+  // MARK: Internal
+
   @Test("LiveSwiftDataBuildingLoader fetches three buildings from its store")
   func fetchBuildingsFromLiveSwiftDataBuildingLoader() async {
     // Given

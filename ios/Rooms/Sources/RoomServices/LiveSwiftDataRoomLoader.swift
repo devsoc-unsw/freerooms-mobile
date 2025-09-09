@@ -39,6 +39,7 @@ public final class LiveSwiftDataRoomLoader: SwiftDataRoomLoader {
           capacity: $0.capacity,
           floor: $0.floor,
           id: $0.id,
+          infoTechnology: $0.infoTechnology,
           latitude: $0.latitude,
           longitude: $0.longitude,
           microphone: $0.microphone,
