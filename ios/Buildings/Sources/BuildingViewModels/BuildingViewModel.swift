@@ -15,13 +15,11 @@ import Observation
 // MARK: - BuildingViewModel
 
 public protocol BuildingViewModel {
-  var buildings: [Building] { get }
-
-  var upperCampusBuildings: [Building] { get set }
-  var lowerCampusBuildings: [Building] { get }
-  var middleCampusBuildings: [Building] { get }
+  var buildings: (upper: [Building], middle: [Building], lower: [Building]) { get }
+  var filteredBuildings: (upper: [Building], middle: [Building], lower: [Building]) { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
+  var searchText: String { get set }
 
   func getBuildingsInOrder()
   func onAppear()
@@ -41,13 +39,23 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Public
 
-  public var buildings: [Building] = []
-
-  public var upperCampusBuildings: [Building] = []
-  public var lowerCampusBuildings: [Building] = []
-  public var middleCampusBuildings: [Building] = []
   public var buildingsInAscendingOrder = true
   public var isLoading = false
+  public var searchText = ""
+
+  public var buildings: (upper: [Building], middle: [Building], lower: [Building]) = ([], [], [])
+
+  public var filteredBuildings: (upper: [Building], middle: [Building], lower: [Building]) {
+    let filter: ([Building]) -> [Building] = { buildings in
+      guard !self.searchText.isEmpty else { return buildings }
+      return buildings.filter { $0.name.localizedCaseInsensitiveContains(self.searchText) }
+    }
+
+    return (
+      upper: filter(buildings.upper),
+      middle: filter(buildings.middle),
+      lower: filter(buildings.lower))
+  }
 
   public func getLoadingStatus() -> Bool {
     isLoading
@@ -72,31 +80,25 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     switch buildingResult {
     case .success(let fetchedBuildings):
-      let unique = uniqueById(fetchedBuildings)
-      buildings = unique
+      let uniqueBuildings = uniqueById(fetchedBuildings)
 
-      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .upper)
-      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .middle)
-      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: buildings, .lower)
+      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
+      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
+      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
 
-      upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings.upper = interactor.getBuildingsSortedAlphabetically(
         buildings: upper,
         order: buildingsInAscendingOrder)
-      middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings.middle = interactor.getBuildingsSortedAlphabetically(
         buildings: middle,
         order: buildingsInAscendingOrder)
-      lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
+      buildings.lower = interactor.getBuildingsSortedAlphabetically(
         buildings: lower,
         order: buildingsInAscendingOrder)
 
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
       print("Error loading buildings: \(error)")
-
-      buildings = []
-      upperCampusBuildings = []
-      middleCampusBuildings = []
-      lowerCampusBuildings = []
     }
 
     isLoading = false
@@ -107,14 +109,14 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading = true
     buildingsInAscendingOrder.toggle()
 
-    upperCampusBuildings = interactor.getBuildingsSortedAlphabetically(
-      buildings: upperCampusBuildings,
+    buildings.upper = interactor.getBuildingsSortedAlphabetically(
+      buildings: buildings.upper,
       order: buildingsInAscendingOrder)
-    lowerCampusBuildings = interactor.getBuildingsSortedAlphabetically(
-      buildings: lowerCampusBuildings,
+    buildings.lower = interactor.getBuildingsSortedAlphabetically(
+      buildings: buildings.lower,
       order: buildingsInAscendingOrder)
-    middleCampusBuildings = interactor.getBuildingsSortedAlphabetically(
-      buildings: middleCampusBuildings,
+    buildings.middle = interactor.getBuildingsSortedAlphabetically(
+      buildings: buildings.middle,
       order: buildingsInAscendingOrder)
 
     isLoading = false
