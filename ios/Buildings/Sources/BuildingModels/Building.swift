@@ -23,13 +23,15 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   ///   - longitude: Geographic longitude coordinate
   ///   - aliases: Alternative names or abbreviations for the building
   ///   - numberOfAvailableRooms: Optional count of currently available rooms
+  ///   - overallRating: Optional overall rating of current building based on rated rooms
   public init(
     name: String,
     id: String,
     latitude: Double,
     longitude: Double,
     aliases: [String],
-    numberOfAvailableRooms: Int? = nil)
+    numberOfAvailableRooms: Int? = nil,
+    overallRating: Double? = nil)
   {
     self.name = name
     self.id = id
@@ -37,6 +39,7 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
     self.longitude = longitude
     self.aliases = aliases
     self.numberOfAvailableRooms = numberOfAvailableRooms
+    self.overallRating = overallRating
   }
 
   // MARK: Public
@@ -46,7 +49,8 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public let latitude: Double
   public let longitude: Double
   public let aliases: [String]
-  public let numberOfAvailableRooms: Int?
+  public var numberOfAvailableRooms: Int?
+  public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {
