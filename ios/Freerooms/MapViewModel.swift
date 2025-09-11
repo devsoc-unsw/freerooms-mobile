@@ -25,7 +25,7 @@ final class MapViewModel {
   var buildings: [Building] = []
 
   func loadBuildings() async throws(FetchBuildingsError) {
-    switch buildingService.getBuildings() {
+    switch await buildingService.getBuildings() {
     case .success(let buildings):
       self.buildings = buildings
     case .failure(let error):

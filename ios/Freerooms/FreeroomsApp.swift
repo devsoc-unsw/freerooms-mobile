@@ -11,7 +11,9 @@ import BuildingServices
 import BuildingViewModels
 import BuildingViews
 import CommonUI
+import Foundation
 import Location
+import Networking
 import Persistence
 import RoomInteractors
 import RoomModels
@@ -51,6 +53,13 @@ struct FreeroomsApp: App {
 
     let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
 
+    let httpClient = URLSessionHTTPClient(session: URLSession.shared)
+
+    /// TODO: baseURL should be in env variables
+    guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
+      fatalError("Invalid base url")
+    }
+
     do {
       let schema = Schema([SwiftDataBuilding.self])
       let modelConfiguration = ModelConfiguration(schema: schema)
@@ -59,9 +68,11 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
+      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
-        JSONBuildingLoader: JSONBuildingLoader)
+        JSONBuildingLoader: JSONBuildingLoader, roomStatusLoader: roomStatusLoader)
 
       let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
 

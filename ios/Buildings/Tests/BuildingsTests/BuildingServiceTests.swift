@@ -24,7 +24,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -38,7 +38,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -52,7 +52,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -65,7 +65,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toThrow: FetchBuildingsError.connectivity)

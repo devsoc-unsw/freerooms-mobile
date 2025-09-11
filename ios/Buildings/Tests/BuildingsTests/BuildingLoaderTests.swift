@@ -10,9 +10,11 @@ import BuildingServices
 import Foundation
 import Persistence
 import PersistenceTestUtils
+import RoomServices
 import SwiftData
 import Testing
 @testable import BuildingTestUtils
+@testable import RoomTestUtils
 
 @Suite(.serialized)
 class BuildingLoaderTests {
@@ -32,10 +34,15 @@ class BuildingLoaderTests {
     let buildings = createBuildings(0)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
@@ -49,10 +56,15 @@ class BuildingLoaderTests {
     let buildings = createBuildings(1)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
@@ -66,10 +78,15 @@ class BuildingLoaderTests {
     let buildings = createBuildings(10)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
@@ -82,10 +99,15 @@ class BuildingLoaderTests {
     let buildings = createBuildings(10)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(throws: .malformedJSON)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == false)
@@ -99,10 +121,15 @@ class BuildingLoaderTests {
     let buildings = createBuildings(10)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == false)
@@ -115,11 +142,16 @@ class BuildingLoaderTests {
     let buildings = createBuildings(10)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
-    let _ = sut.fetch()
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
+    let _ = await sut.fetch()
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
@@ -132,11 +164,16 @@ class BuildingLoaderTests {
     let buildings = createBuildings(10)
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onFetchThrows: .persistenceError)
-    let sut = LiveBuildingLoader(swiftDataBuildingLoader: swiftDataBuildingMock, JSONBuildingLoader: mockJSONBuildingLoader)
-    let _ = sut.fetch()
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
+    let sut = LiveBuildingLoader(
+      swiftDataBuildingLoader: swiftDataBuildingMock,
+      JSONBuildingLoader: mockJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader)
+    let _ = await sut.fetch()
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     #expect(UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData) == true)
@@ -151,6 +188,8 @@ class BuildingLoaderTests {
     let liveFileLoader = LiveFileLoader()
     let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema)
@@ -161,10 +200,10 @@ class BuildingLoaderTests {
 
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
-      JSONBuildingLoader: liveJSONBuildingLoader)
+      JSONBuildingLoader: liveJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: realBuildings)
@@ -178,6 +217,8 @@ class BuildingLoaderTests {
     let liveFileLoader = LiveFileLoader()
     let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubFailure(.connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -188,11 +229,11 @@ class BuildingLoaderTests {
 
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
-      JSONBuildingLoader: liveJSONBuildingLoader)
-    let _ = sut.fetch()
+      JSONBuildingLoader: liveJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+    let _ = await sut.fetch()
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: realBuildings)

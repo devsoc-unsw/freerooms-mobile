@@ -13,7 +13,7 @@ import Persistence
 
 public protocol SwiftDataBuildingLoader {
   func fetch() -> Result<[Building], BuildingLoaderError>
-  func seed(_ buildings: [Building]) -> Result<Void, BuildingLoaderError>
+  func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError>
 }
 
 // MARK: - LiveSwiftDataBuildingLoader
@@ -28,8 +28,13 @@ public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
 
   // MARK: Public
 
-  public func seed(_ buildings: [Building]) -> Result<Void, BuildingLoaderError> {
+  public func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError> {
     do {
+      /// Ensure seed is only run once
+      guard try swiftDataStore.size() == 0 else {
+        return .failure(.alreadySeeded)
+      }
+
       try swiftDataStore.save(buildings.map {
         SwiftDataBuilding(
           name: $0.name,
@@ -37,8 +42,7 @@ public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
           latitude: $0.latitude,
           longitude: $0.longitude,
           aliases: $0.aliases,
-          numberOfAvailableRooms: $0.numberOfAvailableRooms,
-          rooms: [])
+          numberOfAvailableRooms: $0.numberOfAvailableRooms)
       })
       return .success(())
     } catch {
