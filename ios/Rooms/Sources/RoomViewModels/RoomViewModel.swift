@@ -58,13 +58,15 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public func onAppear() {
     // Load Rooms when the view appears
-    loadRooms()
+    Task {
+      await loadRooms()
+    }
   }
 
-  public func loadRooms() {
+  public func loadRooms() async {
     isLoading = true
 
-    let resultRooms = interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
+    let resultRooms = await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
     switch resultRooms {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
@@ -73,7 +75,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       fatalError("Error loading rooms: \(error)")
     }
 
-    let resultRoomsByBuildingId = interactor.getRoomsFilteredByAllBuildingId()
+    let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
     switch resultRoomsByBuildingId {
     case .success(let roomsData):
       roomsByBuildingId = roomsData

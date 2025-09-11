@@ -59,11 +59,9 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
           .truncationMode(.tail)
 
         if let room = item as? Room {
-          let isAvailable = true
-          Text("\(isAvailable ? "Available" : "Unavailable")")
-            .foregroundStyle(isAvailable ? .green : .red)
+          Text("\(room.status == "free" ? "Available" : room.status == "" ? "status not available" : "Unavailable")")
+            .foregroundStyle(room.status == "free" ? .green : room.status == "" ? .gray : .red)
         } else if let building = item as? Building {
-          // The `^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true)` handles plurals using "automatic grammar agreement", works for a couple languages
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }
       }

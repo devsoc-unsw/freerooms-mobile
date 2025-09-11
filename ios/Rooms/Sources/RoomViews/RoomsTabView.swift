@@ -119,21 +119,25 @@ public struct RoomsTabView: View {
       let rooms = roomsByBuildingId[building.id] ?? []
       let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
-      Section {
-        ForEach(rooms) { room in
-          GenericListRowView(
-            path: $path,
-            rowHeight: $rowHeight,
-            room: room,
-            rooms: rooms,
-            imageProvider: { roomID in
-              RoomImage[roomID]
-            })
-            .padding(.vertical, 5)
+      if rooms.isEmpty {
+        EmptyView()
+      } else {
+        Section {
+          ForEach(rooms) { room in
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: rooms,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, 5)
+          }
+        } header: {
+          Text(buildingName)
+            .foregroundStyle(theme.label.primary)
         }
-      } header: {
-        Text(buildingName)
-          .foregroundStyle(theme.label.primary)
       }
     }
   }

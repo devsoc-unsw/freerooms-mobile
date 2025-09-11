@@ -50,8 +50,8 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
-    self.status = status
-    self.endTime = endTime
+    self.status = status ?? ""
+    self.endTime = endTime ?? ""
   }
 
   // MARK: Public

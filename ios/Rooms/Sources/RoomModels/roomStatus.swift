@@ -7,6 +7,19 @@
 
 import Foundation
 
+// MARK: - RoomStatus
+
+/// Represents the status of an individual room
+public struct RoomStatus: Codable, Equatable {
+  public let status: String
+  public let endtime: String
+
+  public init(status: String, endtime: String) {
+    self.status = status
+    self.endtime = endtime
+  }
+}
+
 // MARK: - RemoteRoomStatus
 
 /// Response model for the /api/rooms/status endpoint
@@ -22,18 +35,5 @@ public struct BuildingRoomStatus: Codable, Equatable {
   public init(numAvailable: Int, roomStatuses: [String: RoomStatus]) {
     self.numAvailable = numAvailable
     self.roomStatuses = roomStatuses
-  }
-}
-
-// MARK: - RoomStatus
-
-/// Represents the status of an individual room
-public struct RoomStatus: Codable, Equatable {
-  public let status: String
-  public let endtime: String
-
-  public init(status: String, endtime: String) {
-    self.status = status
-    self.endtime = endtime
   }
 }

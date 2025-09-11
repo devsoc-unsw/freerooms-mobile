@@ -21,7 +21,7 @@ public enum FetchRoomError: Error, Equatable {
 
 public protocol RoomService {
   func getRooms() async -> GetRoomResult
-  func getRooms(buildingId: String) -> GetRoomResult
+  func getRooms(buildingId: String) async -> GetRoomResult
 }
 
 // MARK: - LiveRoomService
@@ -38,13 +38,13 @@ public final class LiveRoomService: RoomService {
 
   public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 
-  public func getRooms(buildingId: String) -> GetRoomResult {
+  public func getRooms(buildingId: String) async -> GetRoomResult {
     // Validate input
     guard !buildingId.isEmpty else {
       return .failure(.invalidBuildingId)
     }
 
-    switch roomLoader.fetch(buildingId: buildingId) {
+    switch await roomLoader.fetch(buildingId: buildingId) {
     case .success(let rooms):
       return .success(rooms)
     case .failure:

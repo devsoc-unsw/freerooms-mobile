@@ -29,10 +29,12 @@ class RoomLoaderTests {
     // Given
     let rooms = createRooms(0)
     let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let sut = LiveRoomLoader(JSONBuildingLoader: mockJSONRoomLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubSuccess(createRemoteRoomStatus(0))
+    let sut = LiveRoomLoader(JSONRoomLoader: mockJSONRoomLoader, roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
@@ -44,10 +46,12 @@ class RoomLoaderTests {
     // Given
     let rooms = createRooms(1)
     let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let sut = LiveRoomLoader(JSONBuildingLoader: mockJSONRoomLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubSuccess(createRemoteRoomStatus(1))
+    let sut = LiveRoomLoader(JSONRoomLoader: mockJSONRoomLoader, roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
@@ -59,10 +63,12 @@ class RoomLoaderTests {
     // Given
     let rooms = createRooms(10)
     let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let sut = LiveRoomLoader(JSONBuildingLoader: mockJSONRoomLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubSuccess(createRemoteRoomStatus(10))
+    let sut = LiveRoomLoader(JSONRoomLoader: mockJSONRoomLoader, roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
@@ -72,10 +78,12 @@ class RoomLoaderTests {
   func onFirstLoadJSONBuildingLoaderThrowsError() async throws {
     // Given
     let mockJSONRoomLoader = MockJSONRoomLoader(throws: .malformedJSON)
-    let sut = LiveRoomLoader(JSONBuildingLoader: mockJSONRoomLoader)
+    let mockRoomStatusLoader = MockRoomStatusLoader()
+    mockRoomStatusLoader.stubSuccess(createRemoteRoomStatus(0))
+    let sut = LiveRoomLoader(JSONRoomLoader: mockJSONRoomLoader, roomStatusLoader: mockRoomStatusLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toThrow: .malformedJSON)
