@@ -78,6 +78,18 @@ public class BuildingInteractor {
     }
   }
 
+  public func filter(_ buildings: CampusBuildings, by query: String) -> CampusBuildings {
+    let filter: ([Building]) -> [Building] = { buildings in
+      guard !query.isEmpty else { return buildings }
+      return buildings.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
+
+    return (
+      upper: filter(buildings.upper),
+      middle: filter(buildings.middle),
+      lower: filter(buildings.lower))
+  }
+
   // MARK: Package
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
