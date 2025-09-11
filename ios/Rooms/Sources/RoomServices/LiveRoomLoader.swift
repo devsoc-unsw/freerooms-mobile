@@ -23,7 +23,7 @@ public enum RoomLoaderError: Error {
 
 public protocol RoomLoader {
   func fetch(buildingId: String) -> Result<[Room], RoomLoaderError>
-  func fetch() -> Result<[Room], RoomLoaderError>
+  func fetch() async -> Result<[Room], RoomLoaderError>
 }
 
 // MARK: - LiveRoomLoader
@@ -32,8 +32,9 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
-  public init(JSONBuildingLoader JSONRoomLoader: JSONRoomLoader) {
+  public init(JSONBuildingLoader JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader) {
     self.JSONRoomLoader = JSONRoomLoader
+    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Public
@@ -55,11 +56,11 @@ public final class LiveRoomLoader: RoomLoader {
     }
   }
 
-  public func fetch() -> Result {
+  public func fetch() async -> Result {
     if !hasSavedData {
       switch JSONRoomLoader.fetch() {
       case .success(let rooms):
-        return .success(rooms)
+        await combineLiveAndSavedData(rooms)
       case .failure(let err):
         // swiftlint:disable:next no_direct_standard_out_logs
         print("my error \(err)")
@@ -74,9 +75,44 @@ public final class LiveRoomLoader: RoomLoader {
   // MARK: Private
 
   private let JSONRoomLoader: JSONRoomLoader
+  private let roomStatusLoader: RoomStatusLoader
 
   private var hasSavedData: Bool {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedRoomsData)
   }
 
+  private func combineLiveAndSavedData(_ rooms: [Room]) async -> Result {
+    switch await roomStatusLoader.fetchRoomStatus() {
+    case .success(let roomStatusResponse):
+      let roomsWithStatus: [Room] = rooms.map { room in
+        let roomStatus = roomStatusResponse[room.buildingId]?.roomStatuses[room.id]!
+
+        return Room(
+          abbreviation: room.abbreviation,
+          accessibility: room.accessibility,
+          audioVisual: room.audioVisual,
+          buildingId: room.id,
+          capacity: room.capacity,
+          floor: room.floor,
+          id: room.id,
+          infoTechnology: room.infoTechnology,
+          latitude: room.latitude,
+          longitude: room.longitude,
+          microphone: room.microphone,
+          name: room.name,
+          school: room.school,
+          seating: room.seating,
+          usage: room.usage,
+          service: room.service,
+          writingMedia: room.writingMedia,
+          status: roomStatus!.status,
+          endTime: roomStatus!.endtime)
+      }
+
+      return .success(rooms)
+
+    case .failure(let failure):
+      return .success(rooms)
+    }
+  }
 }
