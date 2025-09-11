@@ -10,6 +10,10 @@ import Location
 
 // MARK: - Building
 
+public typealias CampusBuildings = (upper: [Building], middle: [Building], lower: [Building])
+
+// MARK: - Building
+
 /// A building on campus with location information and room availability data.
 public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
