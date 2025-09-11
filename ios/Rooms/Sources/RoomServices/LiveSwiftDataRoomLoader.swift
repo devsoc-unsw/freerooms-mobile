@@ -34,7 +34,7 @@ public final class LiveSwiftDataRoomLoader: SwiftDataRoomLoader {
       guard try swiftDataStore.size() == 0 else {
         return .failure(.alreadySeeded)
       }
-      
+
       try swiftDataStore.save(rooms.map {
         SwiftDataRoom(
           abbreviation: $0.abbreviation,
@@ -53,7 +53,9 @@ public final class LiveSwiftDataRoomLoader: SwiftDataRoomLoader {
           seating: $0.seating,
           usage: $0.usage,
           service: $0.service,
-          writingMedia: $0.writingMedia)
+          writingMedia: $0.writingMedia,
+          status: $0.status,
+          endTime: $0.endTime)
       })
       return .success(())
     } catch {
