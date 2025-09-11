@@ -43,11 +43,13 @@ public class LiveBuildingLoader: BuildingLoader {
   public init(
     swiftDataBuildingLoader: SwiftDataBuildingLoader,
     JSONBuildingLoader: JSONBuildingLoader,
-    roomStatusLoader: RoomStatusLoader)
+    roomStatusLoader: RoomStatusLoader,
+    buildingRatingLoader: BuildingRatingLoader)
   {
     self.swiftDataBuildingLoader = swiftDataBuildingLoader
     self.JSONBuildingLoader = JSONBuildingLoader
     self.roomStatusLoader = roomStatusLoader
+    self.buildingRatingLoader = buildingRatingLoader
   }
 
   // MARK: Public
@@ -62,7 +64,7 @@ public class LiveBuildingLoader: BuildingLoader {
           return .failure(err)
         }
         UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
-        return await combineLiveAndOfflineData(offlineBuildings)
+        return .success(await combineLiveAndOfflineData(offlineBuildings))
 
       case .failure(let err):
         return .failure(err)
@@ -70,7 +72,7 @@ public class LiveBuildingLoader: BuildingLoader {
     }
     switch swiftDataBuildingLoader.fetch() {
     case .success(let offlineBuildings):
-      return await combineLiveAndOfflineData(offlineBuildings)
+      return .success(await combineLiveAndOfflineData(offlineBuildings))
 
     case .failure(let err):
       return .failure(err)
@@ -82,29 +84,24 @@ public class LiveBuildingLoader: BuildingLoader {
   private let swiftDataBuildingLoader: SwiftDataBuildingLoader
   private let JSONBuildingLoader: JSONBuildingLoader
   private let roomStatusLoader: RoomStatusLoader
+  private let buildingRatingLoader: BuildingRatingLoader
 
   private var hasSavedData: Bool {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
   }
 
-  private func combineLiveAndOfflineData(_ offlineBuildings: [Building]) async -> Result {
-    switch await roomStatusLoader.fetchRoomStatus() {
-    case .success(let roomStatusResponse):
-      let buildingsWithStatus = offlineBuildings.map { building in
-        let buildingRoomStatus = roomStatusResponse[building.id]
-        return Building(
-          name: building.name,
-          id: building.id,
-          latitude: building.latitude,
-          longitude: building.longitude,
-          aliases: building.aliases,
-          numberOfAvailableRooms: buildingRoomStatus?.numAvailable ?? building.numberOfAvailableRooms)
+  private func combineLiveAndOfflineData(_ offlineBuildings: [Building]) async -> [Building] {
+    var buildings = offlineBuildings
+    if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
+      for i in buildings.indices {
+        if case .success(let rating) = await buildingRatingLoader.fetch(buildingID: buildings[i].id) {
+          buildings[i].overallRating = rating
+        }
+        buildings[i].numberOfAvailableRooms = roomStatusResponse[buildings[i].id]?.numAvailable
       }
-      return .success(buildingsWithStatus)
-
-    case .failure:
-      return .success(offlineBuildings)
     }
+
+    return buildings
   }
 
 }
