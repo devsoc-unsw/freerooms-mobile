@@ -22,7 +22,7 @@ public enum RoomLoaderError: Error {
 // MARK: - RoomLoader
 
 public protocol RoomLoader {
-  func fetch(buildingId: String) -> Result<[Room], RoomLoaderError>
+  func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
   func fetch() async -> Result<[Room], RoomLoaderError>
 }
 
@@ -32,7 +32,7 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
-  public init(JSONBuildingLoader JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader) {
+  public init(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader) {
     self.JSONRoomLoader = JSONRoomLoader
     self.roomStatusLoader = roomStatusLoader
   }
@@ -41,12 +41,12 @@ public final class LiveRoomLoader: RoomLoader {
 
   public typealias Result = Swift.Result<[Room], RoomLoaderError>
 
-  public func fetch(buildingId: String) -> Result {
+  public func fetch(buildingId: String) async -> Result {
     if !hasSavedData {
       switch JSONRoomLoader.fetch() {
       case .success(let rooms):
         let filteredRooms = rooms.filter { $0.buildingId == buildingId }
-        return .success(filteredRooms)
+        return await combineLiveAndSavedData(filteredRooms)
 
       case .failure(let err):
         return .failure(err)
@@ -82,13 +82,13 @@ public final class LiveRoomLoader: RoomLoader {
     switch await roomStatusLoader.fetchRoomStatus() {
     case .success(let roomStatusResponse):
       let roomsWithStatus: [Room] = rooms.map { room in
-        let roomStatus = roomStatusResponse[room.buildingId]?.roomStatuses[room.id]!
+        let roomStatus = roomStatusResponse[room.buildingId]?.roomStatuses[room.id] ?? RoomStatus(status: "", endtime: "")
 
         return Room(
           abbreviation: room.abbreviation,
           accessibility: room.accessibility,
           audioVisual: room.audioVisual,
-          buildingId: room.id,
+          buildingId: room.buildingId,
           capacity: room.capacity,
           floor: room.floor,
           id: room.id,
@@ -102,11 +102,11 @@ public final class LiveRoomLoader: RoomLoader {
           usage: room.usage,
           service: room.service,
           writingMedia: room.writingMedia,
-          status: roomStatus!.status,
-          endTime: roomStatus!.endtime)
+          status: roomStatus.status,
+          endTime: roomStatus.endtime)
       }
 
-      return .success(rooms)
+      return .success(roomsWithStatus)
 
     case .failure(let failure):
       return .success(rooms)

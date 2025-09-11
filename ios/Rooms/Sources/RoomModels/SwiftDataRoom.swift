@@ -73,8 +73,8 @@ public final class SwiftDataRoom: IdentifiableModel {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
-    self.status = status
-    self.endTime = endTime
+    self.status = status ?? ""
+    self.endTime = endTime ?? ""
   }
 
   // MARK: Public
@@ -122,7 +122,7 @@ public final class SwiftDataRoom: IdentifiableModel {
       usage: usage,
       service: service,
       writingMedia: writingMedia,
-      status: nil,
-      endTime: nil)
+      status: status ?? "",
+      endTime: endTime ?? "")
   }
 }
