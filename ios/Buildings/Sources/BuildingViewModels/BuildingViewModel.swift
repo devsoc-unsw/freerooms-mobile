@@ -15,8 +15,8 @@ import Observation
 // MARK: - BuildingViewModel
 
 public protocol BuildingViewModel {
-  var buildings: (upper: [Building], middle: [Building], lower: [Building]) { get }
-  var filteredBuildings: (upper: [Building], middle: [Building], lower: [Building]) { get }
+  var buildings: CampusBuildings { get }
+  var filteredBuildings: CampusBuildings { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
   var searchText: String { get set }
@@ -43,18 +43,10 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   public var isLoading = false
   public var searchText = ""
 
-  public var buildings: (upper: [Building], middle: [Building], lower: [Building]) = ([], [], [])
+  public var buildings: CampusBuildings = ([], [], [])
 
-  public var filteredBuildings: (upper: [Building], middle: [Building], lower: [Building]) {
-    let filter: ([Building]) -> [Building] = { buildings in
-      guard !self.searchText.isEmpty else { return buildings }
-      return buildings.filter { $0.name.localizedCaseInsensitiveContains(self.searchText) }
-    }
-
-    return (
-      upper: filter(buildings.upper),
-      middle: filter(buildings.middle),
-      lower: filter(buildings.lower))
+  public var filteredBuildings: CampusBuildings {
+    interactor.filter(buildings, by: searchText)
   }
 
   public func getLoadingStatus() -> Bool {
