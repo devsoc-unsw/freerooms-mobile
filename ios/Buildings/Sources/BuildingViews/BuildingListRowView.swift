@@ -57,10 +57,12 @@ struct BuildingListRowView: View {
 
           Spacer()
 
-          Text("4.9")
-          Image(systemName: "star.fill")
-            .foregroundStyle(theme.yellow)
-            .padding(.trailing)
+          if let rating = building.overallRating {
+            Text("\(rating.formatted())")
+            Image(systemName: "star.fill")
+              .foregroundStyle(theme.yellow)
+              .padding(.trailing)
+          }
 
           Image(systemName: "chevron.right")
         }
