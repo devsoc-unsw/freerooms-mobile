@@ -45,8 +45,10 @@ public final class LiveRoomLoader: RoomLoader {
     if !hasSavedData {
       switch JSONRoomLoader.fetch() {
       case .success(let rooms):
-        let filteredRooms = rooms.filter { $0.buildingId == buildingId }
-        return await combineLiveAndSavedData(filteredRooms)
+        var filteredRooms = rooms.filter { $0.buildingId == buildingId }
+        await combineLiveAndSavedData(&filteredRooms)
+
+        return .success(filteredRooms)
 
       case .failure(let err):
         return .failure(err)
@@ -59,10 +61,12 @@ public final class LiveRoomLoader: RoomLoader {
   public func fetch() async -> Result {
     if !hasSavedData {
       switch JSONRoomLoader.fetch() {
-      case .success(let rooms):
-        await combineLiveAndSavedData(rooms)
+      case .success(var rooms):
+        await combineLiveAndSavedData(&rooms)
+        return .success(rooms)
+
       case .failure(let err):
-        .failure(err)
+        return .failure(err)
       }
     } else {
       fatalError("Swift data not implemented")
@@ -78,38 +82,13 @@ public final class LiveRoomLoader: RoomLoader {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedRoomsData)
   }
 
-  private func combineLiveAndSavedData(_ rooms: [Room]) async -> Result {
-    switch await roomStatusLoader.fetchRoomStatus() {
-    case .success(let roomStatusResponse):
-      let roomsWithStatus: [Room] = rooms.map { room in
-        let roomStatus = roomStatusResponse[room.buildingId]?.roomStatuses[room.id] ?? RoomStatus(status: "", endtime: "")
-
-        return Room(
-          abbreviation: room.abbreviation,
-          accessibility: room.accessibility,
-          audioVisual: room.audioVisual,
-          buildingId: room.buildingId,
-          capacity: room.capacity,
-          floor: room.floor,
-          id: room.id,
-          infoTechnology: room.infoTechnology,
-          latitude: room.latitude,
-          longitude: room.longitude,
-          microphone: room.microphone,
-          name: room.name,
-          school: room.school,
-          seating: room.seating,
-          usage: room.usage,
-          service: room.service,
-          writingMedia: room.writingMedia,
-          status: roomStatus.status,
-          endTime: roomStatus.endtime)
+  private func combineLiveAndSavedData(_ rooms: inout [Room]) async {
+    if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
+      for i in rooms.indices {
+        let roomStatus = roomStatusResponse[rooms[i].buildingId]?.roomStatuses[rooms[i].id] ?? RoomStatus(status: "", endtime: "")
+        rooms[i].status = roomStatus.status
+        rooms[i].endTime = roomStatus.endtime
       }
-
-      return .success(roomsWithStatus)
-
-    case .failure(let failure):
-      return .success(rooms)
     }
   }
 }

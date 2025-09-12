@@ -163,5 +163,4 @@ public struct Room: Equatable, Identifiable, Hashable {
     guard splitID.count == 3 else { return "?" }
     return splitID[2]
   }
-
 }
