@@ -123,6 +123,6 @@ public final class SwiftDataRoom: IdentifiableModel {
       service: service,
       writingMedia: writingMedia,
       status: status ?? "",
-      endTime: status ?? "")
+      endTime: endTime ?? "")
   }
 }
