@@ -78,7 +78,7 @@ public class BuildingInteractor {
     }
   }
 
-  public func filter(_ buildings: CampusBuildings, by query: String) -> CampusBuildings {
+  public func filterBuildingsByQueryString(_ buildings: CampusBuildings, by query: String) -> CampusBuildings {
     let filter: ([Building]) -> [Building] = { buildings in
       guard !query.isEmpty else { return buildings }
       return buildings.filter { $0.name.localizedCaseInsensitiveContains(query) }

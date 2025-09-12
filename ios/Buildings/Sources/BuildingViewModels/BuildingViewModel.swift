@@ -46,7 +46,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
   public var buildings: CampusBuildings = ([], [], [])
 
   public var filteredBuildings: CampusBuildings {
-    interactor.filter(buildings, by: searchText)
+    interactor.filterBuildingsByQueryString(buildings, by: searchText)
   }
 
   public func getLoadingStatus() -> Bool {
