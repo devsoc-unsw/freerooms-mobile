@@ -30,7 +30,7 @@ public struct RoomsTabView: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.buildings)
+        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
       }
       .toolbar {
         // Buttons on the right
