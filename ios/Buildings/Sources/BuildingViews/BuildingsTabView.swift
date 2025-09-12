@@ -69,6 +69,7 @@ public struct BuildingsTabView: View {
           .foregroundStyle(theme.label.tertiary)
         }
       }
+      .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
       .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
       .shadow(
@@ -92,7 +93,11 @@ public struct BuildingsTabView: View {
         viewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .onAppear(perform: viewModel.onAppear)
+        .onAppear {
+          if !viewModel.hasLoaded {
+            viewModel.onAppear()
+          }
+        }
         .navigationTitle("Buildings")
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
@@ -105,7 +110,6 @@ public struct BuildingsTabView: View {
   // MARK: Internal
 
   @State var viewModel: BuildingViewModel
-
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
 
@@ -116,7 +120,14 @@ public struct BuildingsTabView: View {
     } else {
       Section {
         ForEach(buildings) { building in
-          BuildingListRowView(path: $path, rowHeight: $rowHeight, building: building, buildings: buildings)
+          GenericListRowView(
+            path: $path,
+            rowHeight: $rowHeight,
+            building: building,
+            buildings: buildings,
+            imageProvider: { buildingID in
+              BuildingImage[buildingID] // This closure captures BuildingImage
+            })
             .padding(.vertical, 5)
         }
       } header: {

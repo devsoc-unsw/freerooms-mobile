@@ -15,8 +15,10 @@ import Foundation
 import Location
 import Networking
 import Persistence
+import RoomInteractors
 import RoomModels
 import RoomServices
+import RoomViewModels
 import SwiftData
 import SwiftUI
 
@@ -48,7 +50,8 @@ struct FreeroomsApp: App {
         .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
-        .environment(\.buildingViewModel, viewModel)
+        .environment(\.buildingViewModel, buildingViewModel)
+        .environment(\.roomViewModel, roomViewModel)
     }
   }
 
@@ -85,10 +88,41 @@ struct FreeroomsApp: App {
     }
   }
 
+  static func makeLiveRoomViewModel() -> LiveRoomViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LiveLocationService(locationManager: locationManager)
+
+    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+
+    let httpClient = URLSessionHTTPClient(session: URLSession.shared)
+
+    /// TODO: baseURL should be in env variables
+    guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
+      fatalError("Invalid base url")
+    }
+
+    do {
+      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+
+      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+
+      let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
+
+      let roomService = LiveRoomService(roomLoader: roomLoader)
+
+      let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
+
+      return LiveRoomViewModel(interactor: interactor)
+    } catch {
+      fatalError("Failed to create LiveBuildingViewModel: \(error)")
+    }
+  }
+
   // MARK: Private
 
-  @State private var viewModel = FreeroomsApp.makeLiveBuildingViewModel()
-
+  @State private var buildingViewModel = FreeroomsApp.makeLiveBuildingViewModel()
+  @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 
 }
