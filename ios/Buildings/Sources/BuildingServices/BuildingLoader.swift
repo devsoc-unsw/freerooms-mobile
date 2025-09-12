@@ -59,20 +59,21 @@ public class LiveBuildingLoader: BuildingLoader {
   public func fetch() async -> Result {
     if !hasSavedData {
       switch JSONBuildingLoader.fetch() {
-      case .success(let offlineBuildings):
+      case .success(var offlineBuildings):
         if case .failure(let err) = await swiftDataBuildingLoader.seed(offlineBuildings) {
           return .failure(err)
         }
         UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
-        return .success(await combineLiveAndOfflineData(offlineBuildings))
-
+        await combineLiveAndOfflineData(&offlineBuildings)
+        return .success(offlineBuildings)
       case .failure(let err):
         return .failure(err)
       }
     }
     switch swiftDataBuildingLoader.fetch() {
-    case .success(let offlineBuildings):
-      return .success(await combineLiveAndOfflineData(offlineBuildings))
+    case .success(var offlineBuildings):
+      await combineLiveAndOfflineData(&offlineBuildings)
+      return .success(offlineBuildings)
 
     case .failure(let err):
       return .failure(err)
@@ -90,18 +91,15 @@ public class LiveBuildingLoader: BuildingLoader {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
   }
 
-  private func combineLiveAndOfflineData(_ offlineBuildings: [Building]) async -> [Building] {
-    var buildings = offlineBuildings
+  private func combineLiveAndOfflineData(_ offlineBuildings: inout [Building]) async {
     if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
-      for i in buildings.indices {
-        if case .success(let rating) = await buildingRatingLoader.fetch(buildingID: buildings[i].id) {
-          buildings[i].overallRating = rating
+      for i in offlineBuildings.indices {
+        if case .success(let rating) = await buildingRatingLoader.fetch(buildingID: offlineBuildings[i].id) {
+          offlineBuildings[i].overallRating = rating
         }
-        buildings[i].numberOfAvailableRooms = roomStatusResponse[buildings[i].id]?.numAvailable
+        offlineBuildings[i].numberOfAvailableRooms = roomStatusResponse[offlineBuildings[i].id]?.numAvailable
       }
     }
-
-    return buildings
   }
 
 }
