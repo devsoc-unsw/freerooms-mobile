@@ -85,8 +85,16 @@ public struct RoomsTabView: View {
         roomViewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .onAppear(perform: roomViewModel.onAppear)
-        .onAppear(perform: buildingViewModel.onAppear)
+        .onAppear {
+          if !roomViewModel.hasLoaded {
+            roomViewModel.onAppear()
+          }
+        }
+        .onAppear {
+          if !buildingViewModel.hasLoaded {
+            buildingViewModel.onAppear()
+          }
+        }
         .navigationTitle("Rooms")
         .searchable(text: $searchText, prompt: "Search...")
     }

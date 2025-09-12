@@ -24,6 +24,8 @@ public protocol RoomViewModel {
 
   var isLoading: Bool { get }
 
+  var hasLoaded: Bool { get }
+
   func getRoomsInOrder()
 
   func onAppear()
@@ -44,6 +46,8 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   // MARK: Public
 
+  public var hasLoaded = false
+
   public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
 
   public var rooms: [Room] = []
@@ -61,6 +65,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     Task {
       await loadRooms()
     }
+    hasLoaded = true
   }
 
   public func loadRooms() async {

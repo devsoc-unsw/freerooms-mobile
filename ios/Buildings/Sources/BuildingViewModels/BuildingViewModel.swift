@@ -20,6 +20,7 @@ public protocol BuildingViewModel {
   var allBuildings: [Building] { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
+  var hasLoaded: Bool { get }
   var searchText: String { get set }
 
   func getBuildingsInOrder()
@@ -40,6 +41,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Public
 
+  public var hasLoaded = false
   public var buildingsInAscendingOrder = true
   public var isLoading = false
   public var searchText = ""
@@ -61,16 +63,14 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   public func onAppear() {
     // Load buildings once when the view appears
-    guard !hasLoaded else { return }
-    hasLoaded = true
     Task {
       await loadBuildings()
     }
+
+    hasLoaded = true
   }
 
   public func loadBuildings() async {
-    // Prevent re-entrancy
-    guard !isLoading else { return }
     isLoading = true
 
     // Fetch all buildings once, then derive sections in-memory
@@ -122,7 +122,6 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
   // MARK: Private
 
-  private var hasLoaded = false
   private var interactor: BuildingInteractor
 
   private func uniqueById(_ input: [Building]) -> [Building] {
