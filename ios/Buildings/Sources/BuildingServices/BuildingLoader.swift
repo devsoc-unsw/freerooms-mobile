@@ -66,6 +66,7 @@ public class LiveBuildingLoader: BuildingLoader {
         UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedBuildingsData)
         await combineLiveAndOfflineData(&offlineBuildings)
         return .success(offlineBuildings)
+
       case .failure(let err):
         return .failure(err)
       }
