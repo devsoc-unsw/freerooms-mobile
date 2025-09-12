@@ -30,6 +30,8 @@ struct FreeroomsApp: App {
   init() {
     Theme.registerFont(named: .ttCommonsPro)
     setFontOnToolbars(.ttCommonsPro)
+    /// Sets searchable cancel button to orange
+    UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.light.accent.primary)
   }
 
   // MARK: Internal

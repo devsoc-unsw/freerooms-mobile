@@ -31,11 +31,11 @@ public struct BuildingsTabView: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        buildingsView(for: "Upper campus", from: viewModel.upperCampusBuildings)
+        buildingsView(for: "Upper campus", from: viewModel.filteredBuildings.upper)
 
-        buildingsView(for: "Middle campus", from: viewModel.middleCampusBuildings)
+        buildingsView(for: "Middle campus", from: viewModel.filteredBuildings.middle)
 
-        buildingsView(for: "Lower campus", from: viewModel.lowerCampusBuildings)
+        buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
       .toolbar {
         // Buttons on the right
@@ -94,7 +94,7 @@ public struct BuildingsTabView: View {
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
         .onAppear(perform: viewModel.onAppear)
         .navigationTitle("Buildings")
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Buildings", systemImage: "building")
@@ -109,17 +109,20 @@ public struct BuildingsTabView: View {
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
 
-  @State var searchText = ""
-
+  @ViewBuilder
   func buildingsView(for campus: String, from buildings: [Building]) -> some View {
-    Section {
-      ForEach(buildings) { building in
-        BuildingListRowView(path: $path, rowHeight: $rowHeight, building: building, buildings: buildings)
-          .padding(.vertical, 5)
+    if buildings.isEmpty {
+      EmptyView()
+    } else {
+      Section {
+        ForEach(buildings) { building in
+          BuildingListRowView(path: $path, rowHeight: $rowHeight, building: building, buildings: buildings)
+            .padding(.vertical, 5)
+        }
+      } header: {
+        Text(campus)
+          .foregroundStyle(theme.label.primary)
       }
-    } header: {
-      Text(campus)
-        .foregroundStyle(theme.label.primary)
     }
   }
 
