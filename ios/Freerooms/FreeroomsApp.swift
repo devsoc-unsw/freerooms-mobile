@@ -15,6 +15,7 @@ import Foundation
 import Location
 import Networking
 import Persistence
+import RoomModels
 import RoomServices
 import SwiftData
 import SwiftUI
@@ -34,6 +35,12 @@ struct FreeroomsApp: App {
   }
 
   // MARK: Internal
+
+  static var sharedContainer: ModelContainer = {
+    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self])
+    let config = ModelConfiguration(schema: schema)
+    return try! ModelContainer(for: schema, configurations: [config])
+  }()
 
   var body: some Scene {
     WindowGroup {
@@ -59,11 +66,7 @@ struct FreeroomsApp: App {
     }
 
     do {
-      let schema = Schema([SwiftDataBuilding.self])
-      let modelConfiguration = ModelConfiguration(schema: schema)
-      let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-      let modelContext = ModelContext(modelContainer)
-      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
+      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
       let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)

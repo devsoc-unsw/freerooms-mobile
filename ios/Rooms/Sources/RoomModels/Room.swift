@@ -29,7 +29,9 @@ public struct Room: Equatable, Identifiable, Hashable {
     seating: String?,
     usage: String,
     service: [String],
-    writingMedia: [String])
+    writingMedia: [String],
+    status: String? = nil,
+    endTime: String? = nil)
   {
     self.abbreviation = abbreviation
     self.accessibility = accessibility
@@ -48,6 +50,8 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
+    self.status = status ?? ""
+    self.endTime = endTime ?? ""
   }
 
   // MARK: Public
@@ -145,6 +149,8 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
+  public var status: String?
+  public var endTime: String?
 
   /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {
@@ -157,5 +163,4 @@ public struct Room: Equatable, Identifiable, Hashable {
     guard splitID.count == 3 else { return "?" }
     return splitID[2]
   }
-
 }

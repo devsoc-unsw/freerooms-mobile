@@ -82,7 +82,7 @@ public final class PreviewBuildingService: BuildingService {
         numberOfAvailableRooms: nil),
       Building(
         name: "Wallace Wurth Building",
-        id: "K-C27",
+        id: "K-B16",
         latitude: -33.916744,
         longitude: 151.235681,
         aliases: [],

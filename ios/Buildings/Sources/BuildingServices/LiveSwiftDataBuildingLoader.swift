@@ -42,8 +42,7 @@ public final class LiveSwiftDataBuildingLoader: SwiftDataBuildingLoader {
           latitude: $0.latitude,
           longitude: $0.longitude,
           aliases: $0.aliases,
-          numberOfAvailableRooms: $0.numberOfAvailableRooms,
-          rooms: [])
+          numberOfAvailableRooms: $0.numberOfAvailableRooms)
       })
       return .success(())
     } catch {
