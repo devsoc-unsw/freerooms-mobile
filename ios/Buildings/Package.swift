@@ -30,7 +30,7 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "BuildingViews",
-      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels", .product(name: "RoomViews", package: "Rooms")],
+      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels"],
       resources: [.process("Resources")]),
     .target(
       name: "BuildingViewModels",

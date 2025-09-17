@@ -26,8 +26,10 @@ struct ContentView: View {
   var body: some View {
     TabView(selection: $selectedTab) {
       BuildingsTabView(path: $path, viewModel: buildingViewModel) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $path)
-          .onAppear(perform: roomViewModel.onAppear)
+        RoomsListView(roomViewModel: roomViewModel, building: building, path: $path, imageProvider: {
+          BuildingImage[$0]
+        })
+        .onAppear(perform: roomViewModel.onAppear)
       }
 
       RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel, selectedTab: $selectedTab)

@@ -5,7 +5,6 @@
 //  Created by Yanlin Li  on 17/9/2025.
 //
 import BuildingModels
-import BuildingViews
 import CommonUI
 import RoomModels
 import RoomViewModels
@@ -17,10 +16,16 @@ public struct RoomsListView: View {
 
   // MARK: Lifecycle
 
-  public init(roomViewModel: RoomViewModel, building: Building, path: Binding<NavigationPath>) {
+  public init(
+    roomViewModel: RoomViewModel,
+    building: Building,
+    path: Binding<NavigationPath>,
+    imageProvider: @escaping (String) -> Image)
+  {
     self.roomViewModel = roomViewModel
     self.building = building
     _path = path
+    self.imageProvider = imageProvider
   }
 
   // MARK: Public
@@ -29,7 +34,7 @@ public struct RoomsListView: View {
     let rooms = roomViewModel.roomsByBuildingId[building.id] ?? []
 
     return List {
-      BuildingImage[building.id]
+      imageProvider(building.id)
         .resizable()
         .frame(height: screenHeight / 4)
         .clipShape(RoundedRectangle(cornerRadius: 15))
@@ -82,6 +87,8 @@ public struct RoomsListView: View {
 
   let screenHeight = UIScreen.main.bounds.height
 
+  let imageProvider: (String) -> Image
+
   // MARK: Private
 
   @Environment(Theme.self) private var theme
@@ -100,7 +107,9 @@ struct PreviewWrapper: View {
     RoomsListView(
       roomViewModel: PreviewRoomViewModel(),
       building: Building(name: "AGSM", id: "K-B16", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      path: $path)
+      path: $path, imageProvider: {
+        RoomImage[$0] // This closure captures BuildingImage
+      })
       .defaultTheme()
   }
 }
