@@ -18,12 +18,18 @@ struct Room: Hashable {
 
 // MARK: - BuildingsTabView
 
-public struct BuildingsTabView: View {
+public struct BuildingsTabView<Destination: View>: View {
 
   // MARK: Lifecycle
 
-  public init(viewModel: BuildingViewModel) {
+  public init(
+    path: Binding<NavigationPath>,
+    viewModel: BuildingViewModel,
+    _ roomDestinationBuilderView: @escaping (Building) -> Destination)
+  {
     self.viewModel = viewModel
+    self.roomDestinationBuilderView = roomDestinationBuilderView
+    _path = path
   }
 
   // MARK: Public
@@ -77,13 +83,9 @@ public struct BuildingsTabView: View {
         radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
       .navigationDestination(for: Building.self) { building in
         // Renders the view for displaying a building that has been clicked on
-        Button {
-          path.append(Room(name: "bruh"))
-        } label: {
-          Text("bruh")
-        }
-        .navigationTitle(building.name)
-        .navigationBarTitleDisplayMode(.inline)
+        roomDestinationBuilderView(building)
+          .navigationTitle(building.name)
+          .navigationBarTitleDisplayMode(.inline)
       }
       .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
         Text(room.name)
@@ -110,8 +112,10 @@ public struct BuildingsTabView: View {
   // MARK: Internal
 
   @State var viewModel: BuildingViewModel
-  @State var path = NavigationPath()
+  @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
+
+  let roomDestinationBuilderView: (Building) -> Destination
 
   @ViewBuilder
   func buildingsView(for campus: String, from buildings: [Building]) -> some View {
@@ -142,7 +146,19 @@ public struct BuildingsTabView: View {
   @Environment(Theme.self) private var theme
 }
 
-#Preview {
-  BuildingsTabView(viewModel: PreviewBuildingViewModel())
+// MARK: - PreviewWrapper
+
+struct PreviewWrapper: View {
+  @State var path = NavigationPath()
+
+  var body: some View {
+    BuildingsTabView(path: $path, viewModel: PreviewBuildingViewModel()) { _ in
+      EmptyView()
+    }
     .defaultTheme()
+  }
+}
+
+#Preview {
+  PreviewWrapper()
 }

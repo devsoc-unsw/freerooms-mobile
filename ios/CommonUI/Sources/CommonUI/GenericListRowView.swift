@@ -142,7 +142,6 @@ struct PreviewWrapper: View {
           })
       }
     }
-    .padding()
   }
 }
 
