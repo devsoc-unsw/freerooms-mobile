@@ -11,7 +11,7 @@ import Networking
 
 // MARK: - BuildingRatingLoader
 
-public protocol BuildingRatingLoader {
+public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }
 
@@ -24,7 +24,7 @@ public enum BuildingRatingLoaderError: Error {
 
 // MARK: - RemoteBuildingRatingLoader
 
-public struct RemoteBuildingRatingLoader: BuildingRatingLoader {
+public struct RemoteBuildingRatingLoader: BuildingRatingLoader, Sendable {
 
   // MARK: Lifecycle
 

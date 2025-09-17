@@ -95,11 +95,40 @@ public class LiveBuildingLoader: BuildingLoader {
   private func combineLiveAndOfflineData(_ offlineBuildings: inout [Building]) async {
     if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
       for i in offlineBuildings.indices {
-        if case .success(let rating) = await buildingRatingLoader.fetch(buildingID: offlineBuildings[i].id) {
-          offlineBuildings[i].overallRating = rating
-        }
         offlineBuildings[i].numberOfAvailableRooms = roomStatusResponse[offlineBuildings[i].id]?.numAvailable
       }
+    }
+
+    let buildingIDs = offlineBuildings.map(\.id)
+
+    let ratings = await withTaskGroup { group in
+      for (index, buildingID) in buildingIDs.enumerated() {
+        group.addTask { [buildingRatingLoader] in
+          let res = await buildingRatingLoader.fetch(buildingID: buildingID)
+          return (index, res)
+        }
+      }
+
+      var ratings: [(Int, Swift.Result<Double, BuildingRatingLoaderError>)] = []
+      for await res in group {
+        ratings.append(res)
+      }
+
+      ratings.sort { $0.0 < $1.0 }
+      return ratings
+    }
+
+    let unwrappedRatings: [Double?] = ratings.map {
+      switch $0.1 {
+      case .success(let rating):
+        rating
+      case .failure:
+        nil
+      }
+    }
+
+    for (i, rating) in zip(offlineBuildings.indices, unwrappedRatings) {
+      offlineBuildings[i].overallRating = rating
     }
   }
 
