@@ -21,13 +21,13 @@ import Testing
 enum RoomInteractorTests {
   struct RoomAlphabeticalOrdering {
     @Test("Returns rooms sorted alphabetically in ascending order")
-    func returnsRoomsSortedAlpheticallyInAscendingOrder() {
+    func returnsRoomsSortedAlpheticallyInAscendingOrder() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsSortedAlphabetically(inAscendingOrder: true)
+      let result = await sut.getRoomsSortedAlphabetically(inAscendingOrder: true)
 
       // Then
       let expectResult = expectedRooms.sorted { $0.name < $1.name }
@@ -41,13 +41,13 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns rooms sorted alphabetically in descending order")
-    func returnsRoomsSortedAlpheticallyInDescendingOrder() {
+    func returnsRoomsSortedAlpheticallyInDescendingOrder() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsSortedAlphabetically(inAscendingOrder: false)
+      let result = await sut.getRoomsSortedAlphabetically(inAscendingOrder: false)
 
       // Then
       let expectResult = expectedRooms.sorted { $0.name > $1.name }
@@ -63,13 +63,13 @@ enum RoomInteractorTests {
 
   struct RoomFilteringByBuildingId {
     @Test("Returns rooms filtered by building id matching")
-    func returnsRoomsFilteredByBuildingIdMatching() {
+    func returnsRoomsFilteredByBuildingIdMatching() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-H20")
 
       // When
-      let result = sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-H20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-H20", inAscendingOrder: true)
 
       // Then
       let expectResult = createDifferentRooms()
@@ -85,13 +85,13 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns rooms filtered by building id not matching")
-    func returnsRoomsFilteredByBuildingIdNotMatching() {
+    func returnsRoomsFilteredByBuildingIdNotMatching() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-P20")
 
       // When
-      let result = sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-P20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-P20", inAscendingOrder: true)
 
       // Then
       let expectResult = expectedRooms
@@ -108,17 +108,63 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns all rooms filtered by all builingId matching")
-    func returnsAllRoomsFilteredByAllBuildingIdMatching() {
+    func returnsAllRoomsFilteredByAllBuildingIdMatching() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
+      let buildingIds =
+        [
+          "K-G27",
+          "K-J17",
+          "K-H13",
+          "K-E26",
+          "K-D26",
+          "K-G6",
+          "K-E12",
+          "K-H20",
+          "K-B16",
+          "K-K17",
+          "K-F12",
+          "K-G17",
+          "K-D8",
+          "K-D16",
+          "K-F25",
+          "K-F31",
+          "K-F20",
+          "K-G19",
+          "K-F10",
+          "K-J14",
+          "K-F8",
+          "K-F21",
+          "K-E10",
+          "K-F23",
+          "K-D23",
+          "K-C20",
+          "K-J12",
+          "K-K15",
+          "K-E19",
+          "K-K14",
+          "K-E15",
+          "K-F17",
+          "K-M15",
+          "K-E8",
+          "K-F13",
+          "K-C24",
+          "K-E4",
+          "K-H6",
+          "K-H22",
+          "K-C27",
+          "K-G14",
+          "K-G15",
+          "K-J18",
+        ]
 
       // When
-      let result = sut.getRoomsFilteredByAllBuildingId(buildingIds: ["K-H20", "K-G6", "K-J17"])
+      let result = await sut.getRoomsFilteredByAllBuildingId()
 
       // Then
       var expectResult: [String: [Room]] = [:]
-      for buildingId in ["K-H20", "K-G6", "K-J17"] {
+      for buildingId in buildingIds {
         let filteredRooms = expectedRooms
           .filter { $0.buildingId == buildingId }
         expectResult[buildingId] = filteredRooms
@@ -127,7 +173,6 @@ enum RoomInteractorTests {
       switch result {
       case .success(let actualResult):
         #expect(actualResult == expectResult)
-        #expect(actualResult.keys.count == 3)
         #expect(actualResult["K-H20"]!.count == 2)
 
       case .failure:
@@ -138,13 +183,13 @@ enum RoomInteractorTests {
 
   struct RoomTypeFiltering {
     @Test("Returns rooms filtered by room type (usage) matching")
-    func returnsRoomsFilteredByRoomTypeMatching() {
+    func returnsRoomsFilteredByRoomTypeMatching() async {
       // Given
       let expectedRooms = createRooms(1)
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByRoomType(usage: "LCTR")
+      let result = await sut.getRoomsFilteredByRoomType(usage: "LCTR")
 
       // Then
       let expectResult = createRooms(1)
@@ -158,13 +203,13 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns rooms filtered by room type (usage) not matching")
-    func returnsRoomsFilteredByRoomTypeNotMatching() {
+    func returnsRoomsFilteredByRoomTypeNotMatching() async {
       // Given
       let expectedRooms = createRooms(1)
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByRoomType(usage: "LAB")
+      let result = await sut.getRoomsFilteredByRoomType(usage: "LAB")
 
       // Then
       let expectResult = createRooms(0)
@@ -180,13 +225,13 @@ enum RoomInteractorTests {
 
   struct RoomCampusLocationFiltering {
     @Test("Returns rooms filtered by lower campus")
-    func returnsRoomsFilteredByLowerCampus() {
+    func returnsRoomsFilteredByLowerCampus() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByCampusSection(CampusSection.lower)
+      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.lower)
 
       // Then
       let expectResultCount = 1
@@ -202,13 +247,13 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns rooms filtered by middle campus")
-    func returnsRoomsFilteredByMiddleCampus() {
+    func returnsRoomsFilteredByMiddleCampus() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByCampusSection(CampusSection.middle)
+      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.middle)
 
       // Then
       let expectResultCount = 1
@@ -224,13 +269,13 @@ enum RoomInteractorTests {
     }
 
     @Test("Returns rooms filtered by upper campus")
-    func returnsRoomsFilteredByUpperCampus() {
+    func returnsRoomsFilteredByUpperCampus() async {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByCampusSection(CampusSection.upper)
+      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.upper)
 
       // Then
       switch result {
@@ -257,7 +302,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
 
       // Then
       switch result {
@@ -283,7 +328,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
 
       // Then
       switch result {
@@ -309,7 +354,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 60, roomBookings: roomBookingsMapped)
+      let result = await sut.getRoomsFilteredByDuration(for: 60, roomBookings: roomBookingsMapped)
 
       // Then
       switch result {
@@ -332,7 +377,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = sut.getRoomsFilteredByDuration(for: 120, roomBookings: roomBookingsMapped)
+      let result = await sut.getRoomsFilteredByDuration(for: 120, roomBookings: roomBookingsMapped)
 
       // Then
       switch result {

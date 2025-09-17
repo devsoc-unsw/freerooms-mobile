@@ -126,7 +126,6 @@ public class LiveBuildingLoader: BuildingLoader {
         nil
       }
     }
-
     for (i, rating) in zip(offlineBuildings.indices, unwrappedRatings) {
       offlineBuildings[i].overallRating = rating
     }

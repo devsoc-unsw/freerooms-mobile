@@ -26,8 +26,8 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) -> Result<[Room], Error> {
-    switch roomService.getRooms() {
+  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], Error> {
+    switch await roomService.getRooms() {
     case .success(let rooms):
       let sorted = getRoomsSortedAlphabetically(rooms: rooms, inAscendingOrder: inAscendingOrder)
       return .success(sorted)
@@ -37,8 +37,12 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredAlphabeticallyByBuildingId(buildingId: String, inAscendingOrder: Bool) -> Result<[Room], Error> {
-    switch roomService.getRooms(buildingId: buildingId) {
+  public func getRoomsFilteredAlphabeticallyByBuildingId(
+    buildingId: String,
+    inAscendingOrder: Bool)
+    async -> Result<[Room], Error>
+  {
+    switch await roomService.getRooms(buildingId: buildingId) {
     case .success(let rooms):
       let result = rooms
         .filter { $0.buildingId == buildingId }
@@ -52,8 +56,8 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByRoomType(usage roomType: String) -> Result<[Room], Error> {
-    switch roomService.getRooms() {
+  public func getRoomsFilteredByRoomType(usage roomType: String) async -> Result<[Room], Error> {
+    switch await roomService.getRooms() {
     case .success(let rooms):
       let filtered = rooms.filter { $0.usage == roomType }
       return .success(filtered)
@@ -63,8 +67,8 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) -> Result<[Room], Error> {
-    switch roomService.getRooms() {
+  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], Error> {
+    switch await roomService.getRooms() {
     case .success(let rooms):
       let filtered = rooms.filter { GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection }
       return .success(filtered)
@@ -74,8 +78,12 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByDuration(for minDuration: Int, roomBookings: [String: [RoomBooking]]) -> Result<[Room], Error> {
-    switch roomService.getRooms() {
+  public func getRoomsFilteredByDuration(
+    for minDuration: Int,
+    roomBookings: [String: [RoomBooking]])
+    async -> Result<[Room], Error>
+  {
+    switch await roomService.getRooms() {
     case .success(let rooms):
       var result: [Room] = []
       for room in rooms {
@@ -114,8 +122,55 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByAllBuildingId(buildingIds: [String]) -> Result<[String: [Room]], Error> {
-    switch roomService.getRooms() {
+  public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], Error> {
+    let buildingIds =
+      [
+        "K-G27",
+        "K-J17",
+        "K-H13",
+        "K-E26",
+        "K-D26",
+        "K-G6",
+        "K-E12",
+        "K-H20",
+        "K-B16",
+        "K-K17",
+        "K-F12",
+        "K-G17",
+        "K-D8",
+        "K-D16",
+        "K-F25",
+        "K-F31",
+        "K-F20",
+        "K-G19",
+        "K-F10",
+        "K-J14",
+        "K-F8",
+        "K-F21",
+        "K-E10",
+        "K-F23",
+        "K-D23",
+        "K-C20",
+        "K-J12",
+        "K-K15",
+        "K-E19",
+        "K-K14",
+        "K-E15",
+        "K-F17",
+        "K-M15",
+        "K-E8",
+        "K-F13",
+        "K-C24",
+        "K-E4",
+        "K-H6",
+        "K-H22",
+        "K-C27",
+        "K-G14",
+        "K-G15",
+        "K-J18",
+      ]
+
+    switch await roomService.getRooms() {
     case .success(let rooms):
       var result: [String: [Room]] = [:]
       for id in buildingIds {

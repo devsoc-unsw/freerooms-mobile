@@ -15,7 +15,10 @@ import Foundation
 import Location
 import Networking
 import Persistence
+import RoomInteractors
+import RoomModels
 import RoomServices
+import RoomViewModels
 import SwiftData
 import SwiftUI
 
@@ -29,9 +32,17 @@ struct FreeroomsApp: App {
   init() {
     Theme.registerFont(named: .ttCommonsPro)
     setFontOnToolbars(.ttCommonsPro)
+    /// Sets searchable cancel button to orange
+    UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.light.accent.primary)
   }
 
   // MARK: Internal
+
+  static var sharedContainer: ModelContainer = {
+    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self])
+    let config = ModelConfiguration(schema: schema)
+    return try! ModelContainer(for: schema, configurations: [config])
+  }()
 
   var body: some Scene {
     WindowGroup {
@@ -39,7 +50,8 @@ struct FreeroomsApp: App {
         .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
-        .environment(\.buildingViewModel, viewModel)
+        .environment(\.buildingViewModel, buildingViewModel)
+        .environment(\.roomViewModel, roomViewModel)
     }
   }
 
@@ -61,11 +73,7 @@ struct FreeroomsApp: App {
     }
 
     do {
-      let schema = Schema([SwiftDataBuilding.self])
-      let modelConfiguration = ModelConfiguration(schema: schema)
-      let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-      let modelContext = ModelContext(modelContainer)
-      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
+      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
       let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
@@ -85,10 +93,41 @@ struct FreeroomsApp: App {
     }
   }
 
+  static func makeLiveRoomViewModel() -> LiveRoomViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LiveLocationService(locationManager: locationManager)
+
+    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+
+    let httpClient = URLSessionHTTPClient(session: URLSession.shared)
+
+    /// TODO: baseURL should be in env variables
+    guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
+      fatalError("Invalid base url")
+    }
+
+    do {
+      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+
+      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+
+      let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
+
+      let roomService = LiveRoomService(roomLoader: roomLoader)
+
+      let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
+
+      return LiveRoomViewModel(interactor: interactor)
+    } catch {
+      fatalError("Failed to create LiveBuildingViewModel: \(error)")
+    }
+  }
+
   // MARK: Private
 
-  @State private var viewModel = FreeroomsApp.makeLiveBuildingViewModel()
-
+  @State private var buildingViewModel = FreeroomsApp.makeLiveBuildingViewModel()
+  @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 
 }

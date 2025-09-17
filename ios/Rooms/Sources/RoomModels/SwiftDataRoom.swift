@@ -52,7 +52,9 @@ public final class SwiftDataRoom: IdentifiableModel {
     seating: String?,
     usage: String,
     service: [String],
-    writingMedia: [String])
+    writingMedia: [String],
+    status: String?,
+    endTime: String?)
   {
     self.abbreviation = abbreviation
     self.accessibility = accessibility
@@ -71,6 +73,8 @@ public final class SwiftDataRoom: IdentifiableModel {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
+    self.status = status ?? ""
+    self.endTime = endTime ?? ""
   }
 
   // MARK: Public
@@ -92,6 +96,8 @@ public final class SwiftDataRoom: IdentifiableModel {
   public var usage: String
   public var service: [String]
   public var writingMedia: [String]
+  public var status: String?
+  public var endTime: String?
 
   public var stringID: String {
     id
@@ -115,6 +121,8 @@ public final class SwiftDataRoom: IdentifiableModel {
       seating: seating ?? "",
       usage: usage,
       service: service,
-      writingMedia: writingMedia)
+      writingMedia: writingMedia,
+      status: status ?? "",
+      endTime: endTime ?? "")
   }
 }

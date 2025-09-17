@@ -54,7 +54,9 @@ func createSwiftDataRooms(_ count: Int) -> [SwiftDataRoom] {
       seating: "Theater-style fixed seating",
       usage: "LCTR",
       service: ["IT support", "Cleaning service", "Security monitoring"],
-      writingMedia: ["Whiteboard", "Smart board", "Flip chart"]))
+      writingMedia: ["Whiteboard", "Smart board", "Flip chart"],
+      status: nil,
+      endTime: nil))
   }
 
   return rooms
@@ -97,4 +99,15 @@ func createRoomBookingsFromStartToEnd(_ count: Int, from start: Date, to end: Da
   }
 
   return bookings
+}
+
+func createRemoteRoomStatus(_ count: Int) -> RemoteRoomStatus {
+  var buildingStatuses: RemoteRoomStatus = [:]
+
+  for _ in 0..<count {
+    buildingStatuses["BLDG-2024-007"] = BuildingRoomStatus(numAvailable: 8,
+                                                           roomStatuses: ["ROOM-12345-ABC": RoomStatus(status: "", endtime: "")])
+  }
+
+  return buildingStatuses
 }
