@@ -28,17 +28,23 @@ public protocol HasName {
   var name: String { get }
 }
 
-// MARK: - Room + HasName
+// MARK: - HasRating
 
-extension Room: HasName { }
+public protocol HasRating {
+  var overallRating: Double? { get }
+}
 
-// MARK: - Building + HasName
+// MARK: - Room + HasName, HasRating
 
-extension Building: HasName { }
+extension Room: HasName, HasRating { }
+
+// MARK: - Building + HasName, HasRating
+
+extension Building: HasName, HasRating { }
 
 // MARK: - GenericItemDataRow
 
-public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasName>: View {
+public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasName & HasRating>: View {
 
   // MARK: Lifecycle
 
@@ -67,12 +73,12 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
       }
 
       Spacer()
-
-      Text("0.0")
-      Image(systemName: "star.fill")
-        .foregroundStyle(theme.yellow)
-        .padding(.trailing)
-
+      if let overallRating = item.overallRating {
+        Text(overallRating.formatted())
+        Image(systemName: "star.fill")
+          .foregroundStyle(theme.yellow)
+          .padding(.trailing)
+      }
       Image(systemName: "chevron.right")
     }
     .background(GeometryReader { geometry in

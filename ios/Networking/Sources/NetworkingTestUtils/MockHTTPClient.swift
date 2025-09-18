@@ -9,8 +9,8 @@ import Foundation
 import Networking
 
 // MARK: - MockHTTPClient
-
-public class MockHTTPClient: HTTPClient {
+// swiftlint:disable:next no_unchecked_sendable
+public class MockHTTPClient: HTTPClient, @unchecked Sendable {
 
   // MARK: Lifecycle
 
