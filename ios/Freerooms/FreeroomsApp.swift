@@ -68,15 +68,20 @@ struct FreeroomsApp: App {
       fatalError("Invalid base url")
     }
 
+    guard let baseURLREAL = URL(string: "https://freerooms.devsoc.app/") else {
+      fatalError("Invalid base url")
+    }
+
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
       let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+      let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: baseURLREAL)
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
-        JSONBuildingLoader: JSONBuildingLoader, roomStatusLoader: roomStatusLoader)
+        JSONBuildingLoader: JSONBuildingLoader, roomStatusLoader: roomStatusLoader, buildingRatingLoader: buildingRatingLoader)
 
       let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
 

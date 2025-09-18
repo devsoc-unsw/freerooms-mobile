@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - URLSessionHTTPClient
 
-public struct URLSessionHTTPClient: HTTPClient {
+public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Lifecycle
 
@@ -38,10 +38,10 @@ public struct URLSessionHTTPClient: HTTPClient {
 
 // MARK: - HTTPSession
 
-public protocol HTTPSession {
+public protocol HTTPSession: Sendable {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
-// MARK: - URLSession + HTTPSession
+// MARK: - URLSession + HTTPSession, Sendable
 
-extension URLSession: HTTPSession { }
+extension URLSession: HTTPSession, Sendable { }

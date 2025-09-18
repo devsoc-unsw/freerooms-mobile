@@ -31,7 +31,8 @@ public struct Room: Equatable, Identifiable, Hashable {
     service: [String],
     writingMedia: [String],
     status: String? = nil,
-    endTime: String? = nil)
+    endTime: String? = nil,
+    overallRating: Double? = nil)
   {
     self.abbreviation = abbreviation
     self.accessibility = accessibility
@@ -52,6 +53,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.writingMedia = writingMedia
     self.status = status ?? ""
     self.endTime = endTime ?? ""
+    self.overallRating = overallRating
   }
 
   // MARK: Public
@@ -151,6 +153,7 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let writingMedia: [String]
   public var status: String?
   public var endTime: String?
+  public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {

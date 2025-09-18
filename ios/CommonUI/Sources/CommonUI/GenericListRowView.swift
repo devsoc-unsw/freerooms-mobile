@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - GenericListRowView
 
-public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasName>: View {
+public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasName & HasRating>: View {
 
   // MARK: Lifecycle
 

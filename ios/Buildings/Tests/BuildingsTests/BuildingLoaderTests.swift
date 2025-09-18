@@ -35,11 +35,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -57,11 +59,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -79,11 +83,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -100,11 +106,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(throws: .malformedJSON)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -122,11 +130,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -143,11 +153,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
     let _ = await sut.fetch()
 
     // When
@@ -165,11 +177,13 @@ class BuildingLoaderTests {
     let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
     let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onFetchThrows: .persistenceError)
     let mockRoomStatusLoader = MockRoomStatusLoader()
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
     mockRoomStatusLoader.stubFailure(.connectivity)
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: swiftDataBuildingMock,
       JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader)
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
     let _ = await sut.fetch()
 
     // When
@@ -190,6 +204,7 @@ class BuildingLoaderTests {
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema)
@@ -200,7 +215,9 @@ class BuildingLoaderTests {
 
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
-      JSONBuildingLoader: liveJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+      JSONBuildingLoader: liveJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -219,6 +236,7 @@ class BuildingLoaderTests {
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
     let mockRoomStatusLoader = MockRoomStatusLoader()
     mockRoomStatusLoader.stubFailure(.connectivity)
+    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -229,7 +247,9 @@ class BuildingLoaderTests {
 
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
-      JSONBuildingLoader: liveJSONBuildingLoader, roomStatusLoader: mockRoomStatusLoader)
+      JSONBuildingLoader: liveJSONBuildingLoader,
+      roomStatusLoader: mockRoomStatusLoader,
+      buildingRatingLoader: mockBuildingRatingLoader)
     let _ = await sut.fetch()
 
     // When
