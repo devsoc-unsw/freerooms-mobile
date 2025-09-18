@@ -36,14 +36,15 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
     if roomID.isEmpty {
       return .failure(.invalidBuildingID)
     }
+    let dateFormatter = Date.ISO8601FormatStyle(includingFractionalSeconds: true)
     switch await remoteRoomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let remoteRoomBookings):
       return .success(remoteRoomBookings.map {
         RoomBooking(
           bookingType: $0.bookingType,
-          end: ISO8601DateFormatter().date(from: $0.end)!,
+          end: try! dateFormatter.parse($0.end),
           name: $0.name,
-          start: ISO8601DateFormatter().date(from: $0.start)!)
+          start: try! dateFormatter.parse($0.start))
       })
 
     case .failure(let err):
