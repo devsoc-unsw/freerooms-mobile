@@ -9,6 +9,7 @@ import Foundation
 import RoomModels
 
 public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
+public typealias GetRoomBookingsResult = Swift.Result<[RoomBooking], FetchRoomError>
 
 // MARK: - FetchRoomError
 
@@ -22,6 +23,7 @@ public enum FetchRoomError: Error, Equatable {
 public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
+  func getRoomBookings(roomNumber: String) async -> GetRoomBookingsResult
 }
 
 // MARK: - LiveRoomService
@@ -30,13 +32,12 @@ public final class LiveRoomService: RoomService {
 
   // MARK: Lifecycle
 
-  public init(roomLoader: any RoomLoader) {
+  public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader) {
     self.roomLoader = roomLoader
+    self.roomBookingLoader = roomBookingLoader
   }
 
   // MARK: Public
-
-  public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 
   public func getRooms(buildingId: String) async -> GetRoomResult {
     // Validate input
@@ -61,9 +62,21 @@ public final class LiveRoomService: RoomService {
     }
   }
 
+  public func getRoomBookings(roomNumber: String) async -> GetRoomBookingsResult {
+    switch await roomBookingLoader.fetch(bookingsOf: roomNumber) {
+    case .success(let roomBookings):
+      return .success(roomBookings)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error service: \(error)")
+      return .failure(.connectivity)
+    }
+  }
+
   // MARK: Private
 
   private var roomLoader: any RoomLoader
+  private var roomBookingLoader: any RoomBookingLoader
 }
 
 // MARK: - PreviewRoomService
@@ -75,6 +88,14 @@ public final class PreviewRoomService: RoomService {
   public init() { }
 
   // MARK: Public
+
+  public func getRoomBookings(roomNumber _: String) async -> GetRoomBookingsResult {
+    .success([RoomBooking(
+      bookingType: "MISC",
+      end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
+      name: "COMM",
+      start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!)])
+  }
 
   public func getRooms() -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])

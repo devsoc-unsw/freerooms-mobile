@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct RoomBooking: Equatable {
+public struct RoomBooking: Equatable, Sendable {
   public let bookingType: String
   public let end: Date
   public let name: String

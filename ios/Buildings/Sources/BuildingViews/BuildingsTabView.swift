@@ -8,28 +8,25 @@
 import BuildingModels
 import BuildingViewModels
 import CommonUI
+import RoomModels
 import SwiftUI
-
-// MARK: - Room
-
-struct Room: Hashable {
-  let name: String
-}
 
 // MARK: - BuildingsTabView
 
-public struct BuildingsTabView<Destination: View>: View {
+public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>: View {
 
   // MARK: Lifecycle
 
   public init(
     path: Binding<NavigationPath>,
     viewModel: BuildingViewModel,
-    _ roomDestinationBuilderView: @escaping (Building) -> Destination)
+    _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
+    _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
-    self.viewModel = viewModel
-    self.roomDestinationBuilderView = roomDestinationBuilderView
     _path = path
+    self.viewModel = viewModel
+    self.roomsDestinationBuilderView = roomsDestinationBuilderView
+    self.roomDestinationBuilderView = roomDestinationBuilderView
   }
 
   // MARK: Public
@@ -82,14 +79,12 @@ public struct BuildingsTabView<Destination: View>: View {
         color: theme.label.primary.opacity(0.2),
         radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
       .navigationDestination(for: Building.self) { building in
-        // Renders the view for displaying a building that has been clicked on
-        roomDestinationBuilderView(building)
+        roomsDestinationBuilderView(building)
           .navigationTitle(building.name)
           .navigationBarTitleDisplayMode(.inline)
       }
       .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
-        Text(room.name)
-          .navigationTitle(room.name)
+        roomDestinationBuilderView(room)
       }
       .opacity(
         viewModel.isLoading
@@ -106,7 +101,7 @@ public struct BuildingsTabView<Destination: View>: View {
     .tabItem {
       Label("Buildings", systemImage: "building")
     }
-    .tag("Buildings") // Sets the selected tab to "Buildings"
+    .tag("Buildings")
   }
 
   // MARK: Internal
@@ -115,7 +110,8 @@ public struct BuildingsTabView<Destination: View>: View {
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
 
-  let roomDestinationBuilderView: (Building) -> Destination
+  let roomsDestinationBuilderView: (Building) -> BuildingDestination
+  let roomDestinationBuilderView: (Room) -> RoomDestination
 
   @ViewBuilder
   func buildingsView(for campus: String, from buildings: [Building]) -> some View {
@@ -130,7 +126,7 @@ public struct BuildingsTabView<Destination: View>: View {
             building: building,
             buildings: buildings,
             imageProvider: { buildingID in
-              BuildingImage[buildingID] // This closure captures BuildingImage
+              BuildingImage[buildingID]
             })
             .padding(.vertical, 5)
         }
@@ -152,8 +148,13 @@ struct PreviewWrapper: View {
   @State var path = NavigationPath()
 
   var body: some View {
-    BuildingsTabView(path: $path, viewModel: PreviewBuildingViewModel()) { _ in
-      EmptyView()
+    BuildingsTabView(
+      path: $path,
+      viewModel: PreviewBuildingViewModel())
+    { _ in
+      EmptyView() // Buildings destination
+    } _: { _ in
+      EmptyView() // Rooms destination
     }
     .defaultTheme()
   }

@@ -42,11 +42,18 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
     switch await loader.fetch() {
     case .success(let remoteRoomsResponse):
       return .success(remoteRoomsResponse.bookings)
+
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.connectivity):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loader: \(1)")
       return .failure(.connectivity)
+
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.invalidData):
       return .failure(.invalidBuildingID)
+
     case .failure:
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loader: \(2)")
       return .failure(.connectivity)
     }
   }

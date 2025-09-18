@@ -109,7 +109,10 @@ struct FreeroomsApp: App {
 
       let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
 
-      let roomService = LiveRoomService(roomLoader: roomLoader)
+      let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: baseURL)
+      let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+
+      let roomService = LiveRoomService(roomLoader: roomLoader, roomBookingLoader: roomBookingLoader)
 
       let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 

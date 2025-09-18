@@ -22,6 +22,8 @@ public protocol RoomViewModel {
 
   var roomsInAscendingOrder: Bool { get }
 
+  var currentRoomBookings: [RoomBooking] { get }
+
   var isLoading: Bool { get }
 
   var hasLoaded: Bool { get }
@@ -29,6 +31,8 @@ public protocol RoomViewModel {
   func getRoomsInOrder()
 
   func onAppear()
+
+  func getRoomBookings(roomId: String)
 
 }
 
@@ -45,6 +49,8 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   }
 
   // MARK: Public
+
+  public var currentRoomBookings: [RoomBooking] = []
 
   public var hasLoaded = false
 
@@ -107,6 +113,18 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
         inAscendingOrder: roomsInAscendingOrder)
     }
     isLoading = false
+  }
+
+  public func getRoomBookings(roomId: String) {
+    Task {
+      switch await interactor.getRoomBookings(roomNumber: roomId) {
+      case .success(let bookings):
+        currentRoomBookings = bookings
+      case .failure(let error):
+        // swiftlint:disable:next no_direct_standard_out_logs
+        fatalError("Error loading rooms: \(error)")
+      }
+    }
   }
 
   // MARK: Private

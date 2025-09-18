@@ -22,7 +22,7 @@ public protocol RoomBookingLoader {
 
 // MARK: - LiveRoomBookingLoader
 
-public struct LiveRoomBookingLoader {
+public struct LiveRoomBookingLoader: RoomBookingLoader {
 
   // MARK: Lifecycle
 
@@ -47,6 +47,8 @@ public struct LiveRoomBookingLoader {
       })
 
     case .failure(let err):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error loader: \(err)")
       return .failure(err)
     }
   }

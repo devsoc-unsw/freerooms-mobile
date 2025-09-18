@@ -68,16 +68,6 @@ public struct RoomsListView: View {
       .foregroundStyle(theme.label.tertiary)
     }
     .background(Color(UIColor.systemGroupedBackground))
-    .navigationDestination(for: Room.self) { room in
-      // Renders the view for displaying a building that has been clicked on
-      Button {
-        path.append(Room.exampleOne)
-      } label: {
-        Text("bruh test test")
-      }
-      .navigationTitle(room.name)
-      .navigationBarTitleDisplayMode(.inline)
-    }
   }
 
   // MARK: Internal
@@ -100,7 +90,7 @@ public struct RoomsListView: View {
 
 // MARK: - PreviewWrapper
 
-struct PreviewWrapper: View {
+private struct PreviewWrapper: View {
   @State var path = NavigationPath()
 
   var body: some View {

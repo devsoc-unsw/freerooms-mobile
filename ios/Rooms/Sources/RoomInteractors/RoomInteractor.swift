@@ -184,6 +184,17 @@ public class RoomInteractor {
     }
   }
 
+  public func getRoomBookings(roomNumber: String) async -> Result<[RoomBooking], Error> {
+    switch await roomService.getRoomBookings(roomNumber: roomNumber) {
+    case .success(let success):
+      return .success(success)
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error interactor: \(error)")
+      return .failure(error)
+    }
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
