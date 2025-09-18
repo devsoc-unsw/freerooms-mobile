@@ -65,9 +65,9 @@ public final class LiveRoomService: RoomService {
   public func getRoomBookings(roomID: String) async -> GetRoomBookingsResult {
     switch await roomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let roomBookings):
-      return .success(roomBookings)
+      .success(roomBookings)
     case .failure(let error):
-      return .failure(.connectivity)
+      .failure(.connectivity)
     }
   }
 

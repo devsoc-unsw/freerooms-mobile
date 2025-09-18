@@ -42,9 +42,9 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
       return .success(remoteRoomBookings.map {
         RoomBooking(
           bookingType: $0.bookingType,
-          end: try! dateFormatter.parse($0.end),
+          end: ISO8601DateFormatter().date(from: $0.end) ?? Date.distantFuture,
           name: $0.name,
-          start: try! dateFormatter.parse($0.start))
+          start: ISO8601DateFormatter().date(from: $0.start) ?? Date.distantPast)
       })
 
     case .failure(let err):
