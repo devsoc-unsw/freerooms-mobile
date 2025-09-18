@@ -48,8 +48,6 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
       })
 
     case .failure(let err):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loader: \(err)")
       return .failure(err)
     }
   }

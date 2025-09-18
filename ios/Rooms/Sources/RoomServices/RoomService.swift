@@ -23,7 +23,7 @@ public enum FetchRoomError: Error, Equatable {
 public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
-  func getRoomBookings(roomNumber: String) async -> GetRoomBookingsResult
+  func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
 }
 
 // MARK: - LiveRoomService
@@ -62,13 +62,11 @@ public final class LiveRoomService: RoomService {
     }
   }
 
-  public func getRoomBookings(roomNumber: String) async -> GetRoomBookingsResult {
-    switch await roomBookingLoader.fetch(bookingsOf: roomNumber) {
+  public func getRoomBookings(roomID: String) async -> GetRoomBookingsResult {
+    switch await roomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let roomBookings):
       return .success(roomBookings)
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error service: \(error)")
       return .failure(.connectivity)
     }
   }
@@ -89,7 +87,7 @@ public final class PreviewRoomService: RoomService {
 
   // MARK: Public
 
-  public func getRoomBookings(roomNumber _: String) async -> GetRoomBookingsResult {
+  public func getRoomBookings(roomID _: String) async -> GetRoomBookingsResult {
     .success([RoomBooking(
       bookingType: "MISC",
       end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,

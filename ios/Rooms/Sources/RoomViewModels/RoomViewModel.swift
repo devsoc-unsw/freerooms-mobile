@@ -117,7 +117,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public func getRoomBookings(roomId: String) {
     Task {
-      switch await interactor.getRoomBookings(roomNumber: roomId) {
+      switch await interactor.getRoomBookings(roomID: roomId) {
       case .success(let bookings):
         currentRoomBookings = bookings
       case .failure(let error):

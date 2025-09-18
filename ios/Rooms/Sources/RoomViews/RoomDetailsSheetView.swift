@@ -18,7 +18,21 @@ struct RoomDetailsSheetView: View {
   let room: Room
 
   var dateComponent: DateComponents {
-    Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
+    Calendar.current.dateComponents([.hour, .minute], from: dateSelect)
+  }
+
+  var filteredCurrentDayBookings: [RoomBooking] {
+    roomBookings.filter {
+      Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
+    }
+  }
+
+  var currentDayBookingsDateComponent: [(DateComponents, DateComponents)] {
+    filteredCurrentDayBookings.map {
+      (
+        Calendar.current.dateComponents([.hour, .minute], from: $0.start),
+        Calendar.current.dateComponents([.hour, .minute], from: $0.end))
+    }
   }
 
   var body: some View {
@@ -84,11 +98,11 @@ struct RoomDetailsSheetView: View {
                     .foregroundStyle(theme.accent.primary)
                   VStack(spacing: 0) {
                     Rectangle()
-                      .fill(hour == 15 ? Color.orange : Color.gray.opacity(0.2))
+                      .fill(isBooked(hour) ? Color.orange : Color.gray.opacity(0.2))
                       .frame(height: 40)
                       .border(Color.gray.opacity(0.2), width: 1)
                     Rectangle()
-                      .fill((hour == 15 && isBooked(hour)) ? Color.orange : Color.gray.opacity(0.2))
+                      .fill(isBooked(hour, 30) ? Color.orange : Color.gray.opacity(0.2))
                       .frame(height: 40)
                       .border(Color.gray.opacity(0.2), width: 1)
                   }
@@ -128,13 +142,34 @@ struct RoomDetailsSheetView: View {
     }
   }
 
-  private func isBooked(_: Int, _: Int? = 0) -> Bool {
-    false
+  private func isBooked(_ hour: Int, _ minute: Int = 0) -> Bool {
+    if currentDayBookingsDateComponent.isEmpty {
+      return false
+    }
+
+    // Convert the time slot we're checking to total minutes since midnight
+    let checkTimeInMinutes = hour * 60 + minute
+
+    // Since bookings don't overlap, we just need to find if any booking contains this time
+    return currentDayBookingsDateComponent.contains { booking in
+      let startHour = booking.0.hour ?? 0
+      let startMinute = booking.0.minute ?? 0
+      let endHour = booking.1.hour ?? 0
+      let endMinute = booking.1.minute ?? 0
+
+      let startTimeInMinutes = startHour * 60 + startMinute
+      let endTimeInMinutes = endHour * 60 + endMinute
+
+      // Check if our time slot falls within this booking's range
+      // For the 30-minute slot starting at checkTimeInMinutes
+      return checkTimeInMinutes >= startTimeInMinutes && checkTimeInMinutes < endTimeInMinutes
+    }
   }
 
+  let roomBookings: [RoomBooking]
 }
 
 #Preview {
-  RoomDetailsSheetView(room: Room.exampleOne)
+  RoomDetailsSheetView(room: Room.exampleOne, roomBookings: [])
     .defaultTheme()
 }

@@ -50,7 +50,7 @@ public struct RoomDetailsView: View {
       }
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room)
+      RoomDetailsSheetView(room: room, roomBookings: roomBookings)
         .presentationDetents([.fraction(0.67), .large])
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
