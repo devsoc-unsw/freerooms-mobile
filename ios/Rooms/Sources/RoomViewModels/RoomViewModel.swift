@@ -116,12 +116,11 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   }
 
   public func getRoomBookings(roomId: String) {
-    Task {
+    Task { @MainActor in
       switch await interactor.getRoomBookings(roomID: roomId) {
       case .success(let bookings):
         currentRoomBookings = bookings
       case .failure(let error):
-        // swiftlint:disable:next no_direct_standard_out_logs
         fatalError("Error loading rooms: \(error)")
       }
     }

@@ -92,8 +92,6 @@ public struct RoomBookingBarView: View {
       return ""
     }
 
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("Error loading rooms: \(currentDayBookingsDateComponent)")
     return booking.name
   }
 
