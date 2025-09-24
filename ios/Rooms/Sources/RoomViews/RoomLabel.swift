@@ -15,10 +15,11 @@ struct RoomLabel: View {
   var body: some View {
     HStack(spacing: 2) {
       Text("\(leftLabel):")
+        .font(.callout)
         .foregroundStyle(theme.accent.primary)
       Text("\(rightLabel)")
-        .font(.headline)
         .bold()
+        .font(.headline)
         .foregroundStyle(theme.label.primary)
     }
   }

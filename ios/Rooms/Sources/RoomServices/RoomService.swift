@@ -66,7 +66,7 @@ public final class LiveRoomService: RoomService {
     switch await roomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let roomBookings):
       .success(roomBookings)
-    case .failure(let error):
+    case .failure:
       .failure(.connectivity)
     }
   }

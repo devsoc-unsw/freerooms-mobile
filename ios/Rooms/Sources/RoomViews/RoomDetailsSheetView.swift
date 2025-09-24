@@ -33,7 +33,7 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          HStack {
+          HStack(alignment: .center, spacing: 2) {
             Image(systemName: "star.fill")
               .foregroundStyle(.yellow)
               .padding(0)
@@ -44,61 +44,74 @@ struct RoomDetailsSheetView: View {
           .padding(.vertical, 4)
           .overlay(
             Capsule()
-              .stroke(.gray.tertiary, lineWidth: 1))
+              .stroke(.gray.tertiary, lineWidth: 1)
+              .backgroundStyle(.gray))
+          .background(.gray.quinary, in: Capsule())
         }
 
-        Divider()
-
-        // Info
-        HStack {
-          RoomLabel(leftLabel: "ID", rightLabel: room.id)
-          Spacer()
-          RoomLabel(leftLabel: "Capacity", rightLabel: String(room.capacity))
+        VStack(spacing: 12) {
+          if room.school.trimmingCharacters(in: .whitespaces) == "" {
+            EmptyView()
+          } else {
+            Text("School of \(room.school)")
+              .fontWeight(.bold)
+              .font(.title3)
+              .foregroundStyle(theme.label.primary)
+          }
+          // Info
+          HStack {
+            RoomLabel(leftLabel: "ID", rightLabel: room.id)
+            Spacer()
+            RoomLabel(leftLabel: "Abbreviation", rightLabel: room.abbreviation)
+          }
         }
-        RoomLabel(leftLabel: "Abbreviation", rightLabel: room.abbreviation)
-        RoomLabel(leftLabel: "School", rightLabel: room.school == "" ? "UNSW" : room.school)
-
-        Divider()
+        .padding(.vertical, 12)
 
         // Bookings
-        HStack {
-          Text("Room Bookings")
-            .font(.headline)
-            .foregroundStyle(theme.label.primary)
+        VStack(alignment: .leading, spacing: 16) {
+          HStack {
+            Text("Room Bookings")
+              .font(.headline)
+              .foregroundStyle(theme.label.primary)
 
-          Spacer()
+            Spacer()
 
-          DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
-            .labelsHidden()
-            .tint(theme.accent.primary)
-        }
+            DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
+              .labelsHidden()
+              .tint(theme.accent.primary)
+          }
 
-        // Scrollable booking hours
-        ScrollViewReader { proxy in
-          ScrollView(.vertical) {
-            LazyVStack(spacing: 0) {
-              ForEach(0..<24, id: \.self) { hour in
-                HStack(alignment: .top) {
-                  Text(formatHour(hour))
-                    .frame(width: 50, alignment: .trailing)
-                    .foregroundStyle(theme.accent.primary)
+          // Scrollable booking hours
+          ScrollViewReader { proxy in
+            ScrollView(.vertical) {
+              LazyVStack(spacing: 0) {
+                ForEach(0..<24, id: \.self) { hour in
+                  HStack(alignment: .top) {
+                    Text(formatHour(hour))
+                      .frame(width: 50, alignment: .trailing)
+                      .foregroundStyle(theme.accent.primary)
 
-                  RoomBookingBarView(roomBookings: roomBookings, hour: hour, dateSelect: $dateSelect)
+                    RoomBookingBarView(roomBookings: roomBookings, hour: hour, dateSelect: $dateSelect)
+                  }
+                  .id(hour)
                 }
-                .id(hour)
+              }
+              .padding(.trailing, 8)
+            }
+            .frame(height: 500)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .onAppear {
+              let currentHour = dateComponent.hour ?? 0
+              withAnimation(.easeInOut(duration: 0.5)) {
+                proxy.scrollTo(currentHour, anchor: .top)
               }
             }
-            .padding(.trailing, 8)
-          }
-          .frame(height: 500)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
-          .onAppear {
-            let currentHour = dateComponent.hour ?? 0
-            withAnimation(.easeInOut(duration: 0.5)) {
-              proxy.scrollTo(currentHour, anchor: .top)
-            }
           }
         }
+        .padding()
+        .overlay(
+          RoundedRectangle(cornerRadius: 12)
+            .stroke(Color.gray.secondary, lineWidth: 1))
       }
       .padding()
     }

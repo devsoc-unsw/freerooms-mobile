@@ -22,7 +22,7 @@ public struct RoomDetailsView: View {
   // MARK: Public
 
   public var body: some View {
-    ZStack(alignment: .topLeading) {
+    VStack(spacing: 0) {
       RoomImage[room.id]
         .resizable()
         .scaledToFill()
@@ -30,35 +30,58 @@ public struct RoomDetailsView: View {
         .clipped()
         .ignoresSafeArea()
 
-      // Back button overlay
-      VStack {
-        HStack {
-          Button(action: { showDetails = false }) {
-            Image(systemName: "chevron.left")
-              .padding()
-              .background(.ultraThinMaterial, in: Circle())
-          }
-          Spacer()
-
-          Circle()
-            .fill(.yellow)
-            .frame(width: 60, height: 60)
-        }
-        .padding()
-
-        Spacer()
-      }
+      Spacer()
     }
     .sheet(isPresented: $showDetails) {
       RoomDetailsSheetView(room: room, roomBookings: roomBookings)
-        .presentationDetents([.fraction(0.67), .large])
+        .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
         .interactiveDismissDisabled(true)
+        .onTapGesture {
+          // swiftlint:disable:next no_direct_standard_out_logs
+          print("\(detent)")
+        }
+    }
+    .navigationBarBackButtonHidden()
+    .toolbar {
+      ToolbarItem(placement: .topBarLeading) {
+        Button("Back", systemImage: "chevron.left") {
+          //
+          showDetails = false
+          dismiss()
+        }
+        .padding(.vertical, 4)
+        .font(.title2)
+        .buttonBorderShape(.circle)
+        .buttonStyle(.borderedProminent)
+        .foregroundStyle(theme.accent.primary)
+        .tint(.white)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+      }
+
+      ToolbarItem(placement: .topBarTrailing) {
+        Section {
+          RoomLabel(leftLabel: "Capacity", rightLabel: String(room.capacity))
+        }
+        .controlSize(.large)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 100))
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+      }
     }
   }
 
+  // MARK: Internal
+
+  @Environment(\.dismiss) var dismiss
+
   // MARK: Private
+
+  @State private var detent = PresentationDetent.fraction(0.75)
+
+  @Environment(Theme.self) private var theme
 
   @State private var showDetails = true
 
@@ -68,6 +91,8 @@ public struct RoomDetailsView: View {
 }
 
 #Preview {
-  RoomDetailsView(room: Room.exampleOne, roomBookings: [])
-    .defaultTheme()
+  NavigationStack {
+    RoomDetailsView(room: Room.exampleOne, roomBookings: [])
+      .defaultTheme()
+  }
 }
