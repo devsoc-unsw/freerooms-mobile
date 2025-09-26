@@ -38,10 +38,6 @@ public struct RoomDetailsView: View {
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
         .interactiveDismissDisabled(true)
-        .onTapGesture {
-          // swiftlint:disable:next no_direct_standard_out_logs
-          print("\(detent)")
-        }
     }
     .navigationBarBackButtonHidden()
     .toolbar {
@@ -57,7 +53,7 @@ public struct RoomDetailsView: View {
         .buttonStyle(.borderedProminent)
         .foregroundStyle(theme.accent.primary)
         .tint(.white)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .shadow(radius: 2)
       }
 
       ToolbarItem(placement: .topBarTrailing) {
@@ -68,7 +64,7 @@ public struct RoomDetailsView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .background(Color.white, in: RoundedRectangle(cornerRadius: 100))
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .shadow(radius: 2)
       }
     }
   }

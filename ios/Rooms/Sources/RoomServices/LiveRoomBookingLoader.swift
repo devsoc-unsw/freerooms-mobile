@@ -11,7 +11,7 @@ import RoomModels
 // MARK: - RoomBookingLoaderError
 
 public enum RoomBookingLoaderError: Error {
-  case connectivity, invalidBuildingID, invalidURL
+  case connectivity, invalidBuildingID, invalidURL, invalidDateFormat
 }
 
 // MARK: - RoomBookingLoader
@@ -33,18 +33,20 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
   // MARK: Public
 
   public func fetch(bookingsOf roomID: String) async -> Result<[RoomBooking], RoomBookingLoaderError> {
-    if roomID.isEmpty {
+    guard !roomID.isEmpty else {
       return .failure(.invalidBuildingID)
     }
-    let dateFormatter = Date.ISO8601FormatStyle(includingFractionalSeconds: true)
+
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     switch await remoteRoomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let remoteRoomBookings):
       return .success(remoteRoomBookings.map {
         RoomBooking(
           bookingType: $0.bookingType,
-          end: try! dateFormatter.parse($0.end),
+          end: formatter.date(from: $0.end)!,
           name: $0.name,
-          start: try! dateFormatter.parse($0.start))
+          start: formatter.date(from: $0.start)!)
       })
 
     case .failure(let err):

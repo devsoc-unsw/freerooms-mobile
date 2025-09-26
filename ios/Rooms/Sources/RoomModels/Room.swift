@@ -95,7 +95,8 @@ public struct Room: Equatable, Identifiable, Hashable {
     service: [],
     writingMedia: [
       "Whiteboard",
-    ])
+    ],
+    overallRating: 4.5)
 
   nonisolated(unsafe) static public let exampleTwo = Room(
     abbreviation: "Col LG02",

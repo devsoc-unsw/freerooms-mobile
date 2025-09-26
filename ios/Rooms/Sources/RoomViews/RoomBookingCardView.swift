@@ -18,25 +18,28 @@ struct RoomBookingCardView: View {
       UnevenRoundedRectangle(topLeadingRadius: 15, bottomLeadingRadius: 15, bottomTrailingRadius: 15, topTrailingRadius: 15)
         .fill(theme.accent.primary)
 
-      VStack(alignment: .leading, spacing: 3 * numberTimeSlots) {
+      VStack(alignment: .leading, spacing: 2 * numberTimeSlots) {
         Text("\(time.0) - \(time.1)")
-          .font(.headline)
+          .font(numberTimeSlots < 3
+            ? .system(size: 10, weight: .medium)
+            : .system(size: 12, weight: .medium))
 
-        Text("\(bookingName )")
-          .font(.title)
+        Text("\(bookingName)")
+          .font(numberTimeSlots < 3
+            ? .system(size: 18, weight: .medium)
+            : .system(size: 20, weight: .medium))
       }
-      .padding(15)
+      .padding(10)
       .bold()
       .foregroundStyle(.white)
     }
-    .frame(height: 20 * numberTimeSlots)
-    .padding(2)
+    .frame(height: (20 * numberTimeSlots) - 4)
   }
 
   // MARK: Private
 
   @Environment(Theme.self) private var theme
-  
+
   private func formatHour(_ hour: Int, _ minute: Int) -> String {
     if hour == 0 {
       "12\(minute >= 30 ? ":30" : "") AM"
@@ -49,7 +52,16 @@ struct RoomBookingCardView: View {
     }
   }
 
-  var numberTimeSlots: CGFloat = 8
+  var numberTimeSlots: CGFloat {
+    let startTimeMinute = currentBooking.0.minute ?? 0
+    let startTimeHour = currentBooking.0.hour ?? 0
+    let endTimeMinute = currentBooking.1.minute ?? 0
+    let endTimeHour = currentBooking.1.hour ?? 0
+
+    let range = abs(endTimeHour - startTimeHour) * 60 + abs(endTimeMinute - startTimeMinute)
+
+    return CGFloat(range / 30)
+  }
 
   var room: Room
 
@@ -58,7 +70,7 @@ struct RoomBookingCardView: View {
     let startTimeHour = currentBooking.0.hour ?? 0
     let endTimeMinute = currentBooking.1.minute ?? 0
     let endTimeHour = currentBooking.1.hour ?? 0
-    
+
     return ("\(formatHour(startTimeHour, startTimeMinute))", "\(formatHour(endTimeHour, endTimeMinute))")
   }
 
@@ -68,8 +80,7 @@ struct RoomBookingCardView: View {
 
 #Preview {
   RoomBookingCardView(
-    numberTimeSlots: 8,
     room: Room.exampleOne,
-    currentBooking: ( DateComponents(), DateComponents(), ), bookingName: "COMM")
+    currentBooking: (DateComponents(), DateComponents()), bookingName: "COMM")
     .defaultTheme()
 }
