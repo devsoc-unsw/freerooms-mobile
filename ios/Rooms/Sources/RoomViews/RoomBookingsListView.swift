@@ -57,7 +57,7 @@ struct RoomBookingsListView: View {
                 y: CGFloat(startMinutes) * (40 / 60) + 22)
           }
         }
-        .frame(height: 24 * 40) // Set total height based on 24 hours
+        .frame(height: 24 * 40)
       }
       .frame(height: 500)
       .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -67,7 +67,6 @@ struct RoomBookingsListView: View {
           proxy.scrollTo(currentHour, anchor: .top)
         }
       }
-//      .background(in: Color.secondary.opacity(0.1))
     }
   }
 }

@@ -13,23 +13,32 @@ struct RoomBookingCardView: View {
 
   // MARK: Internal
 
+  private var isSmallBooking: Bool {
+    numberTimeSlots < 4
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
-      UnevenRoundedRectangle(topLeadingRadius: 15, bottomLeadingRadius: 15, bottomTrailingRadius: 15, topTrailingRadius: 15)
+      UnevenRoundedRectangle(
+        topLeadingRadius: isSmallBooking ? 10 : 15,
+        bottomLeadingRadius: isSmallBooking ? 10 : 15,
+        bottomTrailingRadius: isSmallBooking ? 10 : 15,
+        topTrailingRadius: isSmallBooking ? 10 : 15)
         .fill(theme.accent.primary)
 
-      VStack(alignment: .leading, spacing: 2 * numberTimeSlots) {
+      VStack(alignment: .leading, spacing: 2 * (isSmallBooking ? 0.5 : numberTimeSlots)) {
         Text("\(time.0) - \(time.1)")
-          .font(numberTimeSlots < 3
+          .font(isSmallBooking
             ? .system(size: 10, weight: .medium)
             : .system(size: 12, weight: .medium))
 
         Text("\(bookingName)")
-          .font(numberTimeSlots < 3
+          .font(isSmallBooking
             ? .system(size: 18, weight: .medium)
             : .system(size: 20, weight: .medium))
       }
-      .padding(10)
+      .padding(isSmallBooking ? 2 : 10)
+      .padding(.horizontal, isSmallBooking ? 10 : 0)
       .bold()
       .foregroundStyle(.white)
     }
