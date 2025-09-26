@@ -96,9 +96,9 @@ struct BuildingListRowView: View {
   }
 }
 
-// MARK: - PreviewWrapper
+// MARK: - BuildingListRowPreviewWrapper
 
-struct PreviewWrapper: View {
+struct BuildingListRowPreviewWrapper: View {
   @State private var path = NavigationPath()
   @State private var rowHeight: CGFloat?
 
@@ -119,6 +119,6 @@ struct PreviewWrapper: View {
 }
 
 #Preview {
-  PreviewWrapper()
+  BuildingListRowPreviewWrapper()
     .defaultTheme()
 }
