@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Location
 import RoomModels
 import Testing
 
@@ -27,9 +28,10 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "")
 
       // Then
+      let expectedSorted = sortRoomsByNameAscending(expectedRooms)
       switch result {
       case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
+        #expect(actualResult == expectedSorted)
       case .failure:
         Issue.record("Expected success, got failure")
       }
@@ -45,7 +47,7 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "Colombo")
 
       // Then
-      let expectedFilteredRooms = expectedRooms.filter { $0.name.contains("Colombo") }
+      let expectedFilteredRooms = sortRoomsByNameAscending(expectedRooms.filter { $0.name.contains("Colombo") })
 
       switch result {
       case .success(let actualResult):
@@ -83,7 +85,7 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "colombo")
 
       // Then
-      let expectedFilteredRooms = expectedRooms.filter { $0.name.lowercased().contains("colombo") }
+      let expectedFilteredRooms = sortRoomsByNameAscending(expectedRooms.filter { $0.name.lowercased().contains("colombo") })
 
       switch result {
       case .success(let actualResult):
@@ -103,7 +105,7 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "LG")
 
       // Then
-      let expectedFilteredRooms = expectedRooms.filter { $0.name.contains("LG") }
+      let expectedFilteredRooms = sortRoomsByNameAscending(expectedRooms.filter { $0.name.contains("LG") })
 
       switch result {
       case .success(let actualResult):
@@ -123,7 +125,7 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "101")
 
       // Then
-      let expectedFilteredRooms = expectedRooms.filter { $0.name.contains("101") }
+      let expectedFilteredRooms = sortRoomsByNameAscending(expectedRooms.filter { $0.name.contains("101") })
 
       switch result {
       case .success(let actualResult):
@@ -143,7 +145,7 @@ enum RoomSearchInteractorTests {
       let result = await sut.filterRooms(by: "Math")
 
       // Then
-      let expectedFilteredRooms = expectedRooms.filter { $0.name.contains("Math") }
+      let expectedFilteredRooms = sortRoomsByNameAscending(expectedRooms.filter { $0.name.contains("Math") })
 
       switch result {
       case .success(let actualResult):
@@ -155,14 +157,35 @@ enum RoomSearchInteractorTests {
   }
 }
 
-/// Function to make the room search SUT
-func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchInteractor {
+// MARK: - RoomSearchAdapter
+
+/// Adapter that mimics the old RoomSearchInteractor using RoomInteractor
+struct RoomSearchAdapter {
+  let interactor: RoomInteractor
+
+  func filterRooms(by searchString: String) async -> Result<[Room], Error> {
+    switch await interactor.getRoomsSortedAlphabetically(inAscendingOrder: true) {
+    case .success(let rooms):
+      let filtered = interactor.filterRoomsByQueryString(rooms, by: searchString)
+      return .success(filtered)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+}
+
+/// Function to make the room search SUT using RoomInteractor
+func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
   let mockLoader = MockRoomLoader()
   mockLoader.stubRooms(rooms)
 
   let roomService = LiveRoomService(roomLoader: mockLoader)
+  let interactor = RoomInteractor(
+    roomService: roomService,
+    locationService: LiveLocationService(locationManager: LiveLocationManager()))
 
-  return LiveRoomSearchInteractor(roomService: roomService)
+  return RoomSearchAdapter(interactor: interactor)
 }
 
 /// Create rooms with different names for testing
@@ -241,4 +264,9 @@ func createRoomsWithDifferentNames() -> [Room] {
       service: [],
       writingMedia: []),
   ]
+}
+
+/// Helpers
+func sortRoomsByNameAscending(_ rooms: [Room]) -> [Room] {
+  rooms.sorted { $0.name < $1.name }
 }

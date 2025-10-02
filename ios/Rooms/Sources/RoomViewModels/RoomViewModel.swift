@@ -20,11 +20,15 @@ public protocol RoomViewModel {
 
   var roomsByBuildingId: [String: [Room]] { get set }
 
+  var filteredRoomsByBuildingId: [String: [Room]] { get }
+
   var roomsInAscendingOrder: Bool { get }
 
   var isLoading: Bool { get }
 
   var hasLoaded: Bool { get }
+
+  var searchText: String { get set }
 
   func getRoomsInOrder()
 
@@ -55,6 +59,19 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public var roomsInAscendingOrder = true
 
   public var isLoading = false
+
+  public var searchText = ""
+
+  public var filteredRoomsByBuildingId: [String: [Room]] {
+    var result: [String: [Room]] = [:]
+    for (key, value) in roomsByBuildingId {
+      let sorted = interactor.getRoomsSortedAlphabetically(
+        rooms: value,
+        inAscendingOrder: roomsInAscendingOrder)
+      result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
+    }
+    return result
+  }
 
   public func getLoadingStatus() -> Bool {
     isLoading
