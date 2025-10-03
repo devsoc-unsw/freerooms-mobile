@@ -30,6 +30,7 @@ extension [SwiftSetting] {
     [
       .defaultIsolation(MainActor.self),
       .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      .enableUpcomingFeature("InferIsolatedConformances"),
     ]
   }
 }

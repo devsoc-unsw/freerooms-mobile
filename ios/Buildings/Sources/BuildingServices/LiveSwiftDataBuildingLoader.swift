@@ -11,7 +11,6 @@ import Persistence
 
 // MARK: - SwiftDataBuildingLoader
 
-@MainActor
 public protocol SwiftDataBuildingLoader: Sendable {
   func fetch() -> Result<[Building], BuildingLoaderError>
   func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError>

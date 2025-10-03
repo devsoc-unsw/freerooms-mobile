@@ -16,7 +16,6 @@ import RoomServices
 
 /// Coordinates building-related operations including filtering, sorting, and room status integration.
 /// Acts as the main interface between the presentation layer and building services.
-@MainActor
 public class BuildingInteractor {
 
   // MARK: Lifecycle

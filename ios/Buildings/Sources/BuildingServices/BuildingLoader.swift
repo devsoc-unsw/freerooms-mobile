@@ -24,7 +24,6 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
-@MainActor
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
@@ -59,7 +58,7 @@ public final class LiveBuildingLoader: BuildingLoader, Sendable {
 
   public func fetch() async -> Result {
     if !hasSavedData {
-      switch JSONBuildingLoader.fetch() {
+      switch await JSONBuildingLoader.fetch() {
       case .success(var offlineBuildings):
         if case .failure(let err) = await swiftDataBuildingLoader.seed(offlineBuildings) {
           return .failure(err)
@@ -93,10 +92,11 @@ public final class LiveBuildingLoader: BuildingLoader, Sendable {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedBuildingsData)
   }
 
+  @concurrent
   private func combineLiveAndOfflineData(_ offlineBuildings: inout [Building]) async {
     if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
       for i in offlineBuildings.indices {
-        offlineBuildings[i].numberOfAvailableRooms = roomStatusResponse[offlineBuildings[i].id]?.numAvailable
+        offlineBuildings[i].numberOfAvailableRooms = await roomStatusResponse[offlineBuildings[i].id]?.numAvailable
       }
     }
 

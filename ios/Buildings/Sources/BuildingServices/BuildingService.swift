@@ -19,7 +19,6 @@ public enum FetchBuildingsError: Error {
 
 // MARK: - BuildingService
 
-@MainActor
 public protocol BuildingService {
   func getBuildings() async -> GetBuildingsResult
 }

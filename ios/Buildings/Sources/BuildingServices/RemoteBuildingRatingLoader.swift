@@ -11,7 +11,6 @@ import Networking
 
 // MARK: - BuildingRatingLoader
 
-@MainActor
 public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }

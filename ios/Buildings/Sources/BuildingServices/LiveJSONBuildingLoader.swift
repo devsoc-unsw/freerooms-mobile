@@ -11,9 +11,8 @@ import Persistence
 
 // MARK: - JSONBuildingLoader
 
-@MainActor
 public protocol JSONBuildingLoader {
-  func fetch() -> Swift.Result<[Building], BuildingLoaderError>
+  func fetch() async -> Swift.Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - LiveJSONBuildingLoader
@@ -34,12 +33,12 @@ public struct LiveJSONBuildingLoader: JSONBuildingLoader {
     Bundle.module.path(forResource: "BuildingsSeed", ofType: "json")
   }
 
-  public func fetch() -> Result {
+  public func fetch() async -> Result {
     guard let buildingsSeedJSONPath else {
       fatalError("No JSON Buildings Seed bundled")
     }
 
-    switch loader.load(from: buildingsSeedJSONPath) {
+    switch await loader.load(from: buildingsSeedJSONPath) {
     case .success(let JSONBuildingsResponse):
       let buildings = JSONBuildingsResponse.map {
         Building(name: $0.name, id: $0.id, latitude: $0.lat, longitude: $0.long, aliases: $0.aliases)

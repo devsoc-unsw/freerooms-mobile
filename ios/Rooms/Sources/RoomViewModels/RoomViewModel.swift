@@ -35,8 +35,7 @@ public protocol RoomViewModel {
 // MARK: - LiveRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
+public class LiveRoomViewModel: RoomViewModel {
 
   // MARK: Lifecycle
 

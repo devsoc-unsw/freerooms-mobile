@@ -32,8 +32,9 @@ let package = Package(
 extension [SwiftSetting] {
   static var defaultSettings: [SwiftSetting] {
     [
-      //      .defaultIsolation(MainActor.self),
+      .defaultIsolation(MainActor.self),
       .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      .enableUpcomingFeature("InferIsolatedConformances"),
     ]
   }
 }
