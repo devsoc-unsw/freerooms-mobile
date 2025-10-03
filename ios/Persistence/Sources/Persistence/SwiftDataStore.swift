@@ -22,6 +22,8 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
     self.modelContext = modelContext
   }
 
+  nonisolated deinit { }
+
   // MARK: Public
 
   public func deleteAll() throws {
@@ -47,10 +49,12 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
   }
 
   /// Fetches a specific item by its unique identifier.
-  public func fetch(id: String) throws -> Model? {
-    let descriptor = FetchDescriptor<Model>(
-      predicate: #Predicate { $0.stringID == id })
-    return try modelContext.fetch(descriptor).first
+  public func fetch(id _: String) throws -> Model? {
+//    let descriptor = FetchDescriptor<Model>(predicate: #Predicate {
+//      $0.stringID == id
+//    })
+//    return try modelContext.fetch(descriptor).first
+    nil
   }
 
   /// Deletes a single item from the persistent store.

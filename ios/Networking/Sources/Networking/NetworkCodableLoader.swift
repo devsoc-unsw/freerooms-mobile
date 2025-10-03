@@ -26,6 +26,8 @@ public class NetworkCodableLoader<T: Codable>: CodableLoader {
     self.url = url
   }
 
+  nonisolated deinit { }
+
   // MARK: Public
 
   public enum Error: Swift.Error {

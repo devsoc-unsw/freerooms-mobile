@@ -58,7 +58,7 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Public
 
-  nonisolated(unsafe) static public let exampleOne = Room(
+  static public let exampleOne = Room(
     abbreviation: "Col LG01",
     accessibility: [
       "Ventilation - Air conditioning",
@@ -97,7 +97,7 @@ public struct Room: Equatable, Identifiable, Hashable {
       "Whiteboard",
     ])
 
-  nonisolated(unsafe) static public let exampleTwo = Room(
+  static public let exampleTwo = Room(
     abbreviation: "Col LG02",
     accessibility: [
       "Ventilation - Air conditioning",

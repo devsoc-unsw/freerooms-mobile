@@ -14,6 +14,7 @@ import Observation
 
 // MARK: - BuildingViewModel
 
+@MainActor
 public protocol BuildingViewModel {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }
@@ -31,7 +32,7 @@ public protocol BuildingViewModel {
 
 @Observable
 // swiftlint:disable:next no_unchecked_sendable
-public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
+public class LiveBuildingViewModel: BuildingViewModel {
 
   // MARK: Lifecycle
 

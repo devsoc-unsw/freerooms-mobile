@@ -11,6 +11,7 @@ import Persistence
 
 // MARK: - JSONBuildingLoader
 
+@MainActor
 public protocol JSONBuildingLoader {
   func fetch() -> Swift.Result<[Building], BuildingLoaderError>
 }

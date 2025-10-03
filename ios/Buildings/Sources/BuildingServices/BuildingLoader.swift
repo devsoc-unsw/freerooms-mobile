@@ -24,6 +24,7 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
+@MainActor
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
@@ -36,7 +37,7 @@ public protocol RemoteBuildingLoader {
 
 // MARK: - LiveBuildingLoader
 
-public class LiveBuildingLoader: BuildingLoader {
+public final class LiveBuildingLoader: BuildingLoader, Sendable {
 
   // MARK: Lifecycle
 

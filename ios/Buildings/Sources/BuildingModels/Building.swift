@@ -57,6 +57,7 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
+  @MainActor
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }

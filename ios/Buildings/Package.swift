@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -31,23 +31,29 @@ let package = Package(
     .target(
       name: "BuildingViews",
       dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels"],
-      resources: [.process("Resources")]),
+      resources: [.process("Resources")],
+      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingViewModels",
-      dependencies: ["BuildingInteractors", "BuildingModels"]),
+      dependencies: ["BuildingInteractors", "BuildingModels"],
+      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingInteractors",
-      dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")]),
+      dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
+      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingServices",
       dependencies: ["Networking", "Persistence", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
-      resources: [.process("Resources")]),
+      resources: [.process("Resources")],
+      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingModels",
-      dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")]),
+      dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
+      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingTestUtils",
-      dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
+      dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")],
+      swiftSettings: .defaultSettings),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
@@ -61,5 +67,15 @@ let package = Package(
         .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "LocationTestsUtils", package: "Location"),
         .product(name: "RoomTestUtils", package: "Rooms"),
-      ]),
+      ],
+      swiftSettings: .defaultSettings),
   ])
+
+extension [SwiftSetting] {
+  static var defaultSettings: [SwiftSetting] {
+    [
+      .defaultIsolation(MainActor.self),
+      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    ]
+  }
+}

@@ -29,11 +29,12 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
 
   // MARK: Public
 
+  @concurrent
   public func fetch(bookingsOf roomID: String) async -> Result<[RemoteRoomBooking], RoomBookingLoaderError> {
     guard let url = URL(string: statusEndpointPath, relativeTo: baseURL) else {
       return .failure(.invalidURL)
     }
-    let loader = NetworkCodableLoader<RemoteRoomBookingResponse>(client: client, url: url)
+    let loader = await NetworkCodableLoader<RemoteRoomBookingResponse>(client: client, url: url)
 
     if roomID.isEmpty {
       return .failure(.invalidBuildingID)

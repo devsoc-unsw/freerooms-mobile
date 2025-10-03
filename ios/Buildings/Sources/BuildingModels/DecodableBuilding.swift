@@ -8,7 +8,7 @@
 // MARK: - DecodableBuilding
 
 /// A decodable representation of building data from JSON sources.
-public struct DecodableBuilding: Decodable, Equatable {
+public struct DecodableBuilding: Decodable, Equatable, Sendable {
   public let name: String
   public let id: String
   public let lat: Double
