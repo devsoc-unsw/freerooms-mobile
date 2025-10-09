@@ -68,12 +68,12 @@ public struct RoomsTabView<Destination: View>: View {
                 .frame(width: 22, height: 15)
             }
           }
-          .padding(.trailing, 10)
+          .padding(5)
           .foregroundStyle(theme.label.tertiary)
         }
       }
       .background(Color.gray.opacity(0.1))
-      .padding(.top, 1)
+//      .padding(.top, 1) 
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
       .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
       .shadow(
@@ -97,7 +97,7 @@ public struct RoomsTabView<Destination: View>: View {
           }
         }
         .navigationTitle("Rooms")
-        .searchable(text: $searchText, prompt: "Search...")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")

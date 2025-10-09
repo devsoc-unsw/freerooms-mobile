@@ -14,21 +14,47 @@ struct BookingsLayoutView: View {
 
   var hour: Int
 
+  let borderColor = Color.gray.opacity(0.3)
+
   var body: some View {
-    HStack(alignment: .top) {
+    HStack {
       Text(formatHour(hour))
-        .frame(width: 50, height: 40, alignment: .trailing)
+        .frame(width: 50, height: 40, alignment: .topTrailing)
         .foregroundStyle(theme.accent.primary)
+        .overlay(
+          VStack(spacing: 0) {
+            Rectangle()
+              .frame(height: 1)
+            Spacer()
+            Rectangle()
+              .frame(height: 1)
+          }
+          .offset(x: 8)
+          .foregroundStyle(borderColor))
 
       VStack(spacing: 0) {
         Rectangle()
-          .strokeBorder(Color.gray.opacity(0.2), lineWidth: 1)
-          .background(Rectangle().fill(Color.white))
+          .strokeBorder(borderColor, lineWidth: 1)
           .frame(height: 20)
+
         Rectangle()
-          .strokeBorder(Color.gray.opacity(0.2), lineWidth: 1)
-          .background(Rectangle().fill(Color.white))
+          .fill(.clear)
           .frame(height: 20)
+          .overlay(alignment: .leading) {
+            Rectangle()
+              .frame(width: 1)
+              .foregroundStyle(borderColor)
+          }
+          .overlay(alignment: .bottom) {
+            Rectangle()
+              .frame(height: 1)
+              .foregroundStyle(borderColor)
+          }
+          .overlay(alignment: .trailing) {
+            Rectangle()
+              .frame(width: 1)
+              .foregroundStyle(borderColor)
+          }
       }
     }
     .id(hour)

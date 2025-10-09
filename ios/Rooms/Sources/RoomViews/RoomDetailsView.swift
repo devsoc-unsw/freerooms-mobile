@@ -51,7 +51,6 @@ public struct RoomDetailsView: View {
         .font(.title2)
         .buttonBorderShape(.circle)
         .buttonStyle(.borderedProminent)
-        .foregroundStyle(theme.accent.primary)
         .tint(.white)
         .shadow(radius: 2)
       }
@@ -63,7 +62,6 @@ public struct RoomDetailsView: View {
         .controlSize(.large)
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 100))
         .shadow(radius: 2)
       }
     }
@@ -76,8 +74,6 @@ public struct RoomDetailsView: View {
   // MARK: Private
 
   @State private var detent = PresentationDetent.fraction(0.75)
-
-  @Environment(Theme.self) private var theme
 
   @State private var showDetails = true
 

@@ -54,7 +54,7 @@ struct RoomBookingsListView: View {
               .padding(.trailing, 10)
               .offset(
                 x: 0,
-                y: CGFloat(startMinutes) * (40 / 60) + 22)
+                y: CGFloat(startMinutes) * (40 / 60) + 2)
           }
         }
         .frame(height: 24 * 40)

@@ -16,49 +16,54 @@ struct RoomBookingInformationView: View {
   var room: Room
 
   var body: some View {
-    // Title
-    HStack {
-      Text(room.name)
-        .font(.title)
-        .bold()
-        .foregroundStyle(theme.label.primary)
-
-      Spacer()
-
-      HStack(alignment: .center, spacing: 2) {
-        Image(systemName: "star.fill")
-          .foregroundStyle(.yellow)
-          .padding(0)
-
-        Text("\(String(describing: room.overallRating ?? 0))")
-          .foregroundStyle(theme.label.primary)
-      }
-      .padding(.horizontal, 6)
-      .padding(.vertical, 4)
-      .overlay(
-        Capsule()
-          .stroke(.gray.opacity(0.2), lineWidth: 1)
-          .backgroundStyle(.gray))
-      .background(.white.quinary, in: Capsule())
-    }
-
-    VStack(alignment: .leading, spacing: 12) {
-      if room.school.trimmingCharacters(in: .whitespaces) == "" {
-        EmptyView()
-      } else {
-        Text("School of \(room.school)")
-          .fontWeight(.bold)
-          .font(.title3)
-          .foregroundStyle(theme.label.primary)
-      }
-      // Info
+    VStack(spacing: 0) {
       HStack {
-        RoomLabel(leftLabel: "ID", rightLabel: room.id)
+        // Title
+        Text(room.name)
+          .font(.title)
+          .bold()
+          .foregroundStyle(.primary)
+        
         Spacer()
-        RoomLabel(leftLabel: "Abbreviation", rightLabel: room.abbreviation)
+        
+        // Rating
+        ZStack {
+          RoundedRectangle(cornerRadius: 10)
+            .fill(theme.accent.primary)
+            .stroke(.gray.opacity(0.2), lineWidth: 1)
+          
+          HStack(spacing: 5) {
+            Text("\(String(describing: room.overallRating ?? 0))")
+              .foregroundStyle(.white)
+              .font(.headline)
+            
+            Image(systemName: "star.fill")
+              .foregroundStyle(.white)
+              .padding(0)
+          }
+        }
+        .frame(width: 65,height: 35)
+        .padding(.horizontal, 6)
       }
+      
+      VStack(alignment: .leading, spacing: 10) {
+        if room.school.trimmingCharacters(in: .whitespaces) == "" {
+          EmptyView()
+        } else {
+          Text("School of \(room.school)")
+            .font(.title3)
+            .bold()
+            .foregroundStyle(.primary)
+        }
+        // Info
+        Text("\(room.abbreviation)")
+          .font(.callout)
+          .foregroundStyle(.primary)
+          .bold()
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.vertical, 12)
     }
-    .padding(.vertical, 12)
   }
 
   // MARK: Private

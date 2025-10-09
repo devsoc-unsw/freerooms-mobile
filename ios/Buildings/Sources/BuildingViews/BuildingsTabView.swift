@@ -68,7 +68,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
                 .frame(width: 22, height: 15)
             }
           }
-          .padding(.trailing, 10)
+          .padding(5)
           .foregroundStyle(theme.label.tertiary)
         }
       }

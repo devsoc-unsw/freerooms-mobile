@@ -14,11 +14,11 @@ struct RoomDetailsSheetView: View {
   // MARK: Internal
 
   @State var dateSelect = Date()
-
   let room: Room
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
+//    List {
       // Booking informations
       RoomBookingInformationView(room: room)
 
@@ -27,7 +27,7 @@ struct RoomDetailsSheetView: View {
         HStack {
           Text("Room Bookings")
             .font(.headline)
-            .foregroundStyle(theme.label.primary)
+            .foregroundStyle(.primary)
 
           Spacer()
 
@@ -35,7 +35,7 @@ struct RoomDetailsSheetView: View {
             .labelsHidden()
             .tint(theme.accent.primary)
         }
-
+        
         // Booking Grid
         ScrollView {
           RoomBookingsListView(
@@ -45,9 +45,6 @@ struct RoomDetailsSheetView: View {
         }
       }
       .padding()
-      .shadow(
-        color: theme.label.primary.opacity(0.2),
-        radius: 5)
       .overlay(
         RoundedRectangle(cornerRadius: 12)
           .strokeBorder(LinearGradient(

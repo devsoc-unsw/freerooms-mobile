@@ -64,7 +64,7 @@ public struct RoomsListView: View {
             .frame(width: 25, height: 20)
         }
       }
-      .padding(.trailing, 10)
+      .padding(5)
       .foregroundStyle(theme.label.tertiary)
     }
     .background(Color(UIColor.systemGroupedBackground))
