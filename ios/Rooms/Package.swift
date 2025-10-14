@@ -64,7 +64,10 @@ let package = Package(
         .product(name: "Persistence", package: "Persistence"),
       ],
       swiftSettings: .defaultSettings),
-    .target(name: "RoomTestUtils", dependencies: ["RoomServices", "RoomModels"]),
+    .target(
+      name: "RoomTestUtils",
+      dependencies: ["RoomServices", "RoomModels"],
+      swiftSettings: .defaultSettings),
     .testTarget(
       name: "RoomsTests",
       dependencies: [

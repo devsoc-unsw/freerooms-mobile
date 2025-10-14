@@ -15,6 +15,12 @@ public protocol CodableLoader: Sendable {
   func fetch() async -> Swift.Result<Generic, Swift.Error>
 }
 
+// MARK: - StatusCode
+
+public enum StatusCode: Int {
+  case ok = 200
+}
+
 // MARK: - NetworkCodableLoader
 
 public final class NetworkCodableLoader<T: Codable>: CodableLoader {
@@ -47,17 +53,13 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   // MARK: Private
 
-  private static var okStatusCode: Int {
-    200
-  }
-
   private let client: HTTPClient
   private let url: URL
 
   @concurrent
   private func map(_ data: Data, from response: HTTPURLResponse) async -> Result {
     guard
-      response.statusCode == NetworkCodableLoader.okStatusCode, let decodedData = try? JSONDecoder().decode(
+      response.statusCode == StatusCode.ok.rawValue, let decodedData = try? JSONDecoder().decode(
         T.self,
         from: data)
     else {

@@ -18,7 +18,10 @@ let package = Package(
     .target(
       name: "Persistence",
       swiftSettings: .defaultSettings),
-    .target(name: "PersistenceTestUtils", dependencies: ["Persistence"]),
+    .target(
+      name: "PersistenceTestUtils",
+      dependencies: ["Persistence"],
+      swiftSettings: .defaultSettings),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence", "PersistenceTestUtils"],
