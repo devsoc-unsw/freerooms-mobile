@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_16.3.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,7 +17,7 @@ permissions:
 defaults:
   run:
     working-directory: ios
-
+ 
 jobs:
   lint:
     name: Lint
@@ -35,7 +35,7 @@ jobs:
         args: --strict --config .swiftlint.yml
   tests:
     name: Tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -43,7 +43,7 @@ jobs:
       run: "xcodebuild test -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 16'"
   build:
     name: Build
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 5
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
