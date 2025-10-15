@@ -50,7 +50,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
       .foregroundStyle(theme.label.secondary)
     }
     .listRowBackground(
-      RoundedRectangle(cornerRadius: 10)
+      UnevenRoundedRectangle(cornerRadii: cornerRadii)
         .fill(.background)
         .strokeBorder(LinearGradient(
           colors: [
@@ -77,6 +77,14 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   let item: T
   let items: [T]
   let imageProvider: (T.ID) -> Image
+
+  var cornerRadii: RectangleCornerRadii {
+    RectangleCornerRadii(
+      topLeading: item == items.first ? 30 : 0,
+      bottomLeading: item == items.last ? 30 : 0,
+      bottomTrailing: item == items.last ? 30 : 0,
+      topTrailing: item == items.first ? 30 : 0)
+  }
 
   var index: Int {
     items.firstIndex(of: item)!

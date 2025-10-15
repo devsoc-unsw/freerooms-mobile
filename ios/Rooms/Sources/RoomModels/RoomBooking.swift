@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct RoomBooking: Equatable {
+public struct RoomBooking: Equatable, Sendable, Hashable {
   public let bookingType: String
   public let end: Date
   public let name: String
@@ -19,4 +19,15 @@ public struct RoomBooking: Equatable {
     self.name = name
     self.start = start
   }
+
+  static public let exampleOne = RoomBooking(
+    bookingType: "MISC",
+    end: Date().addingTimeInterval(60 * 60),
+    name: "COMM",
+    start: Date())
+  static public let exampleTwo = RoomBooking(
+    bookingType: "MISC",
+    end: Date().addingTimeInterval(-60 * 60 * 4),
+    name: "LAW",
+    start: Date().addingTimeInterval(-60 * 60 * 5))
 }

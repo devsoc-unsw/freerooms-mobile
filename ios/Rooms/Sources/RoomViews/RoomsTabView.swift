@@ -14,15 +14,23 @@ import SwiftUI
 
 // MARK: - RoomsTabView
 
-public struct RoomsTabView: View {
+public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
-  public init(roomViewModel: RoomViewModel, buildingViewModel: BuildingViewModel, selectedTab: Binding<String>) {
+  public init(
+    path: Binding<NavigationPath>,
+    roomViewModel: RoomViewModel,
+    buildingViewModel: BuildingViewModel,
+    selectedTab: Binding<String>,
+    _ roomDestinationBuilderView: @escaping (Room) -> Destination)
+  {
+    _path = path
     self.roomViewModel = roomViewModel
     self.buildingViewModel = buildingViewModel
     _selectedTab = selectedTab
+    self.roomDestinationBuilderView = roomDestinationBuilderView
   }
 
   // MARK: Public
@@ -60,26 +68,19 @@ public struct RoomsTabView: View {
                 .frame(width: 22, height: 15)
             }
           }
-          .padding(.trailing, 10)
+          .padding(5)
           .foregroundStyle(theme.label.tertiary)
         }
       }
       .background(Color.gray.opacity(0.1))
-      .padding(.top, 1)
+//      .padding(.top, 1) 
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
       .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
       .shadow(
         color: theme.label.primary.opacity(0.2),
         radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
       .navigationDestination(for: Room.self) { room in
-        // Renders the view for displaying a building that has been clicked on
-        Button {
-          path.append(Room.exampleOne)
-        } label: {
-          Text("bruh test test")
-        }
-        .navigationTitle(room.name)
-        .navigationBarTitleDisplayMode(.inline)
+        roomDestinationBuilderView(room)
       }
       .opacity(
         roomViewModel.isLoading
@@ -96,12 +97,7 @@ public struct RoomsTabView: View {
           }
         }
         .navigationTitle("Rooms")
-        .searchable(text: $searchText, prompt: "Search...")
-    }
-    .overlay(alignment: .bottom) {
-      Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
-        .buttonStyle(.borderedProminent)
-        .padding(.bottom)
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -114,7 +110,7 @@ public struct RoomsTabView: View {
   @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
-  @State var path = NavigationPath()
+  @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
   @State var searchText = ""
 
@@ -154,12 +150,28 @@ public struct RoomsTabView: View {
 
   @Environment(Theme.self) private var theme
 
+  private let roomDestinationBuilderView: (Room) -> Destination
+
+}
+
+// MARK: - PreviewWrapper
+
+private struct PreviewWrapper: View {
+  @State var path = NavigationPath()
+
+  var body: some View {
+    RoomsTabView<EmptyView>(
+      path: $path,
+      roomViewModel: PreviewRoomViewModel(),
+      buildingViewModel: PreviewBuildingViewModel(),
+      selectedTab: .constant("Rooms"))
+    { _ in
+      EmptyView() // Buildings destination
+    }
+    .defaultTheme()
+  }
 }
 
 #Preview {
-  RoomsTabView(
-    roomViewModel: PreviewRoomViewModel(),
-    buildingViewModel: PreviewBuildingViewModel(),
-    selectedTab: .constant("Rooms"))
-    .defaultTheme()
+  PreviewWrapper()
 }

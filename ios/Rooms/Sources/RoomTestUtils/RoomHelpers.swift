@@ -67,9 +67,9 @@ func createRemoteRoomBookings(_ count: Int) -> [RemoteRoomBooking] {
   for _ in 0..<count {
     bookings.append(RemoteRoomBooking(
       bookingType: "MISC",
-      end: "2024-01-02T10:30:00+00:00",
+      end: "2024-01-02T10:30:00.000+00:00",
       name: "COMM",
-      start: "2024-01-01T20:00:00+00:00"))
+      start: "2024-01-01T20:00:00.000+00:00"))
   }
 
   return bookings
