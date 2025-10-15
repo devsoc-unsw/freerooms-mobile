@@ -32,7 +32,7 @@ struct JSONRoomLoaderTests {
   }
 
   @Test("JSON room loader successfully decodes JSON into type [Room] for zero DecodableRooms")
-  func JSONRoomLoaderLoadsJSONForZeroDecodableRoom() {
+  func JSONRoomLoaderLoadsJSONForZeroDecodableRoom() async {
     // Given
     let decodableRooms = createDecodableRooms(0)
     let rooms = createRooms(0)
@@ -40,14 +40,14 @@ struct JSONRoomLoaderTests {
     let sut = LiveJSONRoomLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
   }
 
   @Test("JSON room loader successfully decodes JSON into type [Room] for 1 DecodableRooms")
-  func JSONRoomLoaderLoadsJSONForOneDecodableRoom() {
+  func JSONRoomLoaderLoadsJSONForOneDecodableRoom() async {
     // Given
     let decodableRooms = createDecodableRooms(1)
     let rooms = createRooms(1)
@@ -55,14 +55,14 @@ struct JSONRoomLoaderTests {
     let sut = LiveJSONRoomLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
   }
 
   @Test("JSON room loader successfully decodes JSON into type [Room] for 10 DecodableRooms")
-  func JSONRoomLoaderLoadsJSONForTenDecodableRooms() {
+  func JSONRoomLoaderLoadsJSONForTenDecodableRooms() async {
     // Given
     let decodableRooms = createDecodableRooms(10)
     let rooms = createRooms(10)
@@ -70,33 +70,33 @@ struct JSONRoomLoaderTests {
     let sut = LiveJSONRoomLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toFetch: rooms)
   }
 
   @Test("JSON room loader throws error when given malformed JSON")
-  func JSONRoomLoaderThrowsMalformedJSONError() {
+  func JSONRoomLoaderThrowsMalformedJSONError() async {
     // Given
     let mockJSONLoader = MockJSONLoader<[DecodableRoom]>(throws: .malformedJSON)
     let sut = LiveJSONRoomLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toThrow: .malformedJSON)
   }
 
   @Test("JSON room loader throws error when given invalid file path")
-  func JSONRoomLoaderThrowsErrorOnInvalidFilePath() {
+  func JSONRoomLoaderThrowsErrorOnInvalidFilePath() async {
     // Given
     let mockJSONLoader = MockJSONLoader<[DecodableRoom]>(throws: .fileNotFound)
     let sut = LiveJSONRoomLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toThrow: .fileNotFound)

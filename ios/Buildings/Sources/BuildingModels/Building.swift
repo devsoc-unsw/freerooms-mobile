@@ -15,6 +15,7 @@ public typealias CampusBuildings = (upper: [Building], middle: [Building], lower
 // MARK: - Building
 
 /// A building on campus with location information and room availability data.
+nonisolated
 public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
@@ -57,6 +58,7 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
+  @MainActor
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }

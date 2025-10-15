@@ -30,8 +30,7 @@ public protocol BuildingViewModel {
 // MARK: - LiveBuildingViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
+public class LiveBuildingViewModel: BuildingViewModel {
 
   // MARK: Lifecycle
 

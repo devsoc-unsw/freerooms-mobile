@@ -43,7 +43,7 @@ public final class LiveRoomLoader: RoomLoader {
 
   public func fetch(buildingId: String) async -> Result {
     if !hasSavedData {
-      switch JSONRoomLoader.fetch() {
+      switch await JSONRoomLoader.fetch() {
       case .success(let rooms):
         var filteredRooms = rooms.filter { $0.buildingId == buildingId }
         await combineLiveAndSavedData(&filteredRooms)
@@ -60,7 +60,7 @@ public final class LiveRoomLoader: RoomLoader {
 
   public func fetch() async -> Result {
     if !hasSavedData {
-      switch JSONRoomLoader.fetch() {
+      switch await JSONRoomLoader.fetch() {
       case .success(var rooms):
         await combineLiveAndSavedData(&rooms)
         return .success(rooms)

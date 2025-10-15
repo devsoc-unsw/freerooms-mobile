@@ -15,7 +15,7 @@ public enum FileLoaderError: Error {
 
 // MARK: - FileLoader
 
-public protocol FileLoader {
+public protocol FileLoader: Sendable {
   func load(at path: String) throws -> Data
 }
 

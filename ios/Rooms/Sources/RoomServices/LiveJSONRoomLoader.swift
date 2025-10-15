@@ -12,7 +12,7 @@ import RoomModels
 // MARK: - JSONRoomLoader
 
 public protocol JSONRoomLoader {
-  func fetch() -> Swift.Result<[Room], RoomLoaderError>
+  func fetch() async -> Swift.Result<[Room], RoomLoaderError>
 }
 
 // MARK: - LiveJSONRoomLoader
@@ -29,12 +29,12 @@ public struct LiveJSONRoomLoader: JSONRoomLoader {
 
   public typealias Result = Swift.Result<[Room], RoomLoaderError>
 
-  public func fetch() -> Result {
+  public func fetch() async -> Result {
     guard let roomsSeedJSONPath else {
       fatalError("Rooms seed JSON file not bundled")
     }
 
-    switch loader.load(from: roomsSeedJSONPath) {
+    switch await loader.load(from: roomsSeedJSONPath) {
     case .success(let decodableRooms):
       let rooms = decodableRooms.map {
         Room(

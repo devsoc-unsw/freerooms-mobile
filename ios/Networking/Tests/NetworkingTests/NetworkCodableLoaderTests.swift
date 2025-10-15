@@ -16,6 +16,7 @@ final class NetworkCodableLoaderTests {
 
   // MARK: Lifecycle
 
+  @MainActor
   deinit {
     clientTracker?.verifyDeallocation()
     sutTracker?.verifyDeallocation()
@@ -164,6 +165,7 @@ private class MockHTTPClient: HTTPClient, @unchecked Sendable {
     returnedStringData = nil
   }
 
+  @MainActor
   func setNextRequestToSucceedWithStatusCode(_ statusCode: Int) {
     returnedStringData = "".data
     returnedStatusCode = statusCode
