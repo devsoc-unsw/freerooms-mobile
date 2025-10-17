@@ -116,39 +116,80 @@ public struct RoomsTabView: View {
   @Binding var selectedTab: String
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
+@State var cardWidth: CGFloat? // TODO:
   @State var searchText = ""
 
-  func roomsView(
-    _ roomsByBuildingId: [String: [Room]],
-    _ buildings: [Building])
-    -> some View
-  {
-    ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
+//  func roomsView(
+//    _ roomsByBuildingId: [String: [Room]],
+//    _ buildings: [Building])
+//    -> some View
+//  {
+//    ForEach(buildings) { building in
+//      let rooms = roomsByBuildingId[building.id] ?? []
+//      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
+//
+//      if rooms.isEmpty {
+//        EmptyView()
+//      } else {
+//        Section {
+//          ForEach(rooms) { room in
+//            GenericListRowView(
+//              path: $path,
+//              rowHeight: $rowHeight,
+//              room: room,
+//              rooms: rooms,
+//              imageProvider: { roomID in
+//                RoomImage[roomID]
+//              })
+//              .padding(.vertical, 5)
+//          }
+//        } header: {
+//          Text(buildingName)
+//            .foregroundStyle(theme.label.primary)
+//        }
+//      }
+//    }
+//  }
+    
+    private let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    func roomsView(
+      _ roomsByBuildingId: [String: [Room]],
+      _ buildings: [Building])
+      -> some View
+    {
+      ForEach(buildings) { building in
+        let rooms = roomsByBuildingId[building.id] ?? []
+        let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
-      if rooms.isEmpty {
-        EmptyView()
-      } else {
-        Section {
-          ForEach(rooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: rooms,
-              imageProvider: { roomID in
-                RoomImage[roomID]
-              })
-              .padding(.vertical, 5)
+        if rooms.isEmpty {
+          EmptyView()
+        } else {
+          Section {
+              LazyVGrid(columns: columns) {
+                ForEach(rooms) { room in
+                    Text(room.name)
+                  GenericCardView(
+                    path: $path,
+                    cardWidth: $cardWidth,
+                    room: room,
+                    rooms: rooms,
+                    imageProvider: { roomID in
+                      RoomImage[roomID]
+                    })
+                    .padding(.vertical, 5)
+                }
+            }
+          } header: {
+            Text(buildingName)
+              .foregroundStyle(theme.label.primary)
           }
-        } header: {
-          Text(buildingName)
-            .foregroundStyle(theme.label.primary)
         }
       }
     }
-  }
 
   // MARK: Private
 
