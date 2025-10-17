@@ -73,7 +73,6 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .background(Color.gray.opacity(0.1))
-//      .padding(.top, 1) 
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
       .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
       .shadow(

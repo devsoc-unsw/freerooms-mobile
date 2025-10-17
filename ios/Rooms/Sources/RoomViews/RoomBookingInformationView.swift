@@ -23,29 +23,29 @@ struct RoomBookingInformationView: View {
           .font(.title)
           .bold()
           .foregroundStyle(.primary)
-        
+
         Spacer()
-        
+
         // Rating
         ZStack {
           RoundedRectangle(cornerRadius: 10)
             .fill(theme.accent.primary)
             .stroke(.gray.opacity(0.2), lineWidth: 1)
-          
+
           HStack(spacing: 5) {
             Text("\(String(describing: room.overallRating ?? 0))")
               .foregroundStyle(.white)
               .font(.headline)
-            
+
             Image(systemName: "star.fill")
               .foregroundStyle(.white)
               .padding(0)
           }
         }
-        .frame(width: 65,height: 35)
+        .frame(width: 65, height: 35)
         .padding(.horizontal, 6)
       }
-      
+
       VStack(alignment: .leading, spacing: 10) {
         if room.school.trimmingCharacters(in: .whitespaces) == "" {
           EmptyView()

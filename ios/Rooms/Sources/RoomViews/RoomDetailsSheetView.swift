@@ -35,7 +35,7 @@ struct RoomDetailsSheetView: View {
             .labelsHidden()
             .tint(theme.accent.primary)
         }
-        
+
         // Booking Grid
         ScrollView {
           RoomBookingsListView(
