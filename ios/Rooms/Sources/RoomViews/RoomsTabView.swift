@@ -30,7 +30,7 @@ public struct RoomsTabView: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
       .toolbar {
         // Buttons on the right
@@ -96,7 +96,7 @@ public struct RoomsTabView: View {
           }
         }
         .navigationTitle("Rooms")
-        .searchable(text: $searchText, prompt: "Search...")
+        .searchable(text: $roomViewModel.searchText, prompt: "Search...")
     }
     .overlay(alignment: .bottom) {
       Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
@@ -116,7 +116,8 @@ public struct RoomsTabView: View {
   @Binding var selectedTab: String
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
-  @State var searchText = ""
+
+  // search text is owned by the view model
 
   func roomsView(
     _ roomsByBuildingId: [String: [Room]],

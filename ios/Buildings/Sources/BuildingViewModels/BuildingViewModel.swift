@@ -25,6 +25,7 @@ public protocol BuildingViewModel {
 
   func getBuildingsInOrder()
   func onAppear()
+  func reloadBuildings()
 }
 
 // MARK: - LiveBuildingViewModel
@@ -120,9 +121,47 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
     isLoading = false
   }
 
+  public func reloadBuildings() {
+    Task {
+      await loadBuildingsFromReload()
+    }
+  }
+
   // MARK: Private
 
   private var interactor: BuildingInteractor
+
+  private func loadBuildingsFromReload() async {
+    isLoading = true
+
+    // Reload all buildings using the reload method
+    let buildingResult = await interactor.reloadBuildingsSortedAlphabetically(inAscendingOrder: true)
+
+    switch buildingResult {
+    case .success(let fetchedBuildings):
+      let uniqueBuildings = uniqueById(fetchedBuildings)
+
+      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
+      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
+      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
+
+      buildings.upper = interactor.getBuildingsSortedAlphabetically(
+        buildings: upper,
+        order: buildingsInAscendingOrder)
+      buildings.middle = interactor.getBuildingsSortedAlphabetically(
+        buildings: middle,
+        order: buildingsInAscendingOrder)
+      buildings.lower = interactor.getBuildingsSortedAlphabetically(
+        buildings: lower,
+        order: buildingsInAscendingOrder)
+
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error reloading buildings: \(error)")
+    }
+
+    isLoading = false
+  }
 
   private func uniqueById(_ input: [Building]) -> [Building] {
     var seen = Set<String>()
