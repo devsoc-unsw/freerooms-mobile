@@ -28,7 +28,7 @@ public protocol LocationManagerDelegate: NSObjectProtocol {
 
 // MARK: - LiveLocationManager
 
-public class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDelegate {
+public final class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDelegate {
 
   // MARK: Lifecycle
 

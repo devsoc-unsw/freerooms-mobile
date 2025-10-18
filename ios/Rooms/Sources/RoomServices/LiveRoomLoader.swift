@@ -83,13 +83,15 @@ public final class LiveRoomLoader: RoomLoader {
   }
 
   private func combineLiveAndSavedData(_ rooms: inout [Room]) async {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
       for i in rooms.indices {
         let roomStatus = roomStatusResponse[rooms[i].buildingId]?.roomStatuses[rooms[i].roomNumber] ?? RoomStatus(
           status: "",
           endtime: "")
         rooms[i].status = roomStatus.status
-        rooms[i].endTime = roomStatus.endtime
+        rooms[i].endTime = formatter.date(from: roomStatus.endtime)
       }
     }
   }

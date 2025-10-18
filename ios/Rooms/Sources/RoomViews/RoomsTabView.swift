@@ -73,7 +73,7 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .background(Color.gray.opacity(0.1))
-//      .padding(.top, 1) 
+//      .padding(.top, 1)
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
       .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
       .shadow(
@@ -86,9 +86,9 @@ public struct RoomsTabView<Destination: View>: View {
         roomViewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .onAppear {
+        .task {
           if !roomViewModel.hasLoaded {
-            roomViewModel.onAppear()
+            await roomViewModel.onAppear()
           }
         }
         .onAppear {

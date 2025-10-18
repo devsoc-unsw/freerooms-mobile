@@ -28,14 +28,16 @@ struct RoomBookingCardView: View {
 
       VStack(alignment: .leading, spacing: 2 * (isSmallBooking ? 0.5 : numberTimeSlots)) {
         Text("\(time.0) - \(time.1)")
-          .font(isSmallBooking
-            ? .system(size: 10, weight: .medium)
-            : .system(size: 12, weight: .medium))
+          .font(
+            isSmallBooking
+              ? .system(size: 10, weight: .medium)
+              : .system(size: 12, weight: .medium))
 
         Text("\(bookingName)")
-          .font(isSmallBooking
-            ? .system(size: 18, weight: .medium)
-            : .system(size: 20, weight: .medium))
+          .font(
+            isSmallBooking
+              ? .system(size: 18, weight: .medium)
+              : .system(size: 20, weight: .medium))
       }
       .padding(isSmallBooking ? 2 : 10)
       .padding(.horizontal, isSmallBooking ? 10 : 0)

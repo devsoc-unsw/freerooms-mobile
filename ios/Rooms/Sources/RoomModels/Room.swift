@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 26/6/2025.
 //
 
+import Foundation
 // MARK: - Room
 import Location
 
@@ -31,7 +32,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     service: [String],
     writingMedia: [String],
     status: String? = nil,
-    endTime: String? = nil,
+    endTime: Date? = nil,
     overallRating: Double? = nil)
   {
     self.abbreviation = abbreviation
@@ -52,7 +53,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.service = service
     self.writingMedia = writingMedia
     self.status = status ?? ""
-    self.endTime = endTime ?? ""
+    self.endTime = endTime
     self.overallRating = overallRating
   }
 
@@ -153,12 +154,16 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let service: [String]
   public let writingMedia: [String]
   public var status: String?
-  public var endTime: String?
+  public var endTime: Date?
   public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: buildingId)
+  }
+
+  public var endTimeString: String {
+    Room.timeFormatter.string(from: endTime!)
   }
 
   /// Computed room number based on the room ID
@@ -167,4 +172,13 @@ public struct Room: Equatable, Identifiable, Hashable {
     guard splitID.count == 3 else { return "?" }
     return splitID[2]
   }
+
+  // MARK: Private
+
+  private static let timeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "h:mm a"
+    return formatter
+  }()
+
 }

@@ -18,7 +18,7 @@ public protocol LocationService {
 
 // MARK: - LiveLocationService
 
-public class LiveLocationService: NSObject, LocationService, LocationManagerDelegate {
+public final class LiveLocationService: NSObject, LocationService, LocationManagerDelegate {
 
   // MARK: Lifecycle
 
@@ -75,7 +75,7 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
 
   // MARK: Package
 
-  package var locationManager: LocationManager
+  package let locationManager: LocationManager
 
   // MARK: Internal
 

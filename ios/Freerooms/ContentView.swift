@@ -31,12 +31,15 @@ struct ContentView: View {
         RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
-        .onAppear(perform: roomViewModel.onAppear)
+        .task { await roomViewModel.onAppear() }
       } _: { room in
-        RoomDetailsView(room: room, roomBookings: roomViewModel.currentRoomBookings)
-          .onAppear(perform: roomViewModel.onAppear)
-          .onAppear {
-            roomViewModel.getRoomBookings(roomId: room.id)
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task {
+            await roomViewModel.onAppear()
+          }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
 
@@ -46,10 +49,11 @@ struct ContentView: View {
         buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab)
       { room in
-        RoomDetailsView(room: room, roomBookings: roomViewModel.currentRoomBookings)
-          .onAppear(perform: roomViewModel.onAppear)
-          .onAppear {
-            roomViewModel.getRoomBookings(roomId: room.id)
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task { await roomViewModel.onAppear() }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
     }
