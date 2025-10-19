@@ -7,21 +7,23 @@
 
 import CommonUI
 import RoomModels
-import SwiftUI
 import RoomViewModels
+import SwiftUI
 
 struct RoomDetailsSheetView: View {
 
-  // MARK: Internal
-
-  @State var dateSelect = Date()
+  // MARK: Lifecycle
 
   public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel) {
     self.dateSelect = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
   }
-  
+
+  // MARK: Internal
+
+  @State var dateSelect = Date()
+
   let room: Room
 
   var body: some View {
@@ -69,8 +71,9 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Private
 
-  private var roomViewModel: RoomViewModel
   @Environment(Theme.self) private var theme
+
+  private var roomViewModel: RoomViewModel
 
 }
 

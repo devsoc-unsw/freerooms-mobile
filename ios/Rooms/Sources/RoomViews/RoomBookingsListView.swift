@@ -7,10 +7,22 @@
 
 import CommonUI
 import RoomModels
-import SwiftUI
 import RoomViewModels
+import SwiftUI
 
 struct RoomBookingsListView: View {
+
+  // MARK: Lifecycle
+
+  public init(room: Room, roomViewModel: RoomViewModel, dateSelect: Binding<Date>) {
+    self.room = room
+    self.roomViewModel = roomViewModel
+    _dateSelect = dateSelect
+  }
+
+  // MARK: Internal
+
+  @Binding var dateSelect: Date
 
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
@@ -22,16 +34,6 @@ struct RoomBookingsListView: View {
         Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
       }
   }
-  
-  public init(room: Room, roomViewModel: RoomViewModel, dateSelect: Binding<Date>) {
-    self.room = room
-    self.roomViewModel = roomViewModel
-    _dateSelect = dateSelect
-  }
-
-  private let room: Room
-  private var roomViewModel: RoomViewModel
-  @Binding var dateSelect: Date
 
   var body: some View {
     ScrollViewReader { proxy in
@@ -42,7 +44,7 @@ struct RoomBookingsListView: View {
               .fill(Color.gray.opacity(0.3))
               .frame(height: 24 * 40)
           }
-          
+
           // Background time grid
           VStack(spacing: 0) {
             ForEach(0..<24, id: \.self) { hour in
@@ -81,10 +83,15 @@ struct RoomBookingsListView: View {
         }
       }
     }
-    .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder: [])
+    .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder : [])
   }
-}
 
+  // MARK: Private
+
+  private let room: Room
+  private var roomViewModel: RoomViewModel
+
+}
 
 #Preview {
   RoomBookingsListView(

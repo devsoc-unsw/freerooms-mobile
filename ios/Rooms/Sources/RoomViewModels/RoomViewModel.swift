@@ -156,7 +156,7 @@ public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
     super.init(interactor: RoomInteractor(
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
-    
+
     currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo]
   }
 }
