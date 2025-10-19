@@ -85,9 +85,9 @@ public struct RoomsTabView<Destination: View>: View {
         roomViewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .onAppear {
+        .task {
           if !roomViewModel.hasLoaded {
-            roomViewModel.onAppear()
+            await roomViewModel.onAppear()
           }
         }
         .onAppear {

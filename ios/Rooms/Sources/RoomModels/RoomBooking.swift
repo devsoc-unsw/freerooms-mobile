@@ -8,10 +8,8 @@
 import Foundation
 
 public struct RoomBooking: Equatable, Sendable, Hashable {
-  public let bookingType: String
-  public let end: Date
-  public let name: String
-  public let start: Date
+
+  // MARK: Lifecycle
 
   public init(bookingType: String, end: Date, name: String, start: Date) {
     self.bookingType = bookingType
@@ -19,6 +17,8 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
     self.name = name
     self.start = start
   }
+
+  // MARK: Public
 
   static public let exampleOne = RoomBooking(
     bookingType: "MISC",
@@ -30,4 +30,10 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
     end: Date().addingTimeInterval(-60 * 60 * 4),
     name: "LAW",
     start: Date().addingTimeInterval(-60 * 60 * 5))
+
+  public let bookingType: String
+  public let end: Date
+  public let name: String
+  public let start: Date
+
 }

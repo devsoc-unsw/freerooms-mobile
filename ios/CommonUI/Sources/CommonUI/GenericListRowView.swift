@@ -39,7 +39,8 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
       HStack(spacing: 0) {
         imageProvider(item.id)
           .resizable()
-          .frame(width: rowHeight, height: rowHeight)
+          .aspectRatio(contentMode: .fill)
+          .frame(width: (rowHeight ?? 0) + 40, height: 60)
           .clipShape(RoundedRectangle(cornerRadius: 5))
           .padding(.trailing)
 
@@ -47,6 +48,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
           rowHeight: $rowHeight,
           item: item)
       }
+      .frame(height: (rowHeight ?? 0) + 15)
       .foregroundStyle(theme.label.secondary)
     }
     .listRowBackground(

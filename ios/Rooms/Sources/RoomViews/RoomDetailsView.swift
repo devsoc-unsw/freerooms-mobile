@@ -14,9 +14,9 @@ public struct RoomDetailsView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomBookings: [RoomBooking]) {
+  public init(room: Room, roomViewModel: RoomViewModel) {
     self.room = room
-    self.roomBookings = roomBookings
+    self.roomViewModel = roomViewModel
   }
 
   // MARK: Public
@@ -33,7 +33,7 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomBookings: roomBookings)
+      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel)
         .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
@@ -43,8 +43,9 @@ public struct RoomDetailsView: View {
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
-          //
           showDetails = false
+          // TODO:
+          // clear room bookings here instead of on appear
           dismiss()
         }
         .padding(.vertical, 4)
@@ -79,12 +80,12 @@ public struct RoomDetailsView: View {
 
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
-  private let roomBookings: [RoomBooking]
+  private var roomViewModel: RoomViewModel
 }
 
 #Preview {
   NavigationStack {
-    RoomDetailsView(room: Room.exampleOne, roomBookings: [])
+    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
       .defaultTheme()
   }
 }

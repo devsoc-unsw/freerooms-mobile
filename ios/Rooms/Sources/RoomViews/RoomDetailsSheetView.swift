@@ -8,17 +8,25 @@
 import CommonUI
 import RoomModels
 import SwiftUI
+import RoomViewModels
 
 struct RoomDetailsSheetView: View {
 
   // MARK: Internal
 
   @State var dateSelect = Date()
+
+  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel) {
+    self.dateSelect = dateSelect
+    self.room = room
+    self.roomViewModel = roomViewModel
+  }
+  
   let room: Room
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-//    List {
+      // List {
       // Booking informations
       RoomBookingInformationView(room: room)
 
@@ -40,7 +48,7 @@ struct RoomDetailsSheetView: View {
         ScrollView {
           RoomBookingsListView(
             room: room,
-            roomBookings: roomBookings,
+            roomViewModel: roomViewModel,
             dateSelect: $dateSelect)
         }
       }
@@ -61,13 +69,12 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Private
 
+  private var roomViewModel: RoomViewModel
   @Environment(Theme.self) private var theme
-
-  let roomBookings: [RoomBooking]
 
 }
 
 #Preview {
-  RoomDetailsSheetView(room: Room.exampleOne, roomBookings: [])
+  RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
     .defaultTheme()
 }

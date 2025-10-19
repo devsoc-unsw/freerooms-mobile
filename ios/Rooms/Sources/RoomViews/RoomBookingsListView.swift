@@ -8,6 +8,7 @@
 import CommonUI
 import RoomModels
 import SwiftUI
+import RoomViewModels
 
 struct RoomBookingsListView: View {
 
@@ -16,20 +17,32 @@ struct RoomBookingsListView: View {
   }
 
   var filteredCurrentDayBookings: [RoomBooking] {
-    roomBookings
+    roomViewModel.currentRoomBookings
       .filter {
         Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
       }
   }
+  
+  public init(room: Room, roomViewModel: RoomViewModel, dateSelect: Binding<Date>) {
+    self.room = room
+    self.roomViewModel = roomViewModel
+    _dateSelect = dateSelect
+  }
 
-  let room: Room
-  let roomBookings: [RoomBooking]
+  private let room: Room
+  private var roomViewModel: RoomViewModel
   @Binding var dateSelect: Date
 
   var body: some View {
     ScrollViewReader { proxy in
       ScrollView(.vertical) {
         ZStack(alignment: .topLeading) {
+          if roomViewModel.getBookingsIsLoading {
+            RoundedRectangle(cornerRadius: 12)
+              .fill(Color.gray.opacity(0.3))
+              .frame(height: 24 * 40)
+          }
+          
           // Background time grid
           VStack(spacing: 0) {
             ForEach(0..<24, id: \.self) { hour in
@@ -68,13 +81,15 @@ struct RoomBookingsListView: View {
         }
       }
     }
+    .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder: [])
   }
 }
+
 
 #Preview {
   RoomBookingsListView(
     room: Room.exampleOne,
-    roomBookings: [RoomBooking.exampleOne, RoomBooking.exampleTwo],
+    roomViewModel: PreviewRoomViewModel(),
     dateSelect: .constant(Date()))
     .defaultTheme()
 }
