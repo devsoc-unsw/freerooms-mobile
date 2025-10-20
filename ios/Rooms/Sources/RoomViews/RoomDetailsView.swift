@@ -72,9 +72,10 @@ public struct RoomDetailsView: View {
   // MARK: Internal
 
   @Environment(\.dismiss) var dismiss
-  @Environment(Theme.self) private var theme
 
   // MARK: Private
+
+  @Environment(Theme.self) private var theme
 
   @State private var detent = PresentationDetent.fraction(0.75)
   @State private var showDetails = true

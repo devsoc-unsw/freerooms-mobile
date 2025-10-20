@@ -56,7 +56,7 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-      
+
 //      RoomsTabView(
 //        path: $roomPath,
 //        roomViewModel: roomViewModel,
