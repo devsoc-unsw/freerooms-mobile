@@ -56,6 +56,20 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
+      
+//      RoomsTabView(
+//        path: $roomPath,
+//        roomViewModel: roomViewModel,
+//        buildingViewModel: buildingViewModel,
+//        selectedTab: $selectedTab)
+//      { room in
+//        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+//          .task { await roomViewModel.onAppear() }
+//          .task {
+//            roomViewModel.clearRoomBookings()
+//            await roomViewModel.getRoomBookings(roomId: room.id)
+//          }
+//      }
     }
     .tint(theme.accent.primary)
   }

@@ -25,10 +25,12 @@ public struct RoomDetailsView: View {
     VStack(spacing: 0) {
       RoomImage[room.id]
         .resizable()
-        .scaledToFill()
-        .frame(height: screenHeight * 0.4)
-        .clipped()
         .ignoresSafeArea()
+        .frame(height: screenHeight * 0.3)
+        .clipped()
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .padding(.horizontal, 5)
+        .offset(y: -60)
 
       Spacer()
     }
@@ -42,7 +44,7 @@ public struct RoomDetailsView: View {
     .navigationBarBackButtonHidden()
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
-        Button("Back", systemImage: "chevron.left") {
+        Button("Back", systemImage: "multiply") {
           showDetails = false
           // TODO:
           // clear room bookings here instead of on appear
@@ -51,8 +53,7 @@ public struct RoomDetailsView: View {
         .padding(.vertical, 4)
         .font(.title2)
         .buttonBorderShape(.circle)
-        .buttonStyle(.borderedProminent)
-        .tint(.white)
+        .tint(theme.accent.primary)
         .shadow(radius: 2)
       }
 
@@ -71,11 +72,11 @@ public struct RoomDetailsView: View {
   // MARK: Internal
 
   @Environment(\.dismiss) var dismiss
+  @Environment(Theme.self) private var theme
 
   // MARK: Private
 
   @State private var detent = PresentationDetent.fraction(0.75)
-
   @State private var showDetails = true
 
   private let screenHeight = UIScreen.main.bounds.height
