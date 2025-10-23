@@ -5,10 +5,12 @@
 //  Created by MUQUEET MOHSEN CHOWDHURY on 24/4/25.
 //
 
+import BottomSheet
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
 import BuildingViewModels
+import CommonUI
 import MapKit
 import SwiftUI
 
@@ -38,7 +40,8 @@ public struct MapTabView: View {
       Map(position: $mapViewModel.position, bounds: mapViewModel.mapCameraBounds) {
         UserAnnotation {
           ZStack {
-            CompassUserAnnotation(mapViewModel: mapViewModel)
+            CompassUserAnnotation()
+              .environment(mapViewModel)
           }
         }
 
@@ -47,107 +50,69 @@ public struct MapTabView: View {
           let coordinates = route.polyline.coordinates
           MapPolyline(coordinates: coordinates)
             .stroke(
-              .blue,
+              .orange,
               style: StrokeStyle(
-                lineWidth: 3,
-                dash: [2, 2]))
+                lineWidth: 5))
         }
 
         ForEach(mapViewModel.buildings, id: \.id) { building in
           Annotation(building.name, coordinate: building.coordinate) {
-            ZStack {
-              // Your custom annotation view
-              BuildingAnnotationView(
-                building: building,
-                isSelected: mapViewModel.isSelectedBuilding(building.id))
-                .onTapGesture {
-                  Task {
-                    await mapViewModel.selectBuilding(building.id)
-                  }
-                }
-            }
+            BuildingAnnotationView(
+              building: building,
+              isSelected: mapViewModel.isSelectedBuilding(building.id))
+              .onTapGesture {
+                mapViewModel.onSelectBuilding(building.id)
+              }
           }
         }
+      }
+      .onChange(of: mapViewModel.selectedBuildingID) { _, _ in
+        // This onChange forces view updates without needing visible UI
+      }
+      .onMapCameraChange { context in
+        mapViewModel.updateMapHeading(context.camera.heading)
       }
       .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
-      // ###########################################################################
-      .safeAreaInset(edge: .bottom) {
-        HStack {
-          Text(mapViewModel.selectedBuildingName)
-          Text("\(mapViewModel.selectedBuildingAvailableRooms)")
-          if mapViewModel.selectedBuildingCoordinate != nil {
-            if let scene = mapViewModel.lookAroundScene {
-              Button(mapViewModel.currentRoute != nil ? "clear route" : "Get Directions") {
-                Task {
-                  if mapViewModel.currentRoute != nil {
-                    mapViewModel.clearDirection()
-                  } else {
-                    await mapViewModel.getDirectionToSelectedBuilding()
-                  }
-                }
-              }
-              LookAroundPreview(initialScene: scene, allowsNavigation: true, showsRoadLabels: true)
-                .clipShape(RoundedRectangle(cornerRadius: 25))
-                .frame(width: 150, height: 100)
-                .padding()
-              if mapViewModel.currentRoute != nil {
-                Text(mapViewModel.currentRouteETA.detailedWalkingTime)
-              }
-            } else if mapViewModel.isLoadingLookAround == true {
-              Text("Loading look around")
-                .clipShape(RoundedRectangle(cornerRadius: 25))
-                .frame(width: 150, height: 150)
-                .padding()
-            } else {
-              Text("Here")
-            }
+      .bottomSheet(
+        bottomSheetPosition: $mapViewModel.bottomSheetPosition,
+        switchablePositions: [SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
+      {
+        VStack {
+          if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
+            SheetDirectionDetails()
+          } else {
+            SheetBuildingDetails()
           }
         }
-        .frame(maxWidth: .infinity)
-        .background(.thinMaterial)
+        .padding(.horizontal)
       }
-      // ###########################################################################
+      .customBackground(
+        Color(uiColor: .systemBackground)
+          .cornerRadius(20)
+          .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
+      .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
+        if newValue == SheetPosition.medium.bottomSheetPosition {
+          mapViewModel.clearDirection()
+        } else if newValue == SheetPosition.short.bottomSheetPosition {
+          Task {
+            await mapViewModel.getDirectionToSelectedBuilding()
+          }
+        }
+      }
       .task {
+//        mapViewModel.requestLocationPermission()
         await mapViewModel.loadBuildings()
       }
-      VStack {
+      VStack(spacing: 0) {
         MapSearchBar(searchtxt: $mapViewModel.searchText)
+          .padding(.bottom, 6)
         if !mapViewModel.searchText.isEmpty {
-          List(mapViewModel.filteredBuildings, id: \.self) { building in
-            Button {
-              Task {
-                await mapViewModel.selectBuilding(building.id)
-                mapViewModel.focusBuildingOnMap()
-              }
-              mapViewModel.clearSearch()
-              hideKeyboard()
-            } label: {
-              HStack {
-                Circle()
-                  .fill(building.availabilityColor)
-                  .frame(
-                    width: 16,
-                    height: 16)
-                  .overlay {
-                    Circle()
-                      .stroke(Color.white, lineWidth: 3)
-                  }
-                  .shadow(
-                    color: .black.opacity(0.3),
-                    radius: 2,
-                    x: 0,
-                    y: 1)
-                Text(building.name)
-                  .foregroundStyle(.black)
-              }
-            }
-          }
-          .frame(maxHeight: 300)
-          .scrollContentBackground(.hidden)
+          MapSearchBarList()
         }
         Spacer()
       }
     }
+    .environment(mapViewModel)
     .ignoresSafeArea(.keyboard)
     .tabItem {
       Label("Map", systemImage: "map")
@@ -158,7 +123,6 @@ public struct MapTabView: View {
   // MARK: Internal
 
   @Bindable var mapViewModel: LiveMapViewModel
-
 }
 
 // MARK: - Preview
