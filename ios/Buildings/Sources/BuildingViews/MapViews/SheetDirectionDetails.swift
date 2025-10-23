@@ -9,7 +9,7 @@ import CommonUI
 import MapKit
 import SwiftUI
 
-public struct DirectionDetailsView: View {
+public struct SheetDirectionDetails: View {
 
   // MARK: Public
 
