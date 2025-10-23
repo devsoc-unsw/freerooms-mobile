@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Building
 
-public struct Building: Equatable, Identifiable, Hashable {
+public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
@@ -27,6 +27,7 @@ public struct Building: Equatable, Identifiable, Hashable {
     self.longitude = longitude
     self.aliases = aliases
     self.numberOfAvailableRooms = numberOfAvailableRooms
+    availabilityStatus = AvailabilityStatus(numberOfAvailableRooms)
   }
 
   // MARK: Public
@@ -37,6 +38,8 @@ public struct Building: Equatable, Identifiable, Hashable {
   public let longitude: Double
   public let aliases: [String]
   public let numberOfAvailableRooms: Int?
+
+  public var availabilityStatus: AvailabilityStatus
 
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
@@ -106,4 +109,29 @@ public enum CampusSection: Int {
     }
   }
 
+}
+
+// MARK: - AvailabilityStatus
+
+public enum AvailabilityStatus: String, Sendable {
+
+  case available, crowded, unavailable, missing
+
+  public init(_ rawValue: Int?) {
+    guard let rawValue else {
+      self = .missing
+      return
+    }
+
+    switch rawValue {
+    case 5...:
+      self = .available
+    case 1...4:
+      self = .crowded
+    case 0:
+      self = .unavailable
+    default:
+      self = .missing
+    }
+  }
 }

@@ -14,7 +14,8 @@ import RoomServices
 
 // MARK: - BuildingInteractor
 
-public class BuildingInteractor {
+// swiftlint:disable:next no_unchecked_sendable
+public class BuildingInteractor: @unchecked Sendable {
 
   // MARK: Lifecycle
 

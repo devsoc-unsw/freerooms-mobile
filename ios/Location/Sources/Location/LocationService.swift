@@ -33,8 +33,30 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
 
   // MARK: Public
 
+  public var onLocationUpdate: ((Location) -> Void)?
+
+  public func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation]) {
+    guard let latestLocation = locations.last else { return }
+
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("LocationService received location update: \(latestLocation)")
+
+    let location = Location(latitude: latestLocation.coordinate.latitude, longitude: latestLocation.coordinate.longitude)
+
+    // Trigger callback for anyone listening (like your MapViewModel)
+    onLocationUpdate?(location)
+  }
+
   public func getCurrentLocation() throws -> Location {
-    fatalError("TODO: Implement")
+    guard currentPermissionState == .granted else {
+      throw LocationServiceError.locationPermissionsDenied
+    }
+
+    guard let location = locationManager.location else {
+      throw LocationServiceError.locationNotAvailable
+    }
+
+    return location
   }
 
   /// - Returns: returns true if `AuthorizationStatus` is undetermined  and no ongoing request, `false` if:
@@ -45,7 +67,7 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
   public func requestLocationPermissions() throws -> Bool {
     let authorizationStatus = locationManager.authorizationStatus
 
-    guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+    guard authorizationStatus != .denied, authorizationStatus != .restricted else {
       throw LocationServiceError.locationPermissionsDenied
     }
 
@@ -53,7 +75,7 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
       return false
     }
 
-    guard authorizationStatus != .authorizedAlways || authorizationStatus != .authorizedWhenInUse else {
+    guard authorizationStatus != .authorizedAlways, authorizationStatus != .authorizedWhenInUse else {
       return false
     }
 
@@ -65,9 +87,13 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
   public func locationManagerDidChangeAuthorization(_: LocationManager) {
     switch locationManager.authorizationStatus {
     case .authorizedWhenInUse:
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("here")
       currentPermissionState = .granted
+
     case .denied:
       currentPermissionState = .denied
+
     default:
       currentPermissionState = .unrequested
     }
@@ -80,11 +106,26 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
   // MARK: Internal
 
   var currentPermissionState = LocationPermission.unrequested
+}
 
+// MARK: - PreviewLocationService
+
+public class PreviewLocationService: LocationService {
+  public override func getCurrentLocation() throws -> Location {
+    guard currentPermissionState == .granted else {
+      throw LocationServiceError.locationPermissionsDenied
+    }
+
+    // Return UNSW campus center for previews
+    return Location(
+      latitude: -33.9173,
+      longitude: 151.2312)
+  }
 }
 
 // MARK: - LocationServiceError
 
 public enum LocationServiceError: Error {
   case locationPermissionsDenied
+  case locationNotAvailable
 }

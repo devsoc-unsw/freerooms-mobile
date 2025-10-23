@@ -7,25 +7,42 @@
 import CoreLocation
 import Location
 
-class MockLocationManager: LocationManager {
+public class MockLocationManager: LocationManager {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public var location: Location?
+
+  public var delegate: LocationManagerDelegate?
+
+  public var authorizationStatus: CLAuthorizationStatus {
+    _authorizationStatus
+  }
+
+  public func startUpdatingLocation() { }
+
+  public func stopUpdatingLocation() { }
+
+  public func requestWhenInUseAuthorization() {
+    requestInUseAuthorizationCallTracker += 1
+  }
 
   // MARK: Internal
 
   var requestInUseAuthorizationCallTracker = 0
-  var delegate: LocationManagerDelegate?
-
-  var authorizationStatus: CLAuthorizationStatus {
-    _authorizationStatus
-  }
-
-  func requestWhenInUseAuthorization() {
-    requestInUseAuthorizationCallTracker += 1
-  }
 
   // MARK: to mock the authorization status
   func simulateAuthorizationStatus(to status: CLAuthorizationStatus) {
     _authorizationStatus = status
-    delegate?.locationManagerDidChangeAuthorization?(self)
+    delegate?.locationManagerDidChangeAuthorization(self)
+  }
+
+  func simulateUserLocation(_ location: Location?) {
+    self.location = location
   }
 
   // MARK: Private

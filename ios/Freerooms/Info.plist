@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby campus buildings and provide directions.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>This app uses your location to show nearby campus buildings and provide directions.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to show nearby campus buildings and provide directions.</string>
 	<key>MKDirectionsApplicationSupportedModes</key>
 	<array/>
 </dict>

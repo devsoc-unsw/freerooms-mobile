@@ -18,13 +18,14 @@ struct ContentView: View {
 
   // MARK: Internal
 
-  @Environment(\.buildingViewModel) var viewModel
+  @Environment(\.buildingViewModel) var buildingViewModel
+  @Environment(\.mapViewModel) var mapViewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(viewModel: viewModel)
-
+      BuildingsTabView(viewModel: buildingViewModel)
+      MapTabView(mapViewModel: mapViewModel)
       RoomsTabView()
     }
     .tint(theme.accent.primary)
@@ -37,10 +38,16 @@ struct ContentView: View {
 
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated {
+    PreviewMapViewModel()
+  }
 }
 
 #Preview {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(\.mapViewModel, MainActor.assumeIsolated {
+      PreviewMapViewModel()
+    })
 }

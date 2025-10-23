@@ -332,9 +332,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = VGXZB88ABH;
+				DEVELOPMENT_TEAM = D93VTL2QJ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_FILE[sdk=*]" = "/Users/dickoevaldo/Documents/freerooms-mobile/ios/Freerooms/Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
@@ -364,7 +365,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = VGXZB88ABH;
+				DEVELOPMENT_TEAM = D93VTL2QJ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";

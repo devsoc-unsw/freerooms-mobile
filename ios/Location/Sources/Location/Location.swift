@@ -5,7 +5,7 @@
 //  Created by Anh Nguyen on 22/4/2025.
 //
 
-public struct Location {
+public struct Location: Equatable {
   public let latitude: Double
   public let longitude: Double
 

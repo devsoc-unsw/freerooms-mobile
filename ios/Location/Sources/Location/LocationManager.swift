@@ -9,21 +9,22 @@ import CoreLocation
 
 // MARK: - LocationManager
 
-@objc
 public protocol LocationManager: AnyObject {
   // MARK: Internal
   var delegate: LocationManagerDelegate? { get set }
   var authorizationStatus: CLAuthorizationStatus { get }
+  var location: Location? { get }
 
   func requestWhenInUseAuthorization()
+  func startUpdatingLocation()
+  func stopUpdatingLocation()
 }
 
 // MARK: - LocationManagerDelegate
 
-@objc
 public protocol LocationManagerDelegate: NSObjectProtocol {
-  @objc
-  optional func locationManagerDidChangeAuthorization(_ manager: LocationManager)
+  func locationManagerDidChangeAuthorization(_ manager: LocationManager)
+  func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation])
 }
 
 // MARK: - LiveLocationManager
@@ -33,30 +34,59 @@ public class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDe
   // MARK: Lifecycle
 
   public override init() {
-    clLocationManager = CLLocationManager()
+    locationManager = CLLocationManager()
     super.init()
-    clLocationManager.delegate = self
+    locationManager.delegate = self
+    locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+    locationManager.startUpdatingLocation()
   }
 
   // MARK: Public
 
+  public var location: Location?
+
   public weak var delegate: LocationManagerDelegate?
 
   public var authorizationStatus: CLAuthorizationStatus {
-    clLocationManager.authorizationStatus
+    locationManager.authorizationStatus
+  }
+
+  public func startUpdatingLocation() {
+    locationManager.startUpdatingLocation()
+  }
+
+  public func stopUpdatingLocation() {
+    locationManager.stopUpdatingLocation()
   }
 
   public func requestWhenInUseAuthorization() {
-    clLocationManager.requestWhenInUseAuthorization()
+    locationManager.requestWhenInUseAuthorization()
   }
 
   /// CLLocationManagerDelegate
   public func locationManagerDidChangeAuthorization(_: CLLocationManager) {
-    delegate?.locationManagerDidChangeAuthorization?(self)
+    delegate?.locationManagerDidChangeAuthorization(self)
+  }
+
+  public func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    guard let clLocation = locations.last else {
+      location = nil
+      return
+    }
+
+    location = Location(
+      latitude: clLocation.coordinate.latitude,
+      longitude: clLocation.coordinate.longitude)
+
+    delegate?.locationManager(self, didUpdateLocations: locations)
+  }
+
+  public func locationManager(_: CLLocationManager, didFailWithError _: Error) {
+    location = nil
   }
 
   // MARK: Private
 
-  private let clLocationManager: CLLocationManager
+  private let locationManager: CLLocationManager
 
 }
