@@ -4,7 +4,6 @@
 //
 //  Created by Dicko Evaldo on 27/9/2025.
 //
-
 import SwiftUI
 
 struct MapSearchBar: View {
@@ -18,29 +17,33 @@ struct MapSearchBar: View {
       HStack {
         Image(systemName: "magnifyingglass")
         TextField("Search", text: $searchtxt)
-          .focused($isSearchFocused) // Track focus state
+          .focused($isSearchFocused)
           .padding(.horizontal, 10)
           .padding(.vertical, 8)
       }
       .padding(.horizontal)
       .background(Color(.secondarySystemBackground))
-      .cornerRadius(10)
-      .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
+      .clipShape(.capsule)
 
       if isSearchFocused {
         Button("Cancel") {
           searchtxt = ""
-          withAnimation(.spring()) {
-            isSearchFocused = false
-          }
+          isSearchFocused = false
         }
-        .transition(.move(edge: .trailing)) // Add animation for cancel button
+        .transition(.move(edge: .trailing).combined(with: .opacity))
       }
     }
     .padding(.horizontal)
+    .animation(.spring(), value: isSearchFocused)
   }
 
   // MARK: Private
 
-  @FocusState private var isSearchFocused: Bool // Track focus state
+  @FocusState private var isSearchFocused: Bool
+}
+
+#Preview {
+  @Previewable
+  @State var searchtxt = ""
+  MapSearchBar(searchtxt: $searchtxt)
 }
