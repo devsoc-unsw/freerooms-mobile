@@ -14,6 +14,9 @@ public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool
   func locationManagerDidChangeAuthorization(_ locationManager: LocationManager)
+
+  var onLocationUpdate: ((Location) -> Void)? { get set }
+  var onHeadingUpdate: ((CLHeading) -> Void)? { get set }
 }
 
 // MARK: - LiveLocationService
@@ -33,17 +36,18 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
 
   // MARK: Public
 
+  public var onHeadingUpdate: ((CLHeading) -> Void)?
   public var onLocationUpdate: ((Location) -> Void)?
+
+  public func locationManager(_: any LocationManager, didUpdateHeading newHeading: CLHeading) {
+    onHeadingUpdate?(newHeading)
+  }
 
   public func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation]) {
     guard let latestLocation = locations.last else { return }
 
-    // swiftlint:disable:next no_direct_standard_out_logs
-    print("LocationService received location update: \(latestLocation)")
-
     let location = Location(latitude: latestLocation.coordinate.latitude, longitude: latestLocation.coordinate.longitude)
 
-    // Trigger callback for anyone listening (like your MapViewModel)
     onLocationUpdate?(location)
   }
 
@@ -87,8 +91,6 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
   public func locationManagerDidChangeAuthorization(_: LocationManager) {
     switch locationManager.authorizationStatus {
     case .authorizedWhenInUse:
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("here")
       currentPermissionState = .granted
 
     case .denied:
@@ -111,7 +113,24 @@ public class LiveLocationService: NSObject, LocationService, LocationManagerDele
 // MARK: - PreviewLocationService
 
 public class PreviewLocationService: LocationService {
-  public override func getCurrentLocation() throws -> Location {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public var onHeadingUpdate: ((CLHeading) -> Void)?
+
+  public var onLocationUpdate: ((Location) -> Void)?
+
+  public func requestLocationPermissions() throws -> Bool {
+    true
+  }
+
+  public func locationManagerDidChangeAuthorization(_: any LocationManager) { }
+
+  public func getCurrentLocation() throws -> Location {
     guard currentPermissionState == .granted else {
       throw LocationServiceError.locationPermissionsDenied
     }
@@ -121,6 +140,11 @@ public class PreviewLocationService: LocationService {
       latitude: -33.9173,
       longitude: 151.2312)
   }
+
+  // MARK: Internal
+
+  var currentPermissionState = LocationPermission.unrequested
+
 }
 
 // MARK: - LocationServiceError

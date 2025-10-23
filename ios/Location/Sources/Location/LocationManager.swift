@@ -14,6 +14,7 @@ public protocol LocationManager: AnyObject {
   var delegate: LocationManagerDelegate? { get set }
   var authorizationStatus: CLAuthorizationStatus { get }
   var location: Location? { get }
+  var heading: CLHeading? { get }
 
   func requestWhenInUseAuthorization()
   func startUpdatingLocation()
@@ -25,6 +26,7 @@ public protocol LocationManager: AnyObject {
 public protocol LocationManagerDelegate: NSObjectProtocol {
   func locationManagerDidChangeAuthorization(_ manager: LocationManager)
   func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation])
+  func locationManager(_ manager: LocationManager, didUpdateHeading newHeading: CLHeading)
 }
 
 // MARK: - LiveLocationManager
@@ -39,11 +41,13 @@ public class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDe
     locationManager.delegate = self
     locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
     locationManager.startUpdatingLocation()
+    locationManager.startUpdatingHeading()
   }
 
   // MARK: Public
 
   public var location: Location?
+  public var heading: CLHeading?
 
   public weak var delegate: LocationManagerDelegate?
 
@@ -79,6 +83,12 @@ public class LiveLocationManager: NSObject, LocationManager, CLLocationManagerDe
       longitude: clLocation.coordinate.longitude)
 
     delegate?.locationManager(self, didUpdateLocations: locations)
+  }
+
+  public func locationManager(_: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+    heading = newHeading
+
+    delegate?.locationManager(self, didUpdateHeading: newHeading)
   }
 
   public func locationManager(_: CLLocationManager, didFailWithError _: Error) {

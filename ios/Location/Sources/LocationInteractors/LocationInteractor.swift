@@ -4,6 +4,7 @@
 //
 //  Created by Dicko Evaldo on 31/8/2025.
 //
+import CoreLocation
 import Location
 
 public class LocationInteractor {
@@ -28,7 +29,11 @@ public class LocationInteractor {
     locationService.onLocationUpdate = callback
   }
 
+  public func setHeadingUpdateCallback(_ callback: @escaping (CLHeading) -> Void) {
+    locationService.onHeadingUpdate = callback
+  }
+
   // MARK: Private
 
-  private let locationService: LocationService
+  private var locationService: LocationService
 }

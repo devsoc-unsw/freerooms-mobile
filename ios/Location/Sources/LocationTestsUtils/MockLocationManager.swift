@@ -15,6 +15,8 @@ public class MockLocationManager: LocationManager {
 
   // MARK: Public
 
+  public var heading: CLHeading?
+
   public var location: Location?
 
   public var delegate: LocationManagerDelegate?
