@@ -6,6 +6,7 @@
 //
 
 import BuildingViewModels
+import CoreLocation
 import SwiftUICore
 
 // MARK: - CompassUserAnnotation
@@ -13,8 +14,6 @@ import SwiftUICore
 struct CompassUserAnnotation: View {
 
   // MARK: Internal
-
-  @Bindable var mapViewModel: LiveMapViewModel
 
   var body: some View {
     ZStack {
@@ -37,6 +36,7 @@ struct CompassUserAnnotation: View {
         .fill(.blue)
         .frame(width: 8, height: 12)
         .offset(y: -14)
+        .rotationEffect(.degrees(viewModel.mapHeading))
         .rotationEffect(.degrees(headingValue))
         .shadow(color: .white, radius: 1)
     }
@@ -49,10 +49,12 @@ struct CompassUserAnnotation: View {
 
   // MARK: Private
 
+  @Environment(LiveMapViewModel.self) private var viewModel
+
   @State private var isPulsing = false
 
   private var headingValue: Double {
-    mapViewModel.userHeading.trueHeading >= 0 ? mapViewModel.userHeading.trueHeading : mapViewModel.userHeading.magneticHeading
+    viewModel.userHeading.trueHeading >= 0 ? viewModel.userHeading.trueHeading : viewModel.userHeading.magneticHeading
   }
 
 }
