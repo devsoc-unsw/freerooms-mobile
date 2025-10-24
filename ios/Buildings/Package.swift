@@ -41,11 +41,11 @@ let package = Package(
       dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")]),
     .target(
       name: "BuildingServices",
-      dependencies: ["Networking", "Persistence", "BuildingModels"],
+      dependencies: ["Networking", "Persistence", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
       resources: [.process("Resources")]),
     .target(
       name: "BuildingModels",
-      dependencies: ["Persistence", .product(name: "RoomModels", package: "Rooms")]),
+      dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")]),
     .target(
       name: "BuildingTestUtils",
       dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")]),
@@ -58,6 +58,7 @@ let package = Package(
         "Persistence",
         "TestingSupport",
         "BuildingTestUtils",
+        .product(name: "RoomServices", package: "Rooms"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "LocationTestsUtils", package: "Location"),
         .product(name: "RoomTestUtils", package: "Rooms"),

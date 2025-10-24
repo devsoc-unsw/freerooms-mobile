@@ -24,7 +24,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -38,7 +38,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -52,7 +52,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -65,7 +65,34 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = sut.getBuildings()
+    let res = await sut.getBuildings()
+
+    // Then
+    expect(res, toThrow: FetchBuildingsError.connectivity)
+  }
+
+  @Test("Building service reloads buildings successfully")
+  func buildingServiceReloadsBuildingsSuccessfully() async {
+    // Given
+    let buildings = createBuildings(5)
+    let mockBuildingLoader = MockBuildingLoader(loads: buildings)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
+
+    // When
+    let res = await sut.reloadBuildings()
+
+    // Then
+    expect(res, toFetch: buildings)
+  }
+
+  @Test("Building service reload returns connectivity error when loader fails")
+  func buildingServiceReloadReturnsConnectivityError() async {
+    // Given
+    let mockBuildingLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
+    let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
+
+    // When
+    let res = await sut.reloadBuildings()
 
     // Then
     expect(res, toThrow: FetchBuildingsError.connectivity)

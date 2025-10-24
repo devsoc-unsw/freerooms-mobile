@@ -20,6 +20,7 @@ public enum FetchRoomError: Error, Equatable {
 // MARK: - RoomService
 
 public protocol RoomService {
+  func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
 }
 
@@ -43,7 +44,7 @@ public final class LiveRoomService: RoomService {
       return .failure(.invalidBuildingId)
     }
 
-    switch roomLoader.fetch(buildingId: buildingId) {
+    switch await roomLoader.fetch(buildingId: buildingId) {
     case .success(let rooms):
       return .success(rooms)
     case .failure:
@@ -52,7 +53,7 @@ public final class LiveRoomService: RoomService {
   }
 
   public func getRooms() async -> GetRoomResult {
-    switch roomLoader.fetch() {
+    switch await roomLoader.fetch() {
     case .success(let rooms):
       .success(rooms)
     case .failure:
@@ -65,6 +66,21 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
 }
 
-// MARK: - RoomLoader
+// MARK: - PreviewRoomService
 
-// MARK: - RoomLoaderError
+public final class PreviewRoomService: RoomService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  public func getRooms() -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+
+  public func getRooms(buildingId _: String) -> GetRoomResult {
+    .success([Room.exampleOne, Room.exampleTwo])
+  }
+}

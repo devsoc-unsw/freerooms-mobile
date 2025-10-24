@@ -12,12 +12,18 @@ let package = Package(
       name: "CommonUI",
       targets: ["CommonUI"]),
   ],
-  dependencies: [],
+  dependencies: [
+    .package(name: "Rooms", path: "../Rooms"),
+    .package(name: "Buildings", path: "../Buildings"),
+  ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "CommonUI",
-      dependencies: [],
+      dependencies: [
+        .product(name: "RoomModels", package: "Rooms"),
+        .product(name: "BuildingModels", package: "Buildings"),
+      ],
       resources: [.process("Resources")]),
   ])

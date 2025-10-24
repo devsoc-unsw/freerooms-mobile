@@ -408,7 +408,7 @@ public class LiveMapViewModel: MapViewModel {
       isLoading = false
     }
 
-    switch await buildingInteractor.getBuildingsWithRoomStatus() {
+    switch await buildingInteractor.getBuildingsSortedAlphabetically(inAscendingOrder: true) {
     case .success(let buildings):
       self.buildings = buildings
     case .failure:

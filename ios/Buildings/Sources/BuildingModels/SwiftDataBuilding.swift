@@ -22,8 +22,7 @@ public final class SwiftDataBuilding: IdentifiableModel {
     latitude: Double,
     longitude: Double,
     aliases: [String],
-    numberOfAvailableRooms: Int?,
-    rooms: [SwiftDataRoom] = [])
+    numberOfAvailableRooms: Int?)
   {
     self.name = name
     self.id = id
@@ -31,18 +30,6 @@ public final class SwiftDataBuilding: IdentifiableModel {
     self.longitude = longitude
     self.aliases = aliases
     self.numberOfAvailableRooms = numberOfAvailableRooms
-    self.rooms = rooms
-  }
-
-  /// Initializes SwiftDataBuilding from a domain `Building`.
-  public convenience init(from building: Building) {
-    self.init(
-      name: building.name,
-      id: building.id,
-      latitude: building.latitude,
-      longitude: building.longitude,
-      aliases: building.aliases,
-      numberOfAvailableRooms: building.numberOfAvailableRooms)
   }
 
   // MARK: Public
@@ -53,10 +40,6 @@ public final class SwiftDataBuilding: IdentifiableModel {
   public var longitude: Double
   public var aliases: [String]
   public var numberOfAvailableRooms: Int?
-
-  /// Associated rooms; cascade delete ensures related rooms are deleted with the building.
-  @Relationship(deleteRule: .cascade)
-  public var rooms: [SwiftDataRoom]
 
   // MARK: - IdentifiableModel
 
