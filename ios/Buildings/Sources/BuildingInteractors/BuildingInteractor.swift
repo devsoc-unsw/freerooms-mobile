@@ -16,7 +16,8 @@ import RoomServices
 
 /// Coordinates building-related operations including filtering, sorting, and room status integration.
 /// Acts as the main interface between the presentation layer and building services.
-public class BuildingInteractor {
+// swiftlint:disable:next no_unchecked_sendable
+public class BuildingInteractor: @unchecked Sendable {
 
   // MARK: Lifecycle
 
@@ -88,6 +89,23 @@ public class BuildingInteractor {
       upper: filter(buildings.upper),
       middle: filter(buildings.middle),
       lower: filter(buildings.lower))
+  }
+
+  public func filterBuildingsByQueryString(_ buildings: [Building], by query: String) -> [Building] {
+    let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    guard !trimmedQuery.isEmpty else {
+      return buildings
+    }
+
+    let lowercasedQuery = trimmedQuery.lowercased()
+
+    return buildings.filter { building in
+      building.name.lowercased().contains(lowercasedQuery) ||
+        building.aliases.contains { alias in
+          alias.lowercased().contains(lowercasedQuery)
+        }
+    }
   }
 
   // MARK: Package
