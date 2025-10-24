@@ -7,7 +7,7 @@
 
 import BuildingViewModels
 import CoreLocation
-import SwiftUICore
+import SwiftUI
 
 // MARK: - CompassUserAnnotation
 

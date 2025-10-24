@@ -6,7 +6,7 @@
 //
 
 import BuildingModels
-import SwiftUICore
+import SwiftUI
 
 struct BuildingAnnotationView: View {
   let building: Building

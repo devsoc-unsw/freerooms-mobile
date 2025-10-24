@@ -130,7 +130,7 @@ struct GetUserLocationTest {
     // Given
     let mockLocationManager = MockLocationManager()
 
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // When
     mockLocationManager.simulateAuthorizationStatus(to: .denied)
@@ -147,7 +147,7 @@ struct GetUserLocationTest {
     // Given
     let mockLocationManager = MockLocationManager()
 
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // When
     mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
@@ -164,7 +164,7 @@ struct GetUserLocationTest {
     // Given
     let mockLocationManager = MockLocationManager()
 
-    let sut = LocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: mockLocationManager)
 
     // When
     mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
