@@ -91,6 +91,23 @@ public class BuildingInteractor: @unchecked Sendable {
       lower: filter(buildings.lower))
   }
 
+  public func filterBuildingsByQueryString(_ buildings: [Building], by query: String) -> [Building] {
+    let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    guard !trimmedQuery.isEmpty else {
+      return buildings
+    }
+
+    let lowercasedQuery = trimmedQuery.lowercased()
+
+    return buildings.filter { building in
+      building.name.lowercased().contains(lowercasedQuery) ||
+        building.aliases.contains { alias in
+          alias.lowercased().contains(lowercasedQuery)
+        }
+    }
+  }
+
   // MARK: Package
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {

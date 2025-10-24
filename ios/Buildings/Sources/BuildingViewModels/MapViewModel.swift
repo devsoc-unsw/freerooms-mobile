@@ -54,7 +54,6 @@ public protocol MapViewModel {
   func performSearch()
   func executeSearch() async
   func clearSearch()
-  nonisolated func filterBuildings(_ buildings: [Building], query: String) async -> [Building]
 
   func loadBuildings() async
   func selectBuilding(_ buildingID: String)
@@ -251,18 +250,12 @@ public class LiveMapViewModel: MapViewModel {
       let buildingsToFilter = buildings
       let query = searchQuery.lowercased()
 
-      let filtered = await filterBuildings(buildingsToFilter, query: query)
+      let filtered = buildingInteractor.filterBuildingsByQueryString(buildingsToFilter, by: query)
 
       guard !Task.isCancelled else { return }
 
       // Update results (back on MainActor automatically)
       self.filteredBuildings = filtered
-    }
-  }
-
-  nonisolated public func filterBuildings(_ buildings: [Building], query: String) async -> [Building] {
-    buildings.filter { building in
-      building.name.lowercased().contains(query)
     }
   }
 
