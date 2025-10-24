@@ -337,10 +337,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = D93VTL2QJ6;
+				DEVELOPMENT_TEAM = 6T8CX6KX43;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				"INFOPLIST_FILE[sdk=*]" = "/Users/dickoevaldo/Documents/freerooms-mobile/ios/Freerooms/Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
@@ -352,7 +351,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssadfdsaf;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -375,7 +374,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = D93VTL2QJ6;
+				DEVELOPMENT_TEAM = 6T8CX6KX43;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -389,7 +388,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssadfdsaf;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
