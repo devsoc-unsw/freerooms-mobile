@@ -100,7 +100,7 @@ public struct MapTabView: View {
         }
       }
       .task {
-//        mapViewModel.requestLocationPermission()
+        mapViewModel.requestLocationPermission()
         await mapViewModel.loadBuildings()
       }
       VStack(spacing: 0) {
