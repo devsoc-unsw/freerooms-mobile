@@ -17,6 +17,17 @@ public enum FetchRoomError: Error, Equatable {
   case invalidBuildingId
 }
 
+extension FetchRoomError {
+  public var clientMessage: String {
+    switch self {
+    case .connectivity:
+      return "Failed to fetch rooms. Please check your internet connection."
+    case .invalidBuildingId:
+      return "Invalid building ID provided."
+    }
+  }
+}
+
 // MARK: - RoomService
 
 public protocol RoomService {
