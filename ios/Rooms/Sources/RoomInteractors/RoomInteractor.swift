@@ -32,7 +32,7 @@ public class RoomInteractor {
     return rooms.filter { $0.name.lowercased().contains(loweredQuery) }
   }
 
-  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], Error> {
+  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
       let sorted = getRoomsSortedAlphabetically(rooms: rooms, inAscendingOrder: inAscendingOrder)
@@ -46,7 +46,7 @@ public class RoomInteractor {
   public func getRoomsFilteredAlphabeticallyByBuildingId(
     buildingId: String,
     inAscendingOrder: Bool)
-    async -> Result<[Room], Error>
+    async -> Result<[Room], FetchRoomError>
   {
     switch await roomService.getRooms(buildingId: buildingId) {
     case .success(let rooms):
@@ -62,7 +62,7 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByRoomType(usage roomType: String) async -> Result<[Room], Error> {
+  public func getRoomsFilteredByRoomType(usage roomType: String) async -> Result<[Room], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
       let filtered = rooms.filter { $0.usage == roomType }
@@ -73,7 +73,7 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], Error> {
+  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
       let filtered = rooms.filter { GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection }
@@ -87,7 +87,7 @@ public class RoomInteractor {
   public func getRoomsFilteredByDuration(
     for minDuration: Int,
     roomBookings: [String: [RoomBooking]])
-    async -> Result<[Room], Error>
+    async -> Result<[Room], FetchRoomError>
   {
     switch await roomService.getRooms() {
     case .success(let rooms):
@@ -128,7 +128,7 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], Error> {
+  public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
     let buildingIds =
       [
         "K-G27",
