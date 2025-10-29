@@ -8,6 +8,7 @@
 import BuildingViewModels
 import BuildingViews
 import CommonUI
+import RoomModels
 import RoomViewModels
 import RoomViews
 import SwiftUI
@@ -22,6 +23,7 @@ struct ContentView: View {
   @Environment(\.buildingViewModel) var buildingViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
+  @State var selectedView = RoomOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -32,7 +34,11 @@ struct ContentView: View {
         .onAppear(perform: roomViewModel.onAppear)
       }
 
-      RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel, selectedTab: $selectedTab)
+      RoomsTabView(
+        roomViewModel: roomViewModel,
+        buildingViewModel: buildingViewModel,
+        selectedTab: $selectedTab,
+        selectedView: $selectedView)
     }
     .tint(theme.accent.primary)
   }
