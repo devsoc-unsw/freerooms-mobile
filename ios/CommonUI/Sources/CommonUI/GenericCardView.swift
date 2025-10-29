@@ -10,7 +10,11 @@ import Combine
 import RoomModels
 import SwiftUI
 
+// MARK: - GenericCardView
+
 public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName & HasRating>: View {
+
+  // MARK: Lifecycle
 
   public init(
     path: Binding<NavigationPath>,
@@ -26,34 +30,39 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     self.imageProvider = imageProvider
   }
 
+  // MARK: Public
+
   public var body: some View {
     Button {
       path.append(item)
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print(item)
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print("im done haha")
     } label: {
-        ZStack(alignment: .top) {
-            // TODO: image at the top of the card, rounded corners
-            HStack(spacing: 0) {
-              GenericCardViewItem<T>(
-                cardWidth: $cardWidth,
-                item: item)
-            }
-            .foregroundStyle(theme.label.secondary)
-            
-            imageProvider(item.id)
-              .resizable()
-              .frame(width: cardWidth, height: cardWidth) // TODO:
-              .clipShape(RoundedRectangle(cornerRadius: 5))
-              .padding(.trailing)
-        }
-    }
-    .onPreferenceChange(HeightPreferenceKey.self) {
-      cardWidth = $0
+      VStack {
+        imageProvider(item.id)
+          .resizable()
+          .scaledToFill()
+          .frame(width: cardWidth, height: 116)
+          .clipped()
+          .clipShape(RoundedRectangle(cornerRadius: 22))
+
+        Spacer()
+        GenericCardViewItem<T>(
+          cardWidth: $cardWidth,
+          item: item)
+        Spacer()
+      }
+      .cornerRadius(22)
+      .background(.white)
+      .clipShape(RoundedRectangle(cornerRadius: 22))
+      .frame(width: cardWidth, height: 173)
+      .padding(0)
+      .buttonStyle(.plain)
+      .onPreferenceChange(WidthPreferenceKey.self) {
+        cardWidth = $0
+      }
     }
   }
+
+  // MARK: Internal
 
   @Binding var path: NavigationPath
   @Binding var cardWidth: CGFloat?
@@ -66,25 +75,23 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     items.firstIndex(of: item)!
   }
 
-  @Environment(Theme.self) private var theme
-
 }
 
-//extension GenericCardView where T == Building {
-//  public init(
-//    path: Binding<NavigationPath>,
-//    cardWidth: Binding<CGFloat?>,
-//    building: Building,
-//    buildings: [Building],
-//    imageProvider: @escaping (Building.ID) -> Image)
-//  {
-//    _path = path
-//    _cardWidth = cardWidth
-//    item = building
-//    items = buildings
-//    self.imageProvider = imageProvider
-//  }
-//}
+extension GenericCardView where T == Building {
+  public init(
+    path: Binding<NavigationPath>,
+    cardWidth: Binding<CGFloat?>,
+    building: Building,
+    buildings: [Building],
+    imageProvider: @escaping (Building.ID) -> Image)
+  {
+    _path = path
+    _cardWidth = cardWidth
+    item = building
+    items = buildings
+    self.imageProvider = imageProvider
+  }
+}
 
 extension GenericCardView where T == Room {
   public init(
@@ -102,29 +109,36 @@ extension GenericCardView where T == Room {
   }
 }
 
-//struct PreviewWrapper: View {
-//  @State private var path = NavigationPath()
-//  @State private var cardWidth: CGFloat?
-//
-//  let rooms: [Room] = [Room.exampleOne, Room.exampleTwo]
-//
-//  var body: some View {
-//    List {
-//      ForEach(rooms) { room in
-//        GenericCardView(
-//          path: $path,
-//          cardWidth: $cardWidth,
-//          room: room,
-//          rooms: rooms,
-//          imageProvider: { roomID in
-//            Image(roomID, bundle: .module)
-//          })
-//      }
-//    }
-//  }
-//}
-//
-//#Preview {
-//  PreviewWrapper()
-//    .defaultTheme()
-//}
+// MARK: - CardPreviewWrapper
+
+struct CardPreviewWrapper: View {
+  @State private var path = NavigationPath()
+  @State private var cardWidth: CGFloat?
+
+  let rooms: [Room] = [Room.exampleOne, Room.exampleTwo]
+
+  var body: some View {
+    LazyVGrid(columns: columns) {
+      ForEach(rooms) { room in
+        GenericCardView(
+          path: $path,
+          cardWidth: $cardWidth,
+          room: room,
+          rooms: rooms,
+          imageProvider: { roomID in
+            Image(roomID, bundle: .module)
+          })
+      }
+    }
+  }
+}
+
+private let columns = [
+  GridItem(.flexible(), spacing: 10),
+  GridItem(.flexible()),
+]
+
+#Preview {
+  CardPreviewWrapper()
+    .defaultTheme()
+}
