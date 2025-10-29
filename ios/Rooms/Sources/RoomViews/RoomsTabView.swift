@@ -98,11 +98,6 @@ public struct RoomsTabView<Destination: View>: View {
         .navigationTitle("Rooms")
         .searchable(text: $roomViewModel.searchText, prompt: "Search...")
     }
-    .overlay(alignment: .bottom) {
-      Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
-        .buttonStyle(.borderedProminent)
-        .padding(.bottom)
-    }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }

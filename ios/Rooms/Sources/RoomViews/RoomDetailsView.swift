@@ -25,12 +25,10 @@ public struct RoomDetailsView: View {
     VStack(spacing: 0) {
       RoomImage[room.id]
         .resizable()
-        .ignoresSafeArea()
-        .frame(height: screenHeight * 0.3)
+        .scaledToFill()
+        .frame(height: screenHeight * 0.4)
         .clipped()
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .padding(.horizontal, 5)
-        .offset(y: -60)
+        .ignoresSafeArea()
 
       Spacer()
     }
@@ -44,7 +42,7 @@ public struct RoomDetailsView: View {
     .navigationBarBackButtonHidden()
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
-        Button("Back", systemImage: "multiply") {
+        Button("Back", systemImage: "chevron.left") {
           showDetails = false
           // TODO:
           // clear room bookings here instead of on appear
