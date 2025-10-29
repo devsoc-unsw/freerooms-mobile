@@ -68,7 +68,7 @@ public struct BuildingsTabView<Destination: View>: View {
             } label: {
               Image(systemName: "list.bullet")
                 .resizable()
-                .frame(width: 22, height: 15)
+                .frame(width: 22, height: 20)
             }
           }
           .padding(.trailing, 10)
