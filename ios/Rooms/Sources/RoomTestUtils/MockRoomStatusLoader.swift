@@ -18,7 +18,6 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
   public init(stubbedResponse: RemoteRoomStatus? = nil, stubbedError: RoomStatusLoaderError? = nil) {
     self.stubbedResponse = stubbedResponse
     self.stubbedError = stubbedError
-    
   }
 
   // MARK: Public
@@ -36,7 +35,7 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
   }
 
   // MARK: Private
-  
+
   private let stubbedResponse: RemoteRoomStatus?
   private let stubbedError: RoomStatusLoaderError?
 }

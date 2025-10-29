@@ -179,7 +179,7 @@ struct RoomSearchAdapter {
 func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
   let mockLoader = MockRoomLoader()
   mockLoader.stubRooms(rooms)
-  
+
   let remoteBookingLoader = MockRemoteRoomBookingLoader()
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
   let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
