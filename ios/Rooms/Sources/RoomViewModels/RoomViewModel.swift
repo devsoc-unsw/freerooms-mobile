@@ -71,10 +71,6 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var isLoading = false
 
-  public func clearRoomBookings() {
-    currentRoomBookings = []
-  }
-  
   public var searchText = ""
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
@@ -86,6 +82,10 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
     }
     return result
+  }
+
+  public func clearRoomBookings() {
+    currentRoomBookings = []
   }
 
   public func getLoadingStatus() -> Bool {
@@ -154,7 +154,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       // either an emtpy timetable
       // or display no connection on the timetable
 //      fatalError("Error loading rooms: \(error)")
-      
+
       1 + 1
     }
   }
