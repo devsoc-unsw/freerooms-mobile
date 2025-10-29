@@ -22,6 +22,7 @@ struct ContentView: View {
   // MARK: Internal
 
   @Environment(\.buildingViewModel) var buildingViewModel
+  @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
 
@@ -42,7 +43,7 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-
+      MapTabView(mapViewModel: mapViewModel)
       RoomsTabView(
         path: $roomPath,
         roomViewModel: roomViewModel,
@@ -56,20 +57,6 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-
-//      RoomsTabView(
-//        path: $roomPath,
-//        roomViewModel: roomViewModel,
-//        buildingViewModel: buildingViewModel,
-//        selectedTab: $selectedTab)
-//      { room in
-//        RoomDetailsView(room: room, roomViewModel: roomViewModel)
-//          .task { await roomViewModel.onAppear() }
-//          .task {
-//            roomViewModel.clearRoomBookings()
-//            await roomViewModel.getRoomBookings(roomId: room.id)
-//          }
-//      }
     }
     .tint(theme.accent.primary)
   }
@@ -84,6 +71,10 @@ struct ContentView: View {
 
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated {
+    PreviewMapViewModel()
+  }
+
   @Entry var roomViewModel: LiveRoomViewModel = PreviewRoomViewModel()
 }
 
@@ -91,5 +82,8 @@ extension EnvironmentValues {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(\.mapViewModel, MainActor.assumeIsolated {
+      PreviewMapViewModel()
+    })
     .environment(\.roomViewModel, PreviewRoomViewModel())
 }

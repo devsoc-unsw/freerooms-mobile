@@ -5,6 +5,7 @@
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //
 
+import CoreLocation
 import Foundation
 import Location
 
@@ -19,6 +20,14 @@ public class MockLocationService: NSObject, LocationService, LocationManagerDele
   }
 
   // MARK: Public
+
+  public var onHeadingUpdate: ((CLHeading) -> Void)?
+
+  public var onLocationUpdate: ((Location) -> Void)?
+
+  public func locationManager(_: any LocationManager, didUpdateHeading _: CLHeading) { }
+
+  public func locationManager(_: any LocationManager, didUpdateLocations _: [CLLocation]) { }
 
   public func getCurrentLocation() throws -> Location {
     if let stubbedError {
