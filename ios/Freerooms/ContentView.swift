@@ -43,7 +43,7 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-
+      MapTabView(mapViewModel: mapViewModel)
       RoomsTabView(
         path: $roomPath,
         roomViewModel: roomViewModel,
@@ -57,24 +57,6 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-
-//      RoomsTabView(
-//        path: $roomPath,
-//        roomViewModel: roomViewModel,
-//        buildingViewModel: buildingViewModel,
-//        selectedTab: $selectedTab)
-//      { room in
-//        RoomDetailsView(room: room, roomViewModel: roomViewModel)
-//          .task { await roomViewModel.onAppear() }
-//          .task {
-//            roomViewModel.clearRoomBookings()
-//            await roomViewModel.getRoomBookings(roomId: room.id)
-//          }
-//      }
-        .onAppear(perform: roomViewModel.onAppear)
-      }
-      MapTabView(mapViewModel: mapViewModel)
-      RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel, selectedTab: $selectedTab)
     }
     .tint(theme.accent.primary)
   }

@@ -31,9 +31,8 @@ public protocol RoomViewModel: Sendable {
 
   var hasLoaded: Bool { get }
 
-  var searchText: String { get set }
-
   var getBookingsIsLoading: Bool { get }
+  var searchText: String { get set }
 
   func getRoomsInOrder()
 
@@ -72,6 +71,10 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var isLoading = false
 
+  public func clearRoomBookings() {
+    currentRoomBookings = []
+  }
+  
   public var searchText = ""
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
@@ -83,10 +86,6 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
     }
     return result
-  }
-
-  public func clearRoomBookings() {
-    currentRoomBookings = []
   }
 
   public func getLoadingStatus() -> Bool {
@@ -154,7 +153,9 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       // TODO: better error handling
       // either an emtpy timetable
       // or display no connection on the timetable
-      fatalError("Error loading rooms: \(error)")
+//      fatalError("Error loading rooms: \(error)")
+      
+      1 + 1
     }
   }
 
