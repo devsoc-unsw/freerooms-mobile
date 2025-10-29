@@ -19,84 +19,92 @@ public struct RoomsTabView: View {
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
-  public init(roomViewModel: RoomViewModel, buildingViewModel: BuildingViewModel, selectedTab: Binding<String>) {
+  public init(
+    roomViewModel: RoomViewModel,
+    buildingViewModel: BuildingViewModel,
+    selectedTab: Binding<String>,
+    selectedView: Binding<RoomOrientation>)
+  {
     self.roomViewModel = roomViewModel
     self.buildingViewModel = buildingViewModel
     _selectedTab = selectedTab
+    _selectedView = selectedView
   }
 
   // MARK: Public
 
   public var body: some View {
     NavigationStack(path: $path) {
-      List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
-      }
-      .toolbar {
-        // Buttons on the right
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {
-            Button {
-              // action
-            } label: {
-              Image(systemName: "line.3.horizontal.decrease")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
+      roomView
+        .toolbar {
+          // Buttons on the right
+          ToolbarItemGroup(placement: .navigationBarTrailing) {
+            HStack {
+              Button {
+                // action
+              } label: {
+                Image(systemName: "line.3.horizontal.decrease")
+                  .resizable()
+                  .frame(width: 22, height: 15)
+              }
 
-            Button {
-              roomViewModel.getRoomsInOrder()
-            } label: {
-              Image(systemName: "arrow.up.arrow.down")
-                .resizable()
-                .frame(width: 25, height: 20)
-            }
+              Button {
+                roomViewModel.getRoomsInOrder()
+              } label: {
+                Image(systemName: "arrow.up.arrow.down")
+                  .resizable()
+                  .frame(width: 25, height: 20)
+              }
 
-            Button {
-              // action
-            } label: {
-              Image(systemName: "list.bullet")
-                .resizable()
-                .frame(width: 22, height: 15)
+              Button {
+                if selectedView == RoomOrientation.Card {
+                  selectedView = RoomOrientation.List
+                } else {
+                  selectedView = RoomOrientation.Card
+                }
+              } label: {
+                Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+                  .resizable()
+                  .frame(width: 22, height: 20)
+              }
+            }
+            .padding(.trailing, 10)
+            .foregroundStyle(theme.label.tertiary)
+          }
+        }
+        .background(Color.gray.opacity(0.1))
+        .padding(.top, 1)
+        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+        .shadow(
+          color: theme.label.primary.opacity(0.2),
+          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+        .navigationDestination(for: Room.self) { room in
+          // Renders the view for displaying a building that has been clicked on
+          Button {
+            path.append(Room.exampleOne)
+          } label: {
+            Text("bruh test test")
+          }
+          .navigationTitle(room.name)
+          .navigationBarTitleDisplayMode(.inline)
+        }
+        .opacity(
+          roomViewModel.isLoading
+            ? 0
+            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+          .onAppear {
+            if !roomViewModel.hasLoaded {
+              roomViewModel.onAppear()
             }
           }
-          .padding(.trailing, 10)
-          .foregroundStyle(theme.label.tertiary)
-        }
-      }
-      .background(Color.gray.opacity(0.1))
-      .padding(.top, 1)
-      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
-      .shadow(
-        color: theme.label.primary.opacity(0.2),
-        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
-      .navigationDestination(for: Room.self) { room in
-        // Renders the view for displaying a building that has been clicked on
-        Button {
-          path.append(Room.exampleOne)
-        } label: {
-          Text("bruh test test")
-        }
-        .navigationTitle(room.name)
-        .navigationBarTitleDisplayMode(.inline)
-      }
-      .opacity(
-        roomViewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .onAppear {
-          if !roomViewModel.hasLoaded {
-            roomViewModel.onAppear()
+          .onAppear {
+            if !buildingViewModel.hasLoaded {
+              buildingViewModel.onAppear()
+            }
           }
-        }
-        .onAppear {
-          if !buildingViewModel.hasLoaded {
-            buildingViewModel.onAppear()
-          }
-        }
-        .navigationTitle("Rooms")
-        .searchable(text: $searchText, prompt: "Search...")
+          .navigationTitle("Rooms")
+          .searchable(text: $searchText, prompt: "Search...")
     }
     .overlay(alignment: .bottom) {
       Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
@@ -114,86 +122,106 @@ public struct RoomsTabView: View {
   @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
+  @Binding var selectedView: RoomOrientation
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
-@State var cardWidth: CGFloat? // TODO:
+  @State var cardWidth: CGFloat? // TODO:
   @State var searchText = ""
 
-//  func roomsView(
-//    _ roomsByBuildingId: [String: [Room]],
-//    _ buildings: [Building])
-//    -> some View
-//  {
-//    ForEach(buildings) { building in
-//      let rooms = roomsByBuildingId[building.id] ?? []
-//      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
-//
-//      if rooms.isEmpty {
-//        EmptyView()
-//      } else {
-//        Section {
-//          ForEach(rooms) { room in
-//            GenericListRowView(
-//              path: $path,
-//              rowHeight: $rowHeight,
-//              room: room,
-//              rooms: rooms,
-//              imageProvider: { roomID in
-//                RoomImage[roomID]
-//              })
-//              .padding(.vertical, 5)
-//          }
-//        } header: {
-//          Text(buildingName)
-//            .foregroundStyle(theme.label.primary)
-//        }
-//      }
-//    }
-//  }
-    
-    private let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    
-    func roomsView(
-      _ roomsByBuildingId: [String: [Room]],
-      _ buildings: [Building])
-      -> some View
-    {
-      ForEach(buildings) { building in
-        let rooms = roomsByBuildingId[building.id] ?? []
-        let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
+  func roomsCardView(
+    _ roomsByBuildingId: [String: [Room]],
+    _ buildings: [Building])
+    -> some View
+  {
+    ForEach(buildings) { building in
+      let rooms = roomsByBuildingId[building.id] ?? []
+      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
-        if rooms.isEmpty {
-          EmptyView()
-        } else {
-          Section {
-              LazyVGrid(columns: columns) {
-                ForEach(rooms) { room in
-                    Text(room.name)
-                  GenericCardView(
-                    path: $path,
-                    cardWidth: $cardWidth,
-                    room: room,
-                    rooms: rooms,
-                    imageProvider: { roomID in
-                      RoomImage[roomID]
-                    })
-                    .padding(.vertical, 5)
-                }
+      if rooms.isEmpty {
+        EmptyView()
+      } else {
+        Section {
+          LazyVGrid(columns: columns, spacing: 24) {
+            ForEach(rooms) { room in
+              GenericCardView(
+                path: $path,
+                cardWidth: $cardWidth,
+                room: room,
+                rooms: rooms,
+                imageProvider: { roomID in
+                  RoomImage[roomID]
+                })
             }
-          } header: {
-            Text(buildingName)
-              .foregroundStyle(theme.label.primary)
           }
+          .padding(.horizontal, 16)
+        } header: {
+          HStack {
+            Text(buildingName)
+              .bold()
+              .foregroundStyle(theme.label.primary)
+              .lineLimit(1)
+              .truncationMode(.tail)
+            Spacer()
+          }
+          .padding(.horizontal, 16)
         }
       }
     }
+  }
+
+  func roomsListView(
+    _ roomsByBuildingId: [String: [Room]],
+    _ buildings: [Building])
+    -> some View
+  {
+    ForEach(buildings) { building in
+      let rooms = roomsByBuildingId[building.id] ?? []
+      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
+
+      if rooms.isEmpty {
+        EmptyView()
+      } else {
+        Section {
+          ForEach(rooms) { room in
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: rooms,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, 5)
+          }
+        } header: {
+          Text(buildingName)
+            .foregroundStyle(theme.label.primary)
+        }
+      }
+    }
+  }
 
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+
+  private let columns = [
+    GridItem(.flexible()),
+    GridItem(.flexible()),
+  ]
+
+  @ViewBuilder
+  private var roomView: some View {
+    if selectedView == RoomOrientation.List {
+      List {
+        roomsListView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+      }
+    } else {
+      ScrollView {
+        roomsCardView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+      }
+    }
+  }
 
 }
 
@@ -201,6 +229,7 @@ public struct RoomsTabView: View {
   RoomsTabView(
     roomViewModel: PreviewRoomViewModel(),
     buildingViewModel: PreviewBuildingViewModel(),
-    selectedTab: .constant("Rooms"))
+    selectedTab: .constant("Rooms"),
+    selectedView: .constant(RoomOrientation.Card))
     .defaultTheme()
 }
