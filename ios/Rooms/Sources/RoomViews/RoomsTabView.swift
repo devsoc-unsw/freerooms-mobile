@@ -38,7 +38,7 @@ public struct RoomsTabView<Destination: View>: View {
   public var body: some View {
     NavigationStack(path: $path) {
       List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
       .toolbar {
         // Buttons on the right
@@ -111,7 +111,8 @@ public struct RoomsTabView<Destination: View>: View {
   @Binding var selectedTab: String
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-  @State var searchText = ""
+
+  // search text is owned by the view model
 
   func roomsView(
     _ roomsByBuildingId: [String: [Room]],

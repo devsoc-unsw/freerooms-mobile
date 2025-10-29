@@ -40,10 +40,22 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
         buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
+      .refreshable {
+        viewModel.reloadBuildings()
+      }
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack {
+            Button {
+              viewModel.reloadBuildings()
+            } label: {
+              Image(systemName: "arrow.clockwise")
+                .resizable()
+                .frame(width: 22, height: 22)
+            }
+            .disabled(viewModel.isLoading)
+
             Button {
               // action
             } label: {
@@ -90,6 +102,20 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         viewModel.isLoading
           ? 0
           : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+        .overlay {
+          if viewModel.isLoading {
+            VStack {
+              ProgressView()
+                .scaleEffect(1.2)
+              Text("Loading buildings...")
+                .font(.caption)
+                .foregroundColor(theme.label.secondary)
+                .padding(.top, 8)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.gray.opacity(0.1))
+          }
+        }
         .onAppear {
           if !viewModel.hasLoaded {
             viewModel.onAppear()

@@ -42,6 +42,6 @@ public protocol HTTPSession: Sendable {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
-// MARK: - URLSession + HTTPSession, Sendable
+// MARK: - URLSession + HTTPSession
 
-extension URLSession: HTTPSession, Sendable { }
+extension URLSession: HTTPSession { }

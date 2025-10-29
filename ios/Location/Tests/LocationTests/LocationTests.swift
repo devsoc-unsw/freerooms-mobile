@@ -120,5 +120,61 @@ struct LocationServicePermissionTest {
     #expect(sut.currentPermissionState == .granted)
     #expect(mockLocationManager.requestInUseAuthorizationCallTracker == 1)
   }
+}
 
+// MARK: - GetUserLocationTest
+
+struct GetUserLocationTest {
+  @Test("get user location when permission not granted")
+  func requestUserLocationWhenPermissionNotGranted() async throws {
+    // Given
+    let mockLocationManager = MockLocationManager()
+
+    let sut = LiveLocationService(locationManager: mockLocationManager)
+
+    // When
+    mockLocationManager.simulateAuthorizationStatus(to: .denied)
+    mockLocationManager.simulateUserLocation(Location(latitude: 300, longitude: 300))
+
+    // Then
+    #expect(throws: LocationServiceError.locationPermissionsDenied) {
+      try sut.getCurrentLocation()
+    }
+  }
+
+  @Test("Get user location when location unavailable")
+  func requestUserLocationWhenLocationNotAvailable() async throws {
+    // Given
+    let mockLocationManager = MockLocationManager()
+
+    let sut = LiveLocationService(locationManager: mockLocationManager)
+
+    // When
+    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+    mockLocationManager.simulateUserLocation(nil)
+
+    // Then
+    #expect(throws: LocationServiceError.locationNotAvailable) {
+      try sut.getCurrentLocation()
+    }
+  }
+
+  @Test("get user location when permission granted")
+  func requestUserLocationWhenGrantedAndAvailable() async throws {
+    // Given
+    let mockLocationManager = MockLocationManager()
+
+    let sut = LiveLocationService(locationManager: mockLocationManager)
+
+    // When
+    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+    mockLocationManager.simulateUserLocation(Location(latitude: 300, longitude: 300))
+
+    // Then
+    #expect(throws: Never.self) {
+      let location = try sut.getCurrentLocation()
+
+      #expect(location == Location(latitude: 300, longitude: 300))
+    }
+  }
 }

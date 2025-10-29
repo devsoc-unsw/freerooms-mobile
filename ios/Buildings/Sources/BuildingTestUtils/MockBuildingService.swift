@@ -22,6 +22,10 @@ public class MockBuildingService: BuildingService {
     .success(buildings)
   }
 
+  public func reloadBuildings() -> GetBuildingsResult {
+    .success(buildings)
+  }
+
   public func addBuilding(_ building: Building) {
     buildings.append(building)
   }
