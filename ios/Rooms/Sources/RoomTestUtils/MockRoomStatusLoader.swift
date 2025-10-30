@@ -11,38 +11,31 @@ import RoomServices
 
 // MARK: - MockRoomStatusLoader
 
-public final class MockRoomStatusLoader: RoomStatusLoader {
+public struct MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 
-  public init() { }
+  public init(throws error: RoomStatusLoaderError? = nil, loads remoteRoomStatus: RemoteRoomStatus? = nil) {
+    self.error = error
+    self.remoteRoomStatus = remoteRoomStatus
+  }
 
   // MARK: Public
 
   public func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError> {
-    if let stubbedError {
-      return .failure(stubbedError)
+    if let error {
+      return .failure(error)
     }
 
-    if let stubbedResponse {
-      return .success(stubbedResponse)
+    if let remoteRoomStatus {
+      return .success(remoteRoomStatus)
     }
 
     return .failure(.connectivity)
   }
 
-  public func stubSuccess(_ response: RemoteRoomStatus) {
-    stubbedResponse = response
-    stubbedError = nil
-  }
-
-  public func stubFailure(_ error: RoomStatusLoaderError = .connectivity) {
-    stubbedError = error
-    stubbedResponse = nil
-  }
-
   // MARK: Private
 
-  private var stubbedResponse: RemoteRoomStatus?
-  private var stubbedError: RoomStatusLoaderError?
+  private let error: RoomStatusLoaderError?
+  private let remoteRoomStatus: RemoteRoomStatus?
 }

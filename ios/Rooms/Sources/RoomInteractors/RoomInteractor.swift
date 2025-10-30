@@ -193,6 +193,46 @@ public class RoomInteractor {
     }
   }
 
+  public func applyFilters(rooms: [Room], filter: RoomFilter) -> [Room] {
+    var filteredRooms = rooms
+
+    // Filter by room type (usage)
+    if !filter.selectedRoomTypes.isEmpty {
+      filteredRooms = filteredRooms.filter { room in
+        let roomType = RoomType(rawValue: room.usage)
+        return roomType.map { filter.selectedRoomTypes.contains($0) } ?? false
+      }
+    }
+
+    // Filter by capacity
+    if let capacity = filter.selectedCapacity {
+      filteredRooms = filteredRooms.filter { $0.capacity >= capacity }
+    }
+
+    // Filter by campus location
+    if let campusLocation = filter.selectedCampusLocation {
+      filteredRooms = filteredRooms.filter { room in
+        let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
+        switch campusLocation {
+        case .upper:
+          return gridReference.campusSection == .upper
+        case .middle:
+          return gridReference.campusSection == .middle
+        case .lower:
+          return gridReference.campusSection == .lower
+        }
+      }
+    }
+
+    // Filter by date/time and duration (requires booking data)
+    if filter.selectedDate != nil || filter.selectedStartTime != nil || filter.selectedDuration != nil {
+      // For now, return rooms as-is since we'd need booking data for proper filtering
+      // This would be enhanced to work with the booking system
+    }
+
+    return filteredRooms
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
