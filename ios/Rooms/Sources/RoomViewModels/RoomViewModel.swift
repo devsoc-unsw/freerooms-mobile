@@ -31,6 +31,16 @@ public protocol RoomViewModel: Sendable {
 
   var getBookingsIsLoading: Bool { get }
 
+  // Filter properties
+  var selectedDate: Date? { get set }
+  var selectedStartTime: Date? { get set }
+  var selectedRoomTypes: Set<RoomType> { get set }
+  var selectedDuration: Duration? { get set }
+  var selectedCampusLocation: CampusLocation? { get set }
+  var selectedCapacity: Int? { get set }
+  var hasActiveFilters: Bool { get }
+  var filteredRoomsByBuildingId: [String: [Room]] { get }
+
   func getRoomsInOrder()
 
   func onAppear() async
@@ -38,6 +48,9 @@ public protocol RoomViewModel: Sendable {
   func getRoomBookings(roomId: String) async
 
   func clearRoomBookings()
+
+  func applyFilters()
+  func clearAllFilters()
 }
 
 // MARK: - LiveRoomViewModel
@@ -67,6 +80,39 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public var roomsInAscendingOrder = true
 
   public var isLoading = false
+
+  public var selectedDate: Date?
+  public var selectedStartTime: Date?
+  public var selectedRoomTypes: Set<RoomType> = []
+  public var selectedDuration: Duration?
+  public var selectedCampusLocation: CampusLocation?
+  public var selectedCapacity: Int?
+
+  public var hasActiveFilters: Bool {
+    selectedDate != nil ||
+      selectedStartTime != nil ||
+      !selectedRoomTypes.isEmpty ||
+      selectedDuration != nil ||
+      selectedCampusLocation != nil ||
+      selectedCapacity != nil
+  }
+
+  public var filteredRoomsByBuildingId: [String: [Room]] {
+    guard hasActiveFilters else {
+      return roomsByBuildingId
+    }
+
+    var filtered: [String: [Room]] = [:]
+
+    for (buildingId, rooms) in roomsByBuildingId {
+      let filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter)
+      if !filteredRooms.isEmpty {
+        filtered[buildingId] = filteredRooms
+      }
+    }
+
+    return filtered
+  }
 
   public func clearRoomBookings() {
     currentRoomBookings = []
@@ -141,9 +187,33 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     }
   }
 
+  public func applyFilters() {
+    // Trigger UI update by accessing filteredRoomsByBuildingId
+    _ = filteredRoomsByBuildingId
+  }
+
+  public func clearAllFilters() {
+    selectedDate = nil
+    selectedStartTime = nil
+    selectedRoomTypes.removeAll()
+    selectedDuration = nil
+    selectedCampusLocation = nil
+    selectedCapacity = nil
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
+
+  private var currentFilter: RoomFilter {
+    RoomFilter(
+      selectedDate: selectedDate,
+      selectedStartTime: selectedStartTime,
+      selectedRoomTypes: selectedRoomTypes,
+      selectedDuration: selectedDuration,
+      selectedCampusLocation: selectedCampusLocation,
+      selectedCapacity: selectedCapacity)
+  }
 }
 
 // MARK: - PreviewRoomViewModel
