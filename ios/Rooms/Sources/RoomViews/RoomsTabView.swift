@@ -271,7 +271,6 @@ public struct RoomsTabView<Destination: View>: View {
         .buttonStyle(.borderedProminent)
         .padding(.bottom)
     }
-    }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }

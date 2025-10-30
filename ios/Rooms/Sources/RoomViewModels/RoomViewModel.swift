@@ -83,8 +83,6 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var isLoading = false
 
-  public var isLoading = false
-
   public var searchText = ""
   public var selectedDate: Date?
   public var selectedStartTime: Date?
