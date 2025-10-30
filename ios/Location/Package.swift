@@ -10,7 +10,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Location",
-      targets: ["Location"]),
+      targets: ["Location", "LocationTestsUtils", "LocationInteractors"]),
     .library(
       name: "LocationTestsUtils", targets: ["LocationTestsUtils"]),
   ],
@@ -21,6 +21,9 @@ let package = Package(
       name: "Location"),
     .target(
       name: "LocationTestsUtils",
+      dependencies: ["Location"]),
+    .target(
+      name: "LocationInteractors",
       dependencies: ["Location"]),
     .testTarget(
       name: "LocationTests",

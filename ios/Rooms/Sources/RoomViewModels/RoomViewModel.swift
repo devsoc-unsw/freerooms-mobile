@@ -20,6 +20,8 @@ public protocol RoomViewModel: Sendable {
 
   var roomsByBuildingId: [String: [Room]] { get set }
 
+  var filteredRoomsByBuildingId: [String: [Room]] { get }
+
   var roomsInAscendingOrder: Bool { get }
 
   var currentRoomBookings: [RoomBooking] { get }
@@ -39,7 +41,7 @@ public protocol RoomViewModel: Sendable {
   var selectedCampusLocation: CampusLocation? { get set }
   var selectedCapacity: Int? { get set }
   var hasActiveFilters: Bool { get }
-  var filteredRoomsByBuildingId: [String: [Room]] { get }
+  var searchText: String { get set }
 
   func getRoomsInOrder()
 
@@ -81,6 +83,9 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var isLoading = false
 
+  public var isLoading = false
+
+  public var searchText = ""
   public var selectedDate: Date?
   public var selectedStartTime: Date?
   public var selectedRoomTypes: Set<RoomType> = []
@@ -98,20 +103,22 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   }
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
-    guard hasActiveFilters else {
-      return roomsByBuildingId
-    }
-
-    var filtered: [String: [Room]] = [:]
-
+    var result: [String: [Room]] = [:]
     for (buildingId, rooms) in roomsByBuildingId {
-      let filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter)
-      if !filteredRooms.isEmpty {
-        filtered[buildingId] = filteredRooms
+      var filteredRooms = rooms
+      if hasActiveFilters {
+        filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter)
+      }
+      let sortedRooms = interactor.getRoomsSortedAlphabetically(
+        rooms: filteredRooms,
+        inAscendingOrder: roomsInAscendingOrder)
+      let searchedRooms = interactor.filterRoomsByQueryString(sortedRooms, by: searchText)
+
+      if !searchedRooms.isEmpty {
+        result[buildingId] = searchedRooms
       }
     }
-
-    return filtered
+    return result
   }
 
   public func clearRoomBookings() {
