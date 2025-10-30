@@ -37,21 +37,148 @@ public struct RoomsTabView<Destination: View>: View {
 
   public var body: some View {
     NavigationStack(path: $path) {
-      List {
-        roomsView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+      VStack(spacing: 0) {
+        // Filter buttons row - horizontally scrollable
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 8) {
+            // Duration filter button
+            Button(action: { showingDurationFilter = true }) {
+              let isActive = roomViewModel.selectedDuration != nil
+              let textColor = isActive ? Color.white : Color.orange
+              let backgroundColor = isActive ? Color.orange : Color.white
+
+              HStack(spacing: 6) {
+                Image(systemName: "clock.arrow.circlepath")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Text("Duration")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Image(systemName: "chevron.down")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 10, weight: .medium))
+              }
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+              .background(backgroundColor)
+              .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                  .stroke(Color.orange, lineWidth: 1))
+              .cornerRadius(6)
+            }
+            .frame(minWidth: 100)
+
+            // Date filter button
+            Button(action: { showingDateFilter = true }) {
+              let isActive = roomViewModel.selectedDate != nil
+              let textColor = isActive ? Color.white : Color.orange
+              let backgroundColor = isActive ? Color.orange : Color.white
+
+              HStack(spacing: 6) {
+                Image(systemName: "calendar")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Text("Date")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Image(systemName: "chevron.down")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 10, weight: .medium))
+              }
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+              .background(backgroundColor)
+              .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                  .stroke(Color.orange, lineWidth: 1))
+              .cornerRadius(6)
+            }
+            .frame(minWidth: 100)
+
+            // Room Type filter button
+            Button(action: { showingRoomTypeFilter = true }) {
+              let isActive = !roomViewModel.selectedRoomTypes.isEmpty
+              let textColor = isActive ? Color.white : Color.orange
+              let backgroundColor = isActive ? Color.orange : Color.white
+
+              HStack(spacing: 6) {
+                Text("Room Type")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Image(systemName: "chevron.down")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 10, weight: .medium))
+              }
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+              .background(backgroundColor)
+              .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                  .stroke(Color.orange, lineWidth: 1))
+              .cornerRadius(6)
+            }
+            .frame(minWidth: 100)
+
+            // Campus Location filter button
+            Button(action: { showingCampusLocationFilter = true }) {
+              let isActive = roomViewModel.selectedCampusLocation != nil
+              let textColor = isActive ? Color.white : Color.orange
+              let backgroundColor = isActive ? Color.orange : Color.white
+
+              HStack(spacing: 6) {
+                Text(roomViewModel.selectedCampusLocation?.displayName ?? "Lower Campus")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 14, weight: .medium))
+                Image(systemName: "chevron.down")
+                  .foregroundColor(textColor)
+                  .font(.system(size: 10, weight: .medium))
+              }
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+              .background(backgroundColor)
+              .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                  .stroke(Color.orange, lineWidth: 1))
+              .cornerRadius(6)
+            }
+            .frame(minWidth: 100)
+
+            // Reset filters button
+            Button(action: {
+              roomViewModel.clearAllFilters()
+            }) {
+              HStack(spacing: 6) {
+                Image(systemName: "xmark.circle")
+                  .foregroundColor(.orange)
+                  .font(.system(size: 14, weight: .medium))
+                Text("Reset")
+                  .foregroundColor(.orange)
+                  .font(.system(size: 14, weight: .medium))
+              }
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+              .background(Color.white)
+              .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                  .stroke(Color.orange, lineWidth: 1))
+              .cornerRadius(6)
+            }
+            .frame(minWidth: 100)
+          }
+          .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 8)
+        .background(Color.white)
+
+        // Rooms list
+        List {
+          roomsView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+        }
       }
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack {
-            Button {
-              // action
-            } label: {
-              Image(systemName: "line.3.horizontal.decrease")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
-
             Button {
               roomViewModel.getRoomsInOrder()
             } label: {
@@ -97,6 +224,47 @@ public struct RoomsTabView<Destination: View>: View {
         }
         .navigationTitle("Rooms")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        .sheet(isPresented: $showingDateFilter) {
+          DateFilterView(
+            selectedDate: $roomViewModel.selectedDate,
+            selectedStartTime: $roomViewModel.selectedStartTime)
+          {
+            showingDateFilter = false
+            roomViewModel.applyFilters()
+          }
+          .presentationDetents([.height(450), .large])
+          .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingRoomTypeFilter) {
+          RoomTypeFilterView(
+            selectedRoomTypes: $roomViewModel.selectedRoomTypes)
+          {
+            showingRoomTypeFilter = false
+            roomViewModel.applyFilters()
+          }
+          .presentationDetents([.medium])
+          .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingDurationFilter) {
+          DurationFilterView(
+            selectedDuration: $roomViewModel.selectedDuration)
+          {
+            showingDurationFilter = false
+            roomViewModel.applyFilters()
+          }
+          .presentationDetents([.medium])
+          .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingCampusLocationFilter) {
+          CampusLocationFilterView(
+            selectedCampusLocation: $roomViewModel.selectedCampusLocation)
+          {
+            showingCampusLocationFilter = false
+            roomViewModel.applyFilters()
+          }
+          .presentationDetents([.medium])
+          .presentationDragIndicator(.visible)
+        }
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -146,6 +314,12 @@ public struct RoomsTabView<Destination: View>: View {
   }
 
   // MARK: Private
+
+  // Filter sheet states
+  @State private var showingDateFilter = false
+  @State private var showingRoomTypeFilter = false
+  @State private var showingDurationFilter = false
+  @State private var showingCampusLocationFilter = false
 
   @Environment(Theme.self) private var theme
 
