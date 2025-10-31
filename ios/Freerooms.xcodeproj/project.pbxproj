@@ -345,6 +345,8 @@
 				INFOPLIST_KEY_NSLocationUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -382,6 +384,8 @@
 				INFOPLIST_KEY_NSLocationUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
