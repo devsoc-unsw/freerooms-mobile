@@ -65,8 +65,7 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
           .truncationMode(.tail)
 
         if let room = item as? Room {
-          Text(
-            "\(room.status == "free" ? (room.endTime != nil ? "Available till \(room.endTimeString)" : "Available all day") : room.status == "" ? "Status not available" : (room.endTime != nil ? "Unavaliable till \(room.endTimeString)" : "Unavailable all day"))")
+          Text(room.statusText)
             .fontWeight(.semibold)
             .foregroundStyle(
               room.status == "free" ? Theme.light.list.green : room.status == "" ? Theme.light.list.gray : Theme
