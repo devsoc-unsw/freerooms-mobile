@@ -153,7 +153,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       // TODO: better error handling
       // either an emtpy timetable
       // or display no connection on the timetable
-//      fatalError("Error loading rooms: \(error)")
+      fatalError("Error loading rooms: \(error)")
     }
   }
 
