@@ -154,8 +154,6 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       // either an emtpy timetable
       // or display no connection on the timetable
 //      fatalError("Error loading rooms: \(error)")
-
-      1 + 1
     }
   }
 
