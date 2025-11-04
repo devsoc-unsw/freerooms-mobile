@@ -180,7 +180,9 @@ func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
   let mockLoader = MockRoomLoader()
   mockLoader.stubRooms(rooms)
 
-  let roomService = LiveRoomService(roomLoader: mockLoader)
+  let remoteBookingLoader = MockRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
   let interactor = RoomInteractor(
     roomService: roomService,
     locationService: LiveLocationService(locationManager: LiveLocationManager()))

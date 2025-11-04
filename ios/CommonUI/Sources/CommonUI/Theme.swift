@@ -19,13 +19,14 @@ public final class Theme {
 
   // MARK: Lifecycle
 
-  public init(accent: Accent, label: Label, background: Color, toolbar: Color, yellow: Color, white: Color) {
+  public init(accent: Accent, label: Label, background: Color, toolbar: Color, yellow: Color, white: Color, list: ListColors) {
     self.accent = accent
     self.label = label
     self.background = background
     self.toolbar = toolbar
     self.yellow = yellow
     self.white = white
+    self.list = list
   }
 
   // MARK: Public
@@ -56,6 +57,24 @@ public final class Theme {
     }
   }
 
+  public struct ListColors {
+    public let red: Color
+    public let redTransparent: Color
+    public let green: Color
+    public let greenTransparent: Color
+    public let gray: Color
+    public let grayTransparent: Color
+
+    public init(red: Color, redTransparent: Color, green: Color, greenTransparent: Color, gray: Color, grayTransparent: Color) {
+      self.red = red
+      self.redTransparent = redTransparent
+      self.green = green
+      self.greenTransparent = greenTransparent
+      self.gray = gray
+      self.grayTransparent = grayTransparent
+    }
+  }
+
   public static let light = Theme(
     accent: .init(
       primary: Color("AccentPrimary", bundle: .module),
@@ -69,7 +88,14 @@ public final class Theme {
     background: .init("Background", bundle: .module),
     toolbar: .init("Toolbar", bundle: .module),
     yellow: .init("Yellow", bundle: .module),
-    white: .init("White", bundle: .module))
+    white: .init("White", bundle: .module),
+    list: .init(
+      red: Color("Red", bundle: .module),
+      redTransparent: Color("RedTransparent", bundle: .module),
+      green: Color("Green", bundle: .module),
+      greenTransparent: Color("GreenTransparent", bundle: .module),
+      gray: Color("Gray", bundle: .module),
+      grayTransparent: Color("GrayTransparent", bundle: .module)))
 
   public var accent: Accent
   public var label: Label
@@ -77,6 +103,7 @@ public final class Theme {
   public var toolbar: Color
   public var yellow: Color
   public var white: Color
+  public var list: ListColors
 
   /// DO NOT CALL IN PREVIEWS
   public static func registerFont(named name: String) {

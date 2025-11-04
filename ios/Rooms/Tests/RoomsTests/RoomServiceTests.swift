@@ -20,7 +20,10 @@ struct RoomServiceTests {
     let expectedRooms = createRooms(1)
     let mockLoader = MockRoomLoader()
     mockLoader.stubRooms(expectedRooms, for: "K-J17")
-    let sut = LiveRoomService(roomLoader: mockLoader)
+
+    let remoteBookingLoader = MockRemoteRoomBookingLoader()
+    let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+    let sut = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -39,7 +42,9 @@ struct RoomServiceTests {
     // Given
     let mockLoader = MockRoomLoader()
     mockLoader.stubRooms([], for: "K-F21")
-    let sut = LiveRoomService(roomLoader: mockLoader)
+    let remoteBookingLoader = MockRemoteRoomBookingLoader()
+    let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+    let sut = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
     // When
     let result = await sut.getRooms(buildingId: "K-F21")
@@ -58,7 +63,9 @@ struct RoomServiceTests {
     // Given
     let mockLoader = MockRoomLoader()
     mockLoader.stubError(.connectivity)
-    let sut = LiveRoomService(roomLoader: mockLoader)
+    let remoteBookingLoader = MockRemoteRoomBookingLoader()
+    let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+    let sut = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -78,7 +85,9 @@ struct RoomServiceTests {
     let expectedRooms = createRooms(3)
     let mockLoader = MockRoomLoader()
     mockLoader.stubRooms(expectedRooms, for: "K-J17")
-    let sut = LiveRoomService(roomLoader: mockLoader)
+    let remoteBookingLoader = MockRemoteRoomBookingLoader()
+    let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+    let sut = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -98,7 +107,9 @@ struct RoomServiceTests {
   func returnsErrorForEmptyBuildingId() async {
     // Given
     let mockLoader = MockRoomLoader()
-    let sut = LiveRoomService(roomLoader: mockLoader)
+    let remoteBookingLoader = MockRemoteRoomBookingLoader()
+    let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+    let sut = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
     // When
     let result = await sut.getRooms(buildingId: "")

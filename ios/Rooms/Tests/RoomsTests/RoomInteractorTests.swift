@@ -404,7 +404,9 @@ func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw room
     mockLoader.stubRooms(rooms)
   }
 
-  let roomService = LiveRoomService(roomLoader: mockLoader)
+  let remoteBookingLoader = MockRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }

@@ -5,9 +5,11 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import BuildingModels
 import BuildingViewModels
 import BuildingViews
 import CommonUI
+import RoomModels
 import RoomViewModels
 import RoomViews
 import SwiftUI
@@ -26,21 +28,43 @@ struct ContentView: View {
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $path, viewModel: buildingViewModel) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $path, imageProvider: {
+      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel) { building in
+        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
-        .onAppear(perform: roomViewModel.onAppear)
+        .task { await roomViewModel.onAppear() }
+      } _: { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task {
+            await roomViewModel.onAppear()
+          }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
       }
       MapTabView(mapViewModel: mapViewModel)
-      RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel, selectedTab: $selectedTab)
+      RoomsTabView(
+        path: $roomPath,
+        roomViewModel: roomViewModel,
+        buildingViewModel: buildingViewModel,
+        selectedTab: $selectedTab)
+      { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task { await roomViewModel.onAppear() }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
+      }
     }
     .tint(theme.accent.primary)
   }
 
   // MARK: Private
 
-  @State private var path = NavigationPath()
+  @State private var buildingPath = NavigationPath()
+  @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
 }

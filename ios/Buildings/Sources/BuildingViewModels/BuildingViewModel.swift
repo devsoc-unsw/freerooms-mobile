@@ -97,7 +97,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading buildings: \(error)")
+      fatalError("Error loading buildings: \(error)")
     }
 
     isLoading = false
