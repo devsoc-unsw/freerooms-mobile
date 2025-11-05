@@ -10,7 +10,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Location",
-      targets: ["Location"]),
+      targets: ["Location", "LocationTestsUtils", "LocationInteractors"]),
     .library(
       name: "LocationTestsUtils", targets: ["LocationTestsUtils"]),
   ],
@@ -22,6 +22,10 @@ let package = Package(
       swiftSettings: .defaultSettings),
     .target(
       name: "LocationTestsUtils",
+      dependencies: ["Location"],
+      swiftSettings: .defaultSettings),
+    .target(
+      name: "LocationInteractors",
       dependencies: ["Location"],
       swiftSettings: .defaultSettings),
     .testTarget(

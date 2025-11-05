@@ -57,7 +57,7 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
   public var body: some View {
     HStack(spacing: 0) {
-      VStack(alignment: .leading) {
+      VStack(alignment: .leading, spacing: 5) {
         Text(item.name)
           .bold()
           .foregroundStyle(theme.label.primary)
@@ -65,8 +65,18 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
           .truncationMode(.tail)
 
         if let room = item as? Room {
-          Text("\(room.status == "free" ? "Available" : room.status == "" ? "status not available" : "Unavailable")")
-            .foregroundStyle(room.status == "free" ? .green : room.status == "" ? .gray : .red)
+          Text(room.statusText)
+            .fontWeight(.semibold)
+            .foregroundStyle(
+              room.status == "free" ? Theme.light.list.green : room.status == "" ? Theme.light.list.gray : Theme
+                .light.list.red)
+            .padding(.vertical, 2)
+            .padding(.horizontal, 4)
+            .background(
+              RoundedRectangle(cornerRadius: 5)
+                .fill(
+                  room.status == "free" ? Theme.light.list.greenTransparent.opacity(0.15) : room.status == "" ? Theme.light.list
+                    .grayTransparent.opacity(0.20) : Theme.light.list.redTransparent.opacity(0.54)))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }

@@ -24,18 +24,19 @@ let package = Package(
     .package(name: "Persistence", path: "../Persistence"),
     .package(name: "Rooms", path: "../Rooms"),
     .package(name: "TestingSupport", path: "../TestingSupport"),
+    .package(url: "https://github.com/lucaszischka/BottomSheet", from: "3.1.1"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "BuildingViews",
-      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels"],
+      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels", .product(name: "BottomSheet", package: "BottomSheet")],
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingViewModels",
-      dependencies: ["BuildingInteractors", "BuildingModels"],
+      dependencies: ["BuildingInteractors", "BuildingModels", .product(name: "BottomSheet", package: "BottomSheet")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingInteractors",

@@ -22,94 +22,78 @@ struct ContentView: View {
   // MARK: Internal
 
   @Environment(\.buildingViewModel) var buildingViewModel
+  @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $path, viewModel: buildingViewModel) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $path, imageProvider: {
+      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel) { building in
+        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
-        .onAppear(perform: roomViewModel.onAppear)
+        .task { await roomViewModel.onAppear() }
+      } _: { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task {
+            await roomViewModel.onAppear()
+          }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
       }
-
-      RoomsTabView(roomViewModel: roomViewModel, buildingViewModel: buildingViewModel, selectedTab: $selectedTab)
+      MapTabView(mapViewModel: mapViewModel)
+      RoomsTabView(
+        path: $roomPath,
+        roomViewModel: roomViewModel,
+        buildingViewModel: buildingViewModel,
+        selectedTab: $selectedTab)
+      { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task { await roomViewModel.onAppear() }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
+      }
     }
     .tint(theme.accent.primary)
   }
 
   // MARK: Private
 
-  @State private var path = NavigationPath()
+  @State private var buildingPath = NavigationPath()
+  @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
 }
 
+extension LiveBuildingViewModel {
+  static let preview = PreviewBuildingViewModel()
+}
+
+extension LiveRoomViewModel {
+  static let preview = PreviewRoomViewModel()
+}
+
+extension LiveMapViewModel {
+  static let preview = PreviewMapViewModel()
+}
+
+@MainActor
 extension EnvironmentValues {
-  @Entry var buildingViewModel: BuildingViewModel = FakeBuildingViewModel()
-  @Entry var roomViewModel: RoomViewModel = FakeRoomViewModel()
+  @Entry var buildingViewModel: LiveBuildingViewModel = .preview
+  @Entry var mapViewModel: LiveMapViewModel = .preview
+  @Entry var roomViewModel: LiveRoomViewModel = .preview
 }
 
 #Preview {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(\.mapViewModel, MainActor.assumeIsolated {
+      PreviewMapViewModel()
+    })
     .environment(\.roomViewModel, PreviewRoomViewModel())
-}
-
-// MARK: - FakeBuildingViewModel
-
-struct FakeBuildingViewModel: BuildingViewModel {
-
-  // MARK: Lifecycle
-
-  nonisolated init() {
-    buildings = ([], [], [])
-    filteredBuildings = ([], [], [])
-    allBuildings = []
-    buildingsInAscendingOrder = false
-    isLoading = false
-    hasLoaded = false
-    searchText = ""
-  }
-
-  // MARK: Internal
-
-  var buildings: BuildingModels.CampusBuildings
-  var filteredBuildings: BuildingModels.CampusBuildings
-  var allBuildings: [BuildingModels.Building]
-  var buildingsInAscendingOrder: Bool
-  var isLoading: Bool
-  var hasLoaded: Bool
-  var searchText: String
-
-  func getBuildingsInOrder() { }
-  func onAppear() { }
-}
-
-// MARK: - FakeRoomViewModel
-
-struct FakeRoomViewModel: RoomViewModel {
-
-  // MARK: Lifecycle
-
-  nonisolated init() {
-    rooms = []
-    roomsByBuildingId = [:]
-    roomsInAscendingOrder = false
-    isLoading = false
-    hasLoaded = false
-  }
-
-  // MARK: Internal
-
-  var rooms: [RoomModels.Room]
-  var roomsByBuildingId: [String: [RoomModels.Room]]
-  var roomsInAscendingOrder: Bool
-  var isLoading: Bool
-  var hasLoaded: Bool
-
-  func getRoomsInOrder() { }
-  func onAppear() { }
 }

@@ -4,5 +4,9 @@
 <dict>
 	<key>MKDirectionsApplicationSupportedModes</key>
 	<array/>
+	<key>NSLocationUsageDescription</key>
+	<string>location for campus map</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>location for campus map</string>
 </dict>
 </plist>

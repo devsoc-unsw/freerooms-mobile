@@ -145,8 +145,7 @@ final class NetworkCodableLoaderTests {
 // MARK: - MockHTTPClient
 
 /// Simulates network responses.
-// swiftlint:disable:next no_unchecked_sendable
-private class MockHTTPClient: HTTPClient, @unchecked Sendable {
+private final class MockHTTPClient: HTTPClient {
 
   // MARK: Public
 

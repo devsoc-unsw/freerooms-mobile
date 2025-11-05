@@ -25,6 +25,7 @@ public protocol BuildingViewModel {
 
   func getBuildingsInOrder()
   func onAppear()
+  func reloadBuildings()
 }
 
 // MARK: - LiveBuildingViewModel
@@ -95,7 +96,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
     case .failure(let error):
       // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error loading buildings: \(error)")
+      fatalError("Error loading buildings: \(error)")
     }
 
     isLoading = false
@@ -119,9 +120,47 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
+  public func reloadBuildings() {
+    Task {
+      await loadBuildingsFromReload()
+    }
+  }
+
   // MARK: Private
 
   private var interactor: BuildingInteractor
+
+  private func loadBuildingsFromReload() async {
+    isLoading = true
+
+    // Reload all buildings using the reload method
+    let buildingResult = await interactor.reloadBuildingsSortedAlphabetically(inAscendingOrder: true)
+
+    switch buildingResult {
+    case .success(let fetchedBuildings):
+      let uniqueBuildings = uniqueById(fetchedBuildings)
+
+      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
+      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
+      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
+
+      buildings.upper = interactor.getBuildingsSortedAlphabetically(
+        buildings: upper,
+        order: buildingsInAscendingOrder)
+      buildings.middle = interactor.getBuildingsSortedAlphabetically(
+        buildings: middle,
+        order: buildingsInAscendingOrder)
+      buildings.lower = interactor.getBuildingsSortedAlphabetically(
+        buildings: lower,
+        order: buildingsInAscendingOrder)
+
+    case .failure(let error):
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("Error reloading buildings: \(error)")
+    }
+
+    isLoading = false
+  }
 
   private func uniqueById(_ input: [Building]) -> [Building] {
     var seen = Set<String>()
@@ -132,8 +171,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
 // MARK: - PreviewBuildingViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendable {
+public class PreviewBuildingViewModel: LiveBuildingViewModel {
 
   public init() {
     super.init(interactor: BuildingInteractor(

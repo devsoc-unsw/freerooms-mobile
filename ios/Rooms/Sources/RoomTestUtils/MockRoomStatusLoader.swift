@@ -10,7 +10,6 @@ import RoomModels
 import RoomServices
 
 // MARK: - MockRoomStatusLoader
-
 public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
