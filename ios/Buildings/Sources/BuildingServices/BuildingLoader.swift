@@ -109,7 +109,7 @@ public class LiveBuildingLoader: BuildingLoader {
         }
       }
 
-      var ratings: [(Int, Swift.Result<Double, BuildingRatingLoaderError>)] = []
+      var ratings = [(Int, Swift.Result<Double, BuildingRatingLoaderError>)]()
       for await res in group {
         ratings.append(res)
       }

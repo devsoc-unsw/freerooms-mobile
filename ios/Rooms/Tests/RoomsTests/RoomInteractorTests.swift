@@ -163,7 +163,7 @@ enum RoomInteractorTests {
       let result = await sut.getRoomsFilteredByAllBuildingId()
 
       // Then
-      var expectResult: [String: [Room]] = [:]
+      var expectResult = [String: [Room]]()
       for buildingId in buildingIds {
         let filteredRooms = expectedRooms
           .filter { $0.buildingId == buildingId }

@@ -9,7 +9,7 @@ import Foundation
 import RoomModels
 
 func createRooms(_ count: Int) -> [Room] {
-  var rooms: [Room] = []
+  var rooms = [Room]()
   for _ in 0..<count {
     rooms.append(Room(
       abbreviation: "SCI101",
@@ -35,7 +35,7 @@ func createRooms(_ count: Int) -> [Room] {
 }
 
 func createSwiftDataRooms(_ count: Int) -> [SwiftDataRoom] {
-  var rooms: [SwiftDataRoom] = []
+  var rooms = [SwiftDataRoom]()
   for _ in 0..<count {
     rooms.append(SwiftDataRoom(
       abbreviation: "SCI101",
@@ -63,7 +63,7 @@ func createSwiftDataRooms(_ count: Int) -> [SwiftDataRoom] {
 }
 
 func createRemoteRoomBookings(_ count: Int) -> [RemoteRoomBooking] {
-  var bookings: [RemoteRoomBooking] = []
+  var bookings = [RemoteRoomBooking]()
   for _ in 0..<count {
     bookings.append(RemoteRoomBooking(
       bookingType: "MISC",
@@ -76,7 +76,7 @@ func createRemoteRoomBookings(_ count: Int) -> [RemoteRoomBooking] {
 }
 
 func createRoomBookings(_ count: Int) -> [RoomBooking] {
-  var bookings: [RoomBooking] = []
+  var bookings = [RoomBooking]()
   for _ in 0..<count {
     bookings.append(RoomBooking(
       bookingType: "MISC",
@@ -89,7 +89,7 @@ func createRoomBookings(_ count: Int) -> [RoomBooking] {
 }
 
 func createRoomBookingsFromStartToEnd(_ count: Int, from start: Date, to end: Date) -> [RoomBooking] {
-  var bookings: [RoomBooking] = []
+  var bookings = [RoomBooking]()
   for _ in 0..<count {
     bookings.append(RoomBooking(
       bookingType: "MISC",
@@ -105,8 +105,9 @@ func createRemoteRoomStatus(_ count: Int) -> RemoteRoomStatus {
   var buildingStatuses: RemoteRoomStatus = [:]
 
   for _ in 0..<count {
-    buildingStatuses["BLDG-2024-007"] = BuildingRoomStatus(numAvailable: 8,
-                                                           roomStatuses: ["ROOM-12345-ABC": RoomStatus(status: "", endtime: "")])
+    buildingStatuses["BLDG-2024-007"] = BuildingRoomStatus(
+      numAvailable: 8,
+      roomStatuses: ["ROOM-12345-ABC": RoomStatus(status: "", endtime: "")])
   }
 
   return buildingStatuses

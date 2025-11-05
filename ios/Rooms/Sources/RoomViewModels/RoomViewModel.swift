@@ -48,9 +48,9 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var hasLoaded = false
 
-  public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
+  public var roomsByBuildingId = [String: [RoomModels.Room]]()
 
-  public var rooms: [Room] = []
+  public var rooms = [Room]()
 
   public var roomsInAscendingOrder = true
 

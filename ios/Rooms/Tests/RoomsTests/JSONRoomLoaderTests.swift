@@ -123,7 +123,7 @@ struct JSONRoomLoaderTests {
   }
 
   private func createDecodableRooms(_ count: Int) -> [DecodableRoom] {
-    var decodableRooms: [DecodableRoom] = []
+    var decodableRooms = [DecodableRoom]()
     for _ in 0..<count {
       decodableRooms.append(DecodableRoom(
         abbr: "SCI101",
