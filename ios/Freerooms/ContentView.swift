@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import BuildingModels
 import BuildingViewModels
 import BuildingViews
 import CommonUI
@@ -21,37 +22,69 @@ struct ContentView: View {
   // MARK: Internal
 
   @Environment(\.buildingViewModel) var buildingViewModel
+  @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
   @State var selectedView = RoomOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $path, viewModel: buildingViewModel) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $path, imageProvider: {
+      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel) { building in
+        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
-        .onAppear(perform: roomViewModel.onAppear)
+        .task { await roomViewModel.onAppear() }
+      } _: { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task {
+            await roomViewModel.onAppear()
+          }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
       }
+      MapTabView(mapViewModel: mapViewModel)
+      RoomsTabView(
+        path: $roomPath,
+        roomViewModel: roomViewModel,
+        buildingViewModel: buildingViewModel,
+        selectedTab: $selectedTab)
+      { room in
+        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+          .task { await roomViewModel.onAppear() }
+          .task {
+            roomViewModel.clearRoomBookings()
+            await roomViewModel.getRoomBookings(roomId: room.id)
+          }
+      }
+<<<<<<< HEAD
 
       RoomsTabView(
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab,
         selectedView: $selectedView)
+=======
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
     }
     .tint(theme.accent.primary)
   }
 
   // MARK: Private
 
-  @State private var path = NavigationPath()
+  @State private var buildingPath = NavigationPath()
+  @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
 }
 
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
+  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated {
+    PreviewMapViewModel()
+  }
+
   @Entry var roomViewModel: LiveRoomViewModel = PreviewRoomViewModel()
 }
 
@@ -59,5 +92,8 @@ extension EnvironmentValues {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(\.mapViewModel, MainActor.assumeIsolated {
+      PreviewMapViewModel()
+    })
     .environment(\.roomViewModel, PreviewRoomViewModel())
 }

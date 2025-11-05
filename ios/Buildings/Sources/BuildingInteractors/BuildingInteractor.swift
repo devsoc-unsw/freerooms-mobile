@@ -16,7 +16,8 @@ import RoomServices
 
 /// Coordinates building-related operations including filtering, sorting, and room status integration.
 /// Acts as the main interface between the presentation layer and building services.
-public class BuildingInteractor {
+// swiftlint:disable:next no_unchecked_sendable
+public class BuildingInteractor: @unchecked Sendable {
 
   // MARK: Lifecycle
 
@@ -90,10 +91,40 @@ public class BuildingInteractor {
       lower: filter(buildings.lower))
   }
 
+  public func filterBuildingsByQueryString(_ buildings: [Building], by query: String) -> [Building] {
+    let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    guard !trimmedQuery.isEmpty else {
+      return buildings
+    }
+
+    let lowercasedQuery = trimmedQuery.lowercased()
+
+    return buildings.filter { building in
+      building.name.lowercased().contains(lowercasedQuery) ||
+        building.aliases.contains { alias in
+          alias.lowercased().contains(lowercasedQuery)
+        }
+    }
+  }
+
   // MARK: Package
 
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
     switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let sorted = buildings.sorted { a, b in
+        inAscendingOrder ? a.name < b.name : a.name > b.name
+      }
+      return .success(sorted)
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  package func reloadBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+    switch await buildingService.reloadBuildings() {
     case .success(let buildings):
       let sorted = buildings.sorted { a, b in
         inAscendingOrder ? a.name < b.name : a.name > b.name

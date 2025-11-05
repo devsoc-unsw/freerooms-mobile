@@ -14,12 +14,13 @@ import SwiftUI
 
 // MARK: - RoomsTabView
 
-public struct RoomsTabView: View {
+public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Lifecycle
 
   /// init some viewModel to depend on
   public init(
+<<<<<<< HEAD
     roomViewModel: RoomViewModel,
     buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
@@ -29,12 +30,26 @@ public struct RoomsTabView: View {
     self.buildingViewModel = buildingViewModel
     _selectedTab = selectedTab
     _selectedView = selectedView
+=======
+    path: Binding<NavigationPath>,
+    roomViewModel: RoomViewModel,
+    buildingViewModel: BuildingViewModel,
+    selectedTab: Binding<String>,
+    _ roomDestinationBuilderView: @escaping (Room) -> Destination)
+  {
+    _path = path
+    self.roomViewModel = roomViewModel
+    self.buildingViewModel = buildingViewModel
+    _selectedTab = selectedTab
+    self.roomDestinationBuilderView = roomDestinationBuilderView
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
   }
 
   // MARK: Public
 
   public var body: some View {
     NavigationStack(path: $path) {
+<<<<<<< HEAD
       roomView
         .toolbar {
           // Buttons on the right
@@ -47,6 +62,22 @@ public struct RoomsTabView: View {
                   .resizable()
                   .frame(width: 22, height: 15)
               }
+=======
+      List {
+        roomsView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+      }
+      .toolbar {
+        // Buttons on the right
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+          HStack {
+            Button {
+              // action
+            } label: {
+              Image(systemName: "line.3.horizontal.decrease")
+                .resizable()
+                .frame(width: 22, height: 15)
+            }
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
 
               Button {
                 roomViewModel.getRoomsInOrder()
@@ -98,6 +129,7 @@ public struct RoomsTabView: View {
               roomViewModel.onAppear()
             }
           }
+<<<<<<< HEAD
           .onAppear {
             if !buildingViewModel.hasLoaded {
               buildingViewModel.onAppear()
@@ -110,6 +142,37 @@ public struct RoomsTabView: View {
       Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
         .buttonStyle(.borderedProminent)
         .padding(.bottom)
+=======
+          .padding(5)
+          .foregroundStyle(theme.label.tertiary)
+        }
+      }
+      .background(Color.gray.opacity(0.1))
+      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+      .shadow(
+        color: theme.label.primary.opacity(0.2),
+        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+      .navigationDestination(for: Room.self) { room in
+        roomDestinationBuilderView(room)
+      }
+      .opacity(
+        roomViewModel.isLoading
+          ? 0
+          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+        .task {
+          if !roomViewModel.hasLoaded {
+            await roomViewModel.onAppear()
+          }
+        }
+        .onAppear {
+          if !buildingViewModel.hasLoaded {
+            buildingViewModel.onAppear()
+          }
+        }
+        .navigationTitle("Rooms")
+        .searchable(text: $roomViewModel.searchText, prompt: "Search...")
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -122,11 +185,18 @@ public struct RoomsTabView: View {
   @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
+<<<<<<< HEAD
   @Binding var selectedView: RoomOrientation
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
   @State var cardWidth: CGFloat? // TODO:
   @State var searchText = ""
+=======
+  @Binding var path: NavigationPath
+  @State var rowHeight: CGFloat?
+
+  // search text is owned by the view model
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
 
   func roomsCardView(
     _ roomsByBuildingId: [String: [Room]],
@@ -205,6 +275,7 @@ public struct RoomsTabView: View {
 
   @Environment(Theme.self) private var theme
 
+<<<<<<< HEAD
   private let columns = [
     GridItem(.flexible()),
     GridItem(.flexible()),
@@ -232,4 +303,30 @@ public struct RoomsTabView: View {
     selectedTab: .constant("Rooms"),
     selectedView: .constant(RoomOrientation.Card))
     .defaultTheme()
+=======
+  private let roomDestinationBuilderView: (Room) -> Destination
+
+}
+
+// MARK: - PreviewWrapper
+
+private struct PreviewWrapper: View {
+  @State var path = NavigationPath()
+
+  var body: some View {
+    RoomsTabView<EmptyView>(
+      path: $path,
+      roomViewModel: PreviewRoomViewModel(),
+      buildingViewModel: PreviewBuildingViewModel(),
+      selectedTab: .constant("Rooms"))
+    { _ in
+      EmptyView() // Buildings destination
+    }
+    .defaultTheme()
+  }
+}
+
+#Preview {
+  PreviewWrapper()
+>>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
 }

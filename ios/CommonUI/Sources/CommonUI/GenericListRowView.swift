@@ -39,7 +39,8 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
       HStack(spacing: 0) {
         imageProvider(item.id)
           .resizable()
-          .frame(width: rowHeight, height: rowHeight)
+          .aspectRatio(contentMode: .fill)
+          .frame(width: (rowHeight ?? 0) + 40, height: 60)
           .clipShape(RoundedRectangle(cornerRadius: 5))
           .padding(.trailing)
 
@@ -47,10 +48,11 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
           rowHeight: $rowHeight,
           item: item)
       }
+      .frame(height: (rowHeight ?? 0) + 15)
       .foregroundStyle(theme.label.secondary)
     }
     .listRowBackground(
-      RoundedRectangle(cornerRadius: 10)
+      UnevenRoundedRectangle(cornerRadii: cornerRadii)
         .fill(.background)
         .strokeBorder(LinearGradient(
           colors: [
@@ -77,6 +79,14 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   let item: T
   let items: [T]
   let imageProvider: (T.ID) -> Image
+
+  var cornerRadii: RectangleCornerRadii {
+    RectangleCornerRadii(
+      topLeading: item == items.first ? 30 : 0,
+      bottomLeading: item == items.last ? 30 : 0,
+      bottomTrailing: item == items.last ? 30 : 0,
+      topTrailing: item == items.first ? 30 : 0)
+  }
 
   var index: Int {
     items.firstIndex(of: item)!

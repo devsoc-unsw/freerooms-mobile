@@ -10,7 +10,7 @@ import Foundation
 // MARK: - RoomStatus
 
 /// Represents the status of an individual room
-public struct RoomStatus: Codable, Equatable {
+public struct RoomStatus: Codable, Equatable, Sendable {
   public let status: String
   public let endtime: String
 
@@ -28,7 +28,7 @@ public typealias RemoteRoomStatus = [String: BuildingRoomStatus]
 // MARK: - BuildingRoomStatus
 
 /// Represents room status data for a specific building
-public struct BuildingRoomStatus: Codable, Equatable {
+public struct BuildingRoomStatus: Codable, Equatable, Sendable {
   public let numAvailable: Int
   public let roomStatuses: [String: RoomStatus]
 

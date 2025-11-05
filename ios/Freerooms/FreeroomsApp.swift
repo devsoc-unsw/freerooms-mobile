@@ -13,6 +13,7 @@ import BuildingViews
 import CommonUI
 import Foundation
 import Location
+import LocationInteractors
 import Networking
 import Persistence
 import RoomInteractors
@@ -51,6 +52,7 @@ struct FreeroomsApp: App {
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
         .environment(\.buildingViewModel, buildingViewModel)
+        .environment(\.mapViewModel, mapViewModel)
         .environment(\.roomViewModel, roomViewModel)
     }
   }
@@ -93,6 +95,57 @@ struct FreeroomsApp: App {
     }
   }
 
+  static func makeLiveMapViewModel() -> LiveMapViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LiveLocationService(locationManager: locationManager)
+
+    let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
+
+    do {
+      let schema = Schema([SwiftDataBuilding.self])
+      let modelConfiguration = ModelConfiguration(schema: schema)
+      let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+      let modelContext = ModelContext(modelContainer)
+      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
+      let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
+      let httpClient = URLSessionHTTPClient(session: URLSession.shared)
+      // safe unwrapping
+      guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
+        fatalError("Invalid base url")
+      }
+      guard let baseURLREAL = URL(string: "https://freerooms.devsoc.app/") else {
+        fatalError("Invalid base url")
+      }
+
+      let liveRoomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+      let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: baseURLREAL)
+
+      let buildingLoader = LiveBuildingLoader(
+        swiftDataBuildingLoader: swiftDataBuildingLoader,
+        JSONBuildingLoader: JSONBuildingLoader,
+        roomStatusLoader: roomStatusLoader,
+        buildingRatingLoader: buildingRatingLoader)
+
+      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+      let buildingInteractor = BuildingInteractor(
+        buildingService: buildingService,
+        locationService: locationService)
+      let locationInteractor = LocationInteractor(locationService: locationService)
+
+      let navigationService = LiveNavigationService()
+      let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
+
+      return LiveMapViewModel(
+        buildingInteractor: buildingInteractor,
+        locationInteractor: locationInteractor,
+        navigationInteractor: navigationInteractor)
+
+    } catch {
+      fatalError("Failed to create LiveMapViewModel: \(error)")
+    }
+  }
+
   static func makeLiveRoomViewModel() -> LiveRoomViewModel {
     let locationManager = LiveLocationManager()
     let locationService = LiveLocationService(locationManager: locationManager)
@@ -114,7 +167,10 @@ struct FreeroomsApp: App {
 
       let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
 
-      let roomService = LiveRoomService(roomLoader: roomLoader)
+      let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: baseURL)
+      let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+
+      let roomService = LiveRoomService(roomLoader: roomLoader, roomBookingLoader: roomBookingLoader)
 
       let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 
@@ -127,6 +183,8 @@ struct FreeroomsApp: App {
   // MARK: Private
 
   @State private var buildingViewModel = FreeroomsApp.makeLiveBuildingViewModel()
+  @State private var mapViewModel = FreeroomsApp.makeLiveMapViewModel()
+
   @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 

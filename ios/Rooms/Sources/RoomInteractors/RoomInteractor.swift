@@ -26,6 +26,12 @@ public class RoomInteractor {
     }
   }
 
+  public func filterRoomsByQueryString(_ rooms: [Room], by searchText: String) -> [Room] {
+    guard !searchText.isEmpty else { return rooms }
+    let loweredQuery = searchText.lowercased()
+    return rooms.filter { $0.name.lowercased().contains(loweredQuery) }
+  }
+
   public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], Error> {
     switch await roomService.getRooms() {
     case .success(let rooms):
@@ -181,6 +187,15 @@ public class RoomInteractor {
 
     case .failure(let error):
       return .failure(error)
+    }
+  }
+
+  public func getRoomBookings(roomID: String) async -> Result<[RoomBooking], Error> {
+    switch await roomService.getRoomBookings(roomID: roomID) {
+    case .success(let success):
+      .success(success)
+    case .failure(let error):
+      .failure(error)
     }
   }
 
