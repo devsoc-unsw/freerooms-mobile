@@ -266,11 +266,6 @@ public struct RoomsTabView<Destination: View>: View {
           .presentationDragIndicator(.visible)
         }
     }
-    .overlay(alignment: .bottom) {
-      Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
-        .buttonStyle(.borderedProminent)
-        .padding(.bottom)
-    }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }

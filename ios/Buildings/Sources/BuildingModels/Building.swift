@@ -113,6 +113,8 @@ public enum AvailabilityStatus: String, Sendable {
 
   case available, crowded, unavailable, missing
 
+  // MARK: Lifecycle
+
   public init(_ rawValue: Int?) {
     guard let rawValue else {
       self = .missing

@@ -43,6 +43,7 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
+      MapTabView(mapViewModel: mapViewModel)
       RoomsTabView(
         path: $roomPath,
         roomViewModel: roomViewModel,
@@ -56,7 +57,6 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-      MapTabView(mapViewModel: mapViewModel)
     }
     .tint(theme.accent.primary)
   }

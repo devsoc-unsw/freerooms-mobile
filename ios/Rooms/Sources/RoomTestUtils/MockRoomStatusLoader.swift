@@ -15,9 +15,9 @@ public struct MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 
-  public init(throws error: RoomStatusLoaderError? = nil, loads remoteRoomStatus: RemoteRoomStatus? = nil) {
-    self.error = error
-    self.remoteRoomStatus = remoteRoomStatus
+  public init(stubbedResponse: RemoteRoomStatus? = nil, stubbedError: RoomStatusLoaderError? = nil) {
+    self.stubbedResponse = stubbedResponse
+    self.stubbedError = stubbedError
   }
 
   // MARK: Public
@@ -36,6 +36,6 @@ public struct MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Private
 
-  private let error: RoomStatusLoaderError?
-  private let remoteRoomStatus: RemoteRoomStatus?
+  private let stubbedResponse: RemoteRoomStatus?
+  private let stubbedError: RoomStatusLoaderError?
 }
