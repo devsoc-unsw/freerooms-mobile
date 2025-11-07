@@ -62,10 +62,10 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
-  
+
   @MainActor
   public var availabilityStatus: AvailabilityStatus {
-      AvailabilityStatus(numberOfAvailableRooms)
+    AvailabilityStatus(numberOfAvailableRooms)
   }
 }
 

@@ -85,9 +85,9 @@ extension LiveMapViewModel {
 
 @MainActor
 extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = .preview
-  @Entry var mapViewModel: LiveMapViewModel = .preview
-  @Entry var roomViewModel: LiveRoomViewModel = .preview
+  @Entry var buildingViewModel = LiveBuildingViewModel.preview
+  @Entry var mapViewModel = LiveMapViewModel.preview
+  @Entry var roomViewModel = LiveRoomViewModel.preview
 }
 
 #Preview {
