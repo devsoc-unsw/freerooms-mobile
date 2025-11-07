@@ -103,6 +103,7 @@ public final class SwiftDataRoom: IdentifiableModel {
     id
   }
 
+  @MainActor
   public func toRoom() -> Room {
     Room(
       abbreviation: abbreviation,

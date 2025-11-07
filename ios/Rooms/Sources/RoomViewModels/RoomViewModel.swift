@@ -46,8 +46,7 @@ public protocol RoomViewModel: Sendable {
 // MARK: - LiveRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
+public class LiveRoomViewModel: RoomViewModel {
 
   // MARK: Lifecycle
 
@@ -165,8 +164,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 // MARK: - PreviewRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
+public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
     super.init(interactor: RoomInteractor(

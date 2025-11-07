@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -25,5 +25,16 @@ let package = Package(
         .product(name: "RoomModels", package: "Rooms"),
         .product(name: "BuildingModels", package: "Buildings"),
       ],
-      resources: [.process("Resources")]),
+      resources: [.process("Resources")],
+      swiftSettings: .defaultSettings),
   ])
+
+extension [SwiftSetting] {
+  static var defaultSettings: [SwiftSetting] {
+    [
+      .defaultIsolation(MainActor.self),
+      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      .enableUpcomingFeature("InferIsolatedConformances"),
+    ]
+  }
+}
