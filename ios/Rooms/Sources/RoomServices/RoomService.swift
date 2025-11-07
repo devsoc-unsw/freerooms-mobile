@@ -24,6 +24,7 @@ public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
   func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
+  func forceReloadRooms() async
 }
 
 // MARK: - LiveRoomService
@@ -71,6 +72,10 @@ public final class LiveRoomService: RoomService {
     }
   }
 
+  public func forceReloadRooms() async {
+    _ = await roomLoader.fetch()
+  }
+
   // MARK: Private
 
   private var roomLoader: any RoomLoader
@@ -88,18 +93,24 @@ public final class PreviewRoomService: RoomService {
   // MARK: Public
 
   public func getRoomBookings(roomID _: String) async -> GetRoomBookingsResult {
-    .success([RoomBooking(
-      bookingType: "MISC",
-      end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
-      name: "COMM",
-      start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!)])
+    .success([
+      RoomBooking(
+        bookingType: "MISC",
+        end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
+        name: "COMM",
+        start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!),
+    ])
   }
 
-  public func getRooms() -> GetRoomResult {
+  public func getRooms() async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
   }
 
-  public func getRooms(buildingId _: String) -> GetRoomResult {
+  public func getRooms(buildingId _: String) async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
+  }
+
+  public func forceReloadRooms() async {
+    // No-op for preview
   }
 }
