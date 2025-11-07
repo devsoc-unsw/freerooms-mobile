@@ -151,6 +151,7 @@ public struct RoomsTabView<Destination: View>: View {
           HStack {
             Text(buildingName)
               .foregroundStyle(theme.label.primary)
+							.padding(.leading, 10)
             Spacer()
           }
           .padding(.horizontal, 16)

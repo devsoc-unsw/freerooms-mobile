@@ -35,7 +35,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 4) {
+    VStack(spacing: 6) {
       HStack(alignment: .center, spacing: 0) {
         if let room = item as? Room {
           Text(room.abbreviation)
@@ -90,6 +90,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
                   .light.list.red)
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
+						.frame(maxWidth: .infinity)
             .background(
               RoundedRectangle(cornerRadius: 5)
                 .fill(
@@ -103,10 +104,10 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }
 
-        Spacer()
-        Image(systemName: "arrow.right")
-          .font(.system(size: 16.0, weight: .black))
-          .foregroundStyle(theme.label.tertiary)
+//        Spacer()
+//        Image(systemName: "arrow.right")
+//          .font(.system(size: 16.0, weight: .black))
+//          .foregroundStyle(theme.label.tertiary)
       }
     }
     .padding(.horizontal, 12)

@@ -42,7 +42,14 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
           .scaledToFill()
           .frame(width: cardWidth, height: 116)
           .clipped()
-          .clipShape(RoundedRectangle(cornerRadius: 22))
+					.clipShape(
+									UnevenRoundedRectangle(
+										topLeadingRadius: 22,
+										bottomLeadingRadius: 0,
+										bottomTrailingRadius: 0,
+										topTrailingRadius: 22
+									)
+								)
 
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
