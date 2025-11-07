@@ -161,19 +161,19 @@ public struct Room: Equatable, Identifiable, Hashable {
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: buildingId)
   }
-  
+
   public var statusText: String {
     switch (status, endTime) {
-      case ("free", let endTime?):
-        return "Available till \(Room.timeFormatter.string(from: endTime))"
-      case ("free", nil):
-        return "Available till end of day"
-      case ("busy", let endTime?):
-        return "Unavailable till \(Room.timeFormatter.string(from: endTime))"
-      case ("busy", nil):
-        return "Unavailable till end of day"
+    case ("free", let endTime?):
+      "Available till \(Room.timeFormatter.string(from: endTime))"
+    case ("free", nil):
+      "Available till end of day"
+    case ("busy", let endTime?):
+      "Unavailable till \(Room.timeFormatter.string(from: endTime))"
+    case ("busy", nil):
+      "Unavailable till end of day"
     case (_, _):
-      return "Status not avaliable"
+      "Status not avaliable"
     }
   }
 

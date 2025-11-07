@@ -37,7 +37,7 @@ struct CompassUserAnnotation: View {
         .frame(width: 8, height: 12)
         .offset(y: -14)
         .rotationEffect(.degrees(headingValue))
-				.rotationEffect(.degrees(-viewModel.mapHeading))
+        .rotationEffect(.degrees(-viewModel.mapHeading))
         .shadow(color: .white, radius: 1)
     }
     .onAppear {

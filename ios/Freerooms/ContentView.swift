@@ -49,9 +49,8 @@ struct ContentView: View {
         path: $roomPath,
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
-				selectedTab: $selectedTab,
-				selectedView: $selectedView
-				)
+        selectedTab: $selectedTab,
+        selectedView: $selectedView)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)
           .task { await roomViewModel.onAppear() }

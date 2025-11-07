@@ -75,31 +75,31 @@ public struct RoomsTabView<Destination: View>: View {
             .foregroundStyle(theme.label.tertiary)
           }
         }
-      .background(Color.gray.opacity(0.1))
-      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
-      .shadow(
-        color: theme.label.primary.opacity(0.2),
-        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
-      .navigationDestination(for: Room.self) { room in
-        roomDestinationBuilderView(room)
-      }
-      .opacity(
-        roomViewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .task {
-          if !roomViewModel.hasLoaded {
-            await roomViewModel.onAppear()
-          }
+        .background(Color.gray.opacity(0.1))
+        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+        .shadow(
+          color: theme.label.primary.opacity(0.2),
+          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+        .navigationDestination(for: Room.self) { room in
+          roomDestinationBuilderView(room)
         }
-        .onAppear {
-          if !buildingViewModel.hasLoaded {
-            buildingViewModel.onAppear()
+        .opacity(
+          roomViewModel.isLoading
+            ? 0
+            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+          .task {
+            if !roomViewModel.hasLoaded {
+              await roomViewModel.onAppear()
+            }
           }
-        }
-        .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, prompt: "Search...")
+          .onAppear {
+            if !buildingViewModel.hasLoaded {
+              buildingViewModel.onAppear()
+            }
+          }
+          .navigationTitle("Rooms")
+          .searchable(text: $roomViewModel.searchText, prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -160,7 +160,6 @@ public struct RoomsTabView<Destination: View>: View {
     }
   }
 
-	
   func roomsListView(
     _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
@@ -202,6 +201,8 @@ public struct RoomsTabView<Destination: View>: View {
     GridItem(.flexible()),
   ]
 
+  private let roomDestinationBuilderView: (Room) -> Destination
+
   @ViewBuilder
   private var roomView: some View {
     if selectedView == RoomOrientation.List {
@@ -215,15 +216,13 @@ public struct RoomsTabView<Destination: View>: View {
     }
   }
 
-  private let roomDestinationBuilderView: (Room) -> Destination
-
 }
 
 // MARK: - PreviewWrapper
 
 private struct PreviewWrapper: View {
   @State var path = NavigationPath()
-	@State var selectedView = RoomOrientation.List
+  @State var selectedView = RoomOrientation.List
 
   var body: some View {
     RoomsTabView<EmptyView>(
@@ -231,8 +230,7 @@ private struct PreviewWrapper: View {
       roomViewModel: PreviewRoomViewModel(),
       buildingViewModel: PreviewBuildingViewModel(),
       selectedTab: .constant("Rooms"),
-			selectedView: $selectedView
-		)
+      selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
     }

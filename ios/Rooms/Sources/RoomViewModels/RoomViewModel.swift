@@ -59,7 +59,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   public var getBookingsIsLoading = false
 
-  public var currentRoomBookings: [RoomBooking] = []
+  public var currentRoomBookings = [RoomBooking]()
 
   public var hasLoaded = false
 
@@ -74,7 +74,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   public var searchText = ""
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
-    var result: [String: [Room]] = [:]
+    var result = [String: [Room]]()
     for (key, value) in roomsByBuildingId {
       let sorted = interactor.getRoomsSortedAlphabetically(
         rooms: value,
