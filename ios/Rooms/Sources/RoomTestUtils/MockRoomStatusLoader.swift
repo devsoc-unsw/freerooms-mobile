@@ -10,7 +10,6 @@ import RoomModels
 import RoomServices
 
 // MARK: - MockRoomStatusLoader
-// swiftlint:disable:next no_unchecked_sendable
 public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle

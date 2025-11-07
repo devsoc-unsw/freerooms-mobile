@@ -451,10 +451,8 @@ public class LiveMapViewModel: MapViewModel {
 
 // MARK: - PreviewMapViewModel
 
-@MainActor
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewMapViewModel: LiveMapViewModel, @unchecked Sendable {
+public class PreviewMapViewModel: LiveMapViewModel {
 
   // MARK: Lifecycle
 

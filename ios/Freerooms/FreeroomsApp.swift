@@ -117,7 +117,6 @@ struct FreeroomsApp: App {
         fatalError("Invalid base url")
       }
 
-      let liveRoomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
       let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
       let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: baseURLREAL)
 

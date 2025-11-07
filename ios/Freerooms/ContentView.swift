@@ -71,13 +71,23 @@ struct ContentView: View {
   @Environment(Theme.self) private var theme
 }
 
-extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
-  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated {
-    PreviewMapViewModel()
-  }
+extension LiveBuildingViewModel {
+  static let preview = PreviewBuildingViewModel()
+}
 
-  @Entry var roomViewModel: LiveRoomViewModel = PreviewRoomViewModel()
+extension LiveRoomViewModel {
+  static let preview = PreviewRoomViewModel()
+}
+
+extension LiveMapViewModel {
+  static let preview = PreviewMapViewModel()
+}
+
+@MainActor
+extension EnvironmentValues {
+  @Entry var buildingViewModel: LiveBuildingViewModel = .preview
+  @Entry var mapViewModel: LiveMapViewModel = .preview
+  @Entry var roomViewModel: LiveRoomViewModel = .preview
 }
 
 #Preview {
