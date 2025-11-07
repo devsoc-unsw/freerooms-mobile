@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 @testable import RoomModels
 @testable import RoomServices
 
@@ -14,6 +15,8 @@ import Foundation
 public class MockRoomLoader: RoomLoader {
 
   // MARK: Public
+
+  public var loadRoomsCallCount = 0
 
   public func stubRooms(_ rooms: [Room], for buildingId: String) {
     stubbedRooms[buildingId] = rooms
@@ -28,6 +31,7 @@ public class MockRoomLoader: RoomLoader {
   }
 
   public func fetch(buildingId: String) -> Result<[Room], RoomLoaderError> {
+    loadRoomsCallCount += 1
     if let error = stubbedError {
       return .failure(error)
     }
@@ -39,6 +43,7 @@ public class MockRoomLoader: RoomLoader {
   }
 
   public func fetch() -> Result<[RoomModels.Room], RoomServices.RoomLoaderError> {
+    loadRoomsCallCount += 1
     if let error = stubbedError {
       return .failure(error)
     }

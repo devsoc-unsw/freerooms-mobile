@@ -98,8 +98,8 @@ enum RoomInteractorTests {
       // Then
       let expectResult =
         expectedRooms
-        .filter { $0.buildingId == "K-P20" }
-        .sorted { $0.name < $1.name }
+          .filter { $0.buildingId == "K-P20" }
+          .sorted { $0.name < $1.name }
 
       switch result {
       case .success(let actualResult):
@@ -170,7 +170,7 @@ enum RoomInteractorTests {
       for buildingId in buildingIds {
         let filteredRooms =
           expectedRooms
-          .filter { $0.buildingId == buildingId }
+            .filter { $0.buildingId == buildingId }
         expectResult[buildingId] = filteredRooms
       }
 
@@ -414,8 +414,9 @@ enum RoomInteractorTests {
 
 /// Function to make the building SUT
 func makeRoomSUT(
-  expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil
-) -> RoomInteractor {
+  expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil)
+  -> RoomInteractor
+{
   let locationManager = MockLocationManager()
   let locationService = LiveLocationService(locationManager: locationManager)
 
@@ -455,7 +456,7 @@ func createDifferentRooms() -> [Room] {
         "Wheelchair access - student",
       ],
       audioVisual: [
-        "Document camera"
+        "Document camera",
       ],
       buildingId: "K-G6",
       capacity: 20,
