@@ -69,7 +69,8 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-H20")
 
       // When
-      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-H20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(
+        buildingId: "K-H20", inAscendingOrder: true)
 
       // Then
       let expectResult = createDifferentRooms()
@@ -91,10 +92,12 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-P20")
 
       // When
-      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-P20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(
+        buildingId: "K-P20", inAscendingOrder: true)
 
       // Then
-      let expectResult = expectedRooms
+      let expectResult =
+        expectedRooms
         .filter { $0.buildingId == "K-P20" }
         .sorted { $0.name < $1.name }
 
@@ -165,7 +168,8 @@ enum RoomInteractorTests {
       // Then
       var expectResult: [String: [Room]] = [:]
       for buildingId in buildingIds {
-        let filteredRooms = expectedRooms
+        let filteredRooms =
+          expectedRooms
           .filter { $0.buildingId == buildingId }
         expectResult[buildingId] = filteredRooms
       }
@@ -178,6 +182,24 @@ enum RoomInteractorTests {
       case .failure:
         Issue.record("Expected success, got failure")
       }
+    }
+  }
+
+  struct RoomReloading {
+    @Test("Reloads rooms when requested")
+    func reloadsRoomsWhenRequested() async {
+      // Given
+      let expectedRooms = createDifferentRooms()
+      let mockLoader = MockRoomLoader()
+      mockLoader.stubRooms(expectedRooms)
+      let sut = makeRoomSUT(mockLoader: mockLoader)
+
+      // When
+      _ = await sut.getRoomsSortedAlphabetically(inAscendingOrder: true)
+      _ = await sut.forceReloadRooms()
+
+      // Then
+      #expect(mockLoader.loadRoomsCallCount == 2)
     }
   }
 
@@ -391,7 +413,9 @@ enum RoomInteractorTests {
 }
 
 /// Function to make the building SUT
-func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil) -> RoomInteractor {
+func makeRoomSUT(
+  expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil
+) -> RoomInteractor {
   let locationManager = MockLocationManager()
   let locationService = LiveLocationService(locationManager: locationManager)
 
@@ -411,6 +435,15 @@ func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw room
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 
+func makeRoomSUT(mockLoader: MockRoomLoader) -> RoomInteractor {
+  let locationManager = MockLocationManager()
+  let locationService = LiveLocationService(locationManager: locationManager)
+  let remoteBookingLoader = MockRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
+  return RoomInteractor(roomService: roomService, locationService: locationService)
+}
+
 func createDifferentRooms() -> [Room] {
   [
     Room(
@@ -422,7 +455,7 @@ func createDifferentRooms() -> [Room] {
         "Wheelchair access - student",
       ],
       audioVisual: [
-        "Document camera",
+        "Document camera"
       ],
       buildingId: "K-G6",
       capacity: 20,
