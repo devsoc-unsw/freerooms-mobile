@@ -36,24 +36,23 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     Button {
       path.append(item)
     } label: {
-      VStack {
+			VStack (spacing: 0) {
         imageProvider(item.id)
           .resizable()
           .scaledToFill()
           .frame(width: cardWidth, height: 116)
           .clipped()
           .clipShape(RoundedRectangle(cornerRadius: 22))
-
-        Spacer()
+				
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
           item: item)
-        Spacer()
+				
+				Spacer()
       }
-      .cornerRadius(22)
-      .background(.white)
+			.frame(width: cardWidth, height: 173)
+			.background(.white)
       .clipShape(RoundedRectangle(cornerRadius: 22))
-      .frame(width: cardWidth, height: 173)
       .padding(0)
       .buttonStyle(.plain)
       .onPreferenceChange(WidthPreferenceKey.self) {

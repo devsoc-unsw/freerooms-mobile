@@ -68,15 +68,21 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
           Text(room.statusText)
             .fontWeight(.semibold)
             .foregroundStyle(
-              room.status == "free" ? Theme.light.list.green : room.status == "" ? Theme.light.list.gray : Theme
-                .light.list.red)
+              room.status == "free"
+                ? Theme.light.list.green
+                : room.status == "" ? Theme.light.list.gray : Theme
+                  .light.list.red)
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
             .background(
               RoundedRectangle(cornerRadius: 5)
                 .fill(
-                  room.status == "free" ? Theme.light.list.greenTransparent.opacity(0.15) : room.status == "" ? Theme.light.list
-                    .grayTransparent.opacity(0.20) : Theme.light.list.redTransparent.opacity(0.54)))
+                  room.status == "free"
+                    ? Theme.light.list.greenTransparent.opacity(0.15)
+                    : room.status == ""
+                      ? Theme.light.list
+                        .grayTransparent.opacity(0.20)
+                      : Theme.light.list.redTransparent.opacity(0.54)))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }

@@ -37,49 +37,71 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
   public var body: some View {
     VStack(spacing: 4) {
       HStack(alignment: .center, spacing: 0) {
-        Text(item.name)
-          .font(.system(size: 16, weight: .bold))
-          .foregroundStyle(.black)
-          .lineLimit(1)
-          .truncationMode(.tail)
-
+				if let room = item as? Room {
+					Text(room.abbreviation)
+						.font(.system(size: 16, weight: .bold))
+						.foregroundStyle(theme.label.primary)
+						.lineLimit(1)
+						.truncationMode(.tail)
+					
+				} else if let building = item as? Building {
+						Text(building.name)
+							.font(.system(size: 16, weight: .bold))
+							.foregroundStyle(theme.label.primary)
+							.lineLimit(1)
+							.truncationMode(.tail)
+				}
+				
         Spacer()
-        // TODO: rating colors
         if let overallRating = item.overallRating {
           Text(overallRating.formatted())
+						.foregroundStyle(.white)
+						.font(.system(size: 12, weight: .semibold))
+						.padding(.leading, 2)
           Image(systemName: "star.fill")
-            .foregroundStyle(theme.yellow)
+						.font(.system(size: 10, weight: .semibold))
             .padding(.trailing)
         } else {
-          HStack(spacing: 4) {
-            Text("0")
+          HStack(spacing: 0) {
+						Text("0")
               .foregroundStyle(.white)
+							.font(.system(size: 12, weight: .semibold))
               .padding(.leading, 2)
             Image(systemName: "star.fill")
+							.font(.system(size: 10, weight: .semibold))
               .foregroundStyle(.white)
           }
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
+          .padding(.horizontal, 4)
+          .padding(.vertical, 2)
           .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 12)
               .fill(theme.label.tertiary))
         }
       }
 
       HStack(alignment: .center, spacing: 0) {
-        // TODO: hex codes?, unavailable till \(time)
-        if let room = item as? Room {
-          Text("\(room.status == "free" ? "Available till" : room.status == "" ? "status not available" : "Unavailable till")")
-            .foregroundStyle(room.status == "free" ? .green : room.status == "" ? .gray : .red)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-              RoundedRectangle(cornerRadius: 8)
-                .fill(
-                  room.status == "free" ? .green.opacity(0.18) : room.status == "" ? .gray.opacity(0.18) : .red.opacity(0.18)))
-        } else if let building = item as? Building {
-          Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
-        }
+				if let room = item as? Room {
+					Text(room.statusText)
+						.font(.system(size: 12, weight: .light))
+						.foregroundStyle(
+							room.status == "free"
+								? Theme.light.list.green
+								: room.status == "" ? Theme.light.list.gray : Theme
+									.light.list.red)
+						.padding(.vertical, 2)
+						.padding(.horizontal, 4)
+						.background(
+							RoundedRectangle(cornerRadius: 5)
+								.fill(
+									room.status == "free"
+										? Theme.light.list.greenTransparent.opacity(0.15)
+										: room.status == ""
+											? Theme.light.list
+												.grayTransparent.opacity(0.20)
+											: Theme.light.list.redTransparent.opacity(0.54)))
+				} else if let building = item as? Building {
+					Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
+				}
 
         Spacer()
         Image(systemName: "arrow.right")

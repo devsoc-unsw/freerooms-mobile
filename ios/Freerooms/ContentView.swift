@@ -49,7 +49,9 @@ struct ContentView: View {
         path: $roomPath,
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
-        selectedTab: $selectedTab)
+				selectedTab: $selectedTab,
+				selectedView: $selectedView
+				)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)
           .task { await roomViewModel.onAppear() }
@@ -58,15 +60,6 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
-<<<<<<< HEAD
-
-      RoomsTabView(
-        roomViewModel: roomViewModel,
-        buildingViewModel: buildingViewModel,
-        selectedTab: $selectedTab,
-        selectedView: $selectedView)
-=======
->>>>>>> 80826b704f04244edd8cd01f50eef776998c05d4
     }
     .tint(theme.accent.primary)
   }
