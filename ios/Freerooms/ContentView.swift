@@ -1,4 +1,4 @@
-//
+// swift-format-ignore-file
 //  ContentView.swift
 //  Freerooms
 //
@@ -85,11 +85,9 @@ extension LiveMapViewModel {
 
 @MainActor
 extension EnvironmentValues {
-  // swiftformat:disable
-  @Entry var buildingViewModel = LiveBuildingViewModel.preview
-  @Entry var mapViewModel = LiveMapViewModel.preview
-  @Entry var roomViewModel = LiveRoomViewModel.preview
-  // swiftformat:enable
+	@Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel.preview
+	@Entry var mapViewModel: LiveMapViewModel = LiveMapViewModel.preview
+	@Entry var roomViewModel: LiveRoomViewModel = LiveRoomViewModel.preview
 }
 
 #Preview {
