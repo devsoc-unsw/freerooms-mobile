@@ -90,7 +90,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
                   .light.list.red)
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
-						.frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity)
             .background(
               RoundedRectangle(cornerRadius: 5)
                 .fill(
@@ -103,11 +103,6 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }
-
-//        Spacer()
-//        Image(systemName: "arrow.right")
-//          .font(.system(size: 16.0, weight: .black))
-//          .foregroundStyle(theme.label.tertiary)
       }
     }
     .padding(.horizontal, 12)
