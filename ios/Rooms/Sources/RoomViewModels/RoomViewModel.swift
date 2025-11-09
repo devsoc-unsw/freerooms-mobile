@@ -153,10 +153,7 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let bookings):
       currentRoomBookings = bookings
     case .failure(let error):
-      // TODO: better error handling
-      // either an emtpy timetable
-      // or display no connection on the timetable
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
   }
 
