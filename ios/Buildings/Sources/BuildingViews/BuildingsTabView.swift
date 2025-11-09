@@ -41,7 +41,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
       .refreshable {
-        Task{
+        Task {
           await viewModel.reloadBuildings()
         }
       }

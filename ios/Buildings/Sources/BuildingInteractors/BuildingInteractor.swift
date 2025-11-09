@@ -124,19 +124,6 @@ public class BuildingInteractor {
     }
   }
 
-//  package func reloadBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
-//    switch await buildingService.reloadBuildings() {
-//    case .success(let buildings):
-//      let sorted = buildings.sorted { a, b in
-//        inAscendingOrder ? a.name < b.name : a.name > b.name
-//      }
-//      return .success(sorted)
-//
-//    case .failure(let error):
-//      return .failure(error)
-//    }
-//  }
-
   // MARK: Internal
 
   func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {

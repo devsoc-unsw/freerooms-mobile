@@ -135,7 +135,7 @@ struct FreeroomsApp: App {
       let (roomStatusLoader, _, remoteBookingLoader) = makeRemoteLoaders()
 
       let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
-      
+
       let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
 
       let roomService = LiveRoomService(roomLoader: roomLoader, roomBookingLoader: roomBookingLoader)
@@ -181,7 +181,10 @@ struct FreeroomsApp: App {
   }
 
   private static func makeRemoteLoaders()
-  -> (roomStatusLoader: LiveRoomStatusLoader, buildingRatingLoader: RemoteBuildingRatingLoader, remoteBookingLoader: LiveRemoteRoomBookingLoader)
+    -> (
+      roomStatusLoader: LiveRoomStatusLoader,
+      buildingRatingLoader: RemoteBuildingRatingLoader,
+      remoteBookingLoader: LiveRemoteRoomBookingLoader)
   {
     let httpClient = makeHTTPClient()
     let (stagingURL, productionURL) = makeBaseURLs()

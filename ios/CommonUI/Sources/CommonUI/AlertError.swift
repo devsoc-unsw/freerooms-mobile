@@ -6,6 +6,7 @@
 //
 import Foundation
 
+nonisolated
 public struct AlertError: Identifiable {
   public let id = UUID()
   public let title: String
