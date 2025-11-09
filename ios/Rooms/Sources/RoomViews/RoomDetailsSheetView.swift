@@ -1,5 +1,5 @@
 //
-//  RoomDetailsSheet.swift
+//  RoomDetailsSheetView.swift
 //  Rooms
 //
 //  Created by Yanlin Li  on 18/9/2025.

@@ -6,7 +6,9 @@
 //
 
 import Foundation
+
 // MARK: - Room
+
 import Location
 
 public struct Room: Equatable, Identifiable, Hashable {
@@ -59,7 +61,7 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Public
 
-  static public let exampleOne = Room(
+  public static let exampleOne = Room(
     abbreviation: "Col LG01",
     accessibility: [
       "Ventilation - Air conditioning",
@@ -99,7 +101,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     ],
     overallRating: 4.5)
 
-  static public let exampleTwo = Room(
+  public static let exampleTwo = Room(
     abbreviation: "Col LG02",
     accessibility: [
       "Ventilation - Air conditioning",
@@ -161,19 +163,19 @@ public struct Room: Equatable, Identifiable, Hashable {
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: buildingId)
   }
-  
+
   public var statusText: String {
     switch (status, endTime) {
-      case ("free", let endTime?):
-        return "Available till \(Room.timeFormatter.string(from: endTime))"
-      case ("free", nil):
-        return "Available till end of day"
-      case ("busy", let endTime?):
-        return "Unavailable till \(Room.timeFormatter.string(from: endTime))"
-      case ("busy", nil):
-        return "Unavailable till end of day"
+    case ("free", let endTime?):
+      "Available till \(Room.timeFormatter.string(from: endTime))"
+    case ("free", nil):
+      "Available till end of day"
+    case ("busy", let endTime?):
+      "Unavailable till \(Room.timeFormatter.string(from: endTime))"
+    case ("busy", nil):
+      "Unavailable till end of day"
     case (_, _):
-      return "Status not avaliable"
+      "Status not avaliable"
     }
   }
 

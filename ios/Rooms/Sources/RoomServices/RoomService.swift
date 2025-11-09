@@ -1,5 +1,5 @@
 //
-//  RoomsService.swift
+//  RoomService.swift
 //  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 5/8/2025.

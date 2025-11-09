@@ -15,8 +15,8 @@ public typealias CampusBuildings = (upper: [Building], middle: [Building], lower
 // MARK: - Building
 
 /// A building on campus with location information and room availability data.
-nonisolated
-public struct Building: Equatable, Identifiable, Hashable, Sendable {
+public nonisolated
+struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
@@ -62,14 +62,15 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
-  
+
   @MainActor
   public var availabilityStatus: AvailabilityStatus {
-      AvailabilityStatus(numberOfAvailableRooms)
+    AvailabilityStatus(numberOfAvailableRooms)
   }
 }
 
 // MARK: - GridReference
+
 public struct GridReference {
   public let campusCode: String
   public let sectionCode: String
@@ -110,6 +111,7 @@ public struct GridReference {
 }
 
 // MARK: - AvailabilityStatus
+
 public enum AvailabilityStatus: String, Sendable {
 
   case available, crowded, unavailable, missing

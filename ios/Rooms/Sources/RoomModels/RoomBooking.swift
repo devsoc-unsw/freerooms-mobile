@@ -20,12 +20,12 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
 
   // MARK: Public
 
-  static public let exampleOne = RoomBooking(
+  public static let exampleOne = RoomBooking(
     bookingType: "MISC",
     end: Date().addingTimeInterval(60 * 60),
     name: "COMM",
     start: Date())
-  static public let exampleTwo = RoomBooking(
+  public static let exampleTwo = RoomBooking(
     bookingType: "MISC",
     end: Date().addingTimeInterval(-60 * 60 * 4),
     name: "LAW",

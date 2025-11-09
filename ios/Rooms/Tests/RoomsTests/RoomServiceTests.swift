@@ -1,5 +1,5 @@
 //
-//  RoomsTests.swift
+//  RoomServiceTests.swift
 //  RoomsTests
 //
 //  Created by Muqueet Mohsen Chowdhury on 5/8/2025.

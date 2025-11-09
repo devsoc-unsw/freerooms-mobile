@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  RoomsTabView.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.
@@ -74,7 +74,8 @@ public struct RoomsTabView<Destination: View>: View {
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under
+      // section cards
       .shadow(
         color: theme.label.primary.opacity(0.2),
         radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)

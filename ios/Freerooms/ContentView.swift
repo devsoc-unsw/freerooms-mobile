@@ -81,7 +81,6 @@ extension LiveMapViewModel {
   static let preview = PreviewMapViewModel()
 }
 
-@MainActor
 extension EnvironmentValues {
   @Entry var buildingViewModel: LiveBuildingViewModel = .preview
   @Entry var mapViewModel: LiveMapViewModel = .preview

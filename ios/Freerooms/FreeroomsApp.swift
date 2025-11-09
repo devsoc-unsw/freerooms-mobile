@@ -65,7 +65,7 @@ struct FreeroomsApp: App {
 
     let httpClient = URLSessionHTTPClient(session: URLSession.shared)
 
-    /// TODO: baseURL should be in env variables
+    // TODO: baseURL should be in env variables
     guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
       fatalError("Invalid base url")
     }
@@ -153,7 +153,7 @@ struct FreeroomsApp: App {
 
     let httpClient = URLSessionHTTPClient(session: URLSession.shared)
 
-    /// TODO: baseURL should be in env variables
+    // TODO: baseURL should be in env variables
     guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
       fatalError("Invalid base url")
     }

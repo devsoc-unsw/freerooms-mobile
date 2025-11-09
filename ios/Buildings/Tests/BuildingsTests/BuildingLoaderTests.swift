@@ -154,7 +154,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: mockJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()
@@ -177,7 +177,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: mockJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()
@@ -241,7 +241,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: liveJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()

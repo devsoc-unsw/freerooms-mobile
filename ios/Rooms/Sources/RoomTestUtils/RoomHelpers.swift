@@ -1,5 +1,5 @@
 //
-//  Helpers.swift
+//  RoomHelpers.swift
 //  Rooms
 //
 //  Created by Chris Wong on 1/9/2025.
