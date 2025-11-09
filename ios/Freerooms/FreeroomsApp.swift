@@ -58,28 +58,14 @@ struct FreeroomsApp: App {
   }
 
   static func makeLiveBuildingViewModel() -> LiveBuildingViewModel {
-    let locationManager = LiveLocationManager()
-    let locationService = LiveLocationService(locationManager: locationManager)
-
+    let locationService = makeLocationService()
     let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
-
-    let httpClient = URLSessionHTTPClient(session: URLSession.shared)
-
-    /// TODO: baseURL should be in env variables
-    guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
-      fatalError("Invalid base url")
-    }
-
-    guard let baseURLREAL = URL(string: "https://freerooms.devsoc.app/") else {
-      fatalError("Invalid base url")
-    }
 
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
-      let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: baseURLREAL)
+      let (roomStatusLoader, buildingRatingLoader) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -96,8 +82,7 @@ struct FreeroomsApp: App {
   }
 
   static func makeLiveMapViewModel() -> LiveMapViewModel {
-    let locationManager = LiveLocationManager()
-    let locationService = LiveLocationService(locationManager: locationManager)
+    let locationService = makeLocationService()
 
     let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
 
@@ -108,18 +93,8 @@ struct FreeroomsApp: App {
       let modelContext = ModelContext(modelContainer)
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
-      let httpClient = URLSessionHTTPClient(session: URLSession.shared)
-      // safe unwrapping
-      guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
-        fatalError("Invalid base url")
-      }
-      guard let baseURLREAL = URL(string: "https://freerooms.devsoc.app/") else {
-        fatalError("Invalid base url")
-      }
 
-      let liveRoomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
-      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
-      let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: baseURLREAL)
+      let (roomStatusLoader, buildingRatingLoader) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -152,23 +127,15 @@ struct FreeroomsApp: App {
 
     let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
 
-    let httpClient = URLSessionHTTPClient(session: URLSession.shared)
-
-    /// TODO: baseURL should be in env variables
-    guard let baseURL = URL(string: "https://freeroomsstaging.devsoc.app") else {
-      fatalError("Invalid base url")
-    }
-
     do {
+      // TODO: ignore unused warning, swiftDataStore is not implemented
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
 
-      let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: baseURL)
+      let (roomStatusLoader, _) = makeRemoteLoaders()
 
       let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
-
       let roomService = LiveRoomService(roomLoader: roomLoader)
-
       let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 
       return LiveRoomViewModel(interactor: interactor)
@@ -185,4 +152,40 @@ struct FreeroomsApp: App {
   @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 
+  private static func makeLocationService() -> LiveLocationService {
+    let locationManager = LiveLocationManager()
+    return LiveLocationService(locationManager: locationManager)
+  }
+
+  private static func makeHTTPClient() -> URLSessionHTTPClient {
+    let configuration = URLSessionConfiguration.default
+    configuration.timeoutIntervalForRequest = 5
+    configuration.timeoutIntervalForResource = 5
+    configuration.waitsForConnectivity = false
+
+    let session = URLSession(configuration: configuration)
+    return URLSessionHTTPClient(session: session)
+  }
+
+  private static func makeBaseURLs() -> (staging: URL, production: URL) {
+    guard let staging = URL(string: "https://freeroomsstaging.devsoc.app") else {
+      fatalError("Invalid staging base URL")
+    }
+    guard let production = URL(string: "https://freerooms.devsoc.app/") else {
+      fatalError("Invalid production base URL")
+    }
+    return (staging, production)
+  }
+
+  private static func makeRemoteLoaders()
+    -> (roomStatusLoader: LiveRoomStatusLoader, buildingRatingLoader: RemoteBuildingRatingLoader)
+  {
+    let httpClient = makeHTTPClient()
+    let (stagingURL, productionURL) = makeBaseURLs()
+
+    let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: stagingURL)
+    let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
+
+    return (roomStatusLoader, buildingRatingLoader)
+  }
 }
