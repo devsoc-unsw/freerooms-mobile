@@ -34,8 +34,7 @@ public protocol BuildingViewModel {
 // MARK: - LiveBuildingViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
+public class LiveBuildingViewModel: BuildingViewModel {
 
   // MARK: Lifecycle
 
@@ -182,8 +181,7 @@ public class LiveBuildingViewModel: BuildingViewModel, @unchecked Sendable {
 // MARK: - PreviewBuildingViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewBuildingViewModel: LiveBuildingViewModel, @unchecked Sendable {
+public class PreviewBuildingViewModel: LiveBuildingViewModel {
 
   public init() {
     super.init(interactor: BuildingInteractor(

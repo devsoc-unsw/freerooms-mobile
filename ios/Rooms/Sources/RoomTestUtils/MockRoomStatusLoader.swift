@@ -10,12 +10,14 @@ import RoomModels
 import RoomServices
 
 // MARK: - MockRoomStatusLoader
-
 public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 
-  public init() { }
+  public init(stubbedResponse: RemoteRoomStatus? = nil, stubbedError: RoomStatusLoaderError? = nil) {
+    self.stubbedResponse = stubbedResponse
+    self.stubbedError = stubbedError
+  }
 
   // MARK: Public
 
@@ -31,18 +33,8 @@ public final class MockRoomStatusLoader: RoomStatusLoader {
     return .failure(.connectivity)
   }
 
-  public func stubSuccess(_ response: RemoteRoomStatus) {
-    stubbedResponse = response
-    stubbedError = nil
-  }
-
-  public func stubFailure(_ error: RoomStatusLoaderError = .connectivity) {
-    stubbedError = error
-    stubbedResponse = nil
-  }
-
   // MARK: Private
 
-  private var stubbedResponse: RemoteRoomStatus?
-  private var stubbedError: RoomStatusLoaderError?
+  private let stubbedResponse: RemoteRoomStatus?
+  private let stubbedError: RoomStatusLoaderError?
 }

@@ -54,7 +54,7 @@ public final class SwiftDataRoom: IdentifiableModel {
     service: [String],
     writingMedia: [String],
     status: String?,
-    endTime: String?)
+    endTime: Date?)
   {
     self.abbreviation = abbreviation
     self.accessibility = accessibility
@@ -74,7 +74,7 @@ public final class SwiftDataRoom: IdentifiableModel {
     self.service = service
     self.writingMedia = writingMedia
     self.status = status ?? ""
-    self.endTime = endTime ?? ""
+    self.endTime = endTime
   }
 
   // MARK: Public
@@ -97,12 +97,13 @@ public final class SwiftDataRoom: IdentifiableModel {
   public var service: [String]
   public var writingMedia: [String]
   public var status: String?
-  public var endTime: String?
+  public var endTime: Date?
 
   public var stringID: String {
     id
   }
 
+  @MainActor
   public func toRoom() -> Room {
     Room(
       abbreviation: abbreviation,
@@ -123,6 +124,6 @@ public final class SwiftDataRoom: IdentifiableModel {
       service: service,
       writingMedia: writingMedia,
       status: status ?? "",
-      endTime: endTime ?? "")
+      endTime: endTime)
   }
 }

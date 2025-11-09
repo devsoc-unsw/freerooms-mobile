@@ -10,7 +10,6 @@
 		30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */ = {isa = PBXBuildFile; productRef = 30FB13AB2E1CDFAE0089793E /* Rooms */; };
 		96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */ = {isa = PBXBuildFile; productRef = 96D65EDE2DA39EA30060D06B /* Buildings */; };
 		96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 96DE0C312DFBD4C200C77DD5 /* CommonUI */; };
-		F165F92D2E9766E900EF21F1 /* BottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = F165F92C2E9766E900EF21F1 /* BottomSheet */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,7 +51,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */,
-				F165F92D2E9766E900EF21F1 /* BottomSheet in Frameworks */,
 				96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */,
 				96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */,
 			);
@@ -119,7 +117,6 @@
 				96D65EDE2DA39EA30060D06B /* Buildings */,
 				96DE0C312DFBD4C200C77DD5 /* CommonUI */,
 				30FB13AB2E1CDFAE0089793E /* Rooms */,
-				F165F92C2E9766E900EF21F1 /* BottomSheet */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -151,7 +148,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
-				F165F92B2E9766E900EF21F1 /* XCRemoteSwiftPackageReference "BottomSheet" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -177,7 +173,7 @@
 		96D65E752DA387360060D06B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -188,7 +184,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftformat >/dev/null 2>&1\nthen\n    swiftformat .\nelse\n    echo \"warning: `swiftformat` command not found - run the command: brew install swiftformat\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint --config .swiftlint.yml\nelse\n    echo \"warning: `swiftlint` command not found - run the command: brew install swiftlint\"\nfi\n";
 		};
@@ -337,21 +333,22 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = 6T8CX6KX43;
+				DEVELOPMENT_TEAM = VGXZB88ABH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
-				INFOPLIST_KEY_NSLocationUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssa;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomsaoihdnainfidbeliadbankjd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -374,21 +371,22 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Freerooms/Preview Content\"";
-				DEVELOPMENT_TEAM = 6T8CX6KX43;
+				DEVELOPMENT_TEAM = VGXZB88ABH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
-				INFOPLIST_KEY_NSLocationUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app uses your location to show nearby campus buildings and provide directions.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomssa;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomsaoihdnainfidbeliadbankjd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -429,17 +427,6 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		F165F92B2E9766E900EF21F1 /* XCRemoteSwiftPackageReference "BottomSheet" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/lucaszischka/BottomSheet";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
 		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -452,11 +439,6 @@
 		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CommonUI;
-		};
-		F165F92C2E9766E900EF21F1 /* BottomSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F165F92B2E9766E900EF21F1 /* XCRemoteSwiftPackageReference "BottomSheet" */;
-			productName = BottomSheet;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

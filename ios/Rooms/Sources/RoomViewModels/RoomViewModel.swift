@@ -17,8 +17,6 @@ import RoomServices
 // MARK: - RoomViewModel
 
 public protocol RoomViewModel {
-  var loadRoomErrorMessage: AlertError? { get set }
-
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -27,23 +25,32 @@ public protocol RoomViewModel {
 
   var roomsInAscendingOrder: Bool { get }
 
+  var currentRoomBookings: [RoomBooking] { get }
+
+  // TODO: Why is there two loading?
   var isLoading: Bool { get }
 
   var hasLoaded: Bool { get }
 
+  var getBookingsIsLoading: Bool { get }
+
   var searchText: String { get set }
+
+  var loadRoomErrorMessage: AlertError? { get set }
 
   func getRoomsInOrder()
 
-  func onAppear()
+  func onAppear() async
 
+  func getRoomBookings(roomId: String) async
+
+  func clearRoomBookings()
 }
 
 // MARK: - LiveRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
+public class LiveRoomViewModel: RoomViewModel {
 
   // MARK: Lifecycle
 
@@ -54,6 +61,10 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   // MARK: Public
 
   public var loadRoomErrorMessage: AlertError?
+
+  public var getBookingsIsLoading = false
+
+  public var currentRoomBookings: [RoomBooking] = []
 
   public var hasLoaded = false
 
@@ -78,15 +89,17 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     return result
   }
 
+  public func clearRoomBookings() {
+    currentRoomBookings = []
+  }
+
   public func getLoadingStatus() -> Bool {
     isLoading
   }
 
-  public func onAppear() {
+  public func onAppear() async {
     // Load Rooms when the view appears
-    Task {
-      await loadRooms()
-    }
+    await loadRooms()
     hasLoaded = true
   }
 
@@ -129,21 +142,39 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     isLoading = false
   }
 
+  public func getRoomBookings(roomId: String) async {
+    getBookingsIsLoading = true
+
+    defer {
+      self.getBookingsIsLoading = false
+    }
+
+    switch await interactor.getRoomBookings(roomID: roomId) {
+    case .success(let bookings):
+      currentRoomBookings = bookings
+    case .failure(let error):
+      // TODO: better error handling
+      // either an emtpy timetable
+      // or display no connection on the timetable
+      fatalError("Error loading rooms: \(error)")
+    }
+  }
+
   // MARK: Private
 
-  private var interactor: RoomInteractor
-
+  private let interactor: RoomInteractor
 }
 
 // MARK: - PreviewRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
+public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
     super.init(interactor: RoomInteractor(
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
+
+    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo]
   }
 }

@@ -21,7 +21,7 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/status") {
+  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/bookings/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -30,7 +30,7 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
   // MARK: Public
 
   public func fetch(bookingsOf roomID: String) async -> Result<[RemoteRoomBooking], RoomBookingLoaderError> {
-    guard let url = URL(string: statusEndpointPath, relativeTo: baseURL) else {
+    guard let url = URL(string: statusEndpointPath + roomID, relativeTo: baseURL) else {
       return .failure(.invalidURL)
     }
     let loader = NetworkCodableLoader<RemoteRoomBookingResponse>(client: client, url: url)
@@ -42,10 +42,13 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
     switch await loader.fetch() {
     case .success(let remoteRoomsResponse):
       return .success(remoteRoomsResponse.bookings)
+
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.connectivity):
       return .failure(.connectivity)
+
     case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.invalidData):
       return .failure(.invalidBuildingID)
+
     case .failure:
       return .failure(.connectivity)
     }

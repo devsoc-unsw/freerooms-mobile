@@ -26,14 +26,14 @@ struct JSONBuildingLoaderTests {
   }
 
   @Test("Live JSON building loader successfully decodes JSON into type [Building]")
-  func liveJSONBuildingLoaderSuccessfullyDecodesJSON() {
+  func liveJSONBuildingLoaderSuccessfullyDecodesJSON() async {
     // Given
     let decodableBuildings = createDecodableBuildings(10)
     let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(loads: decodableBuildings)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     let buildings = createBuildings(10)
@@ -41,14 +41,14 @@ struct JSONBuildingLoaderTests {
   }
 
   @Test("Live JSON building loader successfully decodes empty JSON into type [Building]")
-  func liveJSONBuildingLoaderSuccessfullyDecodesEmptyJSON() {
+  func liveJSONBuildingLoaderSuccessfullyDecodesEmptyJSON() async {
     // Given
     let decodableBuildings = createDecodableBuildings(0)
     let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(loads: decodableBuildings)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     let buildings = [Building]()
@@ -56,26 +56,26 @@ struct JSONBuildingLoaderTests {
   }
 
   @Test("Live JSON building loader returns error when JSON loader cannot find file")
-  func liveJSONBuildingLoaderThrowsErrorOnNoFileFound() {
+  func liveJSONBuildingLoaderThrowsErrorOnNoFileFound() async {
     // Given
     let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(throws: JSONLoaderError.fileNotFound)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toThrow: .fileNotFound)
   }
 
   @Test("Live JSON building loader returns error when JSON loader cannot read malformed JSON")
-  func liveJSONBuildingLoaderThrowsErrorOnMalformedJson() {
+  func liveJSONBuildingLoaderThrowsErrorOnMalformedJson() async {
     // Given
     let mockJSONLoader = MockJSONLoader<[DecodableBuilding]>(throws: JSONLoaderError.malformedJSON)
     let sut = LiveJSONBuildingLoader(using: mockJSONLoader)
 
     // When
-    let res = sut.fetch()
+    let res = await sut.fetch()
 
     // Then
     expect(res, toThrow: .malformedJSON)
@@ -90,7 +90,7 @@ struct JSONBuildingLoaderTests {
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
 
     // When
-    let res = liveJSONBuildingLoader.fetch()
+    let res = await liveJSONBuildingLoader.fetch()
 
     // Then
     expect(res, toFetch: realBuildingsData)

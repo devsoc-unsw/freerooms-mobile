@@ -15,6 +15,7 @@ public typealias CampusBuildings = (upper: [Building], middle: [Building], lower
 // MARK: - Building
 
 /// A building on campus with location information and room availability data.
+nonisolated
 public struct Building: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
@@ -44,7 +45,6 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
     self.aliases = aliases
     self.numberOfAvailableRooms = numberOfAvailableRooms
     self.overallRating = overallRating
-    availabilityStatus = AvailabilityStatus(numberOfAvailableRooms)
   }
 
   // MARK: Public
@@ -57,17 +57,19 @@ public struct Building: Equatable, Identifiable, Hashable, Sendable {
   public var numberOfAvailableRooms: Int?
   public var overallRating: Double?
 
-  public var availabilityStatus: AvailabilityStatus
-
   /// Computed grid reference based on the building ID for campus organization
+  @MainActor
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
-
+  
+  @MainActor
+  public var availabilityStatus: AvailabilityStatus {
+      AvailabilityStatus(numberOfAvailableRooms)
+  }
 }
 
 // MARK: - GridReference
-
 public struct GridReference {
   public let campusCode: String
   public let sectionCode: String
@@ -108,10 +110,11 @@ public struct GridReference {
 }
 
 // MARK: - AvailabilityStatus
-
 public enum AvailabilityStatus: String, Sendable {
 
   case available, crowded, unavailable, missing
+
+  // MARK: Lifecycle
 
   public init(_ rawValue: Int?) {
     guard let rawValue else {

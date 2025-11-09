@@ -16,8 +16,7 @@ import RoomServices
 
 /// Coordinates building-related operations including filtering, sorting, and room status integration.
 /// Acts as the main interface between the presentation layer and building services.
-// swiftlint:disable:next no_unchecked_sendable
-public class BuildingInteractor: @unchecked Sendable {
+public class BuildingInteractor {
 
   // MARK: Lifecycle
 

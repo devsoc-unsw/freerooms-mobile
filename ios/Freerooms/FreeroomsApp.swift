@@ -65,7 +65,7 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, buildingRatingLoader) = makeRemoteLoaders()
+      let (roomStatusLoader, buildingRatingLoader, _) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -94,7 +94,7 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, buildingRatingLoader) = makeRemoteLoaders()
+      let (roomStatusLoader, buildingRatingLoader, _) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -132,10 +132,13 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, _) = makeRemoteLoaders()
+      let (roomStatusLoader, _, remoteBookingLoader) = makeRemoteLoaders()
 
       let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
-      let roomService = LiveRoomService(roomLoader: roomLoader)
+      
+      let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+
+      let roomService = LiveRoomService(roomLoader: roomLoader, roomBookingLoader: roomBookingLoader)
       let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 
       return LiveRoomViewModel(interactor: interactor)
@@ -178,14 +181,15 @@ struct FreeroomsApp: App {
   }
 
   private static func makeRemoteLoaders()
-    -> (roomStatusLoader: LiveRoomStatusLoader, buildingRatingLoader: RemoteBuildingRatingLoader)
+  -> (roomStatusLoader: LiveRoomStatusLoader, buildingRatingLoader: RemoteBuildingRatingLoader, remoteBookingLoader: LiveRemoteRoomBookingLoader)
   {
     let httpClient = makeHTTPClient()
     let (stagingURL, productionURL) = makeBaseURLs()
 
     let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: stagingURL)
     let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
+    let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: productionURL)
 
-    return (roomStatusLoader, buildingRatingLoader)
+    return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader)
   }
 }
