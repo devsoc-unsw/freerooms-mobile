@@ -190,7 +190,7 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomBookings(roomID: String) async -> Result<[RoomBooking], Error> {
+  public func getRoomBookings(roomID: String) async -> Result<[RoomBooking], FetchRoomError> {
     switch await roomService.getRoomBookings(roomID: roomID) {
     case .success(let success):
       .success(success)
