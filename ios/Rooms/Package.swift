@@ -37,6 +37,7 @@ let package = Package(
         "RoomInteractors",
         "RoomModels",
         .product(name: "BuildingModels", package: "buildings"),
+        .product(name: "CommonUI", package: "CommonUI"),
       ]),
     .target(
       name: "RoomInteractors",
