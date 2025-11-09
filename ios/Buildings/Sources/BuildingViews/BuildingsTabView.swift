@@ -44,14 +44,15 @@ public struct BuildingsTabView<Destination: View>: View {
         buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
       .refreshable {
-        viewModel.reloadBuildings()
+        viewModel.onAppear()
       }
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack {
             Button {
-              viewModel.reloadBuildings()
+              // TODO FIX
+              viewModel.onAppear()
             } label: {
               Image(systemName: "arrow.clockwise")
                 .resizable()
@@ -128,6 +129,12 @@ public struct BuildingsTabView<Destination: View>: View {
         }
         .navigationTitle("Buildings")
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+    }
+    .alert(item: $viewModel.loadBuildingErrorMessage) { error in
+      Alert(
+        title: Text(error.title),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK")))
     }
     .tabItem {
       Label("Buildings", systemImage: "building")

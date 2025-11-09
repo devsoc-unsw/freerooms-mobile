@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import CommonUI
 import Foundation
 import Location
 import Observation
@@ -16,6 +17,8 @@ import RoomServices
 // MARK: - RoomViewModel
 
 public protocol RoomViewModel {
+  var loadRoomErrorMessage: AlertError? { get set }
+
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -49,6 +52,8 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   }
 
   // MARK: Public
+
+  public var loadRoomErrorMessage: AlertError?
 
   public var hasLoaded = false
 
@@ -93,8 +98,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
@@ -108,8 +112,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       }
 
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     isLoading = false
