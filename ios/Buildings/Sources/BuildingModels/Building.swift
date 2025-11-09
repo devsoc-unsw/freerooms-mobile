@@ -131,3 +131,9 @@ public enum AvailabilityStatus: String, Sendable {
     }
   }
 }
+
+// MARK: - BuildingFilterOptions
+
+public enum BuildingFilterOptions: Sendable {
+  case Alphabetical, Location, CampusSection
+}
