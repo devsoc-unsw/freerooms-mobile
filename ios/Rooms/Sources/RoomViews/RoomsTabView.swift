@@ -98,6 +98,12 @@ public struct RoomsTabView: View {
         .navigationTitle("Rooms")
         .searchable(text: $roomViewModel.searchText, prompt: "Search...")
     }
+    .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+      Alert(
+        title: Text(error.title),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK")))
+    }
     .overlay(alignment: .bottom) {
       Button("Rooms in ascending order: \(roomViewModel.roomsInAscendingOrder)", action: roomViewModel.getRoomsInOrder)
         .buttonStyle(.borderedProminent)
@@ -111,11 +117,12 @@ public struct RoomsTabView: View {
 
   // MARK: Internal
 
-  @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
   @State var path = NavigationPath()
   @State var rowHeight: CGFloat?
+
+  @State var roomViewModel: RoomViewModel
 
   // search text is owned by the view model
 

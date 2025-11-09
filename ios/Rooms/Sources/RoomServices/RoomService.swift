@@ -21,9 +21,9 @@ extension FetchRoomError {
   public var clientMessage: String {
     switch self {
     case .connectivity:
-      return "Failed to fetch rooms. Please check your internet connection."
+      "Failed to fetch rooms. Please check your internet connection."
     case .invalidBuildingId:
-      return "Invalid building ID provided."
+      "Invalid building ID provided."
     }
   }
 }
