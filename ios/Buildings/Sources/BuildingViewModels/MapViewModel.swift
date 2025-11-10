@@ -505,7 +505,7 @@ public class PreviewMapViewModel: LiveMapViewModel {
 
   // MARK: Public
 
-  public override func loadBuildings() async {
+  override public func loadBuildings() async {
     isLoading = true
 
     // Simulate delay from fetching buildings

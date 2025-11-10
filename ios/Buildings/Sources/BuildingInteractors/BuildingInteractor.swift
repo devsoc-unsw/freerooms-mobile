@@ -63,7 +63,7 @@ public class BuildingInteractor {
             (building, calculateDistance(from: currentLocation, to: building))
           }
           .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
-          .map { $0.0 }
+          .map(\.0)
         return .success(sorted)
       } catch {
         return .failure(error)

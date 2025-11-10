@@ -6,7 +6,9 @@
 //
 
 import Foundation
+
 // MARK: - Room
+
 import Location
 
 public struct Room: Equatable, Identifiable, Hashable {
@@ -59,7 +61,7 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Public
 
-  static public let exampleOne = Room(
+  public static let exampleOne = Room(
     abbreviation: "Col LG01",
     accessibility: [
       "Ventilation - Air conditioning",
@@ -99,7 +101,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     ],
     overallRating: 4.5)
 
-  static public let exampleTwo = Room(
+  public static let exampleTwo = Room(
     abbreviation: "Col LG02",
     accessibility: [
       "Ventilation - Air conditioning",

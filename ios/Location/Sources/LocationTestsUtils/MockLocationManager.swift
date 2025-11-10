@@ -38,6 +38,7 @@ public class MockLocationManager: LocationManager {
   var requestInUseAuthorizationCallTracker = 0
 
   // MARK: to mock the authorization status
+
   func simulateAuthorizationStatus(to status: CLAuthorizationStatus) {
     _authorizationStatus = status
     delegate?.locationManagerDidChangeAuthorization(self)
@@ -50,6 +51,7 @@ public class MockLocationManager: LocationManager {
   // MARK: Private
 
   // MARK: Mock AuthorizationStatus field
+
   private var _authorizationStatus = CLAuthorizationStatus.notDetermined
 
 }
