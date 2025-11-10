@@ -1,5 +1,5 @@
 //
-//  ViewModel.swift
+//  BuildingViewModel.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.

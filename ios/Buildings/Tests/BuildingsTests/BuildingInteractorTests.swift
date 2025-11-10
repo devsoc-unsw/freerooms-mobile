@@ -1,5 +1,5 @@
 //
-//  GetBuildingByAvailableRoomsTest.swift
+//  BuildingInteractorTests.swift
 //  Buildings
 //
 //  Created by Shabinda Sarkaria on 11/6/2025.

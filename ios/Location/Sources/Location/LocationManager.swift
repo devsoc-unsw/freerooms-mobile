@@ -11,6 +11,7 @@ import CoreLocation
 
 public protocol LocationManager: AnyObject {
   // MARK: Internal
+
   var delegate: LocationManagerDelegate? { get set }
   var authorizationStatus: CLAuthorizationStatus { get }
   var location: Location? { get }
@@ -35,7 +36,7 @@ public final class LiveLocationManager: NSObject, LocationManager, CLLocationMan
 
   // MARK: Lifecycle
 
-  public override init() {
+  override public init() {
     locationManager = CLLocationManager()
     super.init()
     locationManager.delegate = self

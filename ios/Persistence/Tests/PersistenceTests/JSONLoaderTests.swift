@@ -176,8 +176,8 @@ private let fakeBuildingsSeedJSON = """
 
 // MARK: - DecodableBuilding
 
-nonisolated
-private struct DecodableBuilding: Decodable, Equatable {
+private nonisolated
+struct DecodableBuilding: Decodable, Equatable {
   public let name: String
   public let id: String
   public let lat: Double
