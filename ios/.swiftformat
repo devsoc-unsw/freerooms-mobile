@@ -62,6 +62,7 @@
 --rules redundantParens
 --rules redundantReturn
 --rules redundantSelf
+--rules redundantType
 --rules redundantPattern
 --rules redundantGet
 --rules redundantFileprivate
