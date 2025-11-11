@@ -113,6 +113,5 @@
 --rules blankLineAfterSwitchCase
 --rules consistentSwitchCaseSpacing
 --rules semicolons
---rules propertyTypes
 --rules blankLinesBetweenChainedFunctions
 --rules unusedPrivateDeclarations

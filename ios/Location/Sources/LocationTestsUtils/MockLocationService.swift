@@ -15,7 +15,7 @@ public class MockLocationService: NSObject, LocationService, LocationManagerDele
 
   // MARK: Lifecycle
 
-  public override init() {
+  override public init() {
     super.init()
   }
 

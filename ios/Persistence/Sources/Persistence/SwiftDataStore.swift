@@ -38,7 +38,9 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
 
   /// Saves multiple items to the persistent store; changes are only committed to backing store if all items successfully save.
   public func save(_ items: [Model]) throws {
-    for item in items { modelContext.insert(item) }
+    for item in items {
+      modelContext.insert(item)
+    }
     try modelContext.save()
   }
 
@@ -63,9 +65,12 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
     try modelContext.save()
   }
 
-  /// Deletes multiple items from the persistent store; changes are only committed to backing store if all items are successfully deleted.
+  /// Deletes multiple items from the persistent store; changes are only committed to backing store if all items are successfully
+  /// deleted.
   public func delete(_ items: [Model]) throws {
-    for item in items { modelContext.delete(item) }
+    for item in items {
+      modelContext.delete(item)
+    }
     try modelContext.save()
   }
 
