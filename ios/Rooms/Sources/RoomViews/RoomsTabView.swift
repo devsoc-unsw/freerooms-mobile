@@ -97,7 +97,7 @@ public struct RoomsTabView<Destination: View>: View {
           }
         }
         .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, prompt: "Search...")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
