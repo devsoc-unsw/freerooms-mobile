@@ -171,6 +171,6 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
 
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleThree, RoomBooking.exampleFour]
+    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
 }
