@@ -47,7 +47,7 @@ struct RoomBookingsListView: View {
 
           // Background time grid
           VStack(spacing: 0) {
-            ForEach(0..<24, id: \.self) { hour in
+            ForEach(9..<24, id: \.self) { hour in
               BookingsLayoutView(hour: hour)
                 .id(hour)
             }
@@ -72,12 +72,12 @@ struct RoomBookingsListView: View {
                 y: CGFloat(startMinutes) * (40 / 60) + 2)
           }
         }
-        .frame(height: 24 * 40)
+        .frame(height: 15 * 40)
       }
-      .frame(height: 500)
+      .frame(height: 15 * 40)
       .clipShape(RoundedRectangle(cornerRadius: 12))
       .onAppear {
-        let currentHour = dateComponent.hour ?? 0
+        let currentHour = max(dateComponent.hour ?? 0, 9)
         withAnimation(.easeInOut(duration: 0.5)) {
           proxy.scrollTo(currentHour, anchor: .top)
         }

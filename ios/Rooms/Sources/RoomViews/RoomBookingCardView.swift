@@ -69,10 +69,10 @@ struct RoomBookingCardView: View {
     let endTimeMinute = currentBooking.1.minute ?? 0
     let endTimeHour = currentBooking.1.hour ?? 0
 
-    let startTotalMinutes = startTimeHour * 60 + startTimeMinute;
-    let endTotalMinutes = endTimeHour * 60 + endTimeMinute;
-    let range = abs(endTotalMinutes - startTotalMinutes);
-    
+    let startTotalMinutes = startTimeHour * 60 + startTimeMinute
+    let endTotalMinutes = endTimeHour * 60 + endTimeMinute
+    let range = abs(endTotalMinutes - startTotalMinutes)
+
     return CGFloat(range / 30)
   }
 
