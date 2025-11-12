@@ -50,17 +50,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack {
             Button {
-              Task {
-                await viewModel.reloadBuildings()
-              }
-            } label: {
-              Image(systemName: "arrow.clockwise")
-                .resizable()
-                .frame(width: 22, height: 22)
-            }
-            .disabled(viewModel.isLoading)
-
-            Button {
               // action
             } label: {
               Image(systemName: "line.3.horizontal.decrease")
