@@ -25,6 +25,7 @@ struct ContentView: View {
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
+  @State var selectedView = RoomOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -48,7 +49,8 @@ struct ContentView: View {
         path: $roomPath,
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
-        selectedTab: $selectedTab)
+        selectedTab: $selectedTab,
+        selectedView: $selectedView)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)
           .task { await roomViewModel.onAppear() }

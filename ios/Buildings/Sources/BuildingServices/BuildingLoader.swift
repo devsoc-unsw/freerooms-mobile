@@ -110,7 +110,7 @@ public final class LiveBuildingLoader: BuildingLoader, Sendable {
         }
       }
 
-      var ratings: [(Int, Swift.Result<Double, BuildingRatingLoaderError>)] = []
+      var ratings = [(Int, Swift.Result<Double, BuildingRatingLoaderError>)]()
       for await res in group {
         ratings.append(res)
       }

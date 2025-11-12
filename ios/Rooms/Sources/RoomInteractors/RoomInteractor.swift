@@ -91,7 +91,7 @@ public class RoomInteractor {
   {
     switch await roomService.getRooms() {
     case .success(let rooms):
-      var result: [Room] = []
+      var result = [Room]()
       for room in rooms {
         let currentTime = Date()
 
@@ -178,7 +178,7 @@ public class RoomInteractor {
 
     switch await roomService.getRooms() {
     case .success(let rooms):
-      var result: [String: [Room]] = [:]
+      var result = [String: [Room]]()
       for id in buildingIds {
         let filteredRooms: [Room] = rooms.filter { $0.buildingId == id }
         result[id] = filteredRooms
