@@ -58,13 +58,13 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getBookingsIsLoading = false
 
-  public var currentRoomBookings: [RoomBooking] = []
+  public var currentRoomBookings = [RoomBooking]()
 
   public var hasLoaded = false
 
-  public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
+  public var roomsByBuildingId = [String: [RoomModels.Room]]()
 
-  public var rooms: [Room] = []
+  public var rooms = [Room]()
 
   public var roomsInAscendingOrder = true
 
@@ -73,7 +73,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var searchText = ""
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
-    var result: [String: [Room]] = [:]
+    var result = [String: [Room]]()
     for (key, value) in roomsByBuildingId {
       let sorted = interactor.getRoomsSortedAlphabetically(
         rooms: value,
