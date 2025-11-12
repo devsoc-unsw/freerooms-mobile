@@ -21,16 +21,30 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
   // MARK: Public
 
   public static let exampleOne = RoomBooking(
-    bookingType: "MISC",
-    end: Date().addingTimeInterval(60 * 60),
-    name: "COMM",
-    start: Date())
-  public static let exampleTwo = RoomBooking(
-    bookingType: "MISC",
-    end: Date().addingTimeInterval(-60 * 60 * 4),
-    name: "LAW",
-    start: Date().addingTimeInterval(-60 * 60 * 5))
+      bookingType: "CLASS",
+      end: ISO8601DateFormatter().date(from: "2025-11-11T23:30:00.000Z")!,
+      name: "COMM2501 LAB",
+      start: ISO8601DateFormatter().date(from: "2025-11-11T22:00:00.000Z")!)
 
+  public static let exampleTwo = RoomBooking(
+      bookingType: "CLASS",
+      end: ISO8601DateFormatter().date(from: "2025-11-12T01:00:00.000Z")!,
+      name: "COMM2501 LAB",
+      start: ISO8601DateFormatter().date(from: "2025-11-11T23:30:00.000Z")!)
+
+  public static let exampleThree = RoomBooking(
+      bookingType: "CLASS",
+      end: ISO8601DateFormatter().date(from: "2025-11-12T02:30:00.000Z")!,
+      name: "COMM2501 LAB",
+      start: ISO8601DateFormatter().date(from: "2025-11-12T01:00:00.000Z")!)
+
+  public static let exampleFour = RoomBooking(
+      bookingType: "CLASS",
+      end: ISO8601DateFormatter().date(from: "2025-11-12T04:00:00.000Z")!,
+      name: "COMM2501 LAB",
+      start: ISO8601DateFormatter().date(from: "2025-11-12T02:30:00.000Z")!)
+  
+  
   public let bookingType: String
   public let end: Date
   public let name: String
