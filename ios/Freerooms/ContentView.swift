@@ -25,6 +25,7 @@ struct ContentView: View {
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
+  @State var selectedView = RoomOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -48,7 +49,8 @@ struct ContentView: View {
         path: $roomPath,
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
-        selectedTab: $selectedTab)
+        selectedTab: $selectedTab,
+        selectedView: $selectedView)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)
           .task { await roomViewModel.onAppear() }
@@ -82,9 +84,9 @@ extension LiveMapViewModel {
 }
 
 extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = .preview
-  @Entry var mapViewModel: LiveMapViewModel = .preview
-  @Entry var roomViewModel: LiveRoomViewModel = .preview
+  @Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel.preview
+  @Entry var mapViewModel: LiveMapViewModel = LiveMapViewModel.preview
+  @Entry var roomViewModel: LiveRoomViewModel = LiveRoomViewModel.preview
 }
 
 #Preview {

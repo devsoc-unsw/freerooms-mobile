@@ -117,7 +117,7 @@ struct JSONBuildingLoaderTests {
   }
 
   private func createDecodableBuildings(_ count: Int) -> [DecodableBuilding] {
-    var decodableBuildings: [DecodableBuilding] = []
+    var decodableBuildings = [DecodableBuilding]()
     for _ in 0..<count {
       decodableBuildings.append(DecodableBuilding(name: "name", id: "123", lat: 1.0, long: 1.0, aliases: ["A", "B"]))
     }
@@ -125,7 +125,7 @@ struct JSONBuildingLoaderTests {
   }
 
   private func createBuildings(_ count: Int) -> [Building] {
-    var buildings: [Building] = []
+    var buildings = [Building]()
     for _ in 0..<count {
       buildings.append(Building(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"]))
     }

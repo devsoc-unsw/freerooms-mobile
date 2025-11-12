@@ -90,7 +90,7 @@ struct LiveSwiftDataBuildingLoaderTests {
   // MARK: Private
 
   private func createSwiftDataBuildings(_ count: Int) -> [SwiftDataBuilding] {
-    var buildings: [SwiftDataBuilding] = []
+    var buildings = [SwiftDataBuilding]()
     for i in 0..<count {
       let building = SwiftDataBuilding(
         name: "Building \(i)",
@@ -105,7 +105,7 @@ struct LiveSwiftDataBuildingLoaderTests {
   }
 
   private func createBuildings(_ count: Int) -> [Building] {
-    var buildings: [Building] = []
+    var buildings = [Building]()
     for i in 0..<count {
       let building = Building(
         name: "Building \(i)",
