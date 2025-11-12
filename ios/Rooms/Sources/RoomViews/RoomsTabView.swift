@@ -204,11 +204,11 @@ public struct RoomsTabView<Destination: View>: View {
   private var roomView: some View {
     if selectedView == RoomOrientation.List {
       List {
-        roomsListView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     } else {
       ScrollView {
-        roomsCardView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsCardView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     }
   }
