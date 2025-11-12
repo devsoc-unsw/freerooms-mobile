@@ -59,7 +59,7 @@ struct RoomBookingsListView: View {
             let start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
             let end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
 
-            let startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0)
+            let startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0) - 540
 
             RoomBookingCardView(
               room: room,
