@@ -93,15 +93,15 @@ public struct RoomsTabView<Destination: View>: View {
               await roomViewModel.onAppear()
             }
           }
-    }
     .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
       Alert(
         title: Text(error.title),
         message: Text(error.message),
         dismissButton: .default(Text("OK")))
+        }
+        .navigationTitle("Rooms")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
-    .navigationTitle("Rooms")
-    .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }
@@ -210,11 +210,11 @@ public struct RoomsTabView<Destination: View>: View {
   private var roomView: some View {
     if selectedView == RoomOrientation.List {
       List {
-        roomsListView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     } else {
       ScrollView {
-        roomsCardView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsCardView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     }
   }
