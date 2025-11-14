@@ -41,7 +41,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
       .refreshable {
-        viewModel.reloadBuildings()
+        Task {
+          await viewModel.reloadBuildings()
+        }
       }
       .toolbar {
         // Buttons on the right
@@ -115,6 +117,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         }
         .navigationTitle("Buildings")
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+    }
+    .alert(item: $viewModel.loadBuildingErrorMessage) { error in
+      Alert(
+        title: Text(error.title),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK")))
     }
     .tabItem {
       Label("Buildings", systemImage: "building")

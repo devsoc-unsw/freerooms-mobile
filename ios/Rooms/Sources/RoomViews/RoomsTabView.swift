@@ -93,9 +93,15 @@ public struct RoomsTabView<Destination: View>: View {
               await roomViewModel.onAppear()
             }
           }
+    .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+      Alert(
+        title: Text(error.title),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK")))
+        }
+      .navigationTitle("Rooms")
+      .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
-    .navigationTitle("Rooms")
-    .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }
@@ -104,7 +110,6 @@ public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Internal
 
-  @State var roomViewModel: RoomViewModel
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
 
@@ -113,6 +118,8 @@ public struct RoomsTabView<Destination: View>: View {
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
+
+  @State var roomViewModel: RoomViewModel
 
   // search text is owned by the view model
 
