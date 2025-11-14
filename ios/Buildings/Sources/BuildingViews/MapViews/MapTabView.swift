@@ -1,5 +1,5 @@
 //
-//  MapView.swift
+//  MapTabView.swift
 //  Freerooms
 //
 //  Created by MUQUEET MOHSEN CHOWDHURY on 24/4/25.
@@ -126,6 +126,7 @@ public struct MapTabView: View {
 }
 
 // MARK: - Preview
+
 #Preview {
   MapTabView(mapViewModel: PreviewMapViewModel())
 }

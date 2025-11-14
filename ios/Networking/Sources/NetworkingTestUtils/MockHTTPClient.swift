@@ -9,6 +9,7 @@ import Foundation
 import Networking
 
 // MARK: - MockHTTPClient
+
 public class MockHTTPClient: HTTPClient {
 
   // MARK: Lifecycle

@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import CommonUI
 import Foundation
 import Location
 import Observation
@@ -15,7 +16,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
-public protocol RoomViewModel: Sendable {
+public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -32,7 +33,10 @@ public protocol RoomViewModel: Sendable {
   var hasLoaded: Bool { get }
 
   var getBookingsIsLoading: Bool { get }
+
   var searchText: String { get set }
+
+  var loadRoomErrorMessage: AlertError? { get set }
 
   func getRoomsInOrder()
 
@@ -58,15 +62,17 @@ public class LiveRoomViewModel: RoomViewModel {
 
   // MARK: Public
 
+  public var loadRoomErrorMessage: AlertError?
+
   public var getBookingsIsLoading = false
 
-  public var currentRoomBookings: [RoomBooking] = []
+  public var currentRoomBookings = [RoomBooking]()
 
   public var hasLoaded = false
 
-  public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
+  public var roomsByBuildingId = [String: [RoomModels.Room]]()
 
-  public var rooms: [Room] = []
+  public var rooms = [Room]()
 
   public var roomsInAscendingOrder = true
 
@@ -75,7 +81,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var searchText = ""
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
-    var result: [String: [Room]] = [:]
+    var result = [String: [Room]]()
     for (key, value) in roomsByBuildingId {
       let sorted = interactor.getRoomsSortedAlphabetically(
         rooms: value,
@@ -107,8 +113,7 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
@@ -122,8 +127,7 @@ public class LiveRoomViewModel: RoomViewModel {
       }
 
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     isLoading = false
@@ -151,10 +155,7 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let bookings):
       currentRoomBookings = bookings
     case .failure(let error):
-      // TODO: better error handling
-      // either an emtpy timetable
-      // or display no connection on the timetable
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
   }
 
@@ -177,6 +178,6 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
 
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo]
+    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
 }

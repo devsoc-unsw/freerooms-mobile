@@ -40,5 +40,5 @@ public class MockBuildingService: BuildingService {
 
   // MARK: Private
 
-  private var buildings: [Building] = []
+  private var buildings = [Building]()
 }

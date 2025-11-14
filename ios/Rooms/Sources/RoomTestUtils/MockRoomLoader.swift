@@ -53,7 +53,7 @@ public class MockRoomLoader: RoomLoader {
 
   // MARK: Private
 
-  private var stubbedRooms: [String: [Room]] = [:]
-  private var allRooms: [Room] = []
+  private var stubbedRooms = [String: [Room]]()
+  private var allRooms = [Room]()
   private var stubbedError: RoomLoaderError?
 }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  BuildingImage.swift
 //  Buildings
 //
 //  Created by Dicko Evaldo on 20/6/2025.

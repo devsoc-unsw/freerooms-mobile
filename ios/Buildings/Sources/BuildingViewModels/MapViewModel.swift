@@ -185,14 +185,14 @@ public class LiveMapViewModel: MapViewModel {
   public var lookAroundScene: MKLookAroundScene?
   public var isLoadingLookAround = false
 
-  public var buildings: [Building] = []
+  public var buildings = [Building]()
   public var position = MapCameraPosition.region(.campusRegion)
   public var isLoading = false
   public var mapCameraBounds = MapCameraBounds(centerCoordinateBounds: .campusRegion, minimumDistance: 500, maximumDistance: 5000)
 
   public var selectedBuildingID: String?
 
-  public var filteredBuildings: [Building] = []
+  public var filteredBuildings = [Building]()
 
   public var searchText = "" {
     didSet {
@@ -505,7 +505,7 @@ public class PreviewMapViewModel: LiveMapViewModel {
 
   // MARK: Public
 
-  public override func loadBuildings() async {
+  override public func loadBuildings() async {
     isLoading = true
 
     // Simulate delay from fetching buildings
