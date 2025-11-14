@@ -20,10 +20,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   public init(
     path: Binding<NavigationPath>,
     viewModel: BuildingViewModel,
+		selectedView: Binding<RoomOrientation>, // TODO: rename RoomOrientation?
     _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
     _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
     _path = path
+		_selectedView = selectedView
     self.viewModel = viewModel
     self.roomsDestinationBuilderView = roomsDestinationBuilderView
     self.roomDestinationBuilderView = roomDestinationBuilderView
@@ -33,13 +35,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   public var body: some View {
     NavigationStack(path: $path) {
-      List {
-        buildingsView(for: "Upper campus", from: viewModel.filteredBuildings.upper)
-
-        buildingsView(for: "Middle campus", from: viewModel.filteredBuildings.middle)
-
-        buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
-      }
+      buildingsView
       .refreshable {
         Task {
           await viewModel.reloadBuildings()
@@ -64,14 +60,26 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
                 .resizable()
                 .frame(width: 25, height: 20)
             }
+						
+						Button {
+							if selectedView == RoomOrientation.Card {
+								selectedView = RoomOrientation.List
+							} else {
+								selectedView = RoomOrientation.Card
+							}
+						} label: {
+							Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+								.resizable()
+								.frame(width: 22, height: 20)
+						}
 
-            Button {
-              // action
-            } label: {
-              Image(systemName: "list.bullet")
-                .resizable()
-                .frame(width: 22, height: 20)
-            }
+//            Button {
+//              // action
+//            } label: {
+//              Image(systemName: "list.bullet")
+//                .resizable()
+//                .frame(width: 22, height: 20)
+//            }
           }
           .padding(5)
           .foregroundStyle(theme.label.tertiary)
@@ -135,12 +143,63 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var viewModel: BuildingViewModel
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
+	@Binding var selectedView: RoomOrientation
+	@State var cardWidth: CGFloat?
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
   let roomDestinationBuilderView: (Room) -> RoomDestination
+	
+	@ViewBuilder
+	private var buildingsView: some View {
+		if selectedView == RoomOrientation.List {
+			List {
+				buildingsListSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
+				buildingsListSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
+				buildingsListSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
+			}
+		} else {
+			ScrollView {
+				buildingsCardSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
+				buildingsCardSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
+				buildingsCardSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
+			}
+			.padding(.horizontal, 16)
+		}
+	}
+	
+	@ViewBuilder
+	func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
+		Section {
+			LazyVGrid(columns: columns, spacing: 24) {
+				ForEach(buildings) { building in
+					GenericCardView(
+						path: $path,
+						cardWidth: $cardWidth,
+						building: building,
+						buildings: buildings,
+						imageProvider: { roomID in
+							BuildingImage[roomID]
+						})
+				}
+			}
+		} header: {
+			HStack {
+				Text(campus)
+					.foregroundStyle(theme.label.primary)
+					.padding(.leading, 10)
+				Spacer()
+			}
+			.padding(.top, 10)
+		}
+	}
+	
+	private let columns = [
+		GridItem(.flexible()),
+		GridItem(.flexible()),
+	]
 
   @ViewBuilder
-  func buildingsView(for campus: String, from buildings: [Building]) -> some View {
+  func buildingsListSegment(for campus: String, from buildings: [Building]) -> some View {
     if buildings.isEmpty {
       EmptyView()
     } else {
@@ -172,11 +231,13 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
 struct PreviewWrapper: View {
   @State var path = NavigationPath()
+	@State var selectedView = RoomOrientation.List
 
   var body: some View {
     BuildingsTabView(
       path: $path,
-      viewModel: PreviewBuildingViewModel())
+      viewModel: PreviewBuildingViewModel(),
+			selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
     } _: { _ in
