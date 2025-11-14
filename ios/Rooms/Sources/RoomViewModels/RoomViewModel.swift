@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import CommonUI
 import Foundation
 import Location
 import Observation
@@ -15,7 +16,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
-public protocol RoomViewModel: Sendable {
+public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -32,7 +33,10 @@ public protocol RoomViewModel: Sendable {
   var hasLoaded: Bool { get }
 
   var getBookingsIsLoading: Bool { get }
+
   var searchText: String { get set }
+
+  var loadRoomErrorMessage: AlertError? { get set }
 
   func getRoomsInOrder()
 
@@ -41,6 +45,8 @@ public protocol RoomViewModel: Sendable {
   func getRoomBookings(roomId: String) async
 
   func clearRoomBookings()
+
+  func reloadRooms() async
 }
 
 // MARK: - LiveRoomViewModel
@@ -55,6 +61,8 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   // MARK: Public
+
+  public var loadRoomErrorMessage: AlertError?
 
   public var getBookingsIsLoading = false
 
@@ -105,8 +113,7 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
@@ -120,8 +127,7 @@ public class LiveRoomViewModel: RoomViewModel {
       }
 
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     isLoading = false
@@ -149,11 +155,12 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let bookings):
       currentRoomBookings = bookings
     case .failure(let error):
-      // TODO: better error handling
-      // either an emtpy timetable
-      // or display no connection on the timetable
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
+  }
+
+  public func reloadRooms() async {
+    await loadRooms()
   }
 
   // MARK: Private

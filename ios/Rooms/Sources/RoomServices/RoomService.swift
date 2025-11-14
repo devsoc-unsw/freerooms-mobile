@@ -18,6 +18,17 @@ public enum FetchRoomError: Error, Equatable {
   case invalidBuildingId
 }
 
+extension FetchRoomError {
+  public var clientMessage: String {
+    switch self {
+    case .connectivity:
+      "Failed to fetch rooms. Please check your internet connection."
+    case .invalidBuildingId:
+      "Invalid building ID provided."
+    }
+  }
+}
+
 // MARK: - RoomService
 
 public protocol RoomService {
@@ -88,18 +99,20 @@ public final class PreviewRoomService: RoomService {
   // MARK: Public
 
   public func getRoomBookings(roomID _: String) async -> GetRoomBookingsResult {
-    .success([RoomBooking(
-      bookingType: "MISC",
-      end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
-      name: "COMM",
-      start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!)])
+    .success([
+      RoomBooking(
+        bookingType: "MISC",
+        end: ISO8601DateFormatter().date(from: "2024-01-02T10:30:00+00:00")!,
+        name: "COMM",
+        start: ISO8601DateFormatter().date(from: "2024-01-01T20:00:00+00:00")!),
+    ])
   }
 
-  public func getRooms() -> GetRoomResult {
+  public func getRooms() async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
   }
 
-  public func getRooms(buildingId _: String) -> GetRoomResult {
+  public func getRooms(buildingId _: String) async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
   }
 }

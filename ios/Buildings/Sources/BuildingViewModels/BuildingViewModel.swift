@@ -8,6 +8,7 @@
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
+import CommonUI
 import Foundation
 import Location
 import Observation
@@ -21,11 +22,13 @@ public protocol BuildingViewModel {
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
   var hasLoaded: Bool { get }
+  var loadBuildingErrorMessage: AlertError? { get set }
   var searchText: String { get set }
 
   func getBuildingsInOrder()
   func onAppear()
-  func reloadBuildings()
+  func loadBuildings() async
+  func reloadBuildings() async
 }
 
 // MARK: - LiveBuildingViewModel
@@ -45,6 +48,8 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var buildingsInAscendingOrder = true
   public var isLoading = false
   public var searchText = ""
+  public var loadBuildingErrorMessage: AlertError?
+  public var selectedFilter = BuildingFilterOptions.Alphabetical
 
   public var buildings: CampusBuildings = ([], [], [])
 
@@ -55,6 +60,50 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var allBuildings: [Building] {
     let allBuildings = buildings.0 + buildings.1 + buildings.2
     return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
+  }
+
+  public func reloadBuildings() {
+    Task {
+      isLoading = true
+      let buildingResult: Result<[Building], FetchBuildingsError>
+
+      switch selectedFilter {
+      case .Alphabetical:
+        buildingResult = await interactor.getBuildingsSortedAlphabetically(inAscendingOrder: buildingsInAscendingOrder)
+      case .Location:
+        // Not Implemented
+        fatalError("Unreachable")
+      case .CampusSection:
+        // Not Implemented
+        fatalError("Unreachable")
+      }
+
+      // Fetch buildings with the determined sort order
+
+      switch buildingResult {
+      case .success(let fetchedBuildings):
+        let uniqueBuildings = uniqueById(fetchedBuildings)
+
+        let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
+        let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
+        let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
+
+        buildings.upper = interactor.getBuildingsSortedAlphabetically(
+          buildings: upper,
+          order: buildingsInAscendingOrder)
+        buildings.middle = interactor.getBuildingsSortedAlphabetically(
+          buildings: middle,
+          order: buildingsInAscendingOrder)
+        buildings.lower = interactor.getBuildingsSortedAlphabetically(
+          buildings: lower,
+          order: buildingsInAscendingOrder)
+
+      case .failure(let error):
+        loadBuildingErrorMessage = AlertError(message: error.clientMessage)
+      }
+
+      isLoading = false
+    }
   }
 
   public func getLoadingStatus() -> Bool {
@@ -95,8 +144,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
         order: buildingsInAscendingOrder)
 
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading buildings: \(error)")
+      loadBuildingErrorMessage = AlertError(message: error.clientMessage)
     }
 
     isLoading = false
@@ -120,47 +168,9 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
-  public func reloadBuildings() {
-    Task {
-      await loadBuildingsFromReload()
-    }
-  }
-
   // MARK: Private
 
   private var interactor: BuildingInteractor
-
-  private func loadBuildingsFromReload() async {
-    isLoading = true
-
-    // Reload all buildings using the reload method
-    let buildingResult = await interactor.reloadBuildingsSortedAlphabetically(inAscendingOrder: true)
-
-    switch buildingResult {
-    case .success(let fetchedBuildings):
-      let uniqueBuildings = uniqueById(fetchedBuildings)
-
-      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
-      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
-      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
-
-      buildings.upper = interactor.getBuildingsSortedAlphabetically(
-        buildings: upper,
-        order: buildingsInAscendingOrder)
-      buildings.middle = interactor.getBuildingsSortedAlphabetically(
-        buildings: middle,
-        order: buildingsInAscendingOrder)
-      buildings.lower = interactor.getBuildingsSortedAlphabetically(
-        buildings: lower,
-        order: buildingsInAscendingOrder)
-
-    case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      print("Error reloading buildings: \(error)")
-    }
-
-    isLoading = false
-  }
 
   private func uniqueById(_ input: [Building]) -> [Building] {
     var seen = Set<String>()

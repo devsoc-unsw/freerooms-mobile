@@ -17,11 +17,19 @@ public enum FetchBuildingsError: Error {
   case connectivity
 }
 
+extension FetchBuildingsError {
+  public var clientMessage: String {
+    switch self {
+    case .connectivity:
+      "Failed to fetch buildings. Please check your internet connection."
+    }
+  }
+}
+
 // MARK: - BuildingService
 
 public protocol BuildingService {
   func getBuildings() async -> GetBuildingsResult
-  func reloadBuildings() async -> GetBuildingsResult
 }
 
 // MARK: - LiveBuildingService
@@ -39,15 +47,6 @@ public final class LiveBuildingService: BuildingService {
   public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
   public func getBuildings() async -> GetBuildingsResult {
-    switch await buildingLoader.fetch() {
-    case .success(let buildings):
-      .success(buildings)
-    case .failure:
-      .failure(.connectivity)
-    }
-  }
-
-  public func reloadBuildings() async -> GetBuildingsResult {
     switch await buildingLoader.fetch() {
     case .success(let buildings):
       .success(buildings)
