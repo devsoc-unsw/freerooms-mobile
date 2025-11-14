@@ -15,9 +15,9 @@ import SwiftUI
 // MARK: - RoomsTabView
 
 public struct RoomsTabView<Destination: View>: View {
-  
+
   // MARK: Lifecycle
-  
+
   /// init some viewModel to depend on
   public init(
     path: Binding<NavigationPath>,
@@ -34,9 +34,9 @@ public struct RoomsTabView<Destination: View>: View {
     _selectedView = selectedView
     self.roomDestinationBuilderView = roomDestinationBuilderView
   }
-  
+
   // MARK: Public
-  
+
   public var body: some View {
     NavigationStack(path: $path) {
       roomView
@@ -58,7 +58,7 @@ public struct RoomsTabView<Destination: View>: View {
                   .resizable()
                   .frame(width: 25, height: 20)
               }
-              
+
               Button {
                 if selectedView == RoomOrientation.Card {
                   selectedView = RoomOrientation.List
@@ -86,22 +86,21 @@ public struct RoomsTabView<Destination: View>: View {
         }
         .opacity(
           roomViewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .task {
-          if !roomViewModel.hasLoaded {
-            await roomViewModel.onAppear()
+            ? 0
+            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+          .task {
+            if !roomViewModel.hasLoaded {
+              await roomViewModel.onAppear()
+            }
           }
-        }
-        .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
+    .navigationTitle("Rooms")
+    .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }
     .tag("Rooms")
   }
-
 
   // MARK: Internal
 
