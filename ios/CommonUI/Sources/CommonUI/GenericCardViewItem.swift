@@ -83,13 +83,13 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
         if let room = item as? Room {
           Text(room.statusText)
             .font(.system(size: 12, weight: .light))
-						.foregroundStyle(room.statusTextColour)
+            .foregroundStyle(room.statusTextColour)
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
             .frame(maxWidth: .infinity)
             .background(
               RoundedRectangle(cornerRadius: 5)
-								.fill(room.statusBackgroundColor))
+                .fill(room.statusBackgroundColor))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }

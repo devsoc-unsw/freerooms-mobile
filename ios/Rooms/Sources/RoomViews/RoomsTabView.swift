@@ -99,8 +99,8 @@ public struct RoomsTabView<Destination: View>: View {
         message: Text(error.message),
         dismissButton: .default(Text("OK")))
         }
-        .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+      .navigationTitle("Rooms")
+      .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
