@@ -60,6 +60,7 @@ public final class LiveRoomLoader: RoomLoader {
         var filteredRooms = offlineRooms.filter { $0.buildingId == buildingId }
         await combineLiveAndSavedData(&filteredRooms)
         return .success(filteredRooms)
+
       case .failure(let err):
         return .failure(err)
       }
@@ -81,6 +82,7 @@ public final class LiveRoomLoader: RoomLoader {
       case .success(var offlineRooms):
         await combineLiveAndSavedData(&offlineRooms)
         return .success(offlineRooms)
+
       case .failure(let err):
         return .failure(err)
       }
