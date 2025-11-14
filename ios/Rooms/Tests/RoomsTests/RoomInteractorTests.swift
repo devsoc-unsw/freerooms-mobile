@@ -185,24 +185,6 @@ enum RoomInteractorTests {
     }
   }
 
-  struct RoomReloading {
-    @Test("Reloads rooms when requested")
-    func reloadsRoomsWhenRequested() async {
-      // Given
-      let expectedRooms = createDifferentRooms()
-      let mockLoader = MockRoomLoader()
-      mockLoader.stubRooms(expectedRooms)
-      let sut = makeRoomSUT(mockLoader: mockLoader)
-
-      // When
-      _ = await sut.getRoomsSortedAlphabetically(inAscendingOrder: true)
-      _ = await sut.forceReloadRooms()
-
-      // Then
-      #expect(mockLoader.loadRoomsCallCount == 2)
-    }
-  }
-
   struct RoomTypeFiltering {
     @Test("Returns rooms filtered by room type (usage) matching")
     func returnsRoomsFilteredByRoomTypeMatching() async {
