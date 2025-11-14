@@ -72,14 +72,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 								.resizable()
 								.frame(width: 22, height: 20)
 						}
-
-//            Button {
-//              // action
-//            } label: {
-//              Image(systemName: "list.bullet")
-//                .resizable()
-//                .frame(width: 22, height: 20)
-//            }
           }
           .padding(5)
           .foregroundStyle(theme.label.tertiary)
