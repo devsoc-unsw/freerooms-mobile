@@ -45,6 +45,8 @@ public protocol RoomViewModel {
   func getRoomBookings(roomId: String) async
 
   func clearRoomBookings()
+
+  func reloadRooms() async
 }
 
 // MARK: - LiveRoomViewModel
@@ -155,6 +157,10 @@ public class LiveRoomViewModel: RoomViewModel {
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
+  }
+
+  public func reloadRooms() async {
+    await loadRooms()
   }
 
   // MARK: Private

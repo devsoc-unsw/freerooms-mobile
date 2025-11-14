@@ -40,6 +40,11 @@ public struct RoomsTabView<Destination: View>: View {
   public var body: some View {
     NavigationStack(path: $path) {
       roomView
+        .refreshable {
+          Task {
+            await roomViewModel.reloadRooms()
+          }
+        }
         .toolbar {
           // Buttons on the right
           ToolbarItemGroup(placement: .navigationBarTrailing) {

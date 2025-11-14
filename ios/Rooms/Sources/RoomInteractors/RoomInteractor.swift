@@ -50,11 +50,12 @@ public class RoomInteractor {
   {
     switch await roomService.getRooms(buildingId: buildingId) {
     case .success(let rooms):
-      let result = rooms
-        .filter { $0.buildingId == buildingId }
-        .sorted { a, b in
-          inAscendingOrder ? a.name < b.name : a.name > b.name
-        }
+      let result =
+        rooms
+          .filter { $0.buildingId == buildingId }
+          .sorted { a, b in
+            inAscendingOrder ? a.name < b.name : a.name > b.name
+          }
       return .success(result)
 
     case .failure(let error):
@@ -76,7 +77,9 @@ public class RoomInteractor {
   public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
-      let filtered = rooms.filter { GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection }
+      let filtered = rooms.filter {
+        GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection
+      }
       return .success(filtered)
 
     case .failure(let error):
@@ -96,13 +99,17 @@ public class RoomInteractor {
         let currentTime = Date()
 
         // Sort classes by start time, then end time.
-        let classBookings: [RoomBooking] = roomBookings[room.id] ?? []
-          .sorted { $0.start < $1.start }
-          .sorted { $0.end < $1.end }
+        let classBookings: [RoomBooking] =
+          roomBookings[room.id]
+            ?? []
+            .sorted { $0.start < $1.start }
+            .sorted { $0.end < $1.end }
 
         // Find the first class that *ends* after the current time
         // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first { $0.end >= currentTime }
+        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first {
+          $0.end >= currentTime
+        }
         if firstClassEndsAfterCurrentTime == nil {
           // class is free indefinitely meaning it is free the whole day from current time onwards
           result.append(room)
