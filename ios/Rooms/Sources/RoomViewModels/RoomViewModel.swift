@@ -41,6 +41,8 @@ public protocol RoomViewModel: Sendable {
   func getRoomBookings(roomId: String) async
 
   func clearRoomBookings()
+
+  func reloadRooms() async
 }
 
 // MARK: - LiveRoomViewModel
@@ -154,6 +156,10 @@ public class LiveRoomViewModel: RoomViewModel {
       // or display no connection on the timetable
       fatalError("Error loading rooms: \(error)")
     }
+  }
+
+  public func reloadRooms() async {
+    await loadRooms()
   }
 
   // MARK: Private

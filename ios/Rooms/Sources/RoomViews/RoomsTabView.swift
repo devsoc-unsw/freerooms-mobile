@@ -40,6 +40,11 @@ public struct RoomsTabView<Destination: View>: View {
       List {
         roomsView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
+      .refreshable {
+        Task {
+          await roomViewModel.reloadRooms()
+        }
+      }
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
