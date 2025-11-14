@@ -24,7 +24,6 @@ public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
   func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
-  func forceReloadRooms() async
 }
 
 // MARK: - LiveRoomService
@@ -72,10 +71,6 @@ public final class LiveRoomService: RoomService {
     }
   }
 
-  public func forceReloadRooms() async {
-    _ = await roomLoader.fetch()
-  }
-
   // MARK: Private
 
   private var roomLoader: any RoomLoader
@@ -108,9 +103,5 @@ public final class PreviewRoomService: RoomService {
 
   public func getRooms(buildingId _: String) async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
-  }
-
-  public func forceReloadRooms() async {
-    // No-op for preview
   }
 }

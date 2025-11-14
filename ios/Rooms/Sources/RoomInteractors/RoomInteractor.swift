@@ -208,10 +208,6 @@ public class RoomInteractor {
     }
   }
 
-  public func forceReloadRooms() async {
-    await roomService.forceReloadRooms()
-  }
-
   // MARK: Private
 
   private let roomService: RoomService
