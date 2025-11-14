@@ -86,13 +86,13 @@ public struct RoomsTabView<Destination: View>: View {
         }
         .opacity(
           roomViewModel.isLoading
-            ? 0
-            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-          .task {
-            if !roomViewModel.hasLoaded {
-              await roomViewModel.onAppear()
-            }
+          ? 0
+          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+        .task {
+          if !roomViewModel.hasLoaded {
+            await roomViewModel.onAppear()
           }
+        }
     }
     .navigationTitle("Rooms")
     .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
@@ -203,11 +203,11 @@ public struct RoomsTabView<Destination: View>: View {
   private var roomView: some View {
     if selectedView == RoomOrientation.List {
       List {
-        roomsListView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     } else {
       ScrollView {
-        roomsCardView(roomViewModel.roomsByBuildingId, buildingViewModel.allBuildings)
+        roomsCardView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
     }
   }
