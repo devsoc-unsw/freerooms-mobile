@@ -41,6 +41,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           await viewModel.reloadBuildings()
         }
       }
+      .redacted(reason: viewModel.isLoading ? .placeholder : [])
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -92,24 +93,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
         roomDestinationBuilderView(room)
       }
-      .opacity(
-        viewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .overlay {
-          if viewModel.isLoading {
-            VStack {
-              ProgressView()
-                .scaleEffect(1.2)
-              Text("Loading buildings...")
-                .font(.caption)
-                .foregroundColor(theme.label.secondary)
-                .padding(.top, 8)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.gray.opacity(0.1))
-          }
-        }
         .onAppear {
           if !viewModel.hasLoaded {
             viewModel.onAppear()
