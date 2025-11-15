@@ -44,13 +44,11 @@ public struct RoomDetailsView: View {
     .gesture(
       DragGesture(minimumDistance: 20, coordinateSpace: .local)
         .onEnded { value in
-          if value.translation.width > 50 && value.translation.width > abs(value.translation.height)
-          {
+          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
             showDetails = false
             dismiss()
           }
-        }
-    )
+        })
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
@@ -121,8 +119,7 @@ extension View {
   @ViewBuilder
   func liquidGlass(
     if transform1: (Self) -> some View,
-    else transform2: (Self) -> some View
-  )
+    else transform2: (Self) -> some View)
     -> some View
   {
     if #available(iOS 26.0, *) {

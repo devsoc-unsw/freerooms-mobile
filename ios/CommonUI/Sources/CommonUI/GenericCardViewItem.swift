@@ -54,20 +54,20 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
 
         Spacer()
         if let overallRating = item.overallRating {
-					HStack(spacing: 0) {
-          	Text(overallRating.formatted())
-							.foregroundStyle(.white)
-							.font(.system(size: 12, weight: .semibold))
-							.padding(.leading, 2)
-						Image(systemName: "star.fill")
-							.font(.system(size: 10, weight: .semibold))
-							.foregroundStyle(.white)
+          HStack(spacing: 0) {
+            Text(overallRating.formatted())
+              .foregroundStyle(.white)
+              .font(.system(size: 12, weight: .semibold))
+              .padding(.leading, 2)
+            Image(systemName: "star.fill")
+              .font(.system(size: 10, weight: .semibold))
+              .foregroundStyle(.white)
           }
-					.padding(.horizontal, 4)
-					.padding(.vertical, 2)
-					.background(
-						RoundedRectangle(cornerRadius: 12)
-							.fill(theme.label.tertiary))
+          .padding(.horizontal, 4)
+          .padding(.vertical, 2)
+          .background(
+            RoundedRectangle(cornerRadius: 12)
+              .fill(theme.label.tertiary))
         } else {
           HStack(spacing: 0) {
             Text("0")
@@ -99,8 +99,8 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
                 .fill(room.statusBackgroundColor))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
-						.font(.system(size: 14, weight: .light))
-						.frame(maxWidth: .infinity, alignment: .leading)
+            .font(.system(size: 14, weight: .light))
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
       }
     }
