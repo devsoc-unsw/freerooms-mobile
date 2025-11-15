@@ -32,9 +32,10 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
-  public init(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader) {
+  public init(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader, swiftDataRoomLoader: SwiftDataRoomLoader) {
     self.JSONRoomLoader = JSONRoomLoader
     self.roomStatusLoader = roomStatusLoader
+    self.swiftDataRoomLoader = swiftDataRoomLoader
   }
 
   // MARK: Public
@@ -47,14 +48,22 @@ public final class LiveRoomLoader: RoomLoader {
       case .success(let rooms):
         var filteredRooms = rooms.filter { $0.buildingId == buildingId }
         await combineLiveAndSavedData(&filteredRooms)
-
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedRoomsData)
         return .success(filteredRooms)
 
       case .failure(let err):
         return .failure(err)
       }
     } else {
-      fatalError("Swift data not implemented")
+      switch swiftDataRoomLoader.fetch() {
+      case .success(let offlineRooms):
+        var filteredRooms = offlineRooms.filter { $0.buildingId == buildingId }
+        await combineLiveAndSavedData(&filteredRooms)
+        return .success(filteredRooms)
+
+      case .failure(let err):
+        return .failure(err)
+      }
     }
   }
 
@@ -69,7 +78,14 @@ public final class LiveRoomLoader: RoomLoader {
         return .failure(err)
       }
     } else {
-      fatalError("Swift data not implemented")
+      switch swiftDataRoomLoader.fetch() {
+      case .success(var offlineRooms):
+        await combineLiveAndSavedData(&offlineRooms)
+        return .success(offlineRooms)
+
+      case .failure(let err):
+        return .failure(err)
+      }
     }
   }
 
@@ -77,6 +93,7 @@ public final class LiveRoomLoader: RoomLoader {
 
   private let JSONRoomLoader: JSONRoomLoader
   private let roomStatusLoader: RoomStatusLoader
+  private let swiftDataRoomLoader: SwiftDataRoomLoader
 
   private var hasSavedData: Bool {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedRoomsData)
