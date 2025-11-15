@@ -119,7 +119,7 @@ public struct RoomsTabView<Destination: View>: View {
   @Binding var selectedTab: String
 
   @Binding var selectedView: RoomOrientation
-  @State var cardWidth: CGFloat? // TODO:
+  @State var cardWidth: CGFloat?
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?

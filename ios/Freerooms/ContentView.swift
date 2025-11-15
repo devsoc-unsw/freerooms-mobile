@@ -25,12 +25,13 @@ struct ContentView: View {
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
-  @State var selectedView = RoomOrientation.List
+  @State var selectedRoomsView = RoomOrientation.List
+	@State var selectedBuildingsView = RoomOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
+			BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in
+				RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath,imageProvider: {
           BuildingImage[$0]
         })
         .task { await roomViewModel.onAppear() }
@@ -50,7 +51,7 @@ struct ContentView: View {
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab,
-        selectedView: $selectedView)
+        selectedView: $selectedRoomsView)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)
           .task { await roomViewModel.onAppear() }
