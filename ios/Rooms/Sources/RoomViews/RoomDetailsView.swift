@@ -39,9 +39,18 @@ public struct RoomDetailsView: View {
         .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
-        .interactiveDismissDisabled(true)
     }
-    .navigationBarBackButtonHidden()
+    .navigationBarBackButtonHidden(true)
+    .gesture(
+      DragGesture(minimumDistance: 20, coordinateSpace: .local)
+        .onEnded { value in
+          if value.translation.width > 50 && value.translation.width > abs(value.translation.height)
+          {
+            showDetails = false
+            dismiss()
+          }
+        }
+    )
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
@@ -53,14 +62,16 @@ public struct RoomDetailsView: View {
         .padding(.vertical, 4)
         .font(.title2)
         .buttonBorderShape(.circle)
-        .liquidGlass(if: {
-          $0
-        }, else: {
-          $0
-            .buttonStyle(.borderedProminent)
-            .tint(.white)
-            .foregroundStyle(theme.accent.primary)
-        })
+        .liquidGlass(
+          if: {
+            $0
+          },
+          else: {
+            $0
+              .buttonStyle(.borderedProminent)
+              .tint(.white)
+              .foregroundStyle(theme.accent.primary)
+          })
       }
 
       ToolbarItem(placement: .topBarTrailing) {
@@ -70,13 +81,15 @@ public struct RoomDetailsView: View {
         .controlSize(.large)
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .liquidGlass(if: {
-          $0
-        }, else: {
-          $0
-            .background(Color.white)
-            .cornerRadius(12)
-        })
+        .liquidGlass(
+          if: {
+            $0
+          },
+          else: {
+            $0
+              .background(Color.white)
+              .cornerRadius(12)
+          })
       }
     }
   }
@@ -108,7 +121,8 @@ extension View {
   @ViewBuilder
   func liquidGlass(
     if transform1: (Self) -> some View,
-    else transform2: (Self) -> some View)
+    else transform2: (Self) -> some View
+  )
     -> some View
   {
     if #available(iOS 26.0, *) {
