@@ -26,7 +26,7 @@ public protocol RoomViewModel {
   var roomsInAscendingOrder: Bool { get }
 
   var currentRoomBookings: [RoomBooking] { get }
-  
+
   // TODO: Why is there two loading?
   var isLoading: Bool { get }
 
@@ -37,11 +37,11 @@ public protocol RoomViewModel {
   var searchText: String { get set }
 
   var loadRoomErrorMessage: AlertError? { get set }
-  
+
   func getDisplayedRooms(for buildingId: String) -> [Room]
 
   func getPlaceHolderRooms(for buildingId: String) -> [Room]
-  
+
   func getRoomsInOrder()
 
   func onAppear() async
@@ -57,42 +57,6 @@ public protocol RoomViewModel {
 
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
-    public func getPlaceHolderRooms(for buildingId: String) -> [Room] {
-        (0..<6).map { index in
-            Room(
-                abbreviation: "LDG",
-                accessibility: ["Loading"],
-                audioVisual: ["Loading"],
-                buildingId: buildingId,
-                capacity: 50,
-                floor: "1",
-                id: "\(buildingId)-placeholder-\(index)",
-                infoTechnology: ["Loading"],
-                latitude: 0.0,
-                longitude: 0.0,
-                microphone: ["Loading"],
-                name: "Loading Room Name",
-                school: "UNSW",
-                seating: "Movable",
-                usage: "TUSM",
-                service: ["Loading"],
-                writingMedia: ["Whiteboard"],
-                status: "free",
-                endTime: nil,
-                overallRating: 4.0
-            )
-        }
-    }
-
-    public func getDisplayedRooms(for buildingId: String) -> [Room] {
-        // If loading and this building has no rooms yet, show placeholders
-        if isLoading && (roomsByBuildingId[buildingId]?.isEmpty ?? true) {
-            return getPlaceHolderRooms(for: buildingId)
-        }
-        
-        // Otherwise show filtered rooms (or empty array if none)
-        return filteredRoomsByBuildingId[buildingId] ?? []
-    }
 
   // MARK: Lifecycle
 
@@ -129,6 +93,42 @@ public class LiveRoomViewModel: RoomViewModel {
       result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
     }
     return result
+  }
+
+  public func getPlaceHolderRooms(for buildingId: String) -> [Room] {
+    (0..<6).map { index in
+      Room(
+        abbreviation: "LDG",
+        accessibility: ["Loading"],
+        audioVisual: ["Loading"],
+        buildingId: buildingId,
+        capacity: 50,
+        floor: "1",
+        id: "\(buildingId)-placeholder-\(index)",
+        infoTechnology: ["Loading"],
+        latitude: 0.0,
+        longitude: 0.0,
+        microphone: ["Loading"],
+        name: "Loading Room Name",
+        school: "UNSW",
+        seating: "Movable",
+        usage: "TUSM",
+        service: ["Loading"],
+        writingMedia: ["Whiteboard"],
+        status: "free",
+        endTime: nil,
+        overallRating: 4.0)
+    }
+  }
+
+  public func getDisplayedRooms(for buildingId: String) -> [Room] {
+    // If loading and this building has no rooms yet, show placeholders
+    if isLoading, roomsByBuildingId[buildingId]?.isEmpty ?? true {
+      return getPlaceHolderRooms(for: buildingId)
+    }
+
+    // Otherwise show filtered rooms (or empty array if none)
+    return filteredRoomsByBuildingId[buildingId] ?? []
   }
 
   public func clearRoomBookings() {
