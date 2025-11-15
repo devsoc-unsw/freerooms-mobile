@@ -1,5 +1,6 @@
 //
 //  RoomsTabView.swift
+//  RoomsTabView.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.
@@ -25,12 +26,14 @@ public struct RoomsTabView<Destination: View>: View {
     buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
     selectedView: Binding<RoomOrientation>,
+    selectedView: Binding<RoomOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
     _path = path
     self.roomViewModel = roomViewModel
     self.buildingViewModel = buildingViewModel
     _selectedTab = selectedTab
+    _selectedView = selectedView
     _selectedView = selectedView
     self.roomDestinationBuilderView = roomDestinationBuilderView
   }
@@ -170,6 +173,47 @@ public struct RoomsTabView<Destination: View>: View {
 
   // search text is owned by the view model
 
+  func roomsCardView(
+    _ roomsByBuildingId: [String: [Room]],
+    _ buildings: [Building])
+    -> some View
+  {
+    ForEach(buildings) { building in
+      let rooms = roomsByBuildingId[building.id] ?? []
+      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
+
+      if rooms.isEmpty {
+        EmptyView()
+      } else {
+        Section {
+          LazyVGrid(columns: columns, spacing: 24) {
+            ForEach(rooms) { room in
+              GenericCardView(
+                path: $path,
+                cardWidth: $cardWidth,
+                room: room,
+                rooms: rooms,
+                imageProvider: { roomID in
+                  RoomImage[roomID]
+                })
+            }
+          }
+          .padding(.horizontal, 16)
+        } header: {
+          HStack {
+            Text(buildingName)
+              .foregroundStyle(theme.label.primary)
+              .padding(.leading, 10)
+            Spacer()
+          }
+          .padding(.horizontal, 16)
+          .padding(.top, 10)
+        }
+      }
+    }
+  }
+
+  func roomsListView(
   func roomsCardView(
     _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])

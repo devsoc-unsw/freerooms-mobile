@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import CommonUI
 import Foundation
 import Location
 import Observation
@@ -208,6 +209,10 @@ public class LiveRoomViewModel: RoomViewModel {
     selectedDuration = nil
     selectedCampusLocation = nil
     selectedCapacity = nil
+  }
+
+  public func reloadRooms() async {
+    await loadRooms()
   }
 
   // MARK: Private
