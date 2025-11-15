@@ -16,13 +16,13 @@ struct JSONLoaderTests {
   // MARK: Internal
 
   @Test("JSON loader decodes json file into platform type [DecodableBuildings]")
-  func loadsBuildingsFromJSONFile() {
+  func loadsBuildingsFromJSONFile() async {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsJSON)
     let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
-    let res = sut.load(from: "fakeFilePath/fake")
+    let res = await sut.load(from: "fakeFilePath/fake")
 
     // Then
     let decodableBuildings = createDecodableBuildings(2)
@@ -30,39 +30,39 @@ struct JSONLoaderTests {
   }
 
   @Test("Throws an error when file does not exist")
-  func throwsErrorOnFileNotExisting() {
+  func throwsErrorOnFileNotExisting() async {
     // Given
     let mockFileLoader = MockFileLoader(throws: FileLoaderError.fileNotFound)
     let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
-    let res = sut.load(from: "fakeFilePath/fake")
+    let res = await sut.load(from: "fakeFilePath/fake")
 
     // Then
     expect(res, toThrow: .fileNotFound)
   }
 
   @Test("Throws an error when JSON in file is malformed")
-  func throwsErrorOnMalformedJSON() {
+  func throwsErrorOnMalformedJSON() async {
     // Given
     let mockFileLoader = MockFileLoader(loads: fakeBuildingsMalformedJSON)
     let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
-    let res = sut.load(from: "fakeFilePath/fake")
+    let res = await sut.load(from: "fakeFilePath/fake")
 
     // Then
     expect(res, toThrow: .malformedJSON)
   }
 
   @Test("JSON Loader decodes empty buildings json file into empty platform type [DecodableBuilding]")
-  func loadsEmptyArrayFromEmptyJSONFile() {
+  func loadsEmptyArrayFromEmptyJSONFile() async {
     // Given
     let mockFileLoader = MockFileLoader(loads: emptyJSON)
     let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
-    let res = sut.load(from: "fakeFilePath/fake")
+    let res = await sut.load(from: "fakeFilePath/fake")
 
     // Then
     let emptyDecodeableBuildings = [DecodableBuilding]()
@@ -76,7 +76,7 @@ struct JSONLoaderTests {
     let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
 
     // When
-    let res = sut.load(from: "fakeFilePath/fake")
+    let res = await sut.load(from: "fakeFilePath/fake")
 
     // Then
     let decodableBuildings = createDecodableBuildings(2)
@@ -104,7 +104,7 @@ struct JSONLoaderTests {
   }
 
   private func createDecodableBuildings(_ count: Int) -> [DecodableBuilding] {
-    var decodableBuildings: [DecodableBuilding] = []
+    var decodableBuildings = [DecodableBuilding]()
     for _ in 0..<count {
       decodableBuildings.append(DecodableBuilding(name: "name", id: "123", lat: 1.0, long: 1.0, aliases: ["A", "B"]))
     }
@@ -176,7 +176,8 @@ private let fakeBuildingsSeedJSON = """
 
 // MARK: - DecodableBuilding
 
-private struct DecodableBuilding: Decodable, Equatable {
+private nonisolated
+struct DecodableBuilding: Decodable, Equatable {
   public let name: String
   public let id: String
   public let lat: Double

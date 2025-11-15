@@ -1,5 +1,5 @@
 //
-//  RoomTypeFilterView.swift
+//  CampusLocationFilterView.swift
 //  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 13/10/2025.
@@ -8,17 +8,17 @@
 import RoomModels
 import SwiftUI
 
-// MARK: - RoomTypeFilterView
+// MARK: - CampusLocationFilterView
 
-public struct RoomTypeFilterView: View {
+public struct CampusLocationFilterView: View {
 
   // MARK: Lifecycle
 
   public init(
-    selectedRoomTypes: Binding<Set<RoomType>>,
+    selectedCampusLocation: Binding<CampusLocation?>,
     onSelect: @escaping () -> Void)
   {
-    _selectedRoomTypes = selectedRoomTypes
+    _selectedCampusLocation = selectedCampusLocation
     self.onSelect = onSelect
   }
 
@@ -26,29 +26,22 @@ public struct RoomTypeFilterView: View {
 
   public var body: some View {
     VStack(spacing: 0) {
-      // Drag handle
-      RoundedRectangle(cornerRadius: 2)
-        .fill(Color.gray.opacity(0.3))
-        .frame(width: 36, height: 4)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-
       // Title
-      Text("Room Types")
+      Text("Campus Location")
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
         .padding(.bottom, 20)
 
-      // Room type grid
-      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
-        ForEach(RoomType.allCases) { roomType in
-          RoomTypeButton(
-            roomType: roomType,
-            isSelected: selectedRoomTypes.contains(roomType))
+      // Campus location options
+      VStack(spacing: 12) {
+        ForEach(CampusLocation.allCases) { location in
+          CampusLocationButton(
+            location: location,
+            isSelected: selectedCampusLocation == location)
           {
-            toggleRoomType(roomType)
+            selectCampusLocation(location)
           }
         }
       }
@@ -78,38 +71,34 @@ public struct RoomTypeFilterView: View {
 
   // MARK: Private
 
-  @Binding private var selectedRoomTypes: Set<RoomType>
+  @Binding private var selectedCampusLocation: CampusLocation?
 
   private let onSelect: () -> Void
 
-  private func toggleRoomType(_ roomType: RoomType) {
-    if selectedRoomTypes.contains(roomType) {
-      selectedRoomTypes.remove(roomType)
-    } else {
-      selectedRoomTypes.insert(roomType)
-    }
+  private func selectCampusLocation(_ location: CampusLocation) {
+    selectedCampusLocation = location
   }
 }
 
-// MARK: - RoomTypeButton
+// MARK: - CampusLocationButton
 
-private struct RoomTypeButton: View {
-  let roomType: RoomType
+private struct CampusLocationButton: View {
+  let location: CampusLocation
   let isSelected: Bool
   let action: () -> Void
 
   var body: some View {
     Button(action: action) {
-      Text(roomType.displayName)
+      Text(location.displayName)
         .font(.body)
         .fontWeight(.medium)
-        .foregroundColor(isSelected ? .primary : .primary)
+        .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
         .frame(height: 44)
-        .background(isSelected ? Color.white : Color.gray.opacity(0.1))
+        .background(isSelected ? Color.orange.opacity(0.1) : Color.gray.opacity(0.1))
         .overlay(
           RoundedRectangle(cornerRadius: 8)
-            .stroke(isSelected ? Color.gray.opacity(0.3) : Color.clear, lineWidth: 1))
+            .stroke(isSelected ? Color.orange : Color.clear, lineWidth: 1))
         .cornerRadius(8)
     }
     .buttonStyle(PlainButtonStyle())
@@ -119,8 +108,8 @@ private struct RoomTypeButton: View {
 // MARK: - Preview
 
 #Preview {
-  RoomTypeFilterView(
-    selectedRoomTypes: .constant([.computerLab]))
+  CampusLocationFilterView(
+    selectedCampusLocation: .constant(.lower))
   {
     // onSelect action
   }

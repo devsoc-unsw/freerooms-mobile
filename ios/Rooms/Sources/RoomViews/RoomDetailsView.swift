@@ -1,5 +1,5 @@
 //
-//  RoomView.swift
+//  RoomDetailsView.swift
 //  Rooms
 //
 //  Created by Yanlin Li  on 18/9/2025.
@@ -9,6 +9,8 @@ import CommonUI
 import RoomModels
 import RoomViewModels
 import SwiftUI
+
+// MARK: - RoomDetailsView
 
 public struct RoomDetailsView: View {
 
@@ -42,40 +44,39 @@ public struct RoomDetailsView: View {
     .navigationBarBackButtonHidden()
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
-        
-          Button("Back", systemImage: "chevron.left") {
-            showDetails = false
-            // TODO:
-            // clear room bookings here instead of on appear
-            dismiss()
-          }
-          .padding(.vertical, 4)
-          .font(.title2)
-          .buttonBorderShape(.circle)
-          .liquidGlass(if: {
-            $0
-          }, else: {
-            $0
-              .buttonStyle(.borderedProminent)
-              .tint(.white)
-              .foregroundStyle(theme.accent.primary)
-          })
+        Button("Back", systemImage: "chevron.left") {
+          showDetails = false
+          // TODO:
+          // clear room bookings here instead of on appear
+          dismiss()
+        }
+        .padding(.vertical, 4)
+        .font(.title2)
+        .buttonBorderShape(.circle)
+        .liquidGlass(if: {
+          $0
+        }, else: {
+          $0
+            .buttonStyle(.borderedProminent)
+            .tint(.white)
+            .foregroundStyle(theme.accent.primary)
+        })
       }
 
       ToolbarItem(placement: .topBarTrailing) {
-          Section {
-            RoomLabel(leftLabel: "Capacity", rightLabel: String(room.capacity))
-          }
-          .controlSize(.large)
-          .padding(.horizontal)
-          .padding(.vertical, 8)
-          .liquidGlass(if: {
-            $0
-          }, else: {
-            $0
-              .background(Color.white)
-              .cornerRadius(12)
-          })
+        Section {
+          RoomLabel(leftLabel: "Capacity", rightLabel: String(room.capacity))
+        }
+        .controlSize(.large)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .liquidGlass(if: {
+          $0
+        }, else: {
+          $0
+            .background(Color.white)
+            .cornerRadius(12)
+        })
       }
     }
   }
@@ -105,10 +106,11 @@ public struct RoomDetailsView: View {
 
 extension View {
   @ViewBuilder
-  func liquidGlass<T: View, U: View>(
-    if transform1: (Self) -> T,
-    else transform2: (Self) -> U
-  ) -> some View {
+  func liquidGlass(
+    if transform1: (Self) -> some View,
+    else transform2: (Self) -> some View)
+    -> some View
+  {
     if #available(iOS 26.0, *) {
       transform1(self)
     } else {

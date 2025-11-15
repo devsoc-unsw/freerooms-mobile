@@ -1,5 +1,5 @@
 //
-//  BuildingList.swift
+//  BuildingsTabView.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.
@@ -41,20 +41,14 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsView(for: "Lower campus", from: viewModel.filteredBuildings.lower)
       }
       .refreshable {
-        viewModel.reloadBuildings()
+        Task {
+          await viewModel.reloadBuildings()
+        }
       }
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {
-            Button {
-              // action
-            } label: {
-              Image(systemName: "line.3.horizontal.decrease")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
-
+          HStack {        
             Button {
               viewModel.getBuildingsInOrder()
             } label: {
@@ -68,7 +62,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             } label: {
               Image(systemName: "list.bullet")
                 .resizable()
-                .frame(width: 22, height: 15)
+                .frame(width: 22, height: 20)
             }
           }
           .padding(5)
@@ -77,7 +71,8 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under
+      // section cards
       .shadow(
         color: theme.label.primary.opacity(0.2),
         radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
@@ -114,6 +109,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         }
         .navigationTitle("Buildings")
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+    }
+    .alert(item: $viewModel.loadBuildingErrorMessage) { error in
+      Alert(
+        title: Text(error.title),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK")))
     }
     .tabItem {
       Label("Buildings", systemImage: "building")

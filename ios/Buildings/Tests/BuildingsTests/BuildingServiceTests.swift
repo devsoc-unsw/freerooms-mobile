@@ -79,7 +79,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.reloadBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toFetch: buildings)
@@ -92,7 +92,7 @@ struct BuildingServiceTests {
     let sut = LiveBuildingService(buildingLoader: mockBuildingLoader)
 
     // When
-    let res = await sut.reloadBuildings()
+    let res = await sut.getBuildings()
 
     // Then
     expect(res, toThrow: FetchBuildingsError.connectivity)
@@ -119,7 +119,7 @@ struct BuildingServiceTests {
   }
 
   private func createBuildings(_ count: Int) -> [Building] {
-    var buildings: [Building] = []
+    var buildings = [Building]()
     for _ in 0..<count {
       buildings.append(Building(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"]))
     }

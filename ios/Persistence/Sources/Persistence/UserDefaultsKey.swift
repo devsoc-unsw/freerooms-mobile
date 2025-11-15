@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 15/8/2025.
 //
 
-public enum UserDefaultsKeys {
+public nonisolated
+enum UserDefaultsKeys {
   public static let hasSavedBuildingsData = "hasSavedBuildingsData"
   public static let hasSavedRoomsData = "hasSavedRoomsData"
 }

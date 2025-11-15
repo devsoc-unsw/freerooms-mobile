@@ -16,6 +16,7 @@ final class NetworkCodableLoaderTests {
 
   // MARK: Lifecycle
 
+  @MainActor
   deinit {
     clientTracker?.verifyDeallocation()
     sutTracker?.verifyDeallocation()
@@ -144,8 +145,7 @@ final class NetworkCodableLoaderTests {
 // MARK: - MockHTTPClient
 
 /// Simulates network responses.
-// swiftlint:disable:next no_unchecked_sendable
-private class MockHTTPClient: HTTPClient, @unchecked Sendable {
+private final class MockHTTPClient: HTTPClient {
 
   // MARK: Public
 
@@ -164,6 +164,7 @@ private class MockHTTPClient: HTTPClient, @unchecked Sendable {
     returnedStringData = nil
   }
 
+  @MainActor
   func setNextRequestToSucceedWithStatusCode(_ statusCode: Int) {
     returnedStringData = "".data
     returnedStatusCode = statusCode

@@ -11,7 +11,7 @@ import RoomServices
 
 // MARK: - MockRoomStatusLoader
 
-public struct MockRoomStatusLoader: RoomStatusLoader {
+public final class MockRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 
@@ -23,12 +23,12 @@ public struct MockRoomStatusLoader: RoomStatusLoader {
   // MARK: Public
 
   public func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError> {
-    if let error {
-      return .failure(error)
+    if let stubbedError {
+      return .failure(stubbedError)
     }
 
-    if let remoteRoomStatus {
-      return .success(remoteRoomStatus)
+    if let stubbedResponse {
+      return .success(stubbedResponse)
     }
 
     return .failure(.connectivity)

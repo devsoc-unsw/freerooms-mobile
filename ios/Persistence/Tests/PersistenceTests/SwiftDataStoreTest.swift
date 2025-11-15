@@ -14,6 +14,7 @@ class DataStoreTest {
 
   // MARK: Lifecycle
 
+  @MainActor
   deinit {
     try? sut.deleteAll()
   }
@@ -53,7 +54,7 @@ class DataStoreTest {
   @Test("Testing fetchAll after save", .serialized, arguments: 1 ... 3)
   func fetchAllAfterSave(count: Int) throws {
     // Given
-    var items: [GenericModel] = []
+    var items = [GenericModel]()
     for i in 1 ... count {
       items.append(GenericModel(stringID: String(i)))
     }
@@ -83,7 +84,7 @@ class DataStoreTest {
   @Test("Testing delete multiple items after save", .serialized, arguments: 1 ... 3)
   func deleteAllAfterSave(count: Int) throws {
     // Given
-    var items: [GenericModel] = []
+    var items = [GenericModel]()
     for i in 1 ... count {
       items.append(GenericModel(stringID: String(i)))
     }
@@ -112,7 +113,7 @@ class DataStoreTest {
   @Test("Testing saving multiple items", .serialized, arguments: 1 ... 3)
   func saveMultipleTimes(count: Int) throws {
     // Given
-    var items: [GenericModel] = []
+    var items = [GenericModel]()
     for i in 1 ... count {
       items.append(GenericModel(stringID: String(i)))
     }

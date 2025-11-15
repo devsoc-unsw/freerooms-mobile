@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -20,8 +20,20 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "TestingSupport",
-      dependencies: ["Persistence"]),
+      dependencies: ["Persistence"],
+      swiftSettings: .defaultSettings),
     .testTarget(
       name: "TestingSupportTests",
-      dependencies: ["TestingSupport"]),
+      dependencies: ["TestingSupport"],
+      swiftSettings: .defaultSettings),
   ])
+
+extension [SwiftSetting] {
+  static var defaultSettings: [SwiftSetting] {
+    [
+      .defaultIsolation(MainActor.self),
+      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      .enableUpcomingFeature("InferIsolatedConformances"),
+    ]
+  }
+}

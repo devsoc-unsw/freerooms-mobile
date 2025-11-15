@@ -38,6 +38,7 @@ public protocol PersistentStore<Model> {
 // MARK: - IdentifiableModel
 
 /// A minimal protocol for models to be stored persistently.
-public protocol IdentifiableModel {
+public nonisolated
+protocol IdentifiableModel {
   var stringID: String { get }
 }

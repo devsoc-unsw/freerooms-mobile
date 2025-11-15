@@ -22,6 +22,8 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
     self.modelContext = modelContext
   }
 
+  nonisolated deinit { }
+
   // MARK: Public
 
   public func deleteAll() throws {
@@ -36,7 +38,9 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
 
   /// Saves multiple items to the persistent store; changes are only committed to backing store if all items successfully save.
   public func save(_ items: [Model]) throws {
-    for item in items { modelContext.insert(item) }
+    for item in items {
+      modelContext.insert(item)
+    }
     try modelContext.save()
   }
 
@@ -48,8 +52,10 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
 
   /// Fetches a specific item by its unique identifier.
   public func fetch(id: String) throws -> Model? {
-    let descriptor = FetchDescriptor<Model>(
-      predicate: #Predicate { $0.stringID == id })
+    let descriptor = FetchDescriptor<Model>(predicate: #Predicate { model in
+      model.stringID == id
+    })
+
     return try modelContext.fetch(descriptor).first
   }
 
@@ -59,9 +65,12 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
     try modelContext.save()
   }
 
-  /// Deletes multiple items from the persistent store; changes are only committed to backing store if all items are successfully deleted.
+  /// Deletes multiple items from the persistent store; changes are only committed to backing store if all items are successfully
+  /// deleted.
   public func delete(_ items: [Model]) throws {
-    for item in items { modelContext.delete(item) }
+    for item in items {
+      modelContext.delete(item)
+    }
     try modelContext.save()
   }
 
@@ -74,4 +83,5 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
   // MARK: Private
 
   private let modelContext: ModelContext
+
 }

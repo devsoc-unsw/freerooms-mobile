@@ -15,7 +15,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
-public protocol RoomViewModel: Sendable {
+public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -43,6 +43,8 @@ public protocol RoomViewModel: Sendable {
   var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
+  var loadRoomErrorMessage: AlertError? { get set }
+
   func getRoomsInOrder()
 
   func onAppear() async
@@ -51,6 +53,8 @@ public protocol RoomViewModel: Sendable {
 
   func clearRoomBookings()
 
+  func reloadRooms() async
+
   func applyFilters()
   func clearAllFilters()
 }
@@ -58,8 +62,7 @@ public protocol RoomViewModel: Sendable {
 // MARK: - LiveRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
+public class LiveRoomViewModel: RoomViewModel {
 
   // MARK: Lifecycle
 
@@ -69,15 +72,17 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 
   // MARK: Public
 
+  public var loadRoomErrorMessage: AlertError?
+
   public var getBookingsIsLoading = false
 
-  public var currentRoomBookings: [RoomBooking] = []
+  public var currentRoomBookings = [RoomBooking]()
 
   public var hasLoaded = false
 
-  public var roomsByBuildingId: [String: [RoomModels.Room]] = [:]
+  public var roomsByBuildingId = [String: [RoomModels.Room]]()
 
-  public var rooms: [Room] = []
+  public var rooms = [Room]()
 
   public var roomsInAscendingOrder = true
 
@@ -101,7 +106,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
   }
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
-    var result: [String: [Room]] = [:]
+    var result = [String: [Room]]()
     for (buildingId, rooms) in roomsByBuildingId {
       var filteredRooms = rooms
       if hasActiveFilters {
@@ -141,8 +146,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
@@ -156,8 +160,7 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
       }
 
     case .failure(let error):
-      // swiftlint:disable:next no_direct_standard_out_logs
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
     isLoading = false
@@ -185,11 +188,12 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
     case .success(let bookings):
       currentRoomBookings = bookings
     case .failure(let error):
-      // TODO: better error handling
-      // either an emtpy timetable
-      // or display no connection on the timetable
-      fatalError("Error loading rooms: \(error)")
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
+  }
+
+  public func reloadRooms() async {
+    await loadRooms()
   }
 
   public func applyFilters() {
@@ -224,14 +228,13 @@ public class LiveRoomViewModel: RoomViewModel, @unchecked Sendable {
 // MARK: - PreviewRoomViewModel
 
 @Observable
-// swiftlint:disable:next no_unchecked_sendable
-public class PreviewRoomViewModel: LiveRoomViewModel, @unchecked Sendable {
+public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
     super.init(interactor: RoomInteractor(
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
 
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo]
+    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
 }

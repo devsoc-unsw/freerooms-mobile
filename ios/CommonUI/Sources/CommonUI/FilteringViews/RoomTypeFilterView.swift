@@ -1,5 +1,5 @@
 //
-//  DurationFilterView.swift
+//  RoomTypeFilterView.swift
 //  Rooms
 //
 //  Created by Muqueet Mohsen Chowdhury on 13/10/2025.
@@ -8,17 +8,17 @@
 import RoomModels
 import SwiftUI
 
-// MARK: - DurationFilterView
+// MARK: - RoomTypeFilterView
 
-public struct DurationFilterView: View {
+public struct RoomTypeFilterView: View {
 
   // MARK: Lifecycle
 
   public init(
-    selectedDuration: Binding<Duration?>,
+    selectedRoomTypes: Binding<Set<RoomType>>,
     onSelect: @escaping () -> Void)
   {
-    _selectedDuration = selectedDuration
+    _selectedRoomTypes = selectedRoomTypes
     self.onSelect = onSelect
   }
 
@@ -26,35 +26,25 @@ public struct DurationFilterView: View {
 
   public var body: some View {
     VStack(spacing: 0) {
-      // Drag handle
-      RoundedRectangle(cornerRadius: 2)
-        .fill(Color.gray.opacity(0.3))
-        .frame(width: 36, height: 4)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-
       // Title
-      Text("Duration")
+      Text("Room Types")
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
         .padding(.bottom, 20)
 
-      // Duration options
-      HStack(spacing: 0) {
-        ForEach(Duration.allCases) { duration in
-          DurationButton(
-            duration: duration,
-            isSelected: selectedDuration == duration)
+      // Room type grid
+      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
+        ForEach(RoomType.allCases) { roomType in
+          RoomTypeButton(
+            roomType: roomType,
+            isSelected: selectedRoomTypes.contains(roomType))
           {
-            selectDuration(duration)
+            toggleRoomType(roomType)
           }
         }
       }
-      .padding(.horizontal, 20)
-      .background(Color.gray.opacity(0.1))
-      .cornerRadius(8)
       .padding(.horizontal, 20)
 
       // Spacing
@@ -76,40 +66,43 @@ public struct DurationFilterView: View {
       .padding(.bottom, 20)
     }
     .background(Color.white)
-    .cornerRadius(20, corners: [.topLeft, .topRight])
   }
 
   // MARK: Private
 
-  @Binding private var selectedDuration: Duration?
+  @Binding private var selectedRoomTypes: Set<RoomType>
 
   private let onSelect: () -> Void
 
-  private func selectDuration(_ duration: Duration) {
-    selectedDuration = duration
+  private func toggleRoomType(_ roomType: RoomType) {
+    if selectedRoomTypes.contains(roomType) {
+      selectedRoomTypes.remove(roomType)
+    } else {
+      selectedRoomTypes.insert(roomType)
+    }
   }
 }
 
-// MARK: - DurationButton
+// MARK: - RoomTypeButton
 
-private struct DurationButton: View {
-  let duration: Duration
+private struct RoomTypeButton: View {
+  let roomType: RoomType
   let isSelected: Bool
   let action: () -> Void
 
   var body: some View {
     Button(action: action) {
-      Text(duration.displayName)
+      Text(roomType.displayName)
         .font(.body)
         .fontWeight(.medium)
-        .foregroundColor(.primary)
+        .foregroundColor(isSelected ? .primary : .primary)
         .frame(maxWidth: .infinity)
         .frame(height: 44)
-        .background(isSelected ? Color.white : Color.clear)
+        .background(isSelected ? Color.white : Color.gray.opacity(0.1))
         .overlay(
-          RoundedRectangle(cornerRadius: 6)
-            .stroke(Color.clear, lineWidth: 0))
-        .cornerRadius(6)
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(isSelected ? Color.gray.opacity(0.3) : Color.clear, lineWidth: 1))
+        .cornerRadius(8)
     }
     .buttonStyle(PlainButtonStyle())
   }
@@ -118,8 +111,8 @@ private struct DurationButton: View {
 // MARK: - Preview
 
 #Preview {
-  DurationFilterView(
-    selectedDuration: .constant(.oneHour))
+  RoomTypeFilterView(
+    selectedRoomTypes: .constant([.computerLab]))
   {
     // onSelect action
   }

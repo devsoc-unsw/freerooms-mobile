@@ -5,7 +5,8 @@
 //  Created by Chris Wong on 15/8/2025.
 //
 
-public struct DecodableRoom: Decodable, Equatable {
+public nonisolated
+struct DecodableRoom: Decodable, Equatable, Sendable {
 
   // MARK: Lifecycle
 

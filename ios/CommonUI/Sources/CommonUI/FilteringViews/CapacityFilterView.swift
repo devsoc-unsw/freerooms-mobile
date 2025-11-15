@@ -25,13 +25,6 @@ public struct CapacityFilterView: View {
 
   public var body: some View {
     VStack(spacing: 0) {
-      // Drag handle
-      RoundedRectangle(cornerRadius: 2)
-        .fill(Color.gray.opacity(0.3))
-        .frame(width: 36, height: 4)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-
       // Title
       Text("Capacity")
         .font(.title2)

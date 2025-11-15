@@ -148,6 +148,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
+				96D65EDD2DA39EA30060D06C /* XCLocalSwiftPackageReference "Buildings" */,
+				96DE0C302DFBD4C200C77DD6 /* XCLocalSwiftPackageReference "CommonUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -261,7 +263,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Debug;
 		};
@@ -317,7 +322,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Release;
 		};
@@ -353,7 +361,10 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -391,7 +402,10 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -425,19 +439,30 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Rooms;
 		};
+		96D65EDD2DA39EA30060D06C /* XCLocalSwiftPackageReference "Buildings" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Buildings;
+		};
+		96DE0C302DFBD4C200C77DD6 /* XCLocalSwiftPackageReference "CommonUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = CommonUI;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */;
 			productName = Rooms;
 		};
 		96D65EDE2DA39EA30060D06B /* Buildings */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 96D65EDD2DA39EA30060D06C /* XCLocalSwiftPackageReference "Buildings" */;
 			productName = Buildings;
 		};
 		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 96DE0C302DFBD4C200C77DD6 /* XCLocalSwiftPackageReference "CommonUI" */;
 			productName = CommonUI;
 		};
 /* End XCSwiftPackageProductDependency section */

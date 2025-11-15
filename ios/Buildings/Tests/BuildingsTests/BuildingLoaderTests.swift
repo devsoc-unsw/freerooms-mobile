@@ -154,7 +154,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: mockJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()
@@ -177,7 +177,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: mockJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()
@@ -241,7 +241,7 @@ class BuildingLoaderTests {
       JSONBuildingLoader: liveJSONBuildingLoader,
       roomStatusLoader: mockRoomStatusLoader,
       buildingRatingLoader: mockBuildingRatingLoader)
-    let _ = await sut.fetch()
+    _ = await sut.fetch()
 
     // When
     let res = await sut.fetch()
@@ -273,7 +273,7 @@ class BuildingLoaderTests {
   }
 
   private func createBuildings(_ count: Int) -> [Building] {
-    var buildings: [Building] = []
+    var buildings = [Building]()
     for _ in 0..<count {
       buildings.append(Building(name: "name", id: "123", latitude: 1.0, longitude: 1.0, aliases: ["A", "B"]))
     }

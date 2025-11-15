@@ -69,7 +69,8 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-H20")
 
       // When
-      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-H20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(
+        buildingId: "K-H20", inAscendingOrder: true)
 
       // Then
       let expectResult = createDifferentRooms()
@@ -91,12 +92,14 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms, for: "K-P20")
 
       // When
-      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: "K-P20", inAscendingOrder: true)
+      let result = await sut.getRoomsFilteredAlphabeticallyByBuildingId(
+        buildingId: "K-P20", inAscendingOrder: true)
 
       // Then
-      let expectResult = expectedRooms
-        .filter { $0.buildingId == "K-P20" }
-        .sorted { $0.name < $1.name }
+      let expectResult =
+        expectedRooms
+          .filter { $0.buildingId == "K-P20" }
+          .sorted { $0.name < $1.name }
 
       switch result {
       case .success(let actualResult):
@@ -163,10 +166,11 @@ enum RoomInteractorTests {
       let result = await sut.getRoomsFilteredByAllBuildingId()
 
       // Then
-      var expectResult: [String: [Room]] = [:]
+      var expectResult = [String: [Room]]()
       for buildingId in buildingIds {
-        let filteredRooms = expectedRooms
-          .filter { $0.buildingId == buildingId }
+        let filteredRooms =
+          expectedRooms
+            .filter { $0.buildingId == buildingId }
         expectResult[buildingId] = filteredRooms
       }
 
@@ -391,7 +395,10 @@ enum RoomInteractorTests {
 }
 
 /// Function to make the building SUT
-func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil) -> RoomInteractor {
+func makeRoomSUT(
+  expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil)
+  -> RoomInteractor
+{
   let locationManager = MockLocationManager()
   let locationService = LiveLocationService(locationManager: locationManager)
 
@@ -408,6 +415,15 @@ func makeRoomSUT(expect rooms: [Room], for buildingId: String? = nil, throw room
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
   let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
 
+  return RoomInteractor(roomService: roomService, locationService: locationService)
+}
+
+func makeRoomSUT(mockLoader: MockRoomLoader) -> RoomInteractor {
+  let locationManager = MockLocationManager()
+  let locationService = LiveLocationService(locationManager: locationManager)
+  let remoteBookingLoader = MockRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 
