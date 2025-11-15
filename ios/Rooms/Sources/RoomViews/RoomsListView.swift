@@ -31,7 +31,7 @@ public struct RoomsListView: View {
   // MARK: Public
 
   public var body: some View {
-    let rooms = roomViewModel.roomsByBuildingId[building.id] ?? []
+    let rooms = roomViewModel.getDisplayedRooms(for: building.id)
 
     return List {
       imageProvider(building.id)
@@ -67,6 +67,7 @@ public struct RoomsListView: View {
       .padding(5)
       .foregroundStyle(theme.label.tertiary)
     }
+    .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     .background(Color(UIColor.systemGroupedBackground))
   }
 
