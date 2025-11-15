@@ -66,48 +66,48 @@ public struct RoomsTabView<Destination: View>: View {
                 .frame(width: 25, height: 20)
             }
 
-              Button {
-                if selectedView == RoomOrientation.Card {
-                  selectedView = RoomOrientation.List
-                } else {
-                  selectedView = RoomOrientation.Card
-                }
-              } label: {
-                Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
-                  .resizable()
-                  .frame(width: 22, height: 20)
+            Button {
+              if selectedView == RoomOrientation.Card {
+                selectedView = RoomOrientation.List
+              } else {
+                selectedView = RoomOrientation.Card
               }
-            }
-            .padding(.trailing, 10)
-            .foregroundStyle(theme.label.tertiary)
-          }
-        }
-        .background(Color.gray.opacity(0.1))
-        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
-        .shadow(
-          color: theme.label.primary.opacity(0.2),
-          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
-        .navigationDestination(for: Room.self) { room in
-          roomDestinationBuilderView(room)
-        }
-        .opacity(
-          roomViewModel.isLoading
-            ? 0
-            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-          .task {
-            if !roomViewModel.hasLoaded {
-              await roomViewModel.onAppear()
+            } label: {
+              Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+                .resizable()
+                .frame(width: 22, height: 20)
             }
           }
-    .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
-      Alert(
-        title: Text(error.title),
-        message: Text(error.message),
-        dismissButton: .default(Text("OK")))
+          .padding(.trailing, 10)
+          .foregroundStyle(theme.label.tertiary)
         }
-      .navigationTitle("Rooms")
-      .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+      }
+      .background(Color.gray.opacity(0.1))
+      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+      .shadow(
+        color: theme.label.primary.opacity(0.2),
+        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+      .navigationDestination(for: Room.self) { room in
+        roomDestinationBuilderView(room)
+      }
+      .opacity(
+        roomViewModel.isLoading
+          ? 0
+          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
+        .task {
+          if !roomViewModel.hasLoaded {
+            await roomViewModel.onAppear()
+          }
+        }
+        .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+          Alert(
+            title: Text(error.title),
+            message: Text(error.message),
+            dismissButton: .default(Text("OK")))
+        }
+        .navigationTitle("Rooms")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
         .sheet(isPresented: $showingDateFilter) {
           DateFilterView(
             selectedDate: $roomViewModel.selectedDate,

@@ -36,7 +36,12 @@ let package = Package(
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingViewModels",
-      dependencies: ["BuildingInteractors", "BuildingModels", .product(name: "RoomModels", package: "Rooms"), .product(name: "BottomSheet", package: "BottomSheet")],
+      dependencies: [
+        "BuildingInteractors",
+        "BuildingModels",
+        .product(name: "RoomModels", package: "Rooms"),
+        .product(name: "BottomSheet", package: "BottomSheet"),
+      ],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingInteractors",

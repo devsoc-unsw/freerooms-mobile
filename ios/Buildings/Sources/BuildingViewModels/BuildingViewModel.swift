@@ -9,9 +9,9 @@ import BuildingInteractors
 import BuildingModels
 import BuildingServices
 import Foundation
-import RoomModels
 import Location
 import Observation
+import RoomModels
 
 // MARK: - BuildingViewModel
 

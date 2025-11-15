@@ -48,7 +48,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .toolbar {
         // Buttons on the right
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {        
+          HStack {
             Button {
               viewModel.getBuildingsInOrder()
             } label: {
