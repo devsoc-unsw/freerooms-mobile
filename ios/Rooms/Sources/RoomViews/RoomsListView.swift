@@ -54,6 +54,7 @@ public struct RoomsListView: View {
           })
           .padding(.vertical, 5)
       }
+      .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     }
     .toolbar {
       HStack {
@@ -68,7 +69,6 @@ public struct RoomsListView: View {
       .padding(5)
       .foregroundStyle(theme.label.tertiary)
     }
-    .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     .background(Color(UIColor.systemGroupedBackground))
   }
 
