@@ -76,7 +76,7 @@ public struct RoomsTabView<Destination: View>: View {
                   .frame(width: 22, height: 20)
               }
             }
-            .padding(.trailing, 10)
+            .padding(5)
             .foregroundStyle(theme.label.tertiary)
           }
         }
