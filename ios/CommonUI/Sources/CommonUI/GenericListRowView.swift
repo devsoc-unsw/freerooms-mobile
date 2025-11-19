@@ -21,12 +21,14 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     rowHeight: Binding<CGFloat?>,
     item: T,
     items: [T],
+    isLoading: Bool,
     imageProvider: @escaping (T.ID) -> Image)
   {
     _path = path
     _rowHeight = rowHeight
     self.item = item
     self.items = items
+    self.isLoading = isLoading
     self.imageProvider = imageProvider
   }
 
@@ -51,6 +53,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
       .frame(height: (rowHeight ?? 0) + 15)
       .foregroundStyle(theme.label.secondary)
     }
+    .disabled(isLoading)
     .listRowBackground(
       UnevenRoundedRectangle(cornerRadii: cornerRadii)
         .fill(.background)
@@ -78,6 +81,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
 
   let item: T
   let items: [T]
+  let isLoading: Bool
   let imageProvider: (T.ID) -> Image
 
   var cornerRadii: RectangleCornerRadii {
@@ -105,12 +109,14 @@ extension GenericListRowView where T == Building {
     rowHeight: Binding<CGFloat?>,
     building: Building,
     buildings: [Building],
+    isLoading: Bool,
     imageProvider: @escaping (Building.ID) -> Image)
   {
     _path = path
     _rowHeight = rowHeight
     item = building
     items = buildings
+    self.isLoading = isLoading
     self.imageProvider = imageProvider
   }
 }
@@ -121,12 +127,14 @@ extension GenericListRowView where T == Room {
     rowHeight: Binding<CGFloat?>,
     room: Room,
     rooms: [Room],
+    isLoading: Bool,
     imageProvider: @escaping (Room.ID) -> Image)
   {
     _path = path
     _rowHeight = rowHeight
     item = room
     items = rooms
+    self.isLoading = isLoading
     self.imageProvider = imageProvider
   }
 }
@@ -147,6 +155,7 @@ struct PreviewWrapper: View {
           rowHeight: $rowHeight,
           room: room,
           rooms: rooms,
+          isLoading: false,
           imageProvider: { roomID in
             Image(roomID, bundle: .module)
           })

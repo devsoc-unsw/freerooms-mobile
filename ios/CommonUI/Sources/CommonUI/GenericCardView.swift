@@ -21,6 +21,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     cardWidth: Binding<CGFloat?>,
     item: T,
     items: [T],
+    isLoading: Bool,
     imageProvider: @escaping (T.ID) -> Image)
   {
     _path = path
@@ -28,6 +29,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     self.item = item
     self.items = items
     self.imageProvider = imageProvider
+    self.isLoading = isLoading
   }
 
   // MARK: Public
@@ -63,6 +65,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
       .onPreferenceChange(WidthPreferenceKey.self) {
         cardWidth = $0
       }
+      .disabled(isLoading)
     }
   }
 
@@ -74,6 +77,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
   let item: T
   let items: [T]
   let imageProvider: (T.ID) -> Image
+  let isLoading: Bool
 
   var index: Int {
     items.firstIndex(of: item)!
@@ -87,6 +91,7 @@ extension GenericCardView where T == Building {
     cardWidth: Binding<CGFloat?>,
     building: Building,
     buildings: [Building],
+    isLoading: Bool,
     imageProvider: @escaping (Building.ID) -> Image)
   {
     _path = path
@@ -94,6 +99,7 @@ extension GenericCardView where T == Building {
     item = building
     items = buildings
     self.imageProvider = imageProvider
+    self.isLoading = isLoading
   }
 }
 
@@ -103,6 +109,7 @@ extension GenericCardView where T == Room {
     cardWidth: Binding<CGFloat?>,
     room: Room,
     rooms: [Room],
+    isLoading: Bool,
     imageProvider: @escaping (Room.ID) -> Image)
   {
     _path = path
@@ -110,6 +117,7 @@ extension GenericCardView where T == Room {
     item = room
     items = rooms
     self.imageProvider = imageProvider
+    self.isLoading = isLoading
   }
 }
 
@@ -129,6 +137,7 @@ struct CardPreviewWrapper: View {
           cardWidth: $cardWidth,
           room: room,
           rooms: rooms,
+          isLoading: true,
           imageProvider: { roomID in
             Image(roomID, bundle: .module)
           })

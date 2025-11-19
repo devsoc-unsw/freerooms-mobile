@@ -20,12 +20,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   public init(
     path: Binding<NavigationPath>,
     viewModel: BuildingViewModel,
-		selectedView: Binding<RoomOrientation>, // TODO: rename RoomOrientation?
+    selectedView: Binding<RoomOrientation>, // TODO: rename RoomOrientation?
     _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
     _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
     _path = path
-		_selectedView = selectedView
+    _selectedView = selectedView
     self.viewModel = viewModel
     self.roomsDestinationBuilderView = roomsDestinationBuilderView
     self.roomDestinationBuilderView = roomDestinationBuilderView
@@ -36,79 +36,62 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   public var body: some View {
     NavigationStack(path: $path) {
       buildingsView
-      .refreshable {
-        Task {
-          await viewModel.reloadBuildings()
+        .refreshable {
+          Task {
+            await viewModel.reloadBuildings()
+          }
         }
-      }
-      .toolbar {
-        // Buttons on the right
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {
-            Button {
-              // action
-            } label: {
-              Image(systemName: "line.3.horizontal.decrease")
-                .resizable()
-                .frame(width: 22, height: 15)
-            }
+        .redacted(reason: viewModel.isLoading ? .placeholder : [])
+        .toolbar {
+          // Buttons on the right
+          ToolbarItemGroup(placement: .navigationBarTrailing) {
+            HStack {
+              Button {
+                // action
+              } label: {
+                Image(systemName: "line.3.horizontal.decrease")
+                  .resizable()
+                  .frame(width: 22, height: 15)
+              }
 
-            Button {
-              viewModel.getBuildingsInOrder()
-            } label: {
-              Image(systemName: "arrow.up.arrow.down")
-                .resizable()
-                .frame(width: 25, height: 20)
+              Button {
+                viewModel.getBuildingsInOrder()
+              } label: {
+                Image(systemName: "arrow.up.arrow.down")
+                  .resizable()
+                  .frame(width: 25, height: 20)
+              }
+
+              Button {
+                if selectedView == RoomOrientation.Card {
+                  selectedView = RoomOrientation.List
+                } else {
+                  selectedView = RoomOrientation.Card
+                }
+              } label: {
+                Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+                  .resizable()
+                  .frame(width: 22, height: 20)
+              }
             }
-						
-						Button {
-							if selectedView == RoomOrientation.Card {
-								selectedView = RoomOrientation.List
-							} else {
-								selectedView = RoomOrientation.Card
-							}
-						} label: {
-							Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
-								.resizable()
-								.frame(width: 22, height: 20)
-						}
+            .padding(5)
+            .foregroundStyle(theme.label.tertiary)
           }
-          .padding(5)
-          .foregroundStyle(theme.label.tertiary)
         }
-      }
-      .background(Color.gray.opacity(0.1))
-      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under
-      // section cards
-      .shadow(
-        color: theme.label.primary.opacity(0.2),
-        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
-      .navigationDestination(for: Building.self) { building in
-        roomsDestinationBuilderView(building)
-          .navigationTitle(building.name)
-          .navigationBarTitleDisplayMode(.inline)
-      }
-      .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
-        roomDestinationBuilderView(room)
-      }
-      .opacity(
-        viewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-        .overlay {
-          if viewModel.isLoading {
-            VStack {
-              ProgressView()
-                .scaleEffect(1.2)
-              Text("Loading buildings...")
-                .font(.caption)
-                .foregroundColor(theme.label.secondary)
-                .padding(.top, 8)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.gray.opacity(0.1))
-          }
+        .background(Color.gray.opacity(0.1))
+        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under
+        // section cards
+        .shadow(
+          color: theme.label.primary.opacity(0.2),
+          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+        .navigationDestination(for: Building.self) { building in
+          roomsDestinationBuilderView(building)
+            .navigationTitle(building.name)
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
+          roomDestinationBuilderView(room)
         }
         .onAppear {
           if !viewModel.hasLoaded {
@@ -135,60 +118,38 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var viewModel: BuildingViewModel
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-	@Binding var selectedView: RoomOrientation
-	@State var cardWidth: CGFloat?
+  @Binding var selectedView: RoomOrientation
+  @State var cardWidth: CGFloat?
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
   let roomDestinationBuilderView: (Room) -> RoomDestination
-	
-	@ViewBuilder
-	private var buildingsView: some View {
-		if selectedView == RoomOrientation.List {
-			List {
-				buildingsListSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
-				buildingsListSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
-				buildingsListSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
-			}
-		} else {
-			ScrollView {
-				buildingsCardSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
-				buildingsCardSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
-				buildingsCardSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
-			}
-			.padding(.horizontal, 16)
-		}
-	}
-	
-	@ViewBuilder
-	func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
-		Section {
-			LazyVGrid(columns: columns, spacing: 24) {
-				ForEach(buildings) { building in
-					GenericCardView(
-						path: $path,
-						cardWidth: $cardWidth,
-						building: building,
-						buildings: buildings,
-						imageProvider: { roomID in
-							BuildingImage[roomID]
-						})
-				}
-			}
-		} header: {
-			HStack {
-				Text(campus)
-					.foregroundStyle(theme.label.primary)
-					.padding(.leading, 10)
-				Spacer()
-			}
-			.padding(.top, 10)
-		}
-	}
-	
-	private let columns = [
-		GridItem(.flexible()),
-		GridItem(.flexible()),
-	]
+
+  @ViewBuilder
+  func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
+    Section {
+      LazyVGrid(columns: columns, spacing: 24) {
+        ForEach(buildings) { building in
+          GenericCardView(
+            path: $path,
+            cardWidth: $cardWidth,
+            building: building,
+            buildings: buildings,
+            isLoading: viewModel.isLoading,
+            imageProvider: { roomID in
+              BuildingImage[roomID]
+            })
+        }
+      }
+    } header: {
+      HStack {
+        Text(campus)
+          .foregroundStyle(theme.label.primary)
+          .padding(.leading, 10)
+        Spacer()
+      }
+      .padding(.top, 10)
+    }
+  }
 
   @ViewBuilder
   func buildingsListSegment(for campus: String, from buildings: [Building]) -> some View {
@@ -202,6 +163,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             rowHeight: $rowHeight,
             building: building,
             buildings: buildings,
+            isLoading: viewModel.isLoading,
             imageProvider: { buildingID in
               BuildingImage[buildingID]
             })
@@ -217,19 +179,43 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+
+  private let columns = [
+    GridItem(.flexible()),
+    GridItem(.flexible()),
+  ]
+
+  @ViewBuilder
+  private var buildingsView: some View {
+    if selectedView == RoomOrientation.List {
+      List {
+        buildingsListSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
+        buildingsListSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
+        buildingsListSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
+      }
+    } else {
+      ScrollView {
+        buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
+        buildingsCardSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
+        buildingsCardSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
+      }
+      .padding(.horizontal, 16)
+    }
+  }
+
 }
 
 // MARK: - PreviewWrapper
 
 struct PreviewWrapper: View {
   @State var path = NavigationPath()
-	@State var selectedView = RoomOrientation.List
+  @State var selectedView = RoomOrientation.List
 
   var body: some View {
     BuildingsTabView(
       path: $path,
       viewModel: PreviewBuildingViewModel(),
-			selectedView: $selectedView)
+      selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
     } _: { _ in
