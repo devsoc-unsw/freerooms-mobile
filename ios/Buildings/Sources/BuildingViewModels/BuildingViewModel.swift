@@ -37,16 +37,7 @@ public protocol BuildingViewModel {
 
 @Observable
 public class LiveBuildingViewModel: BuildingViewModel {
-  public var displayedBuildings: CampusBuildings {
-      let isEmpty = buildings.upper.isEmpty && buildings.middle.isEmpty && buildings.lower.isEmpty
-      
-      if isLoading && isEmpty {
-          return placeHolderBuildings
-      }
-      
-      return filteredBuildings
-  }
-  
+
   // MARK: Lifecycle
 
   public init(interactor: BuildingInteractor) {
@@ -64,6 +55,16 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public var buildings: CampusBuildings = ([], [], [])
 
+  public var displayedBuildings: CampusBuildings {
+    let isEmpty = buildings.upper.isEmpty && buildings.middle.isEmpty && buildings.lower.isEmpty
+
+    if isLoading, isEmpty {
+      return placeHolderBuildings
+    }
+
+    return filteredBuildings
+  }
+
   public var filteredBuildings: CampusBuildings {
     interactor.filterBuildingsByQueryString(buildings, by: searchText)
   }
@@ -72,26 +73,25 @@ public class LiveBuildingViewModel: BuildingViewModel {
     let allBuildings = buildings.0 + buildings.1 + buildings.2
     return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
   }
-  
+
   public var placeHolderBuildings: CampusBuildings {
-      let createPlaceholder: (Int) -> Building = { index in
-          Building(
-              name: "Loading Building Name",
-              id: "placeholder-\(index)",
-              latitude: 0.0,
-              longitude: 0.0,
-              aliases: ["LBN"],
-              numberOfAvailableRooms: 5,
-              overallRating: 4.5
-          )
-      }
-     
-      // Create 2 placeholders for each section (6 total)
-      let upperPlaceholders = (0..<6).map(createPlaceholder)
-      let middlePlaceholders = (2..<12).map(createPlaceholder)
-      let lowerPlaceholders = (4..<18).map(createPlaceholder)
-      
-      return (upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
+    let createPlaceholder: (Int) -> Building = { index in
+      Building(
+        name: "Loading Building Name",
+        id: "placeholder-\(index)",
+        latitude: 0.0,
+        longitude: 0.0,
+        aliases: ["LBN"],
+        numberOfAvailableRooms: 5,
+        overallRating: 4.5)
+    }
+
+    // Create 2 placeholders for each section (6 total)
+    let upperPlaceholders = (0..<6).map(createPlaceholder)
+    let middlePlaceholders = (2..<12).map(createPlaceholder)
+    let lowerPlaceholders = (4..<18).map(createPlaceholder)
+
+    return (upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
   }
 
   public func reloadBuildings() {
