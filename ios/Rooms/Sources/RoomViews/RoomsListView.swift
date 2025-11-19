@@ -48,6 +48,7 @@ public struct RoomsListView: View {
           rowHeight: $rowHeight,
           room: room,
           rooms: rooms,
+          isLoading: roomViewModel.isLoading,
           imageProvider: { roomID in
             RoomImage[roomID]
           })
