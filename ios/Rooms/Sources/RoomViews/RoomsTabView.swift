@@ -45,6 +45,7 @@ public struct RoomsTabView<Destination: View>: View {
             await roomViewModel.reloadRooms()
           }
         }
+        .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
         .toolbar {
           // Buttons on the right
           ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -89,10 +90,6 @@ public struct RoomsTabView<Destination: View>: View {
         .navigationDestination(for: Room.self) { room in
           roomDestinationBuilderView(room)
         }
-        .opacity(
-          roomViewModel.isLoading
-            ? 0
-            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
           .task {
             if !roomViewModel.hasLoaded {
               await roomViewModel.onAppear()
@@ -129,12 +126,11 @@ public struct RoomsTabView<Destination: View>: View {
   // search text is owned by the view model
 
   func roomsCardView(
-    _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
+      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
       let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
@@ -170,12 +166,11 @@ public struct RoomsTabView<Destination: View>: View {
   }
 
   func roomsListView(
-    _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
+      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
       let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
@@ -217,11 +212,11 @@ public struct RoomsTabView<Destination: View>: View {
   private var roomView: some View {
     if selectedView == RoomOrientation.List {
       List {
-        roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+        roomsListView(buildingViewModel.allBuildings)
       }
     } else {
       ScrollView {
-        roomsCardView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+        roomsCardView(buildingViewModel.allBuildings)
       }
     }
   }
