@@ -54,6 +54,11 @@ public struct RoomsListView: View {
           .padding(.vertical, 5)
       }
     }
+    .refreshable {
+      Task {
+        await roomViewModel.reloadRooms()
+      }
+    }
     .toolbar {
       HStack {
         Button {
