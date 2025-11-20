@@ -140,8 +140,10 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func onAppear() async {
-    // Load Rooms when the view appears
-    await loadRooms()
+    // if it has been loaded dont load rooms again
+    if !hasLoaded {
+      await loadRooms()
+    }
     hasLoaded = true
   }
 
