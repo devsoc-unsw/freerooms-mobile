@@ -26,7 +26,6 @@ public struct RoomsTabView<Destination: View>: View {
     buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
     selectedView: Binding<RoomOrientation>,
-    selectedView: Binding<RoomOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
     _path = path
@@ -47,7 +46,8 @@ public struct RoomsTabView<Destination: View>: View {
           showingDateFilter: $showingDateFilter,
           showingRoomTypeFilter: $showingRoomTypeFilter,
           showingDurationFilter: $showingDurationFilter,
-          showingCampusLocationFilter: $showingCampusLocationFilter)
+          showingCampusLocationFilter: $showingCampusLocationFilter,
+          showingCapacityFilter: $showingCapacityFilter)
 
         // Rooms list
         roomView
@@ -58,32 +58,7 @@ public struct RoomsTabView<Destination: View>: View {
           }
       }
       .toolbar {
-        // Buttons on the right
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          HStack {
-            Button {
-              roomViewModel.getRoomsInOrder()
-            } label: {
-              Image(systemName: "arrow.up.arrow.down")
-                .resizable()
-                .frame(width: 25, height: 20)
-            }
-
-            Button {
-              if selectedView == RoomOrientation.Card {
-                selectedView = RoomOrientation.List
-              } else {
-                selectedView = RoomOrientation.Card
-              }
-            } label: {
-              Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
-                .resizable()
-                .frame(width: 22, height: 20)
-            }
-          }
-          .padding(.trailing, 10)
-          .foregroundStyle(theme.label.tertiary)
-        }
+        toolbarButtons
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
@@ -113,32 +88,38 @@ public struct RoomsTabView<Destination: View>: View {
         .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
         .sheet(isPresented: $showingDateFilter) {
           DateFilterView(
-            selectedDate: $roomViewModel.selectedDate,
-            selectedStartTime: $roomViewModel.selectedStartTime)
+            selectedDate: $roomViewModel.selectedDate)
           {
             showingDateFilter = false
             roomViewModel.applyFilters()
           }
-          .presentationDetents([.height(450), .large])
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.75)])
           .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
         }
         .sheet(isPresented: $showingRoomTypeFilter) {
+          
           RoomTypeFilterView(
             selectedRoomTypes: $roomViewModel.selectedRoomTypes)
           {
             showingRoomTypeFilter = false
             roomViewModel.applyFilters()
           }
-          .presentationDetents([.medium])
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.5)])
           .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
         }
         .sheet(isPresented: $showingDurationFilter) {
           DurationFilterView(onSelect: {
             showingDurationFilter = false
             roomViewModel.applyFilters()
           })
+          .environment(roomViewModel)
           .presentationDetents([.fraction(0.3), .medium])
           .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
         }
         .sheet(isPresented: $showingCampusLocationFilter) {
           CampusLocationFilterView(
@@ -147,8 +128,22 @@ public struct RoomsTabView<Destination: View>: View {
             showingCampusLocationFilter = false
             roomViewModel.applyFilters()
           }
-          .presentationDetents([.medium])
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.4)])
           .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+        .sheet(isPresented: $showingCapacityFilter) {
+          CapacityFilterView(
+            selectedCapacity: $roomViewModel.selectedCapacity)
+          {
+            showingCapacityFilter = false
+            roomViewModel.applyFilters()
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.4)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
         }
     }
     .environment(roomViewModel)
@@ -173,47 +168,6 @@ public struct RoomsTabView<Destination: View>: View {
 
   // search text is owned by the view model
 
-  func roomsCardView(
-    _ roomsByBuildingId: [String: [Room]],
-    _ buildings: [Building])
-    -> some View
-  {
-    ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
-
-      if rooms.isEmpty {
-        EmptyView()
-      } else {
-        Section {
-          LazyVGrid(columns: columns, spacing: 24) {
-            ForEach(rooms) { room in
-              GenericCardView(
-                path: $path,
-                cardWidth: $cardWidth,
-                room: room,
-                rooms: rooms,
-                imageProvider: { roomID in
-                  RoomImage[roomID]
-                })
-            }
-          }
-          .padding(.horizontal, 16)
-        } header: {
-          HStack {
-            Text(buildingName)
-              .foregroundStyle(theme.label.primary)
-              .padding(.leading, 10)
-            Spacer()
-          }
-          .padding(.horizontal, 16)
-          .padding(.top, 10)
-        }
-      }
-    }
-  }
-
-  func roomsListView(
   func roomsCardView(
     _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
@@ -293,6 +247,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingRoomTypeFilter = false
   @State private var showingDurationFilter = false
   @State private var showingCampusLocationFilter = false
+  @State private var showingCapacityFilter = false
 
   @Environment(Theme.self) private var theme
 
@@ -316,7 +271,33 @@ public struct RoomsTabView<Destination: View>: View {
     }
   }
 
+  private var toolbarButtons: some View {
+    HStack {
+      Button {
+        roomViewModel.getRoomsInOrder()
+      } label: {
+        Image(systemName: "arrow.up.arrow.down")
+          .resizable()
+          .frame(width: 25, height: 20)
+      }
+      
+      Button {
+        if selectedView == RoomOrientation.Card {
+          selectedView = RoomOrientation.List
+        } else {
+          selectedView = RoomOrientation.Card
+        }
+      } label: {
+        Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+          .resizable()
+          .frame(width: 22, height: 20)
+      }
+    }
+    .padding(5)
+    .foregroundStyle(theme.label.tertiary)
+  }
 }
+
 
 // MARK: - PreviewWrapper
 

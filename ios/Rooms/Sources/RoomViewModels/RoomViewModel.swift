@@ -6,7 +6,6 @@
 //
 
 import BuildingModels
-import CommonUI
 import Foundation
 import Location
 import Observation
@@ -35,8 +34,7 @@ public protocol RoomViewModel {
   var getBookingsIsLoading: Bool { get }
 
   // Filter properties
-  var selectedDate: Date? { get set }
-  var selectedStartTime: Date? { get set }
+  var selectedDate: Date { get set }
   var selectedRoomTypes: Set<RoomType> { get set }
   var selectedDuration: Duration? { get set }
   var selectedCampusLocation: CampusLocation? { get set }
@@ -90,16 +88,15 @@ public class LiveRoomViewModel: RoomViewModel {
   public var isLoading = false
 
   public var searchText = ""
-  public var selectedDate: Date?
-  public var selectedStartTime: Date?
+    
+  public var selectedDate: Date = DateDefaults.selectedDate
   public var selectedRoomTypes: Set<RoomType> = []
   public var selectedDuration: Duration?
   public var selectedCampusLocation: CampusLocation?
   public var selectedCapacity: Int?
 
   public var hasActiveFilters: Bool {
-    selectedDate != nil ||
-      selectedStartTime != nil ||
+    selectedDate != DateDefaults.selectedDate ||
       !selectedRoomTypes.isEmpty ||
       selectedDuration != nil ||
       selectedCampusLocation != nil ||
@@ -111,7 +108,7 @@ public class LiveRoomViewModel: RoomViewModel {
     for (buildingId, rooms) in roomsByBuildingId {
       var filteredRooms = rooms
       if hasActiveFilters {
-        filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter)
+        filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter, roomBookings: currentRoomBookings)
       }
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
@@ -203,16 +200,12 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func clearAllFilters() {
-    selectedDate = nil
-    selectedStartTime = nil
+    DateDefaults.selectedDate = Date()
+    selectedDate = DateDefaults.selectedDate
     selectedRoomTypes.removeAll()
     selectedDuration = nil
     selectedCampusLocation = nil
     selectedCapacity = nil
-  }
-
-  public func reloadRooms() async {
-    await loadRooms()
   }
 
   // MARK: Private
@@ -222,7 +215,6 @@ public class LiveRoomViewModel: RoomViewModel {
   private var currentFilter: RoomFilter {
     RoomFilter(
       selectedDate: selectedDate,
-      selectedStartTime: selectedStartTime,
       selectedRoomTypes: selectedRoomTypes,
       selectedDuration: selectedDuration,
       selectedCampusLocation: selectedCampusLocation,

@@ -13,23 +13,23 @@ struct FilterResetButton: View {
   // MARK: Internal
 
   var body: some View {
-    Button(action: {
+    Button(role: .destructive, action: {
       roomViewModel.clearAllFilters()
     }) {
       HStack(spacing: 6) {
         Image(systemName: "xmark.circle")
-          .foregroundColor(theme.accent.primary)
+          .foregroundColor(.white)
           .font(.system(size: 14, weight: .medium))
         Text("Reset")
-          .foregroundColor(.orange)
+          .foregroundColor(.white)
           .font(.system(size: 14, weight: .medium))
       }
       .padding(.horizontal, 12)
       .padding(.vertical, 8)
-      .background(Color.white)
+      .background(.red)
       .overlay(
         RoundedRectangle(cornerRadius: 6)
-          .stroke(theme.accent.primary, lineWidth: 1))
+          .stroke(.white, lineWidth: 1))
       .cornerRadius(6)
     }
     .frame(minWidth: 100)

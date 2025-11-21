@@ -14,21 +14,17 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
-  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel) {
-    self.dateSelect = dateSelect
+  public init(room: Room) {
     self.room = room
-    self.roomViewModel = roomViewModel
   }
 
   // MARK: Internal
 
-  @State var dateSelect = Date()
-
-  let room: Room
+  private let room: Room
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      // List {
+
       // Booking informations
       RoomBookingInformationView(room: room)
 
@@ -41,7 +37,7 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
+          DatePicker("Please Select a Date", selection: selectedDateBinding,  displayedComponents: .date)
             .labelsHidden()
             .tint(theme.accent.primary)
         }
@@ -50,8 +46,7 @@ struct RoomDetailsSheetView: View {
         ScrollView {
           RoomBookingsListView(
             room: room,
-            roomViewModel: roomViewModel,
-            dateSelect: $dateSelect)
+            dateSelect: selectedDateBinding)
         }
       }
       .padding()
@@ -72,12 +67,23 @@ struct RoomDetailsSheetView: View {
   // MARK: Private
 
   @Environment(Theme.self) private var theme
-
-  private var roomViewModel: RoomViewModel
-
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+  
+  @State private var localSelectedDate = Date()
+  
+  private var selectedDateBinding: Binding<Date> {
+      Binding<Date>(
+        get: { roomViewModel.selectedDate },
+          set: { newValue in
+              roomViewModel.selectedDate = newValue
+          }
+      )
+  }
 }
 
 #Preview {
-  RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return RoomDetailsSheetView(room: Room.exampleOne)
+    .environment(viewModel)
     .defaultTheme()
 }

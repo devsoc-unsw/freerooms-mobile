@@ -15,15 +15,13 @@ public struct RoomFilter: Equatable {
   // MARK: Lifecycle
 
   public init(
-    selectedDate: Date? = nil,
-    selectedStartTime: Date? = nil,
+    selectedDate: Date = Date(),
     selectedRoomTypes: Set<RoomType> = [],
     selectedDuration: Duration? = nil,
     selectedCampusLocation: CampusLocation? = nil,
     selectedCapacity: Int? = nil)
   {
     self.selectedDate = selectedDate
-    self.selectedStartTime = selectedStartTime
     self.selectedRoomTypes = selectedRoomTypes
     self.selectedDuration = selectedDuration
     self.selectedCampusLocation = selectedCampusLocation
@@ -32,32 +30,29 @@ public struct RoomFilter: Equatable {
 
   // MARK: Public
 
-  public var selectedDate: Date?
-  public var selectedStartTime: Date?
+  public var selectedDate: Date
   public var selectedRoomTypes: Set<RoomType>
   public var selectedDuration: Duration?
   public var selectedCampusLocation: CampusLocation?
   public var selectedCapacity: Int?
 
   /// Returns true if any filter is active
-  public var hasActiveFilters: Bool {
-    selectedDate != nil ||
-      selectedStartTime != nil ||
-      !selectedRoomTypes.isEmpty ||
-      selectedDuration != nil ||
-      selectedCampusLocation != nil ||
-      selectedCapacity != nil
-  }
+//  public var hasActiveFilters: Bool {
+//    selectedDate == Date() ||
+//      !selectedRoomTypes.isEmpty ||
+//      selectedDuration != nil ||
+//      selectedCampusLocation != nil ||
+//      selectedCapacity != nil
+//  }
 
   /// Clears all filters
-  public mutating func clearAll() {
-    selectedDate = nil
-    selectedStartTime = nil
-    selectedRoomTypes.removeAll()
-    selectedDuration = nil
-    selectedCampusLocation = nil
-    selectedCapacity = nil
-  }
+//  public mutating func clearAll() {
+//    selectedDate = Date()
+//    selectedRoomTypes.removeAll()
+//    selectedDuration = nil
+//    selectedCampusLocation = nil
+//    selectedCapacity = nil
+//  }
 }
 
 // MARK: - RoomType
@@ -144,4 +139,9 @@ public enum CampusLocation: String, CaseIterable, Identifiable {
       "Lower Campus"
     }
   }
+}
+
+
+public enum DateDefaults {
+    public static var selectedDate = Date()
 }

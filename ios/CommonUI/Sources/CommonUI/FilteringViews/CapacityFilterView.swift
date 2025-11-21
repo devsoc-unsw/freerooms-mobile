@@ -24,14 +24,13 @@ public struct CapacityFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 30) {
       // Title
       Text("Capacity")
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+      
 
       // Capacity input
       VStack(alignment: .leading, spacing: 16) {
@@ -40,7 +39,7 @@ public struct CapacityFilterView: View {
           .foregroundColor(.secondary)
 
         HStack {
-          TextField("Enter capacity", value: $capacityText, format: .number)
+          TextField("Enter capacity", value: $selectedCapacity, format: .number)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .keyboardType(.numberPad)
 
@@ -49,29 +48,14 @@ public struct CapacityFilterView: View {
             .foregroundColor(.secondary)
         }
       }
-      .padding(.horizontal, 20)
-
-      Spacer()
 
       // Select button
-      Button(action: onSelect) {
-        Text("Select")
-          .font(.headline)
-          .fontWeight(.semibold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(Color.orange)
-          .cornerRadius(12)
-      }
-      .padding(.horizontal, 20)
-      .padding(.bottom, 20)
+      SelectButton(onSelect: onSelect)
     }
-    .background(Color.white)
-    .cornerRadius(20, corners: [.topLeft, .topRight])
-    .onChange(of: capacityText) { _, newValue in
-      selectedCapacity = newValue
-    }
+    .padding(.horizontal, 20)
+//    .onChange(of: capacityText) { _, newValue in
+//      selectedCapacity = newValue
+//    }
   }
 
   // MARK: Private
@@ -91,4 +75,5 @@ public struct CapacityFilterView: View {
   {
     // onSelect action
   }
+  .defaultTheme()
 }

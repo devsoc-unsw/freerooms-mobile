@@ -25,14 +25,12 @@ public struct RoomTypeFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 20) {
       // Title
       Text("Room Types")
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
 
       // Room type grid
       LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
@@ -45,27 +43,10 @@ public struct RoomTypeFilterView: View {
           }
         }
       }
-      .padding(.horizontal, 20)
 
-      // Spacing
-      Spacer()
-        .frame(height: 20)
-
-      // Select button
-      Button(action: onSelect) {
-        Text("Select")
-          .font(.headline)
-          .fontWeight(.semibold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(Color.orange)
-          .cornerRadius(12)
-      }
-      .padding(.horizontal, 20)
-      .padding(.bottom, 20)
+      SelectButton(onSelect: onSelect)
     }
-    .background(Color.white)
+    .padding(.horizontal, 20)
   }
 
   // MARK: Private
@@ -98,7 +79,7 @@ private struct RoomTypeButton: View {
         .foregroundColor(isSelected ? .primary : .primary)
         .frame(maxWidth: .infinity)
         .frame(height: 44)
-        .background(isSelected ? Color.white : Color.gray.opacity(0.1))
+        .background(isSelected ? theme.accent.primary.opacity(0.3) : Color.gray.opacity(0.1))
         .overlay(
           RoundedRectangle(cornerRadius: 8)
             .stroke(isSelected ? Color.gray.opacity(0.3) : Color.clear, lineWidth: 1))
@@ -106,6 +87,8 @@ private struct RoomTypeButton: View {
     }
     .buttonStyle(PlainButtonStyle())
   }
+  
+  @Environment(Theme.self) private var theme
 }
 
 // MARK: - Preview
@@ -116,4 +99,5 @@ private struct RoomTypeButton: View {
   {
     // onSelect action
   }
+  .defaultTheme()
 }

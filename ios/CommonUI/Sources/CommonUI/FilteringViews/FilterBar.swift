@@ -16,12 +16,14 @@ public struct FilterBar: View {
     showingDateFilter: Binding<Bool>,
     showingRoomTypeFilter: Binding<Bool>,
     showingDurationFilter: Binding<Bool>,
-    showingCampusLocationFilter: Binding<Bool>)
+    showingCampusLocationFilter: Binding<Bool>,
+    showingCapacityFilter: Binding<Bool>)
   {
     _showingDateFilter = showingDateFilter
     _showingRoomTypeFilter = showingRoomTypeFilter
     _showingDurationFilter = showingDurationFilter
     _showingCampusLocationFilter = showingCampusLocationFilter
+    _showingCapacityFilter = showingCapacityFilter
   }
 
   // MARK: Public
@@ -29,9 +31,9 @@ public struct FilterBar: View {
   public var body: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 8) {
-        FilterButton(
-          filterType: .duration,
-          showingFilter: $showingDurationFilter)
+//        FilterButton(
+//          filterType: .duration,
+//          showingFilter: $showingDurationFilter)
 
         FilterButton(
           filterType: .date,
@@ -44,6 +46,10 @@ public struct FilterBar: View {
         FilterButton(
           filterType: .campusLocation,
           showingFilter: $showingCampusLocationFilter)
+        
+        FilterButton(
+          filterType: .capacity,
+          showingFilter: $showingCapacityFilter)
 
         FilterResetButton()
       }
@@ -64,6 +70,7 @@ public struct FilterBar: View {
   @Binding private var showingRoomTypeFilter: Bool
   @Binding private var showingDurationFilter: Bool
   @Binding private var showingCampusLocationFilter: Bool
+  @Binding private var showingCapacityFilter: Bool
 
 }
 
@@ -72,13 +79,15 @@ public struct FilterBar: View {
   @Previewable @State var showingRoomTypeFilter = false
   @Previewable @State var showingDurationFilter = false
   @Previewable @State var showingCampusLocationFilter = false
+  @Previewable @State var showingCapacityFilter = false
 
   let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
   return FilterBar(
     showingDateFilter: $showingDateFilter,
     showingRoomTypeFilter: $showingRoomTypeFilter,
     showingDurationFilter: $showingDurationFilter,
-    showingCampusLocationFilter: $showingCampusLocationFilter)
+    showingCampusLocationFilter: $showingCampusLocationFilter,
+    showingCapacityFilter: $showingCapacityFilter)
     .environment(viewModel)
     .defaultTheme()
 }

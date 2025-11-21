@@ -14,9 +14,8 @@ struct RoomBookingsListView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel, dateSelect: Binding<Date>) {
+  public init(room: Room, dateSelect: Binding<Date>) {
     self.room = room
-    self.roomViewModel = roomViewModel
     _dateSelect = dateSelect
   }
 
@@ -89,14 +88,15 @@ struct RoomBookingsListView: View {
   // MARK: Private
 
   private let room: Room
-  private var roomViewModel: RoomViewModel
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
 }
 
 #Preview {
-  RoomBookingsListView(
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return RoomBookingsListView(
     room: Room.exampleOne,
-    roomViewModel: PreviewRoomViewModel(),
     dateSelect: .constant(Date()))
+    .environment(viewModel)
     .defaultTheme()
 }

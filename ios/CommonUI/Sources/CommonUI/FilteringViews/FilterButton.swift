@@ -6,6 +6,7 @@
 //
 
 import RoomViewModels
+import RoomModels
 import SwiftUI
 
 public struct FilterButton: View {
@@ -42,7 +43,7 @@ public struct FilterButton: View {
       .background(backgroundColor)
       .overlay(
         RoundedRectangle(cornerRadius: 6)
-          .stroke(Color.orange, lineWidth: 1))
+          .stroke(theme.accent.primary, lineWidth: 1))
       .cornerRadius(6)
     }
     .frame(minWidth: 100)
@@ -62,7 +63,7 @@ public struct FilterButton: View {
     case .duration:
       roomViewModel.selectedDuration != nil
     case .date:
-      roomViewModel.selectedDate != nil
+      roomViewModel.selectedDate != DateDefaults.selectedDate
     case .roomType:
       !roomViewModel.selectedRoomTypes.isEmpty
     case .campusLocation:

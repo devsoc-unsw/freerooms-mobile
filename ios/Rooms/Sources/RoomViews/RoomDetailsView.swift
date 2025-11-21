@@ -16,9 +16,8 @@ public struct RoomDetailsView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel) {
+  public init(room: Room) {
     self.room = room
-    self.roomViewModel = roomViewModel
   }
 
   // MARK: Public
@@ -35,10 +34,12 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel)
+      RoomDetailsSheetView(room: room)
+        .environment(roomViewModel)
         .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
         .presentationBackgroundInteraction(.enabled(upThrough: .large))
         .presentationCornerRadius(30)
+        .interactiveDismissDisabled(true)
     }
     .navigationBarBackButtonHidden(true)
     .gesture(
@@ -94,23 +95,23 @@ public struct RoomDetailsView: View {
 
   // MARK: Internal
 
-  @Environment(\.dismiss) var dismiss
 
   // MARK: Private
 
+  @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   @State private var detent = PresentationDetent.fraction(0.75)
   @State private var showDetails = true
 
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
-  private var roomViewModel: RoomViewModel
 }
 
 #Preview {
   NavigationStack {
-    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
+    RoomDetailsView(room: Room.exampleOne)
       .defaultTheme()
   }
 }

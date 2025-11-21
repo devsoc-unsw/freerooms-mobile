@@ -44,8 +44,8 @@ public struct DurationFilterView: View {
         onSelect()
       }) {
         Text("Select")
-          .font(.headline)
-          .fontWeight(.semibold)
+          .font(.title3)
+          .bold()
           .foregroundColor(.white)
           .frame(maxWidth: .infinity)
           .frame(height: 50)

@@ -34,8 +34,6 @@ let package = Package(
       dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels", .product(name: "BottomSheet", package: "BottomSheet")],
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
-      resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingViewModels",
       dependencies: [
@@ -49,25 +47,17 @@ let package = Package(
       name: "BuildingInteractors",
       dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
       swiftSettings: .defaultSettings),
-      dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
-      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingServices",
       dependencies: ["Networking", "Persistence", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
-      resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
       swiftSettings: .defaultSettings),
-      dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
-      swiftSettings: .defaultSettings),
     .target(
       name: "BuildingTestUtils",
-      dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")],
-      swiftSettings: .defaultSettings),
       dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")],
       swiftSettings: .defaultSettings),
     .testTarget(
@@ -85,19 +75,7 @@ let package = Package(
         .product(name: "RoomTestUtils", package: "Rooms"),
       ],
       swiftSettings: .defaultSettings),
-      ],
-      swiftSettings: .defaultSettings),
   ])
-
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
 
 extension [SwiftSetting] {
   static var defaultSettings: [SwiftSetting] {

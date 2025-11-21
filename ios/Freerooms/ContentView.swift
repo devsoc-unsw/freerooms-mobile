@@ -31,12 +31,14 @@ struct ContentView: View {
   var body: some View {
     TabView(selection: $selectedTab) {
       BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
+        RoomsListView(building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
         .task { await roomViewModel.onAppear() }
+        .environment(roomViewModel)
       } _: { room in
-        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+        RoomDetailsView(room: room)
+          .environment(roomViewModel)
           .task {
             await roomViewModel.onAppear()
           }
@@ -53,7 +55,8 @@ struct ContentView: View {
         selectedTab: $selectedTab,
         selectedView: $selectedRoomsView)
       { room in
-        RoomDetailsView(room: room, roomViewModel: roomViewModel)
+        RoomDetailsView(room: room)
+          .environment(roomViewModel)
           .task { await roomViewModel.onAppear() }
           .task {
             roomViewModel.clearRoomBookings()
@@ -61,6 +64,7 @@ struct ContentView: View {
           }
       }
     }
+    .environment(roomViewModel)
     .tint(theme.accent.primary)
   }
 

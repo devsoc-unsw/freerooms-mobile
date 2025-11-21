@@ -25,14 +25,13 @@ public struct CampusLocationFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 20) {
       // Title
       Text("Campus Location")
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+        .padding(.top, 20)
 
       // Campus location options
       VStack(spacing: 12) {
@@ -45,27 +44,10 @@ public struct CampusLocationFilterView: View {
           }
         }
       }
-      .padding(.horizontal, 20)
 
-      // Spacing
-      Spacer()
-        .frame(height: 20)
-
-      // Select button
-      Button(action: onSelect) {
-        Text("Select")
-          .font(.headline)
-          .fontWeight(.semibold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(Color.orange)
-          .cornerRadius(12)
-      }
-      .padding(.horizontal, 20)
-      .padding(.bottom, 20)
+      SelectButton(onSelect: onSelect)
     }
-    .background(Color.white)
+    .padding(.horizontal, 20)
     .cornerRadius(20, corners: [.topLeft, .topRight])
   }
 
@@ -78,6 +60,8 @@ public struct CampusLocationFilterView: View {
   private func selectCampusLocation(_ location: CampusLocation) {
     selectedCampusLocation = location
   }
+  
+  @Environment(Theme.self) private var theme
 }
 
 // MARK: - CampusLocationButton
@@ -95,7 +79,7 @@ private struct CampusLocationButton: View {
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
         .frame(height: 44)
-        .background(isSelected ? Color.orange.opacity(0.1) : Color.gray.opacity(0.1))
+        .background(isSelected ? theme.accent.primary.opacity(0.1) : Color.gray.opacity(0.1))
         .overlay(
           RoundedRectangle(cornerRadius: 8)
             .stroke(isSelected ? Color.orange : Color.clear, lineWidth: 1))
@@ -103,6 +87,8 @@ private struct CampusLocationButton: View {
     }
     .buttonStyle(PlainButtonStyle())
   }
+  
+  @Environment(Theme.self) private var theme
 }
 
 // MARK: - Preview
@@ -113,4 +99,5 @@ private struct CampusLocationButton: View {
   {
     // onSelect action
   }
+  .defaultTheme()
 }

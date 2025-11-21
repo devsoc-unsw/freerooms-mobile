@@ -8,7 +8,7 @@ import Foundation
 import Location
 import RoomModels
 import RoomServices
-
+ 
 public class RoomInteractor {
 
   // MARK: Lifecycle
@@ -89,50 +89,43 @@ public class RoomInteractor {
 
   public func getRoomsFilteredByDuration(
     for minDuration: Int,
-    roomBookings: [String: [RoomBooking]])
-    async -> Result<[Room], FetchRoomError>
+    roomBookings: [RoomBooking],
+    rooms: [Room])
+    -> [Room]
   {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      var result = [Room]()
-      for room in rooms {
-        let currentTime = Date()
+    var result: [Room] = []
+    for room in rooms {
+      let currentTime = Date()
 
-        // Sort classes by start time, then end time.
-        let classBookings: [RoomBooking] =
-          roomBookings[room.id]
-            ?? []
-            .sorted { $0.start < $1.start }
-            .sorted { $0.end < $1.end }
+      // Sort classes by start time, then end time.
+      let classBookings: [RoomBooking] = roomBookings
+        .sorted { $0.start < $1.start }
+        .sorted { $0.end < $1.end }
 
-        // Find the first class that *ends* after the current time
-        // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first {
-          $0.end >= currentTime
-        }
-        if firstClassEndsAfterCurrentTime == nil {
-          // class is free indefinitely meaning it is free the whole day from current time onwards
-          result.append(room)
-          continue
-        }
-
-        /// Check if from current time to the next first class duration satisfy minDuration
-        let start = firstClassEndsAfterCurrentTime!.start
-        if currentTime < start {
-          let duration = start.timeIntervalSince(currentTime) // in seconds
-          let durationInMinutes = Int(duration / 60)
-
-          if durationInMinutes >= minDuration {
-            result.append(room)
-          }
-        }
+      // Find the first class that *ends* after the current time
+      // Current time should be changing every 15 or 30 min now and then
+      let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first { $0.end >= currentTime }
+      if firstClassEndsAfterCurrentTime == nil {
+        // class is free indefinitely meaning it is free the whole day from current time onwards
+        result.append(room)
+        continue
       }
 
-      return .success(result)
+      /// Check if from current time to the next first class duration satisfy minDuration
+      let start = firstClassEndsAfterCurrentTime!.start
+      if currentTime < start {
+        let duration = start.timeIntervalSince(currentTime) // in seconds
+        let durationInMinutes = Int(duration / 60)
 
-    case .failure(let error):
-      return .failure(error)
+        if durationInMinutes >= minDuration {
+          result.append(room)
+        }
+      }
     }
+    
+    // swiftlint:disable:next no_direct_standard_out_logs
+    print("Final room bookings: \(result)")
+    return result
   }
 
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
@@ -205,8 +198,8 @@ public class RoomInteractor {
       .failure(error)
     }
   }
-
-  public func applyFilters(rooms: [Room], filter: RoomFilter) -> [Room] {
+  
+  public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookings: [RoomBooking]) -> [Room] {
     var filteredRooms = rooms
 
     // Filter by room type (usage)
@@ -237,8 +230,20 @@ public class RoomInteractor {
       }
     }
 
+    if let duration = filter.selectedDuration {
+//      // swiftlint:disable:next no_direct_standard_out_logs
+//      print("Duration: \(duration.rawValue)")
+//
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("------ test -------")
+      // swiftlint:disable:next no_direct_standard_out_logs
+      print("option: \(duration.rawValue), roombookings: \(roomBookings)")
+      filteredRooms = getRoomsFilteredByDuration(for: duration.rawValue, roomBookings: roomBookings, rooms: filteredRooms)
+
+    }
+
     // Filter by date/time and duration (requires booking data)
-    if filter.selectedDate != nil || filter.selectedStartTime != nil || filter.selectedDuration != nil {
+    if filter.selectedDate != DateDefaults.selectedDate {
       // For now, return rooms as-is since we'd need booking data for proper filtering
       // This would be enhanced to work with the booking system
     }
