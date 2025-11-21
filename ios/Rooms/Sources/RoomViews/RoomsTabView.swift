@@ -57,7 +57,7 @@ public struct RoomsTabView<Destination: View>: View {
             }
           }
       }
-			.redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+      .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
       .toolbar {
         toolbarButtons
       }
