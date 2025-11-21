@@ -95,7 +95,6 @@ public struct RoomDetailsView: View {
 
   // MARK: Internal
 
-
   // MARK: Private
 
   @Environment(\.dismiss) private var dismiss

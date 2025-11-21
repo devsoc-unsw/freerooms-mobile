@@ -53,8 +53,6 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
       return .failure(.connectivity)
     }
   }
-  
-  
 
   // MARK: Private
 

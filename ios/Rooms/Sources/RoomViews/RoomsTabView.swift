@@ -99,7 +99,6 @@ public struct RoomsTabView<Destination: View>: View {
           .presentationBackground(Color(.systemBackground))
         }
         .sheet(isPresented: $showingRoomTypeFilter) {
-          
           RoomTypeFilterView(
             selectedRoomTypes: $roomViewModel.selectedRoomTypes)
           {
@@ -280,7 +279,7 @@ public struct RoomsTabView<Destination: View>: View {
           .resizable()
           .frame(width: 25, height: 20)
       }
-      
+
       Button {
         if selectedView == RoomOrientation.Card {
           selectedView = RoomOrientation.List
@@ -297,7 +296,6 @@ public struct RoomsTabView<Destination: View>: View {
     .foregroundStyle(theme.label.tertiary)
   }
 }
-
 
 // MARK: - PreviewWrapper
 

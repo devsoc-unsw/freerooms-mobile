@@ -88,7 +88,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var isLoading = false
 
   public var searchText = ""
-    
+
   public var selectedDate: Date = DateDefaults.selectedDate
   public var selectedRoomTypes: Set<RoomType> = []
   public var selectedDuration: Duration?

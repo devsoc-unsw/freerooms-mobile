@@ -55,18 +55,22 @@ public struct CampusLocationFilterView: View {
 
   @Binding private var selectedCampusLocation: CampusLocation?
 
+  @Environment(Theme.self) private var theme
+
   private let onSelect: () -> Void
 
   private func selectCampusLocation(_ location: CampusLocation) {
     selectedCampusLocation = location
   }
-  
-  @Environment(Theme.self) private var theme
+
 }
 
 // MARK: - CampusLocationButton
 
 private struct CampusLocationButton: View {
+
+  // MARK: Internal
+
   let location: CampusLocation
   let isSelected: Bool
   let action: () -> Void
@@ -87,7 +91,9 @@ private struct CampusLocationButton: View {
     }
     .buttonStyle(PlainButtonStyle())
   }
-  
+
+  // MARK: Private
+
   @Environment(Theme.self) private var theme
 }
 

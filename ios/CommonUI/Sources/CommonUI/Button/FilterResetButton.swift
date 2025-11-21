@@ -38,7 +38,6 @@ struct FilterResetButton: View {
   // MARK: Private
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
-  @Environment(Theme.self) private var theme
 }
 
 #Preview {

@@ -67,6 +67,9 @@ public struct RoomTypeFilterView: View {
 // MARK: - RoomTypeButton
 
 private struct RoomTypeButton: View {
+
+  // MARK: Internal
+
   let roomType: RoomType
   let isSelected: Bool
   let action: () -> Void
@@ -87,7 +90,9 @@ private struct RoomTypeButton: View {
     }
     .buttonStyle(PlainButtonStyle())
   }
-  
+
+  // MARK: Private
+
   @Environment(Theme.self) private var theme
 }
 

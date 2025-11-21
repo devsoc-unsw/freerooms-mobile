@@ -8,28 +8,38 @@
 import SwiftUI
 
 public struct SelectButton: View {
-  
+
+  // MARK: Lifecycle
+
   public init(onSelect: @escaping () -> Void) {
     self.onSelect = onSelect
   }
-    public var body: some View {
-      Button(action: onSelect) {
-        Text("Select")
-          .font(.title3)
-          .fontWeight(.semibold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(theme.accent.primary)
-          .cornerRadius(12)
-      }
+
+  // MARK: Public
+
+  public var body: some View {
+    Button(action: onSelect) {
+      Text("Select")
+        .font(.title3)
+        .fontWeight(.semibold)
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .frame(height: 50)
+        .background(theme.accent.primary)
+        .cornerRadius(12)
     }
-  
+  }
+
+  // MARK: Internal
+
   let onSelect: () -> Void
+
+  // MARK: Private
+
   @Environment(Theme.self) private var theme
 }
 
 #Preview {
-  SelectButton() {}
+  SelectButton { }
     .defaultTheme()
 }

@@ -30,7 +30,6 @@ public struct CapacityFilterView: View {
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-      
 
       // Capacity input
       VStack(alignment: .leading, spacing: 16) {
@@ -61,8 +60,6 @@ public struct CapacityFilterView: View {
   // MARK: Private
 
   @Binding private var selectedCapacity: Int?
-  @State private var capacityText: Int? = nil
-
   private let onSelect: () -> Void
 
 }

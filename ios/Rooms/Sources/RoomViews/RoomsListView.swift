@@ -81,6 +81,7 @@ public struct RoomsListView: View {
 
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+
   private var building: Building
 
 }

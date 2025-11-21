@@ -8,7 +8,7 @@ import Foundation
 import Location
 import RoomModels
 import RoomServices
- 
+
 public class RoomInteractor {
 
   // MARK: Lifecycle
@@ -122,7 +122,7 @@ public class RoomInteractor {
         }
       }
     }
-    
+
     // swiftlint:disable:next no_direct_standard_out_logs
     print("Final room bookings: \(result)")
     return result
@@ -198,7 +198,7 @@ public class RoomInteractor {
       .failure(error)
     }
   }
-  
+
   public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookings: [RoomBooking]) -> [Room] {
     var filteredRooms = rooms
 
@@ -239,7 +239,6 @@ public class RoomInteractor {
       // swiftlint:disable:next no_direct_standard_out_logs
       print("option: \(duration.rawValue), roombookings: \(roomBookings)")
       filteredRooms = getRoomsFilteredByDuration(for: duration.rawValue, roomBookings: roomBookings, rooms: filteredRooms)
-
     }
 
     // Filter by date/time and duration (requires booking data)

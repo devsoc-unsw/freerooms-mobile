@@ -34,18 +34,17 @@ public struct DateFilterView: View {
 
       // Calendar
       DatePicker(
-          "Select a date",
-          selection: $selectedDate,
-          displayedComponents: .date
-      )
-      .datePickerStyle(.graphical)
-      .tint(theme.accent.primary)
-      
+        "Select a date",
+        selection: $selectedDate,
+        displayedComponents: .date)
+        .datePickerStyle(.graphical)
+        .tint(theme.accent.primary)
+
       // Divider
       Rectangle()
         .fill(Color.gray.opacity(0.3))
         .frame(height: 2)
-      
+
       // Time selection
       HStack {
         Text("Start")
@@ -53,10 +52,9 @@ public struct DateFilterView: View {
           .bold()
 
         Spacer()
-        
+
         DatePicker("Please enter a time", selection: $selectedDate, displayedComponents: .hourAndMinute)
           .labelsHidden()
-
       }
 
       SelectButton(onSelect: onSelect)
@@ -65,9 +63,8 @@ public struct DateFilterView: View {
   }
 
   // MARK: Private
+
   @Binding private var selectedDate: Date
-  @State private var currentMonth = Date()
-  @State private var showingTimePicker = false
   @Environment(Theme.self) private var theme
 
   private let onSelect: () -> Void

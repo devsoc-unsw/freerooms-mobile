@@ -20,11 +20,8 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Internal
 
-  private let room: Room
-
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-
       // Booking informations
       RoomBookingInformationView(room: room)
 
@@ -37,7 +34,7 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          DatePicker("Please Select a Date", selection: selectedDateBinding,  displayedComponents: .date)
+          DatePicker("Please Select a Date", selection: selectedDateBinding, displayedComponents: .date)
             .labelsHidden()
             .tint(theme.accent.primary)
         }
@@ -68,16 +65,15 @@ struct RoomDetailsSheetView: View {
 
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
-  
-  @State private var localSelectedDate = Date()
-  
+
+  private let room: Room
+
   private var selectedDateBinding: Binding<Date> {
-      Binding<Date>(
-        get: { roomViewModel.selectedDate },
-          set: { newValue in
-              roomViewModel.selectedDate = newValue
-          }
-      )
+    Binding<Date>(
+      get: { roomViewModel.selectedDate },
+      set: { newValue in
+        roomViewModel.selectedDate = newValue
+      })
   }
 }
 

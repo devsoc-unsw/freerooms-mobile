@@ -87,8 +87,9 @@ struct RoomBookingsListView: View {
 
   // MARK: Private
 
-  private let room: Room
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+
+  private let room: Room
 
 }
 

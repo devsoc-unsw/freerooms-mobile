@@ -141,7 +141,8 @@ public enum CampusLocation: String, CaseIterable, Identifiable {
   }
 }
 
+// MARK: - DateDefaults
 
 public enum DateDefaults {
-    public static var selectedDate = Date()
+  public static var selectedDate = Date()
 }

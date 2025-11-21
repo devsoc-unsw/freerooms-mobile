@@ -46,7 +46,7 @@ public struct FilterBar: View {
         FilterButton(
           filterType: .campusLocation,
           showingFilter: $showingCampusLocationFilter)
-        
+
         FilterButton(
           filterType: .capacity,
           showingFilter: $showingCapacityFilter)
