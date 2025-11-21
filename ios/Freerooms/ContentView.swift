@@ -25,8 +25,8 @@ struct ContentView: View {
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
   @State var selectedTab = "Buildings"
-  @State var selectedRoomsView = RoomOrientation.List
-	@State var selectedBuildingsView = RoomOrientation.List
+  @State var selectedRoomsView = ViewOrientation.List
+	@State var selectedBuildingsView = ViewOrientation.List
 
   var body: some View {
     TabView(selection: $selectedTab) {

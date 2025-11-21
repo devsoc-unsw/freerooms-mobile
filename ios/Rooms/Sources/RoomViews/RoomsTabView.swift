@@ -24,7 +24,7 @@ public struct RoomsTabView<Destination: View>: View {
     roomViewModel: RoomViewModel,
     buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
-    selectedView: Binding<RoomOrientation>,
+    selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
     _path = path
@@ -65,13 +65,13 @@ public struct RoomsTabView<Destination: View>: View {
               }
 
               Button {
-                if selectedView == RoomOrientation.Card {
-                  selectedView = RoomOrientation.List
+                if selectedView == ViewOrientation.Card {
+                  selectedView = ViewOrientation.List
                 } else {
-                  selectedView = RoomOrientation.Card
+                  selectedView = ViewOrientation.Card
                 }
               } label: {
-                Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+                Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
                   .resizable()
                   .frame(width: 22, height: 20)
               }
@@ -118,7 +118,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
 
-  @Binding var selectedView: RoomOrientation
+  @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
   @State var searchText = ""
   @Binding var path: NavigationPath
@@ -213,7 +213,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   @ViewBuilder
   private var roomView: some View {
-    if selectedView == RoomOrientation.List {
+    if selectedView == ViewOrientation.List {
       List {
         roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
       }
@@ -230,7 +230,7 @@ public struct RoomsTabView<Destination: View>: View {
 
 private struct PreviewWrapper: View {
   @State var path = NavigationPath()
-  @State var selectedView = RoomOrientation.List
+  @State var selectedView = ViewOrientation.List
 
   var body: some View {
     RoomsTabView<EmptyView>(

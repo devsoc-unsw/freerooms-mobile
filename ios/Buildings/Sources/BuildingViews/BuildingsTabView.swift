@@ -20,7 +20,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   public init(
     path: Binding<NavigationPath>,
     viewModel: BuildingViewModel,
-		selectedView: Binding<RoomOrientation>, // TODO: rename RoomOrientation?
+		selectedView: Binding<ViewOrientation>,
     _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
     _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
@@ -62,13 +62,13 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             }
 						
 						Button {
-							if selectedView == RoomOrientation.Card {
-								selectedView = RoomOrientation.List
+							if selectedView == ViewOrientation.Card {
+								selectedView = ViewOrientation.List
 							} else {
-								selectedView = RoomOrientation.Card
+								selectedView = ViewOrientation.Card
 							}
 						} label: {
-							Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+							Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
 								.resizable()
 								.frame(width: 22, height: 20)
 						}
@@ -135,7 +135,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var viewModel: BuildingViewModel
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-	@Binding var selectedView: RoomOrientation
+	@Binding var selectedView: ViewOrientation
 	@State var cardWidth: CGFloat?
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
@@ -143,7 +143,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 	
 	@ViewBuilder
 	private var buildingsView: some View {
-		if selectedView == RoomOrientation.List {
+		if selectedView == ViewOrientation.List {
 			List {
 				buildingsListSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
 				buildingsListSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
@@ -223,7 +223,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
 struct PreviewWrapper: View {
   @State var path = NavigationPath()
-	@State var selectedView = RoomOrientation.List
+	@State var selectedView = ViewOrientation.List
 
   var body: some View {
     BuildingsTabView(
