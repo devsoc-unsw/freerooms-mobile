@@ -282,13 +282,13 @@ public struct RoomsTabView<Destination: View>: View {
       }
 
       Button {
-        if selectedView == RoomOrientation.Card {
-          selectedView = RoomOrientation.List
+        if selectedView == ViewOrientation.Card {
+          selectedView = ViewOrientation.List
         } else {
-          selectedView = RoomOrientation.Card
+          selectedView = ViewOrientation.Card
         }
       } label: {
-        Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+        Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
           .resizable()
           .frame(width: 22, height: 20)
       }
