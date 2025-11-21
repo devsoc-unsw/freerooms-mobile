@@ -20,7 +20,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   public init(
     path: Binding<NavigationPath>,
     viewModel: BuildingViewModel,
-    selectedView: Binding<RoomOrientation>, // TODO: rename RoomOrientation?
+    selectedView: Binding<ViewOrientation>,
     _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
     _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
@@ -41,10 +41,19 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             await viewModel.reloadBuildings()
           }
         }
+        .redacted(reason: viewModel.isLoading ? .placeholder : [])
         .toolbar {
           // Buttons on the right
           ToolbarItemGroup(placement: .navigationBarTrailing) {
             HStack {
+              Button {
+                // action
+              } label: {
+                Image(systemName: "line.3.horizontal.decrease")
+                  .resizable()
+                  .frame(width: 22, height: 15)
+              }
+
               Button {
                 viewModel.getBuildingsInOrder()
               } label: {
@@ -54,13 +63,13 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
               }
 
               Button {
-                if selectedView == RoomOrientation.Card {
-                  selectedView = RoomOrientation.List
+                if selectedView == ViewOrientation.Card {
+                  selectedView = ViewOrientation.List
                 } else {
-                  selectedView = RoomOrientation.Card
+                  selectedView = ViewOrientation.Card
                 }
               } label: {
-                Image(systemName: selectedView == RoomOrientation.List ? "square.grid.2x2" : "list.bullet")
+                Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
                   .resizable()
                   .frame(width: 22, height: 20)
               }
@@ -84,31 +93,13 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
           roomDestinationBuilderView(room)
         }
-        .opacity(
-          viewModel.isLoading
-            ? 0
-            : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
-          .overlay {
-            if viewModel.isLoading {
-              VStack {
-                ProgressView()
-                  .scaleEffect(1.2)
-                Text("Loading buildings...")
-                  .font(.caption)
-                  .foregroundColor(theme.label.secondary)
-                  .padding(.top, 8)
-              }
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(Color.gray.opacity(0.1))
-            }
+        .onAppear {
+          if !viewModel.hasLoaded {
+            viewModel.onAppear()
           }
-          .onAppear {
-            if !viewModel.hasLoaded {
-              viewModel.onAppear()
-            }
-          }
-          .navigationTitle("Buildings")
-          .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        }
+        .navigationTitle("Buildings")
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .alert(item: $viewModel.loadBuildingErrorMessage) { error in
       Alert(
@@ -127,7 +118,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var viewModel: BuildingViewModel
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-  @Binding var selectedView: RoomOrientation
+  @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
@@ -143,6 +134,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             cardWidth: $cardWidth,
             building: building,
             buildings: buildings,
+            isLoading: viewModel.isLoading,
             imageProvider: { roomID in
               BuildingImage[roomID]
             })
@@ -171,6 +163,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             rowHeight: $rowHeight,
             building: building,
             buildings: buildings,
+            isLoading: viewModel.isLoading,
             imageProvider: { buildingID in
               BuildingImage[buildingID]
             })
@@ -194,17 +187,17 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   @ViewBuilder
   private var buildingsView: some View {
-    if selectedView == RoomOrientation.List {
+    if selectedView == ViewOrientation.List {
       List {
-        buildingsListSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
-        buildingsListSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
-        buildingsListSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
+        buildingsListSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
+        buildingsListSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
+        buildingsListSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
       }
     } else {
       ScrollView {
-        buildingsCardSegment(for: "Upper campus", from: viewModel.filteredBuildings.upper)
-        buildingsCardSegment(for: "Middle campus", from: viewModel.filteredBuildings.middle)
-        buildingsCardSegment(for: "Lower campus", from: viewModel.filteredBuildings.lower)
+        buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
+        buildingsCardSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
+        buildingsCardSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
       }
       .padding(.horizontal, 16)
     }
@@ -216,7 +209,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
 struct PreviewWrapper: View {
   @State var path = NavigationPath()
-  @State var selectedView = RoomOrientation.List
+  @State var selectedView = ViewOrientation.List
 
   var body: some View {
     BuildingsTabView(

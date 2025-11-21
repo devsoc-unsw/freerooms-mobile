@@ -137,7 +137,10 @@ struct FreeroomsApp: App {
 
       let (roomStatusLoader, _, remoteBookingLoader) = makeRemoteLoaders()
 
-      let roomLoader = LiveRoomLoader(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: roomStatusLoader)
+      let roomLoader = LiveRoomLoader(
+        JSONRoomLoader: JSONRoomLoader,
+        roomStatusLoader: roomStatusLoader,
+        swiftDataRoomLoader: swiftDataRoomLoader)
 
       let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
 

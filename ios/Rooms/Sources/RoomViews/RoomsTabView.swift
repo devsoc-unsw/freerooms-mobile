@@ -25,7 +25,7 @@ public struct RoomsTabView<Destination: View>: View {
     roomViewModel: LiveRoomViewModel,
     buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
-    selectedView: Binding<RoomOrientation>,
+    selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
     _path = path
@@ -57,6 +57,7 @@ public struct RoomsTabView<Destination: View>: View {
             }
           }
       }
+			.redacted(reason: roomViewModel.isLoading ? .placeholder : [])
       .toolbar {
         toolbarButtons
       }
@@ -157,8 +158,8 @@ public struct RoomsTabView<Destination: View>: View {
   @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
 
-  @Binding var selectedView: RoomOrientation
-  @State var cardWidth: CGFloat? // TODO:
+  @Binding var selectedView: ViewOrientation
+  @State var cardWidth: CGFloat?
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
@@ -168,12 +169,11 @@ public struct RoomsTabView<Destination: View>: View {
   // search text is owned by the view model
 
   func roomsCardView(
-    _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
+      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
       let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
@@ -187,6 +187,7 @@ public struct RoomsTabView<Destination: View>: View {
                 cardWidth: $cardWidth,
                 room: room,
                 rooms: rooms,
+                isLoading: roomViewModel.isLoading,
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })
@@ -208,12 +209,11 @@ public struct RoomsTabView<Destination: View>: View {
   }
 
   func roomsListView(
-    _ roomsByBuildingId: [String: [Room]],
     _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
-      let rooms = roomsByBuildingId[building.id] ?? []
+      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
       let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
@@ -226,6 +226,7 @@ public struct RoomsTabView<Destination: View>: View {
               rowHeight: $rowHeight,
               room: room,
               rooms: rooms,
+              isLoading: roomViewModel.isLoading,
               imageProvider: { roomID in
                 RoomImage[roomID]
               })
@@ -259,13 +260,13 @@ public struct RoomsTabView<Destination: View>: View {
 
   @ViewBuilder
   private var roomView: some View {
-    if selectedView == RoomOrientation.List {
+    if selectedView == ViewOrientation.List {
       List {
-        roomsListView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+        roomsListView(buildingViewModel.allBuildings)
       }
     } else {
       ScrollView {
-        roomsCardView(roomViewModel.filteredRoomsByBuildingId, buildingViewModel.allBuildings)
+        roomsCardView(buildingViewModel.allBuildings)
       }
     }
   }
@@ -301,7 +302,7 @@ public struct RoomsTabView<Destination: View>: View {
 
 private struct PreviewWrapper: View {
   @State var path = NavigationPath()
-  @State var selectedView = RoomOrientation.List
+  @State var selectedView = ViewOrientation.List
 
   var body: some View {
     RoomsTabView<EmptyView>(
