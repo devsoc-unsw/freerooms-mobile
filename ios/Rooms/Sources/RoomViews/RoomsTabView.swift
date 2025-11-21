@@ -148,6 +148,7 @@ public struct RoomsTabView<Destination: View>: View {
                 cardWidth: $cardWidth,
                 room: room,
                 rooms: rooms,
+                isLoading: roomViewModel.isLoading,
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })
@@ -187,6 +188,7 @@ public struct RoomsTabView<Destination: View>: View {
               rowHeight: $rowHeight,
               room: room,
               rooms: rooms,
+              isLoading: roomViewModel.isLoading,
               imageProvider: { roomID in
                 RoomImage[roomID]
               })
