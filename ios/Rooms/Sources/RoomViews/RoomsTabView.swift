@@ -56,8 +56,8 @@ public struct RoomsTabView<Destination: View>: View {
               await roomViewModel.reloadRooms()
             }
           }
+          .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
       }
-      .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
       .toolbar {
         toolbarButtons
       }
@@ -70,10 +70,6 @@ public struct RoomsTabView<Destination: View>: View {
       .navigationDestination(for: Room.self) { room in
         roomDestinationBuilderView(room)
       }
-      .opacity(
-        roomViewModel.isLoading
-          ? 0
-          : 1) // This hides a glitch where the bottom border of top section row and vice versa flashes when changing order
         .task {
           if !roomViewModel.hasLoaded {
             await roomViewModel.onAppear()
