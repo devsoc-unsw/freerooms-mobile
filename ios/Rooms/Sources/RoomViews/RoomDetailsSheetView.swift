@@ -71,19 +71,17 @@ struct RoomDetailsSheetView: View {
     .gesture(
       DragGesture(minimumDistance: 20, coordinateSpace: .local)
         .onEnded { value in
-          if value.translation.width > 50 && value.translation.width > abs(value.translation.height)
-          {
+          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
             onDismiss?()
           }
-        }
-    )
+        })
   }
 
   // MARK: Private
 
-  private let onDismiss: (() -> Void)?
-
   @Environment(Theme.self) private var theme
+
+  private let onDismiss: (() -> Void)?
 
   private var roomViewModel: RoomViewModel
 
