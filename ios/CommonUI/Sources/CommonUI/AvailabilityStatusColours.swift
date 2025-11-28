@@ -16,6 +16,8 @@ extension Room {
     switch status {
     case "free":
       Theme.light.list.green
+    case "soon":
+      Theme.light.list.yellow
     case "busy":
       Theme.light.list.red
     default:
@@ -27,6 +29,8 @@ extension Room {
     switch status {
     case "free":
       Theme.light.list.greenTransparent.opacity(0.15)
+    case "soon":
+      Theme.light.list.yellowTransparent.opacity(0.20)
     case "busy":
       Theme.light.list.redTransparent.opacity(0.54)
     default:

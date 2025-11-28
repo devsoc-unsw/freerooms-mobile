@@ -169,13 +169,15 @@ public struct Room: Equatable, Identifiable, Hashable {
     case ("free", let endTime?):
       "Available till \(Room.timeFormatter.string(from: endTime))"
     case ("free", nil):
-      "Available till end of day"
+      "Available all day"
+    case ("soon", let endTime?):
+      "Available soon at \(Room.timeFormatter.string(from: endTime))"
     case ("busy", let endTime?):
       "Unavailable till \(Room.timeFormatter.string(from: endTime))"
     case ("busy", nil):
-      "Unavailable till end of day"
+      "Unavailable all day"
     case (_, _):
-      "Status not avaliable"
+      "Status unavailable"
     }
   }
 

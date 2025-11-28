@@ -64,14 +64,18 @@ public final class Theme {
     public let greenTransparent: Color
     public let gray: Color
     public let grayTransparent: Color
+    public let yellow: Color
+    public let yellowTransparent: Color
 
-    public init(red: Color, redTransparent: Color, green: Color, greenTransparent: Color, gray: Color, grayTransparent: Color) {
+    public init(red: Color, redTransparent: Color, green: Color, greenTransparent: Color, gray: Color, grayTransparent: Color, yellow: Color, yellowTransparent: Color) {
       self.red = red
       self.redTransparent = redTransparent
       self.green = green
       self.greenTransparent = greenTransparent
       self.gray = gray
       self.grayTransparent = grayTransparent
+      self.yellow = yellow
+      self.yellowTransparent = yellowTransparent
     }
   }
 
@@ -95,7 +99,10 @@ public final class Theme {
       green: Color("Green", bundle: .module),
       greenTransparent: Color("GreenTransparent", bundle: .module),
       gray: Color("Gray", bundle: .module),
-      grayTransparent: Color("GrayTransparent", bundle: .module)))
+      grayTransparent: Color("GrayTransparent", bundle: .module),
+      yellow: Color("Yellow", bundle: .module),
+      yellowTransparent: Color("YellowTransparent", bundle: .module)),
+  )
 
   public var accent: Accent
   public var label: Label
