@@ -14,10 +14,11 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
-  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel) {
+  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, onDismiss: (() -> Void)? = nil) {
     self.dateSelect = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
+    self.onDismiss = onDismiss
   }
 
   // MARK: Internal
@@ -67,11 +68,20 @@ struct RoomDetailsSheetView: View {
           .stroke(Color.gray.secondary, lineWidth: 1))
     }
     .padding()
+    .gesture(
+      DragGesture(minimumDistance: 20, coordinateSpace: .local)
+        .onEnded { value in
+          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
+            onDismiss?()
+          }
+        })
   }
 
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+
+  private let onDismiss: (() -> Void)?
 
   private var roomViewModel: RoomViewModel
 

@@ -35,22 +35,23 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel)
-        .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
-        .presentationBackgroundInteraction(.enabled(upThrough: .large))
-        .presentationCornerRadius(30)
+      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel) {
+        showDetails = false
+        dismiss()
+      }
+      .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
+      .presentationBackgroundInteraction(.enabled(upThrough: .large))
+      .presentationCornerRadius(30)
     }
     .navigationBarBackButtonHidden(true)
     .gesture(
       DragGesture(minimumDistance: 20, coordinateSpace: .local)
         .onEnded { value in
-          if value.translation.width > 50 && value.translation.width > abs(value.translation.height)
-          {
+          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
             showDetails = false
             dismiss()
           }
-        }
-    )
+        })
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
@@ -121,8 +122,7 @@ extension View {
   @ViewBuilder
   func liquidGlass(
     if transform1: (Self) -> some View,
-    else transform2: (Self) -> some View
-  )
+    else transform2: (Self) -> some View)
     -> some View
   {
     if #available(iOS 26.0, *) {
