@@ -154,6 +154,7 @@ public struct RoomsTabView<Destination: View>: View {
         } header: {
           HStack {
             Text(buildingName)
+              .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
               .padding(.leading, 10)
             Spacer()
@@ -191,6 +192,7 @@ public struct RoomsTabView<Destination: View>: View {
           }
         } header: {
           Text(buildingName)
+            .textCase(.uppercase)
             .foregroundStyle(theme.label.primary)
         }
       }
