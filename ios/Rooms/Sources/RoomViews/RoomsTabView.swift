@@ -90,19 +90,19 @@ public struct RoomsTabView<Destination: View>: View {
         .navigationDestination(for: Room.self) { room in
           roomDestinationBuilderView(room)
         }
-          .task {
-            if !roomViewModel.hasLoaded {
-              await roomViewModel.onAppear()
-            }
+        .task {
+          if !roomViewModel.hasLoaded {
+            await roomViewModel.onAppear()
           }
-          .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
-            Alert(
-              title: Text(error.title),
-              message: Text(error.message),
-              dismissButton: .default(Text("OK")))
-          }
-          .navigationTitle("Rooms")
-          .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        }
+        .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+          Alert(
+            title: Text(error.title),
+            message: Text(error.message),
+            dismissButton: .default(Text("OK")))
+        }
+        .navigationTitle("Rooms")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")

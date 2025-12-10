@@ -115,7 +115,7 @@ public class LiveRoomViewModel: RoomViewModel {
         usage: "TUSM",
         service: ["Loading"],
         writingMedia: ["Whiteboard"],
-        status: "free",
+        status: .available,
         endTime: nil,
         overallRating: 4.0)
     }

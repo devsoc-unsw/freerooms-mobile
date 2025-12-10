@@ -53,7 +53,7 @@ public final class SwiftDataRoom: IdentifiableModel {
     usage: String,
     service: [String],
     writingMedia: [String],
-    status: String?,
+    status: RoomAvailability,
     endTime: Date?)
   {
     self.abbreviation = abbreviation
@@ -73,7 +73,7 @@ public final class SwiftDataRoom: IdentifiableModel {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
-    self.status = status ?? ""
+    self.status = status
     self.endTime = endTime
   }
 
@@ -96,7 +96,7 @@ public final class SwiftDataRoom: IdentifiableModel {
   public var usage: String
   public var service: [String]
   public var writingMedia: [String]
-  public var status: String?
+  public var status: RoomAvailability
   public var endTime: Date?
 
   public var stringID: String {
@@ -123,7 +123,7 @@ public final class SwiftDataRoom: IdentifiableModel {
       usage: usage,
       service: service,
       writingMedia: writingMedia,
-      status: status ?? "",
+      status: status,
       endTime: endTime)
   }
 }
