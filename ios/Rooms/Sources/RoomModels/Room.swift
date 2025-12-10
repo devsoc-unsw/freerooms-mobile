@@ -11,15 +11,19 @@ import Foundation
 
 import Location
 
+// MARK: - RoomAvailability
+
 public enum RoomAvailability: String, Codable {
-    case available
-    case availableSoon
-    case unavailable
-    case unknown
+  case available
+  case availableSoon
+  case unavailable
+  case unknown
 }
 
+// MARK: - Room
+
 public struct Room: Equatable, Identifiable, Hashable {
-    
+
   // MARK: Lifecycle
 
   public init(

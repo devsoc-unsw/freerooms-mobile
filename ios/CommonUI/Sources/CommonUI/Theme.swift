@@ -67,7 +67,16 @@ public final class Theme {
     public let yellow: Color
     public let yellowBackground: Color
 
-    public init(red: Color, redBackground: Color, green: Color, greenBackground: Color, gray: Color, grayBackground: Color, yellow: Color, yellowBackground: Color) {
+    public init(
+      red: Color,
+      redBackground: Color,
+      green: Color,
+      greenBackground: Color,
+      gray: Color,
+      grayBackground: Color,
+      yellow: Color,
+      yellowBackground: Color)
+    {
       self.red = red
       self.redBackground = redBackground
       self.green = green
@@ -101,8 +110,7 @@ public final class Theme {
       gray: Color("Gray", bundle: .module),
       grayBackground: Color("GrayBackground", bundle: .module),
       yellow: Color("Yellow", bundle: .module),
-      yellowBackground: Color("YellowBackground", bundle: .module)),
-  )
+      yellowBackground: Color("YellowBackground", bundle: .module)))
 
   public var accent: Accent
   public var label: Label
