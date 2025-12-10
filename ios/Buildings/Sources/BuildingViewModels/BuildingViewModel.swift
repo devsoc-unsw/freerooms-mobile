@@ -8,10 +8,10 @@
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
-import CommonUI
 import Foundation
 import Location
 import Observation
+import CommonUI
 
 // MARK: - BuildingViewModel
 

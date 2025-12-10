@@ -107,7 +107,19 @@ public final class LiveRoomLoader: RoomLoader {
         let roomStatus = roomStatusResponse[rooms[i].buildingId]?.roomStatuses[rooms[i].roomNumber] ?? RoomStatus(
           status: "",
           endtime: "")
-        rooms[i].status = roomStatus.status
+          
+          switch roomStatus.status {
+          case "free":
+              rooms[i].status = .available
+          case "soon":
+              rooms[i].status = .availableSoon
+          case "busy":
+              rooms[i].status = .unavailable
+          default:
+              rooms[i].status = .unknown
+          }
+          
+          
         rooms[i].endTime = formatter.date(from: roomStatus.endtime)
       }
     }
