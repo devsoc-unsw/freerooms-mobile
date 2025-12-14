@@ -42,6 +42,7 @@ public struct RoomDetailsView: View {
       .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
       .presentationBackgroundInteraction(.enabled(upThrough: .large))
       .presentationCornerRadius(30)
+      .interactiveDismissDisabled()
     }
     .navigationBarBackButtonHidden(true)
     .gesture(
