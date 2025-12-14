@@ -14,23 +14,27 @@ extension Room {
 
   public var statusTextColour: Color {
     switch status {
-    case "free":
+    case .available:
       Theme.light.list.green
-    case "busy":
+    case .availableSoon:
+      Theme.light.list.yellow
+    case .unavailable:
       Theme.light.list.red
-    default:
+    case .unknown:
       Theme.light.list.gray
     }
   }
 
   public var statusBackgroundColor: Color {
     switch status {
-    case "free":
-      Theme.light.list.greenTransparent.opacity(0.15)
-    case "busy":
-      Theme.light.list.redTransparent.opacity(0.54)
-    default:
-      Theme.light.list.grayTransparent.opacity(0.20)
+    case .available:
+      Theme.light.list.greenBackground.opacity(0.15)
+    case .availableSoon:
+      Theme.light.list.yellowBackground.opacity(0.20)
+    case .unavailable:
+      Theme.light.list.redBackground.opacity(0.54)
+    case .unknown:
+      Theme.light.list.grayBackground.opacity(0.20)
     }
   }
 }

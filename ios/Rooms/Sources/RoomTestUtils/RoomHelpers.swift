@@ -55,7 +55,7 @@ func createSwiftDataRooms(_ count: Int) -> [SwiftDataRoom] {
       usage: "LCTR",
       service: ["IT support", "Cleaning service", "Security monitoring"],
       writingMedia: ["Whiteboard", "Smart board", "Flip chart"],
-      status: nil,
+      status: .unknown,
       endTime: nil))
   }
 

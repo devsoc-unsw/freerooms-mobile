@@ -59,19 +59,32 @@ public final class Theme {
 
   public struct ListColors {
     public let red: Color
-    public let redTransparent: Color
+    public let redBackground: Color
     public let green: Color
-    public let greenTransparent: Color
+    public let greenBackground: Color
     public let gray: Color
-    public let grayTransparent: Color
+    public let grayBackground: Color
+    public let yellow: Color
+    public let yellowBackground: Color
 
-    public init(red: Color, redTransparent: Color, green: Color, greenTransparent: Color, gray: Color, grayTransparent: Color) {
+    public init(
+      red: Color,
+      redBackground: Color,
+      green: Color,
+      greenBackground: Color,
+      gray: Color,
+      grayBackground: Color,
+      yellow: Color,
+      yellowBackground: Color)
+    {
       self.red = red
-      self.redTransparent = redTransparent
+      self.redBackground = redBackground
       self.green = green
-      self.greenTransparent = greenTransparent
+      self.greenBackground = greenBackground
       self.gray = gray
-      self.grayTransparent = grayTransparent
+      self.grayBackground = grayBackground
+      self.yellow = yellow
+      self.yellowBackground = yellowBackground
     }
   }
 
@@ -91,11 +104,13 @@ public final class Theme {
     white: .init("White", bundle: .module),
     list: .init(
       red: Color("Red", bundle: .module),
-      redTransparent: Color("RedTransparent", bundle: .module),
+      redBackground: Color("RedBackground", bundle: .module),
       green: Color("Green", bundle: .module),
-      greenTransparent: Color("GreenTransparent", bundle: .module),
+      greenBackground: Color("GreenBackground", bundle: .module),
       gray: Color("Gray", bundle: .module),
-      grayTransparent: Color("GrayTransparent", bundle: .module)))
+      grayBackground: Color("GrayBackground", bundle: .module),
+      yellow: Color("Yellow", bundle: .module),
+      yellowBackground: Color("YellowBackground", bundle: .module)))
 
   public var accent: Accent
   public var label: Label

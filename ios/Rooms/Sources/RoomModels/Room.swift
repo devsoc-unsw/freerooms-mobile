@@ -11,6 +11,17 @@ import Foundation
 
 import Location
 
+// MARK: - RoomAvailability
+
+public enum RoomAvailability: String, Codable {
+  case available
+  case availableSoon
+  case unavailable
+  case unknown
+}
+
+// MARK: - Room
+
 public struct Room: Equatable, Identifiable, Hashable {
 
   // MARK: Lifecycle
@@ -33,7 +44,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     usage: String,
     service: [String],
     writingMedia: [String],
-    status: String? = nil,
+    status: RoomAvailability = .unknown,
     endTime: Date? = nil,
     overallRating: Double? = nil)
   {
@@ -54,7 +65,7 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.usage = usage
     self.service = service
     self.writingMedia = writingMedia
-    self.status = status ?? ""
+    self.status = status
     self.endTime = endTime
     self.overallRating = overallRating
   }
@@ -155,7 +166,7 @@ public struct Room: Equatable, Identifiable, Hashable {
   public let usage: String
   public let service: [String]
   public let writingMedia: [String]
-  public var status: String?
+  public var status: RoomAvailability
   public var endTime: Date?
   public var overallRating: Double?
 
@@ -166,16 +177,18 @@ public struct Room: Equatable, Identifiable, Hashable {
 
   public var statusText: String {
     switch (status, endTime) {
-    case ("free", let endTime?):
+    case (.available, let endTime?):
       "Available till \(Room.timeFormatter.string(from: endTime))"
-    case ("free", nil):
-      "Available till end of day"
-    case ("busy", let endTime?):
+    case (.available, nil):
+      "Available"
+    case (.availableSoon, let endTime?):
+      "Available soon at \(Room.timeFormatter.string(from: endTime))"
+    case (.unavailable, let endTime?):
       "Unavailable till \(Room.timeFormatter.string(from: endTime))"
-    case ("busy", nil):
-      "Unavailable till end of day"
+    case (.unavailable, nil):
+      "Unavailable"
     case (_, _):
-      "Status not avaliable"
+      "Status unavailable"
     }
   }
 
