@@ -20,8 +20,4 @@ assignees: ''
 [What the app currently does]
 
 # Resources
-- [Attach screenshots or screen recordings]
-- [Attach crash logs if available]
-
-# Extra context
-[Attach any additional context e.g device version]
+- [Attach any useful context e.g device version]
