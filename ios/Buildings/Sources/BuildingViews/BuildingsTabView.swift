@@ -47,14 +47,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           ToolbarItemGroup(placement: .navigationBarTrailing) {
             HStack {
               Button {
-                // action
-              } label: {
-                Image(systemName: "line.3.horizontal.decrease")
-                  .resizable()
-                  .frame(width: 22, height: 15)
-              }
-
-              Button {
                 viewModel.getBuildingsInOrder()
               } label: {
                 Image(systemName: "arrow.up.arrow.down")
@@ -78,13 +70,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             .foregroundStyle(theme.label.tertiary)
           }
         }
-        .background(Color.gray.opacity(0.1))
-        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under
-        // section cards
-        .shadow(
-          color: theme.label.primary.opacity(0.2),
-          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
         .navigationDestination(for: Building.self) { building in
           roomsDestinationBuilderView(building)
             .navigationTitle(building.name)
@@ -99,7 +84,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           }
         }
         .navigationTitle("Buildings")
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "K17")
     }
     .alert(item: $viewModel.loadBuildingErrorMessage) { error in
       Alert(
@@ -140,6 +125,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             })
         }
       }
+      .padding(.horizontal, 16)
+      // .listRowSeparator(.hidden)
+      // .listRowBackground(Color.clear)
     } header: {
       HStack {
         Text(campus)
@@ -195,13 +183,18 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsListSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
         buildingsListSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
       }
+      .listRowInsets(EdgeInsets())
+      .scrollContentBackground(.hidden)
+      .background(Color.gray.opacity(0.1))
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
         buildingsCardSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
         buildingsCardSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
       }
-      .padding(.horizontal, 16)
+      // .padding(.horizontal)
+      .background(Color.gray.opacity(0.1))
+      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
 
