@@ -12,9 +12,13 @@ import SwiftUI
 struct RoomBookingCardView: View {
 
   // MARK: Internal
-
-  private var isSmallBooking: Bool {
-    numberTimeSlots < 4
+  
+  public init(room: Room, booking: RoomBooking) {
+    self.room = room
+    self.booking = booking
+    self.start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
+    self.end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
+    self.startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0) - (60 * 8)
   }
 
   var body: some View {
@@ -33,7 +37,7 @@ struct RoomBookingCardView: View {
               ? .system(size: 10, weight: .medium)
               : .system(size: 12, weight: .medium))
 
-        Text("\(bookingName)")
+        Text("\(booking.name)")
           .font(
             isSmallBooking
               ? .system(size: 18, weight: .medium)
@@ -45,6 +49,9 @@ struct RoomBookingCardView: View {
       .foregroundStyle(.white)
     }
     .frame(height: (20 * numberTimeSlots) - 4)
+    .offset(
+      x: 0,
+      y: CGFloat(startMinutes) * (40 / 60) + 2)
   }
 
   // MARK: Private
@@ -64,10 +71,10 @@ struct RoomBookingCardView: View {
   }
 
   var numberTimeSlots: CGFloat {
-    let startTimeMinute = currentBooking.0.minute ?? 0
-    let startTimeHour = currentBooking.0.hour ?? 0
-    let endTimeMinute = currentBooking.1.minute ?? 0
-    let endTimeHour = currentBooking.1.hour ?? 0
+    let startTimeMinute = start.minute ?? 0
+    let startTimeHour = start.hour ?? 0
+    let endTimeMinute = end.minute ?? 0
+    let endTimeHour = end.hour ?? 0
 
     let startTotalMinutes = startTimeHour * 60 + startTimeMinute
     let endTotalMinutes = endTimeHour * 60 + endTimeMinute
@@ -76,24 +83,33 @@ struct RoomBookingCardView: View {
     return CGFloat(range / 30)
   }
 
-  var room: Room
-
   var time: (String, String) {
-    let startTimeMinute = currentBooking.0.minute ?? 0
-    let startTimeHour = currentBooking.0.hour ?? 0
-    let endTimeMinute = currentBooking.1.minute ?? 0
-    let endTimeHour = currentBooking.1.hour ?? 0
+    let startTimeMinute = start.minute ?? 0
+    let startTimeHour = start.hour ?? 0
+    let endTimeMinute = end.minute ?? 0
+    let endTimeHour = end.hour ?? 0
 
     return ("\(formatHour(startTimeHour, startTimeMinute))", "\(formatHour(endTimeHour, endTimeMinute))")
   }
 
-  var currentBooking: (DateComponents, DateComponents)
-  var bookingName: String
+  private var room: Room
+  private var booking: RoomBooking
+  private var isSmallBooking: Bool {
+    numberTimeSlots < 4
+  }
+  
+  private var start: DateComponents
+  private var end: DateComponents
+  private let startMinutes: Int
+  
+//  var currentBooking: (DateComponents, DateComponents)
+//  var bookingName: String
 }
 
 #Preview {
   RoomBookingCardView(
     room: Room.exampleOne,
-    currentBooking: (DateComponents(), DateComponents()), bookingName: "COMM")
+    booking: RoomBooking.exampleOne)
+//    currentBooking: (DateComponents(), DateComponents()), bookingName: "COMM")
     .defaultTheme()
 }
