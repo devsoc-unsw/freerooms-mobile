@@ -11,15 +11,17 @@ import SwiftUI
 
 struct RoomBookingCardView: View {
 
-  // MARK: Internal
-  
+  // MARK: Lifecycle
+
   public init(room: Room, booking: RoomBooking) {
     self.room = room
     self.booking = booking
-    self.start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
-    self.end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
-    self.startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0) - (60 * 8)
+    start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
+    end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
+    startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0) - (60 * 8)
   }
+
+  // MARK: Internal
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -54,22 +56,6 @@ struct RoomBookingCardView: View {
       y: CGFloat(startMinutes) * (40 / 60) + 2)
   }
 
-  // MARK: Private
-
-  @Environment(Theme.self) private var theme
-
-  private func formatHour(_ hour: Int, _ minute: Int) -> String {
-    if hour == 0 {
-      "12\(minute >= 30 ? ":30" : "") AM"
-    } else if hour < 12 {
-      "\(hour)\(minute >= 30 ? ":30" : "") AM"
-    } else if hour == 12 {
-      "12\(minute >= 30 ? ":30" : "") PM"
-    } else {
-      "\(hour - 12)\(minute >= 30 ? ":30" : "") PM"
-    }
-  }
-
   var numberTimeSlots: CGFloat {
     let startTimeMinute = start.minute ?? 0
     let startTimeHour = start.hour ?? 0
@@ -92,24 +78,37 @@ struct RoomBookingCardView: View {
     return ("\(formatHour(startTimeHour, startTimeMinute))", "\(formatHour(endTimeHour, endTimeMinute))")
   }
 
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
+
   private var room: Room
   private var booking: RoomBooking
-  private var isSmallBooking: Bool {
-    numberTimeSlots < 4
-  }
-  
   private var start: DateComponents
   private var end: DateComponents
   private let startMinutes: Int
-  
-//  var currentBooking: (DateComponents, DateComponents)
-//  var bookingName: String
+
+  private var isSmallBooking: Bool {
+    numberTimeSlots < 4
+  }
+
+  private func formatHour(_ hour: Int, _ minute: Int) -> String {
+    if hour == 0 {
+      "12\(minute >= 30 ? ":30" : "") AM"
+    } else if hour < 12 {
+      "\(hour)\(minute >= 30 ? ":30" : "") AM"
+    } else if hour == 12 {
+      "12\(minute >= 30 ? ":30" : "") PM"
+    } else {
+      "\(hour - 12)\(minute >= 30 ? ":30" : "") PM"
+    }
+  }
+
 }
 
 #Preview {
   RoomBookingCardView(
     room: Room.exampleOne,
     booking: RoomBooking.exampleOne)
-//    currentBooking: (DateComponents(), DateComponents()), bookingName: "COMM")
     .defaultTheme()
 }

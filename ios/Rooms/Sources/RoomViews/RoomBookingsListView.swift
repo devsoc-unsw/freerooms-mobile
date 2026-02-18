@@ -24,6 +24,8 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
+  let hoursToDisplay: CGFloat = 24 - 8
+
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
   }
@@ -34,8 +36,6 @@ struct RoomBookingsListView: View {
         Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
       }
   }
-  
-  let hoursToDisplay: CGFloat = 24 - 8
 
   var body: some View {
     ScrollViewReader { proxy in
