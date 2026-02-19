@@ -27,7 +27,7 @@ struct ContentView: View {
   @State var selectedTab = "Buildings"
   @State var selectedRoomsView = ViewOrientation.List
   @State var selectedBuildingsView = ViewOrientation.List
-  
+
   var body: some View {
     TabView(selection: $selectedTab) {
       BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in

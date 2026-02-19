@@ -58,14 +58,8 @@ public final class Theme {
   }
 
   public struct ListColors {
-    public let red: Color
-    public let redBackground: Color
-    public let green: Color
-    public let greenBackground: Color
-    public let gray: Color
-    public let grayBackground: Color
-    public let yellow: Color
-    public let yellowBackground: Color
+
+    // MARK: Lifecycle
 
     public init(
       red: Color,
@@ -86,6 +80,18 @@ public final class Theme {
       self.yellow = yellow
       self.yellowBackground = yellowBackground
     }
+
+    // MARK: Public
+
+    public let red: Color
+    public let redBackground: Color
+    public let green: Color
+    public let greenBackground: Color
+    public let gray: Color
+    public let grayBackground: Color
+    public let yellow: Color
+    public let yellowBackground: Color
+
   }
 
   public static let light = Theme(

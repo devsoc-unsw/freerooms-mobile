@@ -24,6 +24,8 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
+  let hoursToDisplay: CGFloat = 24 - 8
+
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
   }
@@ -47,7 +49,7 @@ struct RoomBookingsListView: View {
 
           // Background time grid
           VStack(spacing: 0) {
-            ForEach(9..<24, id: \.self) { hour in
+            ForEach(8..<24, id: \.self) { hour in
               BookingsLayoutView(hour: hour)
                 .id(hour)
             }
@@ -56,25 +58,16 @@ struct RoomBookingsListView: View {
 
           // Overlaid booking cards
           ForEach(filteredCurrentDayBookings, id: \.self) { booking in
-            let start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
-            let end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
-
-            let startMinutes = (start.hour ?? 0) * 60 + (start.minute ?? 0) - 540
-
             RoomBookingCardView(
               room: room,
-              currentBooking: (start, end),
-              bookingName: booking.name)
+              booking: booking)
               .padding(.leading, 60)
               .padding(.trailing, 10)
-              .offset(
-                x: 0,
-                y: CGFloat(startMinutes) * (40 / 60) + 2)
           }
         }
-        .frame(height: 15 * 40)
+        .frame(height: hoursToDisplay * 40)
       }
-      .frame(height: 15 * 40)
+      .frame(height: hoursToDisplay * 40)
       .clipShape(RoundedRectangle(cornerRadius: 12))
       .onAppear {
         let currentHour = max(dateComponent.hour ?? 0, 9)

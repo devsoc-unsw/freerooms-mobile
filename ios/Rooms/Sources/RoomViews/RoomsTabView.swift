@@ -51,13 +51,6 @@ public struct RoomsTabView<Destination: View>: View {
           ToolbarItemGroup(placement: .navigationBarTrailing) {
             HStack {
               Button {
-                // action
-              } label: {
-                Image(systemName: "line.3.horizontal.decrease")
-                  .resizable()
-                  .frame(width: 22, height: 15)
-              }
-              Button {
                 roomViewModel.getRoomsInOrder()
               } label: {
                 Image(systemName: "arrow.up.arrow.down")
@@ -81,12 +74,6 @@ public struct RoomsTabView<Destination: View>: View {
             .foregroundStyle(theme.label.tertiary)
           }
         }
-        .background(Color.gray.opacity(0.1))
-        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
-        .shadow(
-          color: theme.label.primary.opacity(0.2),
-          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
         .navigationDestination(for: Room.self) { room in
           roomDestinationBuilderView(room)
         }
@@ -102,7 +89,7 @@ public struct RoomsTabView<Destination: View>: View {
             dismissButton: .default(Text("OK")))
         }
         .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "CSE")
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -151,6 +138,8 @@ public struct RoomsTabView<Destination: View>: View {
             }
           }
           .padding(.horizontal, 16)
+          // .listRowSeparator(.hidden)
+          // .listRowBackground(Color.clear)
         } header: {
           HStack {
             Text(buildingName)
@@ -216,10 +205,15 @@ public struct RoomsTabView<Destination: View>: View {
       List {
         roomsListView(buildingViewModel.allBuildings)
       }
+      .listRowInsets(EdgeInsets())
+      .scrollContentBackground(.hidden)
+      .background(Color.gray.opacity(0.1))
     } else {
       ScrollView {
         roomsCardView(buildingViewModel.allBuildings)
       }
+      .background(Color.gray.opacity(0.1))
+      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
 
