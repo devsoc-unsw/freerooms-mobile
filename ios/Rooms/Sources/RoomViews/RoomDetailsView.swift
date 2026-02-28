@@ -44,6 +44,11 @@ public struct RoomDetailsView: View {
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
     }
+    .background(
+      NavigationPopObserver {
+        showDetails = false
+      }
+    )
     .navigationBarBackButtonHidden(true)
     .enableSystemBackSwipe()
     .toolbar {
@@ -127,7 +132,44 @@ extension View {
   }
 }
 
-extension View {
+private struct NavigationPopObserver: UIViewControllerRepresentable {
+  let onDismiss: () -> Void
+
+  func makeUIViewController(context: Context) -> Controller {
+    Controller(onDismiss: onDismiss)
+  }
+
+  func updateUIViewController(_ controller: Controller, context: Context) {
+    controller.onDismiss = onDismiss
+  }
+
+  class Controller: UIViewController {
+    var onDismiss: () -> Void
+
+    init(onDismiss: @escaping () -> Void) {
+      self.onDismiss = onDismiss
+      super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) { fatalError() }
+
+    override func viewWillDisappear(_ animated: Bool) {
+      super.viewWillDisappear(animated)
+
+      if let coordinator = transitionCoordinator, coordinator.isInteractive {
+        // Wait until the interactive gesture is committed (user lifts finger past threshold)
+        coordinator.notifyWhenInteractionChanges { context in
+          if !context.isCancelled {
+            self.onDismiss()
+          }
+        }
+      }
+    }
+  }
+}
+
+private extension View {
     func enableSystemBackSwipe() -> some View {
         self.onAppear {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
