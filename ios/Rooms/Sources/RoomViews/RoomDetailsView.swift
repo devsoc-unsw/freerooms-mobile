@@ -45,14 +45,7 @@ public struct RoomDetailsView: View {
       .interactiveDismissDisabled()
     }
     .navigationBarBackButtonHidden(true)
-    .gesture(
-      DragGesture(minimumDistance: 20, coordinateSpace: .local)
-        .onEnded { value in
-          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
-            showDetails = false
-            dismiss()
-          }
-        })
+    .enableSystemBackSwipe()
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
@@ -132,4 +125,26 @@ extension View {
       transform2(self)
     }
   }
+}
+
+extension View {
+    func enableSystemBackSwipe() -> some View {
+        self.onAppear {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first,
+                  let navigationController = findNavigationController(in: window.rootViewController) else { return }
+            
+          navigationController.interactivePopGestureRecognizer?.isEnabled = true
+          navigationController.interactivePopGestureRecognizer?.delegate = nil
+        }
+    }
+    
+    // Helper to traverse view controller hierarchy
+    private func findNavigationController(in viewController: UIViewController?) -> UINavigationController? {
+        if let navigationController = viewController as? UINavigationController { return navigationController }
+        for child in viewController?.children ?? [] {
+            if let found = findNavigationController(in: child) { return found }
+        }
+        return nil
+    }
 }
