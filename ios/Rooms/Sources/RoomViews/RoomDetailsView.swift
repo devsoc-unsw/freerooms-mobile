@@ -39,20 +39,16 @@ public struct RoomDetailsView: View {
         showDetails = false
         dismiss()
       }
-      .background(SheetDetentBridge(coordinator: sheetCoordinator))
       .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
       .presentationBackgroundInteraction(.enabled)
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
     }
     .background(
-      NavigationPopObserver(
-        coordinator: sheetCoordinator,
-        onDismiss: { showDetails = false }
-      )
-    )
+      NavigationPopObserver {
+        showDetails = false
+      })
     .navigationBarBackButtonHidden(true)
-    .enableSystemBackSwipe()
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         Button("Back", systemImage: "chevron.left") {
@@ -106,7 +102,6 @@ public struct RoomDetailsView: View {
 
   @State private var detent = PresentationDetent.fraction(0.75)
   @State private var showDetails = true
-  @State private var sheetCoordinator = SheetSwipeCoordinator()
 
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
@@ -135,103 +130,24 @@ extension View {
   }
 }
 
-// MARK: - SheetSwipeCoordinator
-
-private class SheetSwipeCoordinator {
-  weak var sheetController: UISheetPresentationController?
-
-  private var savedDetents: [UISheetPresentationController.Detent] = []
-  private var savedSelectedIdentifier: UISheetPresentationController.Detent.Identifier?
-  private var baseHeight: CGFloat = 0
-  private var targetHeight: CGFloat = 0
-  private(set) var isActive = false
-
-  private lazy var dynamicDetent: UISheetPresentationController.Detent =
-    .custom(identifier: .init("swipe")) { [weak self] _ in
-      self?.targetHeight
-    }
-
-  func beginSwipe() {
-    guard let sheet = sheetController else { return }
-    savedDetents = sheet.detents
-    savedSelectedIdentifier = sheet.selectedDetentIdentifier
-    baseHeight = sheet.presentedView?.frame.height ?? 0
-    targetHeight = baseHeight
-    isActive = true
-    sheet.detents = [dynamicDetent]
-    sheet.selectedDetentIdentifier = .init("swipe")
-  }
-
-  func updateSwipe(progress: CGFloat) {
-    guard isActive else { return }
-    targetHeight = max(1, baseHeight * (1 - progress))
-    sheetController?.invalidateDetents()
-  }
-
-  func endSwipe(cancelled: Bool) {
-    guard isActive else { return }
-    isActive = false
-    guard cancelled, let sheet = sheetController else { return }
-    sheet.animateChanges {
-      sheet.detents = self.savedDetents
-      sheet.selectedDetentIdentifier = self.savedSelectedIdentifier
-    }
-  }
-}
-
-// MARK: - SheetDetentBridge
-
-/// Embedded inside the sheet content to capture the UISheetPresentationController reference.
-private struct SheetDetentBridge: UIViewControllerRepresentable {
-  let coordinator: SheetSwipeCoordinator
-
-  func makeUIViewController(context: Context) -> Controller {
-    Controller(coordinator: coordinator)
-  }
-
-  func updateUIViewController(_ controller: Controller, context: Context) {
-    controller.coordinator = coordinator
-  }
-
-  class Controller: UIViewController {
-    var coordinator: SheetSwipeCoordinator
-
-    init(coordinator: SheetSwipeCoordinator) {
-      self.coordinator = coordinator
-      super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) { fatalError() }
-
-    override func viewDidAppear(_ animated: Bool) {
-      super.viewDidAppear(animated)
-      coordinator.sheetController = sheetPresentationController
-    }
-  }
-}
-
 // MARK: - NavigationPopObserver
 
+/// Observes the navigation controller's interactive pop gesture to:
+/// 1. Dismiss the room availability sheet when the pop completes.
+/// 2. Shrink the sheet height proportionally during the back-swipe.
+///
+/// Sheet tracking works entirely through UIKit to avoid SwiftUI re-renders
+/// that would fight the detent changes. On gesture `.began` the current
+/// `UISheetPresentationController` detents are saved and replaced with a
+/// single custom detent whose height is re-resolved via `invalidateDetents()`
+/// on each `.changed` event. If the pop is cancelled the original detents
+/// are restored with `animateChanges`.
 private struct NavigationPopObserver: UIViewControllerRepresentable {
-  let coordinator: SheetSwipeCoordinator
-  let onDismiss: () -> Void
-
-  func makeUIViewController(context: Context) -> Controller {
-    Controller(coordinator: coordinator, onDismiss: onDismiss)
-  }
-
-  func updateUIViewController(_ controller: Controller, context: Context) {
-    controller.coordinator = coordinator
-    controller.onDismiss = onDismiss
-  }
-
   class Controller: UIViewController {
-    var coordinator: SheetSwipeCoordinator
-    var onDismiss: () -> Void
 
-    init(coordinator: SheetSwipeCoordinator, onDismiss: @escaping () -> Void) {
-      self.coordinator = coordinator
+    // MARK: Lifecycle
+
+    init(onDismiss: @escaping () -> Void) {
       self.onDismiss = onDismiss
       super.init(nibName: nil, bundle: nil)
     }
@@ -239,27 +155,30 @@ private struct NavigationPopObserver: UIViewControllerRepresentable {
     @available(*, unavailable)
     required init?(coder _: NSCoder) { fatalError() }
 
-    private weak var gestureRecognizer: UIGestureRecognizer?
-    private var isTrackingSwipe = false
+    // MARK: Internal
+
+    var onDismiss: () -> Void
 
     override func viewDidAppear(_ animated: Bool) {
       super.viewDidAppear(animated)
-      guard gestureRecognizer == nil else { return }
-      if let recognizer = navigationController?.interactivePopGestureRecognizer {
-        recognizer.addTarget(self, action: #selector(handlePopGesture(_:)))
-        gestureRecognizer = recognizer
+      guard gestureRecogniser == nil, let nav = navigationController else { return }
+      // Re-enable the system back swipe disabled by .navigationBarBackButtonHidden(true)
+      nav.interactivePopGestureRecognizer?.isEnabled = true
+      nav.interactivePopGestureRecognizer?.delegate = nil
+      if let recogniser = nav.interactivePopGestureRecognizer {
+        recogniser.addTarget(self, action: #selector(handlePopGesture(_:)))
+        gestureRecogniser = recogniser
       }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
       super.viewDidDisappear(animated)
-      gestureRecognizer?.removeTarget(self, action: #selector(handlePopGesture(_:)))
-      gestureRecognizer = nil
+      gestureRecogniser?.removeTarget(self, action: #selector(handlePopGesture(_:)))
+      gestureRecogniser = nil
     }
 
     override func viewWillDisappear(_ animated: Bool) {
       super.viewWillDisappear(animated)
-
       if let coord = transitionCoordinator, coord.isInteractive {
         coord.notifyWhenInteractionChanges { context in
           if !context.isCancelled {
@@ -269,37 +188,86 @@ private struct NavigationPopObserver: UIViewControllerRepresentable {
       }
     }
 
-    @objc private func handlePopGesture(_ recognizer: UIPanGestureRecognizer) {
+    // MARK: Private
+
+    private weak var gestureRecogniser: UIGestureRecognizer?
+    private var isTrackingSwipe = false
+
+    // Sheet height tracking — all state lives here (not in SwiftUI)
+    // so that updates bypass the render loop and go straight to UIKit.
+    private weak var sheetController: UISheetPresentationController?
+    private var savedDetents: [UISheetPresentationController.Detent] = []
+    private var savedSelectedIdentifier: UISheetPresentationController.Detent.Identifier?
+    private var baseHeight: CGFloat = 0
+    private var targetHeight: CGFloat = 0
+
+    /// Custom detent whose resolver re-reads `targetHeight` each time
+    /// `invalidateDetents()` is called, giving smooth per-frame tracking.
+    private lazy var dynamicDetent: UISheetPresentationController.Detent =
+      .custom(identifier: .init("swipe")) { [weak self] _ in
+        self?.targetHeight
+      }
+
+    /// Walks up the view controller hierarchy to find the presented sheet.
+    private func findSheetController() -> UISheetPresentationController? {
+      var vc: UIViewController? = self
+      while let current = vc {
+        if let sheet = current.presentedViewController?.sheetPresentationController {
+          return sheet
+        }
+        vc = current.parent
+      }
+      return nil
+    }
+
+    private func restoreDetents() {
+      guard let sheet = sheetController else { return }
+      sheet.animateChanges {
+        sheet.detents = self.savedDetents
+        sheet.selectedDetentIdentifier = self.savedSelectedIdentifier
+      }
+    }
+
+    @objc
+    private func handlePopGesture(_ recogniser: UIPanGestureRecognizer) {
       let screenWidth = view.bounds.width
       guard screenWidth > 0 else { return }
 
-      switch recognizer.state {
+      switch recogniser.state {
       case .began:
-        coordinator.beginSwipe()
+        guard let sheet = findSheetController() else { return }
+        sheetController = sheet
+        savedDetents = sheet.detents
+        savedSelectedIdentifier = sheet.selectedDetentIdentifier
+        baseHeight = sheet.presentedView?.frame.height ?? 0
+        targetHeight = baseHeight
         isTrackingSwipe = true
+        sheet.detents = [dynamicDetent]
+        sheet.selectedDetentIdentifier = .init("swipe")
 
       case .changed:
         guard isTrackingSwipe else { return }
-        let translation = recognizer.translation(in: view).x
+        let translation = recogniser.translation(in: view).x
         let progress = min(max(translation / screenWidth, 0), 1)
-        coordinator.updateSwipe(progress: progress)
+        targetHeight = max(1, baseHeight * (1 - progress))
+        sheetController?.invalidateDetents()
 
       case .ended, .cancelled:
         guard isTrackingSwipe else { return }
         isTrackingSwipe = false
 
-        if recognizer.state == .cancelled {
-          coordinator.endSwipe(cancelled: true)
+        if recogniser.state == .cancelled {
+          restoreDetents()
           return
         }
 
         if let transCoord = navigationController?.transitionCoordinator {
           transCoord.notifyWhenInteractionChanges { [weak self] context in
-            guard let self else { return }
-            self.coordinator.endSwipe(cancelled: context.isCancelled)
+            guard let self, context.isCancelled else { return }
+            restoreDetents()
           }
         } else {
-          coordinator.endSwipe(cancelled: true)
+          restoreDetents()
         }
 
       default:
@@ -307,26 +275,15 @@ private struct NavigationPopObserver: UIViewControllerRepresentable {
       }
     }
   }
-}
 
-private extension View {
-    func enableSystemBackSwipe() -> some View {
-        self.onAppear {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first,
-                  let navigationController = findNavigationController(in: window.rootViewController) else { return }
-            
-          navigationController.interactivePopGestureRecognizer?.isEnabled = true
-          navigationController.interactivePopGestureRecognizer?.delegate = nil
-        }
-    }
-    
-    // Helper to traverse view controller hierarchy
-    private func findNavigationController(in viewController: UIViewController?) -> UINavigationController? {
-        if let navigationController = viewController as? UINavigationController { return navigationController }
-        for child in viewController?.children ?? [] {
-            if let found = findNavigationController(in: child) { return found }
-        }
-        return nil
-    }
+  let onDismiss: () -> Void
+
+  func makeUIViewController(context _: Context) -> Controller {
+    Controller(onDismiss: onDismiss)
+  }
+
+  func updateUIViewController(_ controller: Controller, context _: Context) {
+    controller.onDismiss = onDismiss
+  }
+
 }
