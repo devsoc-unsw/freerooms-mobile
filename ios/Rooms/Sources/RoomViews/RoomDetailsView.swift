@@ -152,8 +152,7 @@ private struct NavigationPopObserver: UIViewControllerRepresentable {
       super.init(nibName: nil, bundle: nil)
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) { fatalError() }
+    required init?(coder _: NSCoder) { fatalError("NavigationPopObserver should not be created in interface builder") }
 
     // MARK: Internal
 
