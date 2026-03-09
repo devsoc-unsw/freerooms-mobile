@@ -95,9 +95,6 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
     case .authorizedWhenInUse:
       currentPermissionState = .granted
 
-    case .authorizedAlways:
-      currentPermissionState = .granted
-
     case .denied:
       currentPermissionState = .denied
 

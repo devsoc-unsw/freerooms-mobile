@@ -38,7 +38,7 @@ struct LocationServicePermissionTest {
   func requestLocationPermissionGrantedOnInitialize() async throws {
     // Given
     let spyLocationManager = SpyLocationManager()
-    spyLocationManager.authorizationStatus = .authorizedAlways
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
     spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // When
@@ -119,7 +119,7 @@ struct LocationServicePermissionTest {
     }
 
     // When
-    spyLocationManager.authorizationStatus = .authorizedAlways
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
     spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // Then
@@ -157,7 +157,7 @@ struct GetUserLocationTest {
     let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // When
-    spyLocationManager.authorizationStatus = .authorizedAlways
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
     spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
     spyLocationManager.location = nil
 
@@ -175,7 +175,7 @@ struct GetUserLocationTest {
     let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // When
-    spyLocationManager.authorizationStatus = .authorizedAlways
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
     spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
     spyLocationManager.location = Location(latitude: 300, longitude: 300)
 
