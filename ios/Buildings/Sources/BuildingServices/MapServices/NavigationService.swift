@@ -6,9 +6,11 @@
 //
 
 import MapKit
+import VISOR
 
 // MARK: - NavigationService
 
+@Stubbable
 public protocol NavigationService: Sendable {
   func getDirection(source: MKMapItem, destination: MKMapItem) async throws -> MKRoute?
 }

@@ -7,9 +7,11 @@
 
 import CoreLocation
 import Foundation
+import VISOR
 
 // MARK: - LocationService
 
+@Stubbable
 public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool
@@ -91,6 +93,9 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
   public func locationManagerDidChangeAuthorization(_: LocationManager) {
     switch locationManager.authorizationStatus {
     case .authorizedWhenInUse:
+      currentPermissionState = .granted
+
+    case .authorizedAlways:
       currentPermissionState = .granted
 
     case .denied:

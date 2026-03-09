@@ -13,6 +13,7 @@ excluded:
   - Carthage
   - Pods
   - .build
+  - "**/.build"
 
 indentation: 2
 

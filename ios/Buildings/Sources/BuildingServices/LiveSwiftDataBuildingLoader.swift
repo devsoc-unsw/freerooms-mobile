@@ -8,9 +8,11 @@
 import BuildingModels
 import Foundation
 import Persistence
+import VISOR
 
 // MARK: - SwiftDataBuildingLoader
 
+@Stubbable
 public protocol SwiftDataBuildingLoader: Sendable {
   func fetch() -> Result<[Building], BuildingLoaderError>
   func seed(_ buildings: [Building]) async -> Result<Void, BuildingLoaderError>

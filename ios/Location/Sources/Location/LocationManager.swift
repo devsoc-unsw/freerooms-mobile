@@ -6,13 +6,16 @@
 //
 
 import CoreLocation
+import VISOR
 
 // MARK: - LocationManager
 
+@Stubbable @Spyable
 public protocol LocationManager: AnyObject {
   // MARK: Internal
 
   var delegate: LocationManagerDelegate? { get set }
+  @StubbableDefault(CLAuthorizationStatus.notDetermined)
   var authorizationStatus: CLAuthorizationStatus { get }
   var location: Location? { get }
   var heading: CLHeading? { get }

@@ -10,7 +10,6 @@ import RoomModels
 import Testing
 
 @testable import Location
-@testable import LocationTestsUtils
 @testable import RoomInteractors
 @testable import RoomServices
 @testable import RoomTestUtils
@@ -399,31 +398,32 @@ func makeRoomSUT(
   expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil)
   -> RoomInteractor
 {
-  let locationManager = MockLocationManager()
-  let locationService = LiveLocationService(locationManager: locationManager)
+  let spyLocationManager = SpyLocationManager()
+  let locationService = LiveLocationService(locationManager: spyLocationManager)
 
-  let mockLoader = MockRoomLoader()
-  if roomError != nil {
-    mockLoader.stubError(roomError!)
+  let stubLoader = StubRoomLoader()
+  if let roomError {
+    stubLoader.fetchBuildingIdReturnValue = .failure(roomError)
+    stubLoader.fetchReturnValue = .failure(roomError)
   } else if buildingId != nil {
-    mockLoader.stubRooms(rooms, for: buildingId!)
+    stubLoader.fetchBuildingIdReturnValue = .success(rooms)
   } else {
-    mockLoader.stubRooms(rooms)
+    stubLoader.fetchReturnValue = .success(rooms)
   }
 
-  let remoteBookingLoader = MockRemoteRoomBookingLoader()
-  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
+  let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
 
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 
-func makeRoomSUT(mockLoader: MockRoomLoader) -> RoomInteractor {
-  let locationManager = MockLocationManager()
-  let locationService = LiveLocationService(locationManager: locationManager)
-  let remoteBookingLoader = MockRemoteRoomBookingLoader()
-  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
+func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
+  let spyLocationManager = SpyLocationManager()
+  let locationService = LiveLocationService(locationManager: spyLocationManager)
+  let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 

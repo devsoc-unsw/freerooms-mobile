@@ -6,8 +6,8 @@
 //
 
 import RoomModels
-import RoomServices
 import Testing
+@testable import RoomServices
 @testable import RoomTestUtils
 @testable import TestingSupport
 
@@ -17,8 +17,9 @@ struct BookingLoaderTests {
     // Given
     let remoteRoomBookings = createRemoteRoomBookings(1)
     let roomBookings = createRoomBookings(1)
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(loads: remoteRoomBookings)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .success(remoteRoomBookings)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "1")
@@ -32,8 +33,9 @@ struct BookingLoaderTests {
     // Given
     let remoteRoomBookings = createRemoteRoomBookings(0)
     let roomBookings = createRoomBookings(0)
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(loads: remoteRoomBookings)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .success(remoteRoomBookings)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "1")
@@ -47,8 +49,9 @@ struct BookingLoaderTests {
     // Given
     let remoteRoomBookings = createRemoteRoomBookings(10)
     let roomBookings = createRoomBookings(10)
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(loads: remoteRoomBookings)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .success(remoteRoomBookings)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "1")
@@ -60,8 +63,9 @@ struct BookingLoaderTests {
   @Test("Booking loader throws error on network failures")
   func BookingLoaderThrowsErrorOnNetworkFailure() async throws {
     // Given
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(throws: .connectivity)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .failure(.connectivity)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "1")
@@ -74,8 +78,9 @@ struct BookingLoaderTests {
   func BookingLoaderThrowsErrorOnEmptyBuildingId() async throws {
     // Given
     let remoteRoomBookings = createRemoteRoomBookings(10)
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(loads: remoteRoomBookings)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .success(remoteRoomBookings)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "")
@@ -87,8 +92,9 @@ struct BookingLoaderTests {
   @Test("Booking loader throws error on invalid building id")
   func BookingLoaderThrowsErrorOnInvalidBuildingId() async throws {
     // Given
-    let mockRemoteRoomBookingLoader = MockRemoteRoomBookingLoader(throws: .invalidBuildingID)
-    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: mockRemoteRoomBookingLoader)
+    let stubRemoteRoomBookingLoader = StubRemoteRoomBookingLoader()
+    stubRemoteRoomBookingLoader.fetchReturnValue = .failure(.invalidBuildingID)
+    let sut = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteRoomBookingLoader)
 
     // When
     let res = await sut.fetch(bookingsOf: "invalid")

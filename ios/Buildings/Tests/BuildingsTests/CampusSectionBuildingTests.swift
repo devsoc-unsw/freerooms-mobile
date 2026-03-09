@@ -4,24 +4,24 @@ import Testing
 @testable import BuildingInteractors
 @testable import BuildingModels
 @testable import BuildingServices
-@testable import BuildingTestUtils
 @testable import Location
-@testable import LocationTestsUtils
 
 // MARK: - GetBuildingByCampusSectionTest
 
 struct GetBuildingByCampusSectionTest {
   @Test("Building interactor returns buildings in ascending order by campus reference")
   func sortByAscending() async {
-    let mockBuildingService = MockBuildingService()
-    mockBuildingService.addBuilding(createUpperCampusBuilding())
-    mockBuildingService.addBuilding(createLowerCampusBuilding())
-    mockBuildingService.addBuilding(createMiddleCampusBuilding())
+    let stubBuildingService = StubBuildingService()
+    stubBuildingService.getBuildingsReturnValue = .success([
+      createUpperCampusBuilding(),
+      createLowerCampusBuilding(),
+      createMiddleCampusBuilding(),
+    ])
 
-    let locationManager = MockLocationManager()
-    let locationService = LiveLocationService(locationManager: locationManager)
+    let spyLocationManager = SpyLocationManager()
+    let locationService = LiveLocationService(locationManager: spyLocationManager)
 
-    let sut = BuildingInteractor(buildingService: mockBuildingService, locationService: locationService)
+    let sut = BuildingInteractor(buildingService: stubBuildingService, locationService: locationService)
 
     // When
     let buildings = await sut.getBuildingSortedByCampusSection(inAscendingOrder: true)
@@ -40,15 +40,17 @@ struct GetBuildingByCampusSectionTest {
   @Test("Building interactor returns buildings in descending order by campus reference")
   func sortByDescending() async {
     // Given
-    let mockBuildingService = MockBuildingService()
-    mockBuildingService.addBuilding(createUpperCampusBuilding())
-    mockBuildingService.addBuilding(createLowerCampusBuilding())
-    mockBuildingService.addBuilding(createMiddleCampusBuilding())
+    let stubBuildingService = StubBuildingService()
+    stubBuildingService.getBuildingsReturnValue = .success([
+      createUpperCampusBuilding(),
+      createLowerCampusBuilding(),
+      createMiddleCampusBuilding(),
+    ])
 
-    let locationManager = MockLocationManager()
-    let locationService = LiveLocationService(locationManager: locationManager)
+    let spyLocationManager = SpyLocationManager()
+    let locationService = LiveLocationService(locationManager: spyLocationManager)
 
-    let sut = BuildingInteractor(buildingService: mockBuildingService, locationService: locationService)
+    let sut = BuildingInteractor(buildingService: stubBuildingService, locationService: locationService)
 
     // When
     let buildings = await sut.getBuildingSortedByCampusSection(inAscendingOrder: false)

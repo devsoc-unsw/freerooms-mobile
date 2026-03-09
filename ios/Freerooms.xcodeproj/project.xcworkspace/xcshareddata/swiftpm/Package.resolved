@@ -1,5 +1,5 @@
 {
-  "originHash" : "befb9609cab168baa6794aab3ed12d3a4c1a5a4953c90bc1756257b81d00be67",
+  "originHash" : "2d1d8307a1ad576598d5228092707fe87220758228be260244b738d1cd6c5f8c",
   "pins" : [
     {
       "identity" : "bottomsheet",
@@ -8,6 +8,24 @@
       "state" : {
         "revision" : "720ddbd1371fef2a09cc1ab65fc503df37767f9c",
         "version" : "3.1.1"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    },
+    {
+      "identity" : "visor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/avdn-dev/VISOR",
+      "state" : {
+        "revision" : "8281ca20b434afdb5302e272677f62a2ab0f6806",
+        "version" : "4.0.0"
       }
     }
   ],

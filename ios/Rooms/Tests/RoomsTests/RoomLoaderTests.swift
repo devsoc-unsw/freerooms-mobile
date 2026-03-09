@@ -17,6 +17,10 @@ class RoomLoaderTests {
 
   // MARK: Lifecycle
 
+  init() {
+    UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedRoomsData)
+  }
+
   deinit {
     UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedRoomsData)
   }
@@ -28,13 +32,15 @@ class RoomLoaderTests {
   func onFirstLoadSuccessfullyLoadsZeroRooms() async throws {
     // Given
     let rooms = createRooms(0)
-    let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedResponse: createRemoteRoomStatus(0))
-    let mockSwiftDataRoomLoader = MockSwiftDataRoomLoader()
+    let stubJSONRoomLoader = StubJSONRoomLoader()
+    stubJSONRoomLoader.fetchReturnValue = .success(rooms)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(0))
+    let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
     let sut = LiveRoomLoader(
-      JSONRoomLoader: mockJSONRoomLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      swiftDataRoomLoader: mockSwiftDataRoomLoader)
+      JSONRoomLoader: stubJSONRoomLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      swiftDataRoomLoader: stubSwiftDataRoomLoader)
 
     // When
     let res = await sut.fetch()
@@ -48,13 +54,15 @@ class RoomLoaderTests {
   func onFirstLoadSuccessfullyLoadsOneBuilding() async throws {
     // Given
     let rooms = createRooms(1)
-    let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedResponse: createRemoteRoomStatus(1))
-    let mockSwiftDataRoomLoader = MockSwiftDataRoomLoader()
+    let stubJSONRoomLoader = StubJSONRoomLoader()
+    stubJSONRoomLoader.fetchReturnValue = .success(rooms)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(1))
+    let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
     let sut = LiveRoomLoader(
-      JSONRoomLoader: mockJSONRoomLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      swiftDataRoomLoader: mockSwiftDataRoomLoader)
+      JSONRoomLoader: stubJSONRoomLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      swiftDataRoomLoader: stubSwiftDataRoomLoader)
 
     // When
     let res = await sut.fetch()
@@ -68,13 +76,15 @@ class RoomLoaderTests {
   func onFirstLoadSuccessfullyLoadsTenBuilding() async throws {
     // Given
     let rooms = createRooms(10)
-    let mockJSONRoomLoader = MockJSONRoomLoader(loads: rooms)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedResponse: createRemoteRoomStatus(10))
-    let mockSwiftDataRoomLoader = MockSwiftDataRoomLoader()
+    let stubJSONRoomLoader = StubJSONRoomLoader()
+    stubJSONRoomLoader.fetchReturnValue = .success(rooms)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(10))
+    let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
     let sut = LiveRoomLoader(
-      JSONRoomLoader: mockJSONRoomLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      swiftDataRoomLoader: mockSwiftDataRoomLoader)
+      JSONRoomLoader: stubJSONRoomLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      swiftDataRoomLoader: stubSwiftDataRoomLoader)
 
     // When
     let res = await sut.fetch()
@@ -86,13 +96,15 @@ class RoomLoaderTests {
   @Test("First load of buildings, JSON Building Loader throws an error so buildings loader will throw an error")
   func onFirstLoadJSONBuildingLoaderThrowsError() async throws {
     // Given
-    let mockJSONRoomLoader = MockJSONRoomLoader(throws: .malformedJSON)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedResponse: createRemoteRoomStatus(0))
-    let mockSwiftDataRoomLoader = MockSwiftDataRoomLoader()
+    let stubJSONRoomLoader = StubJSONRoomLoader()
+    stubJSONRoomLoader.fetchReturnValue = .failure(.malformedJSON)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(0))
+    let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
     let sut = LiveRoomLoader(
-      JSONRoomLoader: mockJSONRoomLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      swiftDataRoomLoader: mockSwiftDataRoomLoader)
+      JSONRoomLoader: stubJSONRoomLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      swiftDataRoomLoader: stubSwiftDataRoomLoader)
 
     // When
     let res = await sut.fetch()

@@ -177,12 +177,12 @@ struct RoomSearchAdapter {
 
 /// Function to make the room search SUT using RoomInteractor
 func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
-  let mockLoader = MockRoomLoader()
-  mockLoader.stubRooms(rooms)
+  let stubLoader = StubRoomLoader()
+  stubLoader.fetchReturnValue = .success(rooms)
 
-  let remoteBookingLoader = MockRemoteRoomBookingLoader()
-  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: mockLoader, roomBookingLoader: roomBookingLoader)
+  let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
+  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
   let interactor = RoomInteractor(
     roomService: roomService,
     locationService: LiveLocationService(locationManager: LiveLocationManager()))

@@ -8,6 +8,7 @@
 import Foundation
 import Persistence
 import RoomModels
+import VISOR
 
 // MARK: - RoomLoaderError
 
@@ -21,6 +22,7 @@ public enum RoomLoaderError: Error {
 
 // MARK: - RoomLoader
 
+@Stubbable
 public protocol RoomLoader {
   func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
   func fetch() async -> Result<[Room], RoomLoaderError>

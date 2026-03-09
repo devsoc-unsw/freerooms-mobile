@@ -10,6 +10,7 @@
 		30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */ = {isa = PBXBuildFile; productRef = 30FB13AB2E1CDFAE0089793E /* Rooms */; };
 		96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */ = {isa = PBXBuildFile; productRef = 96D65EDE2DA39EA30060D06B /* Buildings */; };
 		96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 96DE0C312DFBD4C200C77DD5 /* CommonUI */; };
+		BDA0A3F02F5AC8450049E965 /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = BDA0A3EF2F5AC8450049E965 /* VISOR */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDA0A3F02F5AC8450049E965 /* VISOR in Frameworks */,
 				30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */,
 				96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */,
 				96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */,
@@ -117,6 +119,7 @@
 				96D65EDE2DA39EA30060D06B /* Buildings */,
 				96DE0C312DFBD4C200C77DD5 /* CommonUI */,
 				30FB13AB2E1CDFAE0089793E /* Rooms */,
+				BDA0A3EF2F5AC8450049E965 /* VISOR */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -148,6 +151,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
+				BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -439,6 +443,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/avdn-dev/VISOR";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -451,6 +466,11 @@
 		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CommonUI;
+		};
+		BDA0A3EF2F5AC8450049E965 /* VISOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */;
+			productName = VISOR;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

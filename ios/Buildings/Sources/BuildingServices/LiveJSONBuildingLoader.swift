@@ -8,9 +8,11 @@
 import BuildingModels
 import Foundation
 import Persistence
+import VISOR
 
 // MARK: - JSONBuildingLoader
 
+@Stubbable
 public protocol JSONBuildingLoader {
   func fetch() async -> Swift.Result<[Building], BuildingLoaderError>
 }
