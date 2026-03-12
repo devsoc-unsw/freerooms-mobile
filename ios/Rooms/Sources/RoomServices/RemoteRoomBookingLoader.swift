@@ -8,9 +8,11 @@
 import Foundation
 import Networking
 import RoomModels
+import VISOR
 
 // MARK: - RemoteRoomBookingLoader
 
+@Stubbable
 public protocol RemoteRoomBookingLoader {
   func fetch(bookingsOf roomID: String) async -> Result<[RemoteRoomBooking], RoomBookingLoaderError>
 }

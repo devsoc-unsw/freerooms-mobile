@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import VISOR
 
 // MARK: - FileLoaderError
 
@@ -15,6 +16,7 @@ public enum FileLoaderError: Error {
 
 // MARK: - FileLoader
 
+@Stubbable
 public protocol FileLoader: Sendable {
   func load(at path: String) throws -> Data
 }

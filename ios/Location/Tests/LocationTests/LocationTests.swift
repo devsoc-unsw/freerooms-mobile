@@ -1,7 +1,6 @@
 import CoreLocation
 import Testing
 @testable import Location
-@testable import LocationTestsUtils
 
 // MARK: - LocationServicePermissionTest
 
@@ -10,11 +9,12 @@ struct LocationServicePermissionTest {
   @Test("userAuthorizationStatus denied on initiliaze")
   func requestLocationPermissionDeniedOnInitialize() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
+    let spyLocationManager = SpyLocationManager()
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .denied)
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    spyLocationManager.authorizationStatus = .denied
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .denied)
@@ -23,11 +23,12 @@ struct LocationServicePermissionTest {
   @Test("userAuthorizationStatus unrequested on initialize")
   func requestLocationPermissionUnrequestedOnInitialize() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
-    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
+    let spyLocationManager = SpyLocationManager()
+    spyLocationManager.authorizationStatus = .notDetermined
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // when
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .unrequested)
@@ -36,11 +37,12 @@ struct LocationServicePermissionTest {
   @Test("userAuthorizationStatus granted on initialize")
   func requestLocationPermissionGrantedOnInitialize() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
-    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+    let spyLocationManager = SpyLocationManager()
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // When
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .granted)
@@ -49,11 +51,12 @@ struct LocationServicePermissionTest {
   @Test("user request permission on pending permissionState")
   func requestLocationPermissionOnPendingState() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
-    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
+    let spyLocationManager = SpyLocationManager()
+    spyLocationManager.authorizationStatus = .notDetermined
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // When
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // Then
     #expect(throws: Never.self) {
@@ -70,17 +73,18 @@ struct LocationServicePermissionTest {
       // expect early false return
       #expect(hasPermissionApiBeenCalled == false)
       #expect(sut.currentPermissionState == .pending)
-      #expect(mockLocationManager.requestInUseAuthorizationCallTracker == 1)
+      #expect(spyLocationManager.requestWhenInUseAuthorizationCallCount == 1)
     }
   }
 
   @Test("user deny access on authorize")
   func requestLocationPermissionDeniedWhenAuthorized() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
-    mockLocationManager.simulateAuthorizationStatus(to: .notDetermined)
+    let spyLocationManager = SpyLocationManager()
+    spyLocationManager.authorizationStatus = .notDetermined
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     #expect(sut.locationManager.authorizationStatus == .notDetermined)
 
@@ -91,21 +95,22 @@ struct LocationServicePermissionTest {
     }
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .denied)
+    spyLocationManager.authorizationStatus = .denied
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // Then
     #expect(throws: LocationServiceError.locationPermissionsDenied) {
       try sut.requestLocationPermissions()
     }
-    #expect(mockLocationManager.requestInUseAuthorizationCallTracker == 1)
+    #expect(spyLocationManager.requestWhenInUseAuthorizationCallCount == 1)
   }
 
   @Test("user grant access on authorize")
   func requestLocationPermissionGrantedWhenAuthorized() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
+    let spyLocationManager = SpyLocationManager()
 
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
     #expect(sut.currentPermissionState == LocationPermission.unrequested)
     #expect(throws: Never.self) {
       let hasPermissionApiBeenCalled = try sut.requestLocationPermissions()
@@ -114,11 +119,12 @@ struct LocationServicePermissionTest {
     }
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
 
     // Then
     #expect(sut.currentPermissionState == .granted)
-    #expect(mockLocationManager.requestInUseAuthorizationCallTracker == 1)
+    #expect(spyLocationManager.requestWhenInUseAuthorizationCallCount == 1)
   }
 }
 
@@ -128,13 +134,14 @@ struct GetUserLocationTest {
   @Test("get user location when permission not granted")
   func requestUserLocationWhenPermissionNotGranted() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
+    let spyLocationManager = SpyLocationManager()
 
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .denied)
-    mockLocationManager.simulateUserLocation(Location(latitude: 300, longitude: 300))
+    spyLocationManager.authorizationStatus = .denied
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
+    spyLocationManager.location = Location(latitude: 300, longitude: 300)
 
     // Then
     #expect(throws: LocationServiceError.locationPermissionsDenied) {
@@ -145,13 +152,14 @@ struct GetUserLocationTest {
   @Test("Get user location when location unavailable")
   func requestUserLocationWhenLocationNotAvailable() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
+    let spyLocationManager = SpyLocationManager()
 
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
-    mockLocationManager.simulateUserLocation(nil)
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
+    spyLocationManager.location = nil
 
     // Then
     #expect(throws: LocationServiceError.locationNotAvailable) {
@@ -162,13 +170,14 @@ struct GetUserLocationTest {
   @Test("get user location when permission granted")
   func requestUserLocationWhenGrantedAndAvailable() async throws {
     // Given
-    let mockLocationManager = MockLocationManager()
+    let spyLocationManager = SpyLocationManager()
 
-    let sut = LiveLocationService(locationManager: mockLocationManager)
+    let sut = LiveLocationService(locationManager: spyLocationManager)
 
     // When
-    mockLocationManager.simulateAuthorizationStatus(to: .authorizedWhenInUse)
-    mockLocationManager.simulateUserLocation(Location(latitude: 300, longitude: 300))
+    spyLocationManager.authorizationStatus = .authorizedWhenInUse
+    spyLocationManager.delegate?.locationManagerDidChangeAuthorization(spyLocationManager)
+    spyLocationManager.location = Location(latitude: 300, longitude: 300)
 
     // Then
     #expect(throws: Never.self) {

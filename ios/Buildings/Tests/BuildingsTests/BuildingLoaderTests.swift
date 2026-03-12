@@ -6,20 +6,22 @@
 //
 
 import BuildingModels
-import BuildingServices
 import Foundation
 import Persistence
 import PersistenceTestUtils
-import RoomServices
 import SwiftData
 import Testing
-@testable import BuildingTestUtils
-@testable import RoomTestUtils
+@testable import BuildingServices
+@testable import RoomServices
 
 @Suite(.serialized)
 class BuildingLoaderTests {
 
   // MARK: Lifecycle
+
+  init() {
+    UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedBuildingsData)
+  }
 
   deinit {
     UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedBuildingsData)
@@ -32,15 +34,20 @@ class BuildingLoaderTests {
   func onFirstLoadSuccessfullyLoadsZeroBuilding() async throws {
     // Given
     let buildings = createBuildings(0)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success(buildings)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -55,15 +62,20 @@ class BuildingLoaderTests {
   func onFirstLoadSuccessfullyLoadsOneBuilding() async throws {
     // Given
     let buildings = createBuildings(1)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success(buildings)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -78,15 +90,20 @@ class BuildingLoaderTests {
   func onFirstLoadSuccessfullyLoadsTenBuilding() async throws {
     // Given
     let buildings = createBuildings(10)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success(buildings)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -100,15 +117,20 @@ class BuildingLoaderTests {
   func onFirstLoadJSONBuildingLoaderThrowsError() async throws {
     // Given
     let buildings = createBuildings(10)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(throws: .malformedJSON)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .failure(.malformedJSON)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success(buildings)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -123,15 +145,20 @@ class BuildingLoaderTests {
   func onFirstLoadSwiftDataBuildingLoaderThrowsError() async throws {
     // Given
     let buildings = createBuildings(10)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onSeedThrows: .persistenceError)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.seedReturnValue = .failure(.persistenceError)
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success([])
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -145,15 +172,20 @@ class BuildingLoaderTests {
   func onSubsequentLoadsSuccessfullyLoadsBuildings() async throws {
     // Given
     let buildings = createBuildings(10)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(loads: buildings)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .success(buildings)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
     _ = await sut.fetch()
 
     // When
@@ -168,15 +200,20 @@ class BuildingLoaderTests {
   func onSubsequentLoadsSwiftDataBuildingLoaderThrowsError() async throws {
     // Given
     let buildings = createBuildings(10)
-    let mockJSONBuildingLoader = JSONBuildingLoaderMock(loads: buildings)
-    let swiftDataBuildingMock = SwiftDataBuildingLoaderMock(onFetchThrows: .persistenceError)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubJSONBuildingLoader = StubJSONBuildingLoader()
+    stubJSONBuildingLoader.fetchReturnValue = .success(buildings)
+    let stubSwiftDataBuildingLoader = StubSwiftDataBuildingLoader()
+    stubSwiftDataBuildingLoader.fetchReturnValue = .failure(.persistenceError)
+    stubSwiftDataBuildingLoader.seedReturnValue = .success(())
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
     let sut = LiveBuildingLoader(
-      swiftDataBuildingLoader: swiftDataBuildingMock,
-      JSONBuildingLoader: mockJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      swiftDataBuildingLoader: stubSwiftDataBuildingLoader,
+      JSONBuildingLoader: stubJSONBuildingLoader,
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
     _ = await sut.fetch()
 
     // When
@@ -195,11 +232,13 @@ class BuildingLoaderTests {
     let liveFileLoader = LiveFileLoader()
     let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
-    let modelConfiguration = ModelConfiguration(schema: schema)
+    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
     let modelContext = ModelContext(modelContainer)
     let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
@@ -208,8 +247,8 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
       JSONBuildingLoader: liveJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
 
     // When
     let res = await sut.fetch()
@@ -226,8 +265,10 @@ class BuildingLoaderTests {
     let liveFileLoader = LiveFileLoader()
     let liveJSONLoader = LiveJSONLoader<[DecodableBuilding]>(using: liveFileLoader)
     let liveJSONBuildingLoader = LiveJSONBuildingLoader(using: liveJSONLoader)
-    let mockRoomStatusLoader = MockRoomStatusLoader(stubbedError: .connectivity)
-    let mockBuildingRatingLoader = MockBuildingRatingLoader(throws: .connectivity)
+    let stubRoomStatusLoader = StubRoomStatusLoader()
+    stubRoomStatusLoader.fetchRoomStatusReturnValue = .failure(.connectivity)
+    let stubBuildingRatingLoader = StubBuildingRatingLoader()
+    stubBuildingRatingLoader.fetchReturnValue = .failure(.connectivity)
 
     let schema = Schema([SwiftDataBuilding.self])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -239,8 +280,8 @@ class BuildingLoaderTests {
     let sut = LiveBuildingLoader(
       swiftDataBuildingLoader: liveSwiftDataBuildingLoader,
       JSONBuildingLoader: liveJSONBuildingLoader,
-      roomStatusLoader: mockRoomStatusLoader,
-      buildingRatingLoader: mockBuildingRatingLoader)
+      roomStatusLoader: stubRoomStatusLoader,
+      buildingRatingLoader: stubBuildingRatingLoader)
     _ = await sut.fetch()
 
     // When

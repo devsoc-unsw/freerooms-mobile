@@ -15,7 +15,6 @@ let package = Package(
     .library(name: "BuildingViews", targets: ["BuildingViews"]),
     .library(name: "BuildingInteractors", targets: ["BuildingInteractors"]),
     .library(name: "BuildingServices", targets: ["BuildingServices"]),
-    .library(name: "BuildingTestUtils", targets: ["BuildingTestUtils"]),
   ],
   dependencies: [
     .package(name: "Networking", path: "../Networking"),
@@ -25,6 +24,7 @@ let package = Package(
     .package(name: "Rooms", path: "../Rooms"),
     .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(url: "https://github.com/lucaszischka/BottomSheet", from: "3.1.1"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "4.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -44,16 +44,18 @@ let package = Package(
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingServices",
-      dependencies: ["Networking", "Persistence", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
+      dependencies: [
+        "Networking",
+        "Persistence",
+        "BuildingModels",
+        .product(name: "RoomServices", package: "Rooms"),
+        .product(name: "VISOR", package: "VISOR"),
+      ],
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
-      swiftSettings: .defaultSettings),
-    .target(
-      name: "BuildingTestUtils",
-      dependencies: ["BuildingModels", "BuildingServices", .product(name: "RoomModels", package: "Rooms")],
       swiftSettings: .defaultSettings),
     .testTarget(
       name: "BuildingsTests",
@@ -63,11 +65,9 @@ let package = Package(
         "BuildingModels",
         "Persistence",
         "TestingSupport",
-        "BuildingTestUtils",
         .product(name: "RoomServices", package: "Rooms"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
-        .product(name: "LocationTestsUtils", package: "Location"),
-        .product(name: "RoomTestUtils", package: "Rooms"),
+        .product(name: "Location", package: "Location"),
       ],
       swiftSettings: .defaultSettings),
   ])

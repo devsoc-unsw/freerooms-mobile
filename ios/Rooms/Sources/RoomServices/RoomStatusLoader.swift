@@ -8,6 +8,7 @@
 import Foundation
 import Networking
 import RoomModels
+import VISOR
 
 // MARK: - RoomStatusLoaderError
 
@@ -18,6 +19,7 @@ public enum RoomStatusLoaderError: Error, Equatable {
 
 // MARK: - RoomStatusLoader
 
+@Stubbable
 public protocol RoomStatusLoader: Sendable {
   func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError>
 }

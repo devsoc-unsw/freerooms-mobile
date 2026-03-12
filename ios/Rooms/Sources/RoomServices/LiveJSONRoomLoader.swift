@@ -8,9 +8,11 @@
 import Foundation
 import Persistence
 import RoomModels
+import VISOR
 
 // MARK: - JSONRoomLoader
 
+@Stubbable
 public protocol JSONRoomLoader {
   func fetch() async -> Swift.Result<[Room], RoomLoaderError>
 }

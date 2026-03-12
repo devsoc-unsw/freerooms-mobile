@@ -1,15 +1,6 @@
 {
-  "originHash" : "2d1d8307a1ad576598d5228092707fe87220758228be260244b738d1cd6c5f8c",
+  "originHash" : "20e3d507dd8eeddcd6f879f21fffbdf8e4b4f3fbbb67fb7a552790df5c1f9338",
   "pins" : [
-    {
-      "identity" : "bottomsheet",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/lucaszischka/BottomSheet",
-      "state" : {
-        "revision" : "720ddbd1371fef2a09cc1ab65fc503df37767f9c",
-        "version" : "3.1.1"
-      }
-    },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
@@ -22,7 +13,7 @@
     {
       "identity" : "visor",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/avdn-dev/VISOR",
+      "location" : "https://github.com/avdn-dev/VISOR.git",
       "state" : {
         "revision" : "8281ca20b434afdb5302e272677f62a2ab0f6806",
         "version" : "4.0.0"
