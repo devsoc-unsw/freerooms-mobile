@@ -11,6 +11,7 @@ import VISOR
 
 public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 public typealias GetRoomBookingsResult = Swift.Result<[RoomBooking], FetchRoomError>
+public typealias GetRoomRatingResult = Swift.Result<RoomRating, FetchRoomError>
 
 // MARK: - FetchRoomError
 
@@ -37,14 +38,16 @@ public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult
   func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
+  func getRoomRating(roomID: String) async -> GetRoomRatingResult
 }
 
 // MARK: - LiveRoomService
 
 public final class LiveRoomService: RoomService {
+
   // MARK: Lifecycle
 
-    public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader, roomRatingLoader: any RoomRatingLoader) {
+  public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader, roomRatingLoader: any RoomRatingLoader) {
     self.roomLoader = roomLoader
     self.roomBookingLoader = roomBookingLoader
     self.roomRatingLoader = roomRatingLoader
@@ -84,10 +87,20 @@ public final class LiveRoomService: RoomService {
     }
   }
 
+  public func getRoomRating(roomID: String) async -> GetRoomRatingResult {
+    switch await roomRatingLoader.fetchRoomRating(roomID: roomID) {
+    case .success(let rating):
+      .success(rating)
+    case .failure:
+      .failure(.connectivity)
+    }
+  }
+
   // MARK: Private
 
   private var roomLoader: any RoomLoader
   private var roomBookingLoader: any RoomBookingLoader
+  private var roomRatingLoader: any RoomRatingLoader
 }
 
 // MARK: - PreviewRoomService
@@ -116,5 +129,12 @@ public final class PreviewRoomService: RoomService {
 
   public func getRooms(buildingId _: String) async -> GetRoomResult {
     .success([Room.exampleOne, Room.exampleTwo])
+  }
+
+  public func getRoomRating(roomID _: String) async -> GetRoomRatingResult {
+    .success(RoomRating(
+      roomId: "K-J17-G03",
+      overallRating: 4.0,
+      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 4.0)))
   }
 }
