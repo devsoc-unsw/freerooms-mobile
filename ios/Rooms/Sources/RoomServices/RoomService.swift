@@ -42,12 +42,12 @@ public protocol RoomService {
 // MARK: - LiveRoomService
 
 public final class LiveRoomService: RoomService {
-
   // MARK: Lifecycle
 
-  public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader) {
+    public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader, roomRatingLoader: any RoomRatingLoader) {
     self.roomLoader = roomLoader
     self.roomBookingLoader = roomBookingLoader
+    self.roomRatingLoader = roomRatingLoader
   }
 
   // MARK: Public
