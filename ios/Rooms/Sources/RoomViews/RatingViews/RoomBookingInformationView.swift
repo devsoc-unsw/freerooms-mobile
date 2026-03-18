@@ -11,14 +11,21 @@ import SwiftUI
 
 struct RoomBookingInformationView: View {
 
+  // MARK: Lifecycle
+
+  public init(room: Room, currentRoomRating: RoomRating?) {
+    self.room = room
+    self.currentRoomRating = currentRoomRating
+  }
+
   // MARK: Internal
 
   var room: Room
+  let currentRoomRating: RoomRating?
 
   var body: some View {
     VStack(spacing: 0) {
       HStack {
-        // Title
         Text(room.name)
           .font(.title)
           .bold()
@@ -26,14 +33,13 @@ struct RoomBookingInformationView: View {
 
         Spacer()
 
-        // Rating
         ZStack {
           RoundedRectangle(cornerRadius: 10)
             .fill(theme.accent.primary)
             .stroke(.gray.opacity(0.2), lineWidth: 1)
 
           HStack(spacing: 5) {
-            Text("\(String(describing: room.overallRating ?? 0))")
+            Text("\(currentRoomRating?.overallRating ?? 0, specifier: "%.1f")")
               .foregroundStyle(.white)
               .font(.headline)
 
@@ -41,6 +47,14 @@ struct RoomBookingInformationView: View {
               .foregroundStyle(.white)
               .padding(0)
           }
+        }
+        .onTapGesture {
+          isShowingSheet.toggle()
+        }
+        .sheet(isPresented: $isShowingSheet) {
+          RoomRatingSheet(currentRoomRating: currentRoomRating)
+            .presentationDetents([.medium])
+            .presentationCornerRadius(24)
         }
         .frame(width: 65, height: 35)
         .padding(.horizontal, 6)
@@ -55,7 +69,6 @@ struct RoomBookingInformationView: View {
             .bold()
             .foregroundStyle(.primary)
         }
-        // Info
         Text("\(room.abbreviation)")
           .font(.callout)
           .foregroundStyle(.primary)
@@ -68,10 +81,17 @@ struct RoomBookingInformationView: View {
 
   // MARK: Private
 
+  @State private var isShowingSheet: Bool = false
+
   @Environment(Theme.self) private var theme
 }
 
 #Preview {
-  RoomBookingInformationView(room: Room.exampleOne)
+  RoomBookingInformationView(
+    room: Room.exampleOne,
+    currentRoomRating: RoomRating(
+      roomId: "K-17",
+      overallRating: 5.0,
+      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 5.0)))
     .defaultTheme()
 }
