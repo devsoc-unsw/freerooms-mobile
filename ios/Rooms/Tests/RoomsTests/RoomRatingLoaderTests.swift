@@ -11,6 +11,8 @@ import Testing
 @testable import NetworkingTestUtils
 @testable import RoomServices
 
+// MARK: - RoomRatingLoaderTests
+
 struct RoomRatingLoaderTests {
 
   @Test("Rating loader returns rating for valid room ID")
