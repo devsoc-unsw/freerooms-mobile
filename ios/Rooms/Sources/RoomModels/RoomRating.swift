@@ -24,7 +24,7 @@ public struct RoomRating: Codable, Equatable, Sendable, Hashable {
 
 // MARK: - AverageRating
 
-/// represent the rating details on
+/// Represents the rating details for:
 /// 1. cleanliness
 /// 2. location
 /// 3. quietness
