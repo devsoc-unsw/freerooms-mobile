@@ -23,7 +23,7 @@ struct RoomServiceTests {
 
     let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
     let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader, roomRatingLoader: StubRoomRatingLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -44,7 +44,7 @@ struct RoomServiceTests {
     stubLoader.fetchBuildingIdReturnValue = .success([])
     let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
     let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader, roomRatingLoader: StubRoomRatingLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-F21")
@@ -65,7 +65,7 @@ struct RoomServiceTests {
     stubLoader.fetchBuildingIdReturnValue = .failure(.connectivity)
     let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
     let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader, roomRatingLoader: StubRoomRatingLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -87,7 +87,7 @@ struct RoomServiceTests {
     stubLoader.fetchBuildingIdReturnValue = .success(expectedRooms)
     let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
     let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader, roomRatingLoader: StubRoomRatingLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -109,7 +109,7 @@ struct RoomServiceTests {
     let stubLoader = StubRoomLoader()
     let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
     let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+    let sut = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader, roomRatingLoader: StubRoomRatingLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "")
