@@ -28,11 +28,11 @@ extension RoomRatingLoaderError {
   public var clientMessage: String {
     switch self {
     case .connectivity:
-      "Failed to fetch rooms. Please check your internet connection."
+      "Failed to fetch room rating. Please check your internet connection."
     case .invalidRoomID:
       "Invalid room ID provided."
     case .invalidURL:
-      "API url doesn't exist."
+      "API URL doesn't exist."
     }
   }
 }
