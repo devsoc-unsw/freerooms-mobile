@@ -18,6 +18,8 @@ public typealias GetRoomRatingResult = Swift.Result<RoomRating, FetchRoomError>
 public enum FetchRoomError: Error, Equatable {
   case connectivity
   case invalidBuildingId
+  case invalidRoomID
+  case invalidURL
 }
 
 extension FetchRoomError {
@@ -27,6 +29,10 @@ extension FetchRoomError {
       "Failed to fetch rooms. Please check your internet connection."
     case .invalidBuildingId:
       "Invalid building ID provided."
+    case .invalidRoomID:
+      "Invalid room ID provided."
+    case .invalidURL:
+      "API URL doesn't exist."
     }
   }
 }
@@ -91,8 +97,15 @@ public final class LiveRoomService: RoomService {
     switch await roomRatingLoader.fetchRoomRating(roomID: roomID) {
     case .success(let rating):
       .success(rating)
-    case .failure:
-      .failure(.connectivity)
+    case .failure(let error):
+      switch error {
+      case .invalidRoomID:
+        .failure(.invalidRoomID)
+      case .invalidURL:
+        .failure(.invalidURL)
+      case .connectivity:
+        .failure(.connectivity)
+      }
     }
   }
 

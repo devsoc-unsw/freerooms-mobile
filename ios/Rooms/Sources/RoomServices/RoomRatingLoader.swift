@@ -43,7 +43,7 @@ public struct LiveRoomRatingLoader: RoomRatingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "api/rating/") {
+  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rating/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath

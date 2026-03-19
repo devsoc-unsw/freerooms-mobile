@@ -16,6 +16,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
+@MainActor
 public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
@@ -63,6 +64,7 @@ public protocol RoomViewModel {
 
 // MARK: - LiveRoomViewModel
 
+@MainActor
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
 
@@ -214,6 +216,7 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func fetchRoomRating(roomID: String) async {
+    currentRoomRating = nil
     getRatingIsLoading = true
 
     defer {
