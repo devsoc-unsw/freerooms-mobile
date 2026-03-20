@@ -16,6 +16,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
+@MainActor
 public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
@@ -51,10 +52,19 @@ public protocol RoomViewModel {
   func clearRoomBookings()
 
   func reloadRooms() async
+
+  var currentRoomRating: RoomRating? { get }
+
+  var getRatingIsLoading: Bool { get }
+
+  func fetchRoomRating(roomID: String) async
+
+  func clearRoomRating()
 }
 
 // MARK: - LiveRoomViewModel
 
+@MainActor
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
 
@@ -70,7 +80,11 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getBookingsIsLoading = false
 
+  public var getRatingIsLoading = false
+
   public var currentRoomBookings = [RoomBooking]()
+
+  public var currentRoomRating: RoomRating?
 
   public var hasLoaded = false
 
@@ -199,6 +213,26 @@ public class LiveRoomViewModel: RoomViewModel {
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
+  }
+
+  public func fetchRoomRating(roomID: String) async {
+    currentRoomRating = nil
+    getRatingIsLoading = true
+
+    defer {
+      self.getRatingIsLoading = false
+    }
+
+    switch await interactor.getRoomRating(roomID: roomID) {
+    case .success(let rating):
+      currentRoomRating = rating
+    case .failure(let error):
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
+    }
+  }
+
+  public func clearRoomRating() {
+    currentRoomRating = nil
   }
 
   public func reloadRooms() async {

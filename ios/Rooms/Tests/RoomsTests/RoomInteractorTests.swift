@@ -413,7 +413,10 @@ func makeRoomSUT(
 
   let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+  let roomService = LiveRoomService(
+    roomLoader: stubLoader,
+    roomBookingLoader: roomBookingLoader,
+    roomRatingLoader: StubRoomRatingLoader())
 
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
@@ -423,7 +426,10 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
   let locationService = LiveLocationService(locationManager: spyLocationManager)
   let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+  let roomService = LiveRoomService(
+    roomLoader: stubLoader,
+    roomBookingLoader: roomBookingLoader,
+    roomRatingLoader: StubRoomRatingLoader())
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 

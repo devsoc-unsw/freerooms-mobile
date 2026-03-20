@@ -182,7 +182,10 @@ func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
 
   let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
-  let roomService = LiveRoomService(roomLoader: stubLoader, roomBookingLoader: roomBookingLoader)
+  let roomService = LiveRoomService(
+    roomLoader: stubLoader,
+    roomBookingLoader: roomBookingLoader,
+    roomRatingLoader: StubRoomRatingLoader())
   let interactor = RoomInteractor(
     roomService: roomService,
     locationService: LiveLocationService(locationManager: LiveLocationManager()))

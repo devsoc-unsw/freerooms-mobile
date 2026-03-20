@@ -31,7 +31,7 @@ struct RoomDetailsSheetView: View {
     VStack(alignment: .leading, spacing: 10) {
       // List {
       // Booking informations
-      RoomBookingInformationView(room: room)
+      RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating)
 
       // Booking interactive section
       VStack(alignment: .leading, spacing: 16) {
@@ -68,6 +68,9 @@ struct RoomDetailsSheetView: View {
           .stroke(Color.gray.secondary, lineWidth: 1))
     }
     .padding()
+    .task {
+      await roomViewModel.fetchRoomRating(roomID: room.id)
+    }
     .gesture(
       DragGesture(minimumDistance: 20, coordinateSpace: .local)
         .onEnded { value in
