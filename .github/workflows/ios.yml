@@ -1,8 +1,11 @@
-name: CI
+name: IOS CI
 
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
