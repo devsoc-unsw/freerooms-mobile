@@ -24,7 +24,7 @@ let package = Package(
     .package(name: "Rooms", path: "../Rooms"),
     .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(url: "https://github.com/lucaszischka/BottomSheet", from: "3.1.1"),
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "4.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.

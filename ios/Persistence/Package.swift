@@ -15,7 +15,7 @@ let package = Package(
       targets: ["PersistenceTestUtils"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "4.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
     .target(

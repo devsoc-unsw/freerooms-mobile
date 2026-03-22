@@ -1,5 +1,5 @@
 {
-  "originHash" : "2d1d8307a1ad576598d5228092707fe87220758228be260244b738d1cd6c5f8c",
+  "originHash" : "426167c36472378a41ffe894e5f6d2aa3d1cf8079d40f226c0b4d9576d5f1ed8",
   "pins" : [
     {
       "identity" : "bottomsheet",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/avdn-dev/VISOR",
       "state" : {
-        "revision" : "8281ca20b434afdb5302e272677f62a2ab0f6806",
-        "version" : "4.0.0"
+        "revision" : "9be5af39a68804e852107bef20fe4c3ec086cb1c",
+        "version" : "8.0.0"
       }
     }
   ],

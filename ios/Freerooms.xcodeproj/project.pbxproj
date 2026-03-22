@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */ = {isa = PBXBuildFile; productRef = 30FB13AB2E1CDFAE0089793E /* Rooms */; };
+		4245BD272F6D6B0C0078BCD4 /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 4245BD262F6D6B0C0078BCD4 /* VISOR */; };
 		96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */ = {isa = PBXBuildFile; productRef = 96D65EDE2DA39EA30060D06B /* Buildings */; };
 		96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 96DE0C312DFBD4C200C77DD5 /* CommonUI */; };
-		BDA0A3F02F5AC8450049E965 /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = BDA0A3EF2F5AC8450049E965 /* VISOR */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BDA0A3F02F5AC8450049E965 /* VISOR in Frameworks */,
+				4245BD272F6D6B0C0078BCD4 /* VISOR in Frameworks */,
 				30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */,
 				96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */,
 				96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */,
@@ -119,7 +119,7 @@
 				96D65EDE2DA39EA30060D06B /* Buildings */,
 				96DE0C312DFBD4C200C77DD5 /* CommonUI */,
 				30FB13AB2E1CDFAE0089793E /* Rooms */,
-				BDA0A3EF2F5AC8450049E965 /* VISOR */,
+				4245BD262F6D6B0C0078BCD4 /* VISOR */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -151,7 +151,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
-				BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */,
+				4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -346,6 +346,7 @@
 				DEVELOPMENT_TEAM = VPNR8289C6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
@@ -358,7 +359,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomsaoihdnainfidbeliadbankjd;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -387,6 +388,7 @@
 				DEVELOPMENT_TEAM = VPNR8289C6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
@@ -399,7 +401,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freeroomsaoihdnainfidbeliadbankjd;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -444,12 +446,12 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */ = {
+		4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/avdn-dev/VISOR";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -459,6 +461,11 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Rooms;
 		};
+		4245BD262F6D6B0C0078BCD4 /* VISOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */;
+			productName = VISOR;
+		};
 		96D65EDE2DA39EA30060D06B /* Buildings */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Buildings;
@@ -466,11 +473,6 @@
 		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CommonUI;
-		};
-		BDA0A3EF2F5AC8450049E965 /* VISOR */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BDA0A3EE2F5AC8450049E965 /* XCRemoteSwiftPackageReference "VISOR" */;
-			productName = VISOR;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
