@@ -33,4 +33,31 @@ extension Room {
       Theme.light.list.grayTransparent.opacity(0.20)
     }
   }
+
+  /// Status text color derived from bookings when a custom filter is active.
+  /// Falls back to the live `statusTextColour` when inactive or bookings are unavailable.
+  public func contextualStatusTextColour(
+    referenceInstant: Date,
+    isCustomFilterActive: Bool,
+    bookings: [RoomBooking]?
+  ) -> Color {
+    if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
+      return isFree ? Theme.light.list.green : Theme.light.list.red
+    }
+    return statusTextColour
+  }
+
+  /// Status background color derived from bookings when a custom filter is active.
+  public func contextualStatusBackgroundColor(
+    referenceInstant: Date,
+    isCustomFilterActive: Bool,
+    bookings: [RoomBooking]?
+  ) -> Color {
+    if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
+      return isFree
+        ? Theme.light.list.greenTransparent.opacity(0.15)
+        : Theme.light.list.redTransparent.opacity(0.54)
+    }
+    return statusBackgroundColor
+  }
 }

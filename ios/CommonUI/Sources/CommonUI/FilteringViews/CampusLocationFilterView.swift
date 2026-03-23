@@ -6,6 +6,7 @@
 //
 
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - CampusLocationFilterView
@@ -31,7 +32,6 @@ public struct CampusLocationFilterView: View {
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 20)
 
       // Campus location options
       VStack(spacing: 12) {
@@ -45,9 +45,22 @@ public struct CampusLocationFilterView: View {
         }
       }
 
+      Button(role: .cancel, action: {
+        roomViewModel.clearCampusLocationFilter()
+        onSelect()
+      }) {
+        Text("Any campus")
+          .font(.body)
+          .fontWeight(.medium)
+          .frame(maxWidth: .infinity)
+          .frame(height: 44)
+      }
+
       SelectButton(onSelect: onSelect)
     }
     .padding(.horizontal, 20)
+    .padding(.top, FilterSheetLayout.contentTopPadding)
+    .padding(.bottom, FilterSheetLayout.contentBottomPadding)
     .cornerRadius(20, corners: [.topLeft, .topRight])
   }
 
@@ -55,6 +68,7 @@ public struct CampusLocationFilterView: View {
 
   @Binding private var selectedCampusLocation: CampusLocation?
 
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
 
   private let onSelect: () -> Void
@@ -100,10 +114,8 @@ private struct CampusLocationButton: View {
 // MARK: - Preview
 
 #Preview {
-  CampusLocationFilterView(
-    selectedCampusLocation: .constant(.lower))
-  {
-    // onSelect action
-  }
-  .defaultTheme()
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return CampusLocationFilterView(selectedCampusLocation: .constant(.lower), onSelect: { })
+    .defaultTheme()
+    .environment(viewModel)
 }

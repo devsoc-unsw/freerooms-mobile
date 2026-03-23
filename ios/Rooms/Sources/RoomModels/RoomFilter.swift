@@ -35,24 +35,13 @@ public struct RoomFilter: Equatable {
   public var selectedDuration: Duration?
   public var selectedCampusLocation: CampusLocation?
   public var selectedCapacity: Int?
+}
 
-  /// Returns true if any filter is active
-//  public var hasActiveFilters: Bool {
-//    selectedDate == Date() ||
-//      !selectedRoomTypes.isEmpty ||
-//      selectedDuration != nil ||
-//      selectedCampusLocation != nil ||
-//      selectedCapacity != nil
-//  }
-
-  /// Clears all filters
-//  public mutating func clearAll() {
-//    selectedDate = Date()
-//    selectedRoomTypes.removeAll()
-//    selectedDuration = nil
-//    selectedCampusLocation = nil
-//    selectedCapacity = nil
-//  }
+extension RoomFilter {
+  /// Start instant for duration overlap: the user’s chosen date/time if they changed the date filter from `DateDefaults.selectedDate`, otherwise `clockNow` (typically “right now”).
+  public func filteringReferenceInstant(clockNow: Date = Date()) -> Date {
+    selectedDate != DateDefaults.selectedDate ? selectedDate : clockNow
+  }
 }
 
 // MARK: - RoomType

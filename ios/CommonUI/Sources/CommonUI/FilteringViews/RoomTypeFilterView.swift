@@ -6,6 +6,7 @@
 //
 
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - RoomTypeFilterView
@@ -44,15 +45,29 @@ public struct RoomTypeFilterView: View {
         }
       }
 
+      Button(role: .cancel, action: {
+        roomViewModel.clearRoomTypeFilter()
+        onSelect()
+      }) {
+        Text("Clear all types")
+          .font(.body)
+          .fontWeight(.medium)
+          .frame(maxWidth: .infinity)
+          .frame(height: 44)
+      }
+
       SelectButton(onSelect: onSelect)
     }
     .padding(.horizontal, 20)
+    .padding(.top, FilterSheetLayout.contentTopPadding)
+    .padding(.bottom, FilterSheetLayout.contentBottomPadding)
   }
 
   // MARK: Private
 
   @Binding private var selectedRoomTypes: Set<RoomType>
 
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
   private let onSelect: () -> Void
 
   private func toggleRoomType(_ roomType: RoomType) {
@@ -99,10 +114,8 @@ private struct RoomTypeButton: View {
 // MARK: - Preview
 
 #Preview {
-  RoomTypeFilterView(
-    selectedRoomTypes: .constant([.computerLab]))
-  {
-    // onSelect action
-  }
-  .defaultTheme()
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return RoomTypeFilterView(selectedRoomTypes: .constant([.computerLab]), onSelect: { })
+    .defaultTheme()
+    .environment(viewModel)
 }

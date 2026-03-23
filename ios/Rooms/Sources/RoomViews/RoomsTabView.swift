@@ -57,6 +57,19 @@ public struct RoomsTabView<Destination: View>: View {
             }
           }
           .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+          .overlay {
+            if roomViewModel.isLoading {
+              VStack(spacing: 12) {
+                ProgressView()
+                  .controlSize(.large)
+                Text("Applying filters...")
+                  .font(.subheadline)
+                  .foregroundStyle(.secondary)
+              }
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background(.ultraThinMaterial)
+            }
+          }
       }
       .toolbar {
         toolbarButtons
@@ -89,9 +102,11 @@ public struct RoomsTabView<Destination: View>: View {
           {
             showingDateFilter = false
             roomViewModel.applyFilters()
+            let vm = roomViewModel
+            Task { await vm.loadBookingsForFilteredRooms() }
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.75)])
+          .presentationDetents([.fraction(0.8)])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }
@@ -103,7 +118,7 @@ public struct RoomsTabView<Destination: View>: View {
             roomViewModel.applyFilters()
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.5)])
+          .presentationDetents([.fraction(0.6)])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }
@@ -113,7 +128,7 @@ public struct RoomsTabView<Destination: View>: View {
             roomViewModel.applyFilters()
           })
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.3), .medium])
+          .presentationDetents([.fraction(0.35), .medium])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }
@@ -125,7 +140,7 @@ public struct RoomsTabView<Destination: View>: View {
             roomViewModel.applyFilters()
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.4)])
+          .presentationDetents([.fraction(0.45)])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }
@@ -137,7 +152,7 @@ public struct RoomsTabView<Destination: View>: View {
             roomViewModel.applyFilters()
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.4)])
+          .presentationDetents([.fraction(0.55)])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }

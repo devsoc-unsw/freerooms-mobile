@@ -31,9 +31,9 @@ public struct FilterBar: View {
   public var body: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 8) {
-//        FilterButton(
-//          filterType: .duration,
-//          showingFilter: $showingDurationFilter)
+        FilterButton(
+          filterType: .duration,
+          showingFilter: $showingDurationFilter)
 
         FilterButton(
           filterType: .date,

@@ -5,6 +5,7 @@
 //  Created by Muqueet Mohsen Chowdhury on 13/10/2025.
 //
 
+import RoomViewModels
 import SwiftUI
 
 // MARK: - DateFilterView
@@ -30,7 +31,6 @@ public struct DateFilterView: View {
         .font(.title2)
         .fontWeight(.bold)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 20)
 
       // Calendar
       DatePicker(
@@ -57,14 +57,28 @@ public struct DateFilterView: View {
           .labelsHidden()
       }
 
+      Button(role: .cancel, action: {
+        roomViewModel.clearDateFilter()
+        onSelect()
+      }) {
+        Text("Use current date & time")
+          .font(.body)
+          .fontWeight(.medium)
+          .frame(maxWidth: .infinity)
+          .frame(height: 44)
+      }
+
       SelectButton(onSelect: onSelect)
     }
     .padding(.horizontal, 20)
+    .padding(.top, FilterSheetLayout.contentTopPadding)
+    .padding(.bottom, FilterSheetLayout.contentBottomPadding)
   }
 
   // MARK: Private
 
   @Binding private var selectedDate: Date
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
 
   private let onSelect: () -> Void
@@ -96,10 +110,8 @@ struct RoundedCorner: Shape {
 // MARK: - Preview
 
 #Preview {
-  DateFilterView(
-    selectedDate: .constant(Date()))
-  {
-    // onSelect action
-  }
-  .defaultTheme()
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return DateFilterView(selectedDate: .constant(Date()), onSelect: { })
+    .defaultTheme()
+    .environment(viewModel)
 }

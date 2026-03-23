@@ -38,6 +38,17 @@ public struct DurationFilterView: View {
       .scaleEffect(x: 1.0, y: 1.4)
       .frame(height: 44 * 1.4)
 
+      Button(role: .cancel, action: {
+        roomViewModel.clearDurationFilter()
+        onSelect()
+      }) {
+        Text("Clear duration")
+          .font(.body)
+          .fontWeight(.medium)
+          .frame(maxWidth: .infinity)
+          .frame(height: 44)
+      }
+
       Button(action: {
         // Only apply the selection when user clicks Select
         roomViewModel.selectedDuration = selectedDuration
@@ -54,6 +65,8 @@ public struct DurationFilterView: View {
       }
     }
     .padding(.horizontal, 20)
+    .padding(.top, FilterSheetLayout.contentTopPadding)
+    .padding(.bottom, FilterSheetLayout.contentBottomPadding)
     .onAppear {
       // Initialize with current value or default
       selectedDuration = roomViewModel.selectedDuration ?? .oneHour

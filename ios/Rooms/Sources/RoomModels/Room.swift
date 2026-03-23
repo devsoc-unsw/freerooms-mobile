@@ -179,6 +179,42 @@ public struct Room: Equatable, Identifiable, Hashable {
     }
   }
 
+  /// When a custom date/time filter is active and bookings have been loaded, derive
+  /// the room's status from the booking schedule instead of the stale live `status`/`endTime`.
+  /// Falls back to `statusText` when the filter is inactive or bookings haven't loaded.
+  public func statusTextWhenFiltering(
+    referenceInstant: Date,
+    isCustomFilterActive: Bool,
+    bookings: [RoomBooking]? = nil
+  ) -> String {
+    guard isCustomFilterActive else { return statusText }
+    guard let bookings else { return statusText }
+    return Room.statusFromBookings(at: referenceInstant, bookings: bookings)
+  }
+
+  /// Whether the room is free at `referenceInstant` based on its bookings.
+  /// Returns `nil` when bookings haven't been loaded or the filter is inactive.
+  public func isFreeFromBookings(
+    at referenceInstant: Date,
+    isCustomFilterActive: Bool,
+    bookings: [RoomBooking]?
+  ) -> Bool? {
+    guard isCustomFilterActive, let bookings else { return nil }
+    return !bookings.contains { $0.start <= referenceInstant && $0.end > referenceInstant }
+  }
+
+  // MARK: - Booking-derived status
+
+  private static func statusFromBookings(at instant: Date, bookings: [RoomBooking]) -> String {
+    if let active = bookings.first(where: { $0.start <= instant && $0.end > instant }) {
+      return "Unavailable till \(timeFormatter.string(from: active.end))"
+    }
+    if let next = bookings.filter({ $0.start > instant }).min(by: { $0.start < $1.start }) {
+      return "Available till \(timeFormatter.string(from: next.start))"
+    }
+    return "Available till end of day"
+  }
+
   /// Computed room number based on the room ID
   public var roomNumber: String {
     let splitID = id.split(separator: "-").map { String($0) }
