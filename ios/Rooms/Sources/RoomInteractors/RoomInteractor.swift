@@ -221,6 +221,9 @@ public class RoomInteractor {
 
   // MARK: Private
 
+  private let roomService: RoomService
+  private let locationService: LocationService
+
   /// A booking blocks the room if it overlaps the interval from `now` for `minDurationMinutes`.
   private func roomsFreeForMinimumDuration(
     minDurationMinutes: Int,
@@ -239,6 +242,4 @@ public class RoomInteractor {
     }
   }
 
-  private let roomService: RoomService
-  private let locationService: LocationService
 }

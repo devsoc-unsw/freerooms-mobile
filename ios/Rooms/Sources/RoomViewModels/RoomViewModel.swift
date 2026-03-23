@@ -239,6 +239,7 @@ public class LiveRoomViewModel: RoomViewModel {
     case .success(let bookings):
       currentRoomBookings = bookings
       bookingsByRoomId[roomId] = bookings
+
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }

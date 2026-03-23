@@ -41,8 +41,8 @@ public struct CapacityFilterView: View {
         // Quick picks so users don't need to type a value.
         LazyVGrid(
           columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2),
-          spacing: 12
-        ) {
+          spacing: 12)
+        {
           ForEach(Self.quickCapacityOptions, id: \.self) { option in
             capacityPresetButton(for: option)
           }
@@ -83,12 +83,13 @@ public struct CapacityFilterView: View {
 
   // MARK: Private
 
+  private static let quickCapacityOptions: [Int] = [10, 25, 50, 100]
+
   @Binding private var selectedCapacity: Int?
   @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
-  private let onSelect: () -> Void
 
-  private static let quickCapacityOptions: [Int] = [10, 25, 50, 100]
+  private let onSelect: () -> Void
 
   @ViewBuilder
   private func capacityPresetButton(for option: Int) -> some View {
@@ -104,11 +105,10 @@ public struct CapacityFilterView: View {
         .background(selectedCapacity == option
           ? theme.accent.primary.opacity(0.25)
           : Color.gray.opacity(0.1))
-        .overlay(
-          RoundedRectangle(cornerRadius: 10)
-            .stroke(selectedCapacity == option ? theme.accent.primary : Color.clear, lineWidth: 1)
-        )
-        .cornerRadius(10)
+          .overlay(
+            RoundedRectangle(cornerRadius: 10)
+              .stroke(selectedCapacity == option ? theme.accent.primary : Color.clear, lineWidth: 1))
+          .cornerRadius(10)
     }
     .buttonStyle(.plain)
   }

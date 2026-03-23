@@ -83,79 +83,79 @@ public struct RoomsTabView<Destination: View>: View {
       .navigationDestination(for: Room.self) { room in
         roomDestinationBuilderView(room)
       }
-        .task {
-          if !roomViewModel.hasLoaded {
-            await roomViewModel.onAppear()
-          }
+      .task {
+        if !roomViewModel.hasLoaded {
+          await roomViewModel.onAppear()
         }
-        .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
-          Alert(
-            title: Text(error.title),
-            message: Text(error.message),
-            dismissButton: .default(Text("OK")))
+      }
+      .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+        Alert(
+          title: Text(error.title),
+          message: Text(error.message),
+          dismissButton: .default(Text("OK")))
+      }
+      .navigationTitle("Rooms")
+      .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+      .sheet(isPresented: $showingDateFilter) {
+        DateFilterView(
+          selectedDate: $roomViewModel.selectedDate)
+        {
+          showingDateFilter = false
+          roomViewModel.applyFilters()
+          let vm = roomViewModel
+          Task { await vm.loadBookingsForFilteredRooms() }
         }
-        .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
-        .sheet(isPresented: $showingDateFilter) {
-          DateFilterView(
-            selectedDate: $roomViewModel.selectedDate)
-          {
-            showingDateFilter = false
-            roomViewModel.applyFilters()
-            let vm = roomViewModel
-            Task { await vm.loadBookingsForFilteredRooms() }
-          }
-          .environment(roomViewModel)
-          .presentationDetents([.fraction(0.8)])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
+        .environment(roomViewModel)
+        .presentationDetents([.fraction(0.8)])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+      }
+      .sheet(isPresented: $showingRoomTypeFilter) {
+        RoomTypeFilterView(
+          selectedRoomTypes: $roomViewModel.selectedRoomTypes)
+        {
+          showingRoomTypeFilter = false
+          roomViewModel.applyFilters()
         }
-        .sheet(isPresented: $showingRoomTypeFilter) {
-          RoomTypeFilterView(
-            selectedRoomTypes: $roomViewModel.selectedRoomTypes)
-          {
-            showingRoomTypeFilter = false
-            roomViewModel.applyFilters()
-          }
-          .environment(roomViewModel)
-          .presentationDetents([.fraction(0.6)])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
+        .environment(roomViewModel)
+        .presentationDetents([.fraction(0.6)])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+      }
+      .sheet(isPresented: $showingDurationFilter) {
+        DurationFilterView(onSelect: {
+          showingDurationFilter = false
+          roomViewModel.applyFilters()
+        })
+        .environment(roomViewModel)
+        .presentationDetents([.fraction(0.35), .medium])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+      }
+      .sheet(isPresented: $showingCampusLocationFilter) {
+        CampusLocationFilterView(
+          selectedCampusLocation: $roomViewModel.selectedCampusLocation)
+        {
+          showingCampusLocationFilter = false
+          roomViewModel.applyFilters()
         }
-        .sheet(isPresented: $showingDurationFilter) {
-          DurationFilterView(onSelect: {
-            showingDurationFilter = false
-            roomViewModel.applyFilters()
-          })
-          .environment(roomViewModel)
-          .presentationDetents([.fraction(0.35), .medium])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
+        .environment(roomViewModel)
+        .presentationDetents([.fraction(0.45)])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+      }
+      .sheet(isPresented: $showingCapacityFilter) {
+        CapacityFilterView(
+          selectedCapacity: $roomViewModel.selectedCapacity)
+        {
+          showingCapacityFilter = false
+          roomViewModel.applyFilters()
         }
-        .sheet(isPresented: $showingCampusLocationFilter) {
-          CampusLocationFilterView(
-            selectedCampusLocation: $roomViewModel.selectedCampusLocation)
-          {
-            showingCampusLocationFilter = false
-            roomViewModel.applyFilters()
-          }
-          .environment(roomViewModel)
-          .presentationDetents([.fraction(0.45)])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-        }
-        .sheet(isPresented: $showingCapacityFilter) {
-          CapacityFilterView(
-            selectedCapacity: $roomViewModel.selectedCapacity)
-          {
-            showingCapacityFilter = false
-            roomViewModel.applyFilters()
-          }
-          .environment(roomViewModel)
-          .presentationDetents([.fraction(0.55)])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-        }
+        .environment(roomViewModel)
+        .presentationDetents([.fraction(0.55)])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
+      }
     }
     .environment(roomViewModel)
     .tabItem {

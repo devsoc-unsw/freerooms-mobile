@@ -179,14 +179,22 @@ public struct Room: Equatable, Identifiable, Hashable {
     }
   }
 
+  /// Computed room number based on the room ID
+  public var roomNumber: String {
+    let splitID = id.split(separator: "-").map { String($0) }
+    guard splitID.count == 3 else { return "?" }
+    return splitID[2]
+  }
+
   /// When a custom date/time filter is active and bookings have been loaded, derive
   /// the room's status from the booking schedule instead of the stale live `status`/`endTime`.
   /// Falls back to `statusText` when the filter is inactive or bookings haven't loaded.
   public func statusTextWhenFiltering(
     referenceInstant: Date,
     isCustomFilterActive: Bool,
-    bookings: [RoomBooking]? = nil
-  ) -> String {
+    bookings: [RoomBooking]? = nil)
+    -> String
+  {
     guard isCustomFilterActive else { return statusText }
     guard let bookings else { return statusText }
     return Room.statusFromBookings(at: referenceInstant, bookings: bookings)
@@ -197,11 +205,20 @@ public struct Room: Equatable, Identifiable, Hashable {
   public func isFreeFromBookings(
     at referenceInstant: Date,
     isCustomFilterActive: Bool,
-    bookings: [RoomBooking]?
-  ) -> Bool? {
+    bookings: [RoomBooking]?)
+    -> Bool?
+  {
     guard isCustomFilterActive, let bookings else { return nil }
     return !bookings.contains { $0.start <= referenceInstant && $0.end > referenceInstant }
   }
+
+  // MARK: Private
+
+  private static let timeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "h:mm a"
+    return formatter
+  }()
 
   // MARK: - Booking-derived status
 
@@ -214,20 +231,5 @@ public struct Room: Equatable, Identifiable, Hashable {
     }
     return "Available till end of day"
   }
-
-  /// Computed room number based on the room ID
-  public var roomNumber: String {
-    let splitID = id.split(separator: "-").map { String($0) }
-    guard splitID.count == 3 else { return "?" }
-    return splitID[2]
-  }
-
-  // MARK: Private
-
-  private static let timeFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "h:mm a"
-    return formatter
-  }()
 
 }

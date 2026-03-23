@@ -68,6 +68,7 @@ public struct RoomTypeFilterView: View {
   @Binding private var selectedRoomTypes: Set<RoomType>
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+
   private let onSelect: () -> Void
 
   private func toggleRoomType(_ roomType: RoomType) {

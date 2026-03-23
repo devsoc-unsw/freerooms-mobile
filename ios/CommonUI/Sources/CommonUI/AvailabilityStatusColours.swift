@@ -39,8 +39,9 @@ extension Room {
   public func contextualStatusTextColour(
     referenceInstant: Date,
     isCustomFilterActive: Bool,
-    bookings: [RoomBooking]?
-  ) -> Color {
+    bookings: [RoomBooking]?)
+    -> Color
+  {
     if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
       return isFree ? Theme.light.list.green : Theme.light.list.red
     }
@@ -51,8 +52,9 @@ extension Room {
   public func contextualStatusBackgroundColor(
     referenceInstant: Date,
     isCustomFilterActive: Bool,
-    bookings: [RoomBooking]?
-  ) -> Color {
+    bookings: [RoomBooking]?)
+    -> Color
+  {
     if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
       return isFree
         ? Theme.light.list.greenTransparent.opacity(0.15)
