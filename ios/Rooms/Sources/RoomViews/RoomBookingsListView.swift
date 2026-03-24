@@ -23,7 +23,7 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
-  let hoursToDisplay: CGFloat = 24 - 8
+  let hoursToDisplay: CGFloat = 24 - 9
 
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
@@ -48,7 +48,7 @@ struct RoomBookingsListView: View {
 
           // Background time grid
           VStack(spacing: 0) {
-            ForEach(8..<24, id: \.self) { hour in
+            ForEach(9..<24, id: \.self) { hour in
               BookingsLayoutView(hour: hour)
                 .id(hour)
             }

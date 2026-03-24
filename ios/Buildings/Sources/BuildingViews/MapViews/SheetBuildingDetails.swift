@@ -50,7 +50,6 @@ public struct SheetBuildingDetails: View {
   private var buildingImageSection: some View {
     if let buildingID = viewModel.selectedBuildingID {
       BuildingImage[buildingID]
-        .resizable()
         .aspectRatio(contentMode: .fill)
         .frame(maxWidth: .infinity, maxHeight: 150)
         .clipShape(RoundedRectangle(cornerRadius: 5))

@@ -26,6 +26,12 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
     name: "COMM2501 LAB",
     start: formatter.date(from: "2025-11-11T22:00:00.000Z")!)
 
+  public static let twoAMToThreePM = RoomBooking(
+    bookingType: "CLASS",
+    end: formatter.date(from: "2026-03-24T04:00:30.000Z")!,
+    name: "COMM2501 LAB",
+    start: formatter.date(from: "2026-03-23T15:00:30.000Z")!)
+
   public static let exampleTwo = RoomBooking(
     bookingType: "CLASS",
     end: formatter.date(from: "2025-11-12T01:00:00.000Z")!,

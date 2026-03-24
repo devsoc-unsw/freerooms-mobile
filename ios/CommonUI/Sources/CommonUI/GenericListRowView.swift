@@ -13,7 +13,7 @@ import SwiftUI
 
 // MARK: - GenericListRowView
 
-public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasName & HasRating>: View {
+public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasName & HasRating, ImageContent: View>: View {
 
   // MARK: Lifecycle
 
@@ -23,7 +23,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     item: T,
     items: [T],
     isLoading: Bool,
-    imageProvider: @escaping (T.ID) -> Image)
+    imageProvider: @escaping (T.ID) -> ImageContent)
   {
     _path = path
     _rowHeight = rowHeight
@@ -41,7 +41,6 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     } label: {
       HStack(spacing: 0) {
         imageProvider(item.id)
-          .resizable()
           .aspectRatio(contentMode: .fill)
           .frame(width: (rowHeight ?? 0) + 40, height: 60)
           .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -83,7 +82,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   let item: T
   let items: [T]
   let isLoading: Bool
-  let imageProvider: (T.ID) -> Image
+  let imageProvider: (T.ID) -> ImageContent
 
   var cornerRadii: RectangleCornerRadii {
     RectangleCornerRadii(
@@ -104,14 +103,14 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
 }
 
 /// Convenience extensions
-extension GenericListRowView where T == Building {
+extension GenericListRowView where T == Building, ImageContent == CachedImage {
   public init(
     path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
     building: Building,
     buildings: [Building],
     isLoading: Bool,
-    imageProvider: @escaping (Building.ID) -> Image)
+    imageProvider: @escaping (Building.ID) -> CachedImage)
   {
     _path = path
     _rowHeight = rowHeight
@@ -122,14 +121,14 @@ extension GenericListRowView where T == Building {
   }
 }
 
-extension GenericListRowView where T == Room {
+extension GenericListRowView where T == Room, ImageContent == CachedImage {
   public init(
     path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
     room: Room,
     rooms: [Room],
     isLoading: Bool,
-    imageProvider: @escaping (Room.ID) -> Image)
+    imageProvider: @escaping (Room.ID) -> CachedImage)
   {
     _path = path
     _rowHeight = rowHeight
@@ -158,7 +157,7 @@ struct PreviewWrapper: View {
           rooms: rooms,
           isLoading: false,
           imageProvider: { roomID in
-            Image(roomID, bundle: .module)
+            CachedImage(name: roomID, bundle: .module)
           })
       }
     }
