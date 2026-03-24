@@ -24,6 +24,6 @@ public struct CacheConfig {
 
   // MARK: Private
 
-  private static let defaultNSCacheCountLimit = 50
-  private static let defaultNSCacheTotalCostLimit = 50 * 1024 * 1024 // 50 MB
+  public static let defaultNSCacheCountLimit = 50
+  public static let defaultNSCacheTotalCostLimit = 50 * 1024 * 1024 // 50 MB
 }
