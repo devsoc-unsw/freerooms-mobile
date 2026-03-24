@@ -30,7 +30,7 @@ struct ContentView: View {
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in
+      BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
         RoomsListView(building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
         })
@@ -50,8 +50,6 @@ struct ContentView: View {
       MapTabView(mapViewModel: mapViewModel)
       RoomsTabView(
         path: $roomPath,
-        roomViewModel: roomViewModel,
-        buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab,
         selectedView: $selectedRoomsView)
       { room in
@@ -65,6 +63,7 @@ struct ContentView: View {
       }
     }
     .environment(roomViewModel)
+    .environment(buildingViewModel)
     .tint(theme.accent.primary)
   }
 

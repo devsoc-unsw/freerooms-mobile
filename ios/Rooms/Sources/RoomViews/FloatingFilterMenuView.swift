@@ -5,22 +5,21 @@
 //  Created by Yanlin Li  on 24/3/2026.
 //
 
-import SwiftUI
-import RoomViewModels
 import CommonUI
+import RoomViewModels
+import SwiftUI
 
 struct FloatingFilterMenuView: View {
-  
+
+  // MARK: Internal
+
   @Binding var showingDateFilter: Bool
   @Binding var showingRoomTypeFilter: Bool
   @Binding var showingDurationFilter: Bool
   @Binding var showingCampusLocationFilter: Bool
   @Binding var showingCapacityFilter: Bool
   @Binding var showingFilterMenu: Bool
-  
-  @Environment(LiveRoomViewModel.self) private var roomViewModel
-  @Environment(Theme.self) private var theme
-  
+
   var body: some View {
     VStack(alignment: .trailing, spacing: 10) {
       if showingFilterMenu {
@@ -44,7 +43,7 @@ struct FloatingFilterMenuView: View {
           roomViewModel.applyFilters()
         }
       }
-      
+
       Button {
         withAnimation(.spring(duration: 0.25)) {
           showingFilterMenu.toggle()
@@ -63,13 +62,18 @@ struct FloatingFilterMenuView: View {
     }
     .animation(.spring(duration: 0.25), value: showingFilterMenu)
   }
-  
+
+  // MARK: Private
+
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(Theme.self) private var theme
+
   private func filterMenuAction(
     _ title: String,
     systemImage: String,
     role: ButtonRole? = nil,
     action: @escaping () -> Void)
-  -> some View
+    -> some View
   {
     Button {
       action()
@@ -89,5 +93,11 @@ struct FloatingFilterMenuView: View {
 }
 
 #Preview {
-  FloatingFilterMenuView(showingDateFilter: .constant(false), showingRoomTypeFilter: .constant(false), showingDurationFilter: .constant(false), showingCampusLocationFilter: .constant(false), showingCapacityFilter: .constant(false), showingFilterMenu: .constant(false))
+  FloatingFilterMenuView(
+    showingDateFilter: .constant(false),
+    showingRoomTypeFilter: .constant(false),
+    showingDurationFilter: .constant(false),
+    showingCampusLocationFilter: .constant(false),
+    showingCapacityFilter: .constant(false),
+    showingFilterMenu: .constant(false))
 }
