@@ -22,24 +22,24 @@ struct RoomBookingCardView: View {
   }
 
   // MARK: Internal
-    
-    var topRadius: CGFloat {
-        if (start.hour ?? 0) < 9 {
-            0
-        } else if isSmallBooking {
-            10
-        } else {
-            15
-        }
+
+  var topRadius: CGFloat {
+    if (start.hour ?? 0) < 9 {
+      0
+    } else if isSmallBooking {
+      10
+    } else {
+      15
     }
-    
-    var bottomRadius: CGFloat {
-        if isSmallBooking {
-            10
-        } else {
-            15
-        }
+  }
+
+  var bottomRadius: CGFloat {
+    if isSmallBooking {
+      10
+    } else {
+      15
     }
+  }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -73,7 +73,7 @@ struct RoomBookingCardView: View {
       x: 0,
       y: CGFloat(startMinutes) * (40 / 60) + 2)
   }
-    
+
   var numberTimeSlots: CGFloat {
     let startTimeMinute = start.minute ?? 0
     let startTimeHour = start.hour ?? 0
