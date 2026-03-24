@@ -8,21 +8,21 @@ public struct CacheConfig {
   // MARK: Lifecycle
 
   public init(
-    nsCacheCountLimit: Int = defaultNSCacheCountLimit,
-    nsCacheTotalCostLimit: Int = defaultNSCacheTotalCostLimit)
+    maxItemCount: Int = defaultMaxItemCount,
+    maxByteCount: Int = defaultMaxByteCount)
   {
-    self.nsCacheCountLimit = nsCacheCountLimit
-    self.nsCacheTotalCostLimit = nsCacheTotalCostLimit
+    self.maxItemCount = maxItemCount
+    self.maxByteCount = maxByteCount
   }
 
   // MARK: Public
 
   public static let `default` = CacheConfig()
 
-  public static let defaultNSCacheCountLimit = 50
-  public static let defaultNSCacheTotalCostLimit = 50 * 1024 * 1024 // 50 MB
+  public static let defaultMaxItemCount = 50
+  public static let defaultMaxByteCount = 50 * 1024 * 1024 // 50 MB
 
-  public let nsCacheCountLimit: Int
-  public let nsCacheTotalCostLimit: Int
+  public let maxItemCount: Int
+  public let maxByteCount: Int
 
 }

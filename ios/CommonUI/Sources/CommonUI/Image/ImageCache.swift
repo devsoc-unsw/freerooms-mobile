@@ -55,8 +55,8 @@ public final class ImageCache {
   ///
   /// - Parameter config: Cache limits. Defaults to `CacheConfig.default`.
   init(config: CacheConfig = .default) {
-    cache.countLimit = config.nsCacheCountLimit
-    cache.totalCostLimit = config.nsCacheTotalCostLimit
+    cache.countLimit = config.maxItemCount
+    cache.totalCostLimit = config.maxByteCount
   }
 
   // MARK: Public
