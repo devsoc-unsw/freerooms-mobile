@@ -22,6 +22,7 @@ let package = Package(
     .package(name: "CommonUI", path: "../CommonUI"),
     .package(name: "Persistence", path: "../Persistence"),
     .package(name: "Buildings", path: "../Buildings"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
     .target(
@@ -52,6 +53,7 @@ let package = Package(
       dependencies: [
         .product(name: "Networking", package: "Networking"),
         .product(name: "Persistence", package: "Persistence"),
+        .product(name: "VISOR", package: "VISOR"),
         "RoomModels",
       ],
       resources: [.process("Resources")],
@@ -80,7 +82,7 @@ let package = Package(
         .product(name: "Networking", package: "Networking"),
         .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
-        .product(name: "LocationTestsUtils", package: "Location"),
+        .product(name: "Location", package: "Location"),
       ],
       swiftSettings: .defaultSettings),
   ])

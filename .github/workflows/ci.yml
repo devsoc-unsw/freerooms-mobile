@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +40,7 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Run tests
-      run: "xcodebuild test -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17'"
+      run: "xcodebuild test -skipMacroValidation -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17'"
   build:
     name: Build
     runs-on: macos-26
@@ -48,4 +48,4 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Build swift project
-      run: "xcodebuild build -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17'"
+      run: "xcodebuild build -skipMacroValidation -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17'"

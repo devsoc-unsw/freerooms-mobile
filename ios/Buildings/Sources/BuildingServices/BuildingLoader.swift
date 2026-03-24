@@ -10,6 +10,7 @@ import Foundation
 import Networking
 import Persistence
 import RoomServices
+import VISOR
 
 // MARK: - BuildingLoaderError
 
@@ -24,12 +25,14 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
+@Stubbable
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - RemoteBuildingLoader
 
+@Stubbable
 public protocol RemoteBuildingLoader {
   func fetch() -> Result<[RemoteBuilding], BuildingLoaderError>
 }

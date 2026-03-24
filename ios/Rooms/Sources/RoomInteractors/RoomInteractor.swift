@@ -173,6 +173,15 @@ public class RoomInteractor {
     }
   }
 
+  public func getRoomRating(roomID: String) async -> Result<RoomRating, FetchRoomError> {
+    switch await roomService.getRoomRating(roomID: roomID) {
+    case .success(let rating):
+      .success(rating)
+    case .failure(let error):
+      .failure(error)
+    }
+  }
+
   /// - Parameter roomBookingsByRoomId: Bookings keyed by `Room.id` for duration filtering. Rooms with no entry are treated as having no known bookings (they pass the duration filter until loaded).
   public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookingsByRoomId: [String: [RoomBooking]]) -> [Room] {
     var filteredRooms = rooms

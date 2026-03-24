@@ -10,9 +10,7 @@ import Foundation
 import Testing
 @testable import BuildingInteractors
 @testable import BuildingServices
-@testable import BuildingTestUtils
 @testable import Location
-@testable import LocationTestsUtils
 
 // MARK: - BuildingInteractorTests
 
@@ -471,10 +469,11 @@ enum BuildingInteractorTests {
     @Test("Filter buildings propagates service error")
     func getBuildingsFilteredPropagatesServiceError() async {
       // Given
-      let mockLoader = MockBuildingLoader(throws: BuildingLoaderError.connectivity)
-      let buildingService = LiveBuildingService(buildingLoader: mockLoader)
-      let locationManager = MockLocationManager()
-      let locationService = LiveLocationService(locationManager: locationManager)
+      let stubLoader = StubBuildingLoader()
+      stubLoader.fetchReturnValue = .failure(.connectivity)
+      let buildingService = LiveBuildingService(buildingLoader: stubLoader)
+      let spyLocationManager = SpyLocationManager()
+      let locationService = LiveLocationService(locationManager: spyLocationManager)
       let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
 
       // When
@@ -493,9 +492,10 @@ enum BuildingInteractorTests {
 
 /// Function to make the building SUT
 func makeSUT(loadBuildings buildings: [Building]) -> BuildingInteractor {
-  let mockLoader = MockBuildingLoader(loads: buildings)
-  let buildingService = LiveBuildingService(buildingLoader: mockLoader)
-  let locationManager = MockLocationManager()
-  let locationService = LiveLocationService(locationManager: locationManager)
+  let stubLoader = StubBuildingLoader()
+  stubLoader.fetchReturnValue = .success(buildings)
+  let buildingService = LiveBuildingService(buildingLoader: stubLoader)
+  let spyLocationManager = SpyLocationManager()
+  let locationService = LiveLocationService(locationManager: spyLocationManager)
   return BuildingInteractor(buildingService: buildingService, locationService: locationService)
 }

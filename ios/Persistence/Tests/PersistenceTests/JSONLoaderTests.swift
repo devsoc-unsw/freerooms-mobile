@@ -5,9 +5,9 @@
 //  Created by Chris Wong on 22/6/2025.
 //
 
+import Foundation
 import Testing
 @testable import Persistence
-@testable import PersistenceTestUtils
 
 // MARK: - JSONLoaderTests
 
@@ -18,8 +18,9 @@ struct JSONLoaderTests {
   @Test("JSON loader decodes json file into platform type [DecodableBuildings]")
   func loadsBuildingsFromJSONFile() async {
     // Given
-    let mockFileLoader = MockFileLoader(loads: fakeBuildingsJSON)
-    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+    let stubFileLoader = StubFileLoader()
+    stubFileLoader.loadResult = .success(fakeBuildingsJSON.data(using: .utf8)!)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: stubFileLoader)
 
     // When
     let res = await sut.load(from: "fakeFilePath/fake")
@@ -32,8 +33,9 @@ struct JSONLoaderTests {
   @Test("Throws an error when file does not exist")
   func throwsErrorOnFileNotExisting() async {
     // Given
-    let mockFileLoader = MockFileLoader(throws: FileLoaderError.fileNotFound)
-    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+    let stubFileLoader = StubFileLoader()
+    stubFileLoader.loadResult = .failure(FileLoaderError.fileNotFound)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: stubFileLoader)
 
     // When
     let res = await sut.load(from: "fakeFilePath/fake")
@@ -45,8 +47,9 @@ struct JSONLoaderTests {
   @Test("Throws an error when JSON in file is malformed")
   func throwsErrorOnMalformedJSON() async {
     // Given
-    let mockFileLoader = MockFileLoader(loads: fakeBuildingsMalformedJSON)
-    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+    let stubFileLoader = StubFileLoader()
+    stubFileLoader.loadResult = .success(fakeBuildingsMalformedJSON.data(using: .utf8)!)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: stubFileLoader)
 
     // When
     let res = await sut.load(from: "fakeFilePath/fake")
@@ -58,8 +61,9 @@ struct JSONLoaderTests {
   @Test("JSON Loader decodes empty buildings json file into empty platform type [DecodableBuilding]")
   func loadsEmptyArrayFromEmptyJSONFile() async {
     // Given
-    let mockFileLoader = MockFileLoader(loads: emptyJSON)
-    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+    let stubFileLoader = StubFileLoader()
+    stubFileLoader.loadResult = .success(emptyJSON.data(using: .utf8)!)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: stubFileLoader)
 
     // When
     let res = await sut.load(from: "fakeFilePath/fake")
@@ -72,8 +76,9 @@ struct JSONLoaderTests {
   @Test("JSON Loader successfully decodes buildings seed JSON")
   func loadsJSONFromFakeBuildingsSeedJSONSuccessfully() async throws {
     // Given
-    let mockFileLoader = MockFileLoader(loads: fakeBuildingsSeedJSON)
-    let sut = LiveJSONLoader<[DecodableBuilding]>(using: mockFileLoader)
+    let stubFileLoader = StubFileLoader()
+    stubFileLoader.loadResult = .success(fakeBuildingsSeedJSON.data(using: .utf8)!)
+    let sut = LiveJSONLoader<[DecodableBuilding]>(using: stubFileLoader)
 
     // When
     let res = await sut.load(from: "fakeFilePath/fake")

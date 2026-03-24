@@ -10,19 +10,17 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "Location",
-      targets: ["Location", "LocationTestsUtils", "LocationInteractors"]),
-    .library(
-      name: "LocationTestsUtils", targets: ["LocationTestsUtils"]),
+      targets: ["Location", "LocationInteractors"]),
+  ],
+  dependencies: [
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "Location",
-      swiftSettings: .defaultSettings),
-    .target(
-      name: "LocationTestsUtils",
-      dependencies: ["Location"],
+      dependencies: [.product(name: "VISOR", package: "VISOR")],
       swiftSettings: .defaultSettings),
     .target(
       name: "LocationInteractors",
@@ -30,7 +28,7 @@ let package = Package(
       swiftSettings: .defaultSettings),
     .testTarget(
       name: "LocationTests",
-      dependencies: ["Location", "LocationTestsUtils"],
+      dependencies: ["Location"],
       swiftSettings: .defaultSettings),
   ])
 

@@ -15,6 +15,7 @@ import RoomServices
 
 // MARK: - RoomViewModel
 
+@MainActor
 public protocol RoomViewModel {
   var rooms: [Room] { get set }
 
@@ -58,6 +59,14 @@ public protocol RoomViewModel {
 
   func reloadRooms() async
 
+  var currentRoomRating: RoomRating? { get }
+
+  var getRatingIsLoading: Bool { get }
+
+  func fetchRoomRating(roomID: String) async
+
+  func clearRoomRating()
+
   func applyFilters()
   func loadBookingsForFilteredRooms() async
   func clearAllFilters()
@@ -71,6 +80,7 @@ public protocol RoomViewModel {
 
 // MARK: - LiveRoomViewModel
 
+@MainActor
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
 
@@ -86,8 +96,14 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getBookingsIsLoading = false
 
+  public var getRatingIsLoading = false
+
+  public var getRatingIsLoading = false
+
   /// Bookings for the **last** room that `getRoomBookings(roomId:)` loaded (e.g. detail / list UI).
   public var currentRoomBookings = [RoomBooking]()
+
+  public var currentRoomRating: RoomRating?
 
   /// Cached bookings per `Room.id` for duration filtering. Rooms without an entry are not filtered out by duration until their bookings are loaded.
   public var bookingsByRoomId = [String: [RoomBooking]]()
@@ -157,7 +173,7 @@ public class LiveRoomViewModel: RoomViewModel {
         usage: "TUSM",
         service: ["Loading"],
         writingMedia: ["Whiteboard"],
-        status: "free",
+        status: .available,
         endTime: nil,
         overallRating: 4.0)
     }
@@ -243,6 +259,26 @@ public class LiveRoomViewModel: RoomViewModel {
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
+  }
+
+  public func fetchRoomRating(roomID: String) async {
+    currentRoomRating = nil
+    getRatingIsLoading = true
+
+    defer {
+      self.getRatingIsLoading = false
+    }
+
+    switch await interactor.getRoomRating(roomID: roomID) {
+    case .success(let rating):
+      currentRoomRating = rating
+    case .failure(let error):
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
+    }
+  }
+
+  public func clearRoomRating() {
+    currentRoomRating = nil
   }
 
   public func reloadRooms() async {

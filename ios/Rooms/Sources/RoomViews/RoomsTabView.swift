@@ -205,9 +205,12 @@ public struct RoomsTabView<Destination: View>: View {
             }
           }
           .padding(.horizontal, 16)
+          // .listRowSeparator(.hidden)
+          // .listRowBackground(Color.clear)
         } header: {
           HStack {
             Text(buildingName)
+              .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
               .padding(.leading, 10)
             Spacer()
@@ -245,6 +248,7 @@ public struct RoomsTabView<Destination: View>: View {
           }
         } header: {
           Text(buildingName)
+            .textCase(.uppercase)
             .foregroundStyle(theme.label.primary)
         }
       }
@@ -275,10 +279,15 @@ public struct RoomsTabView<Destination: View>: View {
       List {
         roomsListView(buildingViewModel.allBuildings)
       }
+      .listRowInsets(EdgeInsets())
+      .scrollContentBackground(.hidden)
+      .background(Color.gray.opacity(0.1))
     } else {
       ScrollView {
         roomsCardView(buildingViewModel.allBuildings)
       }
+      .background(Color.gray.opacity(0.1))
+      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
 

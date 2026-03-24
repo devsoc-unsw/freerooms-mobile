@@ -13,7 +13,6 @@ import Combine
 import Foundation
 import Location
 import LocationInteractors
-import LocationTestsUtils
 @preconcurrency import MapKit
 import SwiftUI
 

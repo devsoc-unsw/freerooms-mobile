@@ -7,9 +7,11 @@
 
 import CoreLocation
 import Foundation
+import VISOR
 
 // MARK: - LocationService
 
+@Stubbable
 public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool

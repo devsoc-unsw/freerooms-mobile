@@ -143,8 +143,8 @@ extension GenericListRowView where T == Room {
 // MARK: - PreviewWrapper
 
 struct PreviewWrapper: View {
-  @State private var path = NavigationPath()
-  @State private var rowHeight: CGFloat?
+
+  // MARK: Internal
 
   let rooms: [Room] = [Room.exampleOne, Room.exampleTwo]
 
@@ -163,6 +163,12 @@ struct PreviewWrapper: View {
       }
     }
   }
+
+  // MARK: Private
+
+  @State private var path = NavigationPath()
+  @State private var rowHeight: CGFloat?
+
 }
 
 #Preview {

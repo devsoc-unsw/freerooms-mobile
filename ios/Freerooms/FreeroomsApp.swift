@@ -68,7 +68,7 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, buildingRatingLoader, _) = makeRemoteLoaders()
+      let (roomStatusLoader, buildingRatingLoader, _, _) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -97,7 +97,7 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, buildingRatingLoader, _) = makeRemoteLoaders()
+      let (roomStatusLoader, buildingRatingLoader, _, _) = makeRemoteLoaders()
 
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: swiftDataBuildingLoader,
@@ -135,7 +135,7 @@ struct FreeroomsApp: App {
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
 
-      let (roomStatusLoader, _, remoteBookingLoader) = makeRemoteLoaders()
+      let (roomStatusLoader, _, remoteBookingLoader, roomRatingLoader) = makeRemoteLoaders()
 
       let roomLoader = LiveRoomLoader(
         JSONRoomLoader: JSONRoomLoader,
@@ -144,7 +144,10 @@ struct FreeroomsApp: App {
 
       let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
 
-      let roomService = LiveRoomService(roomLoader: roomLoader, roomBookingLoader: roomBookingLoader)
+      let roomService = LiveRoomService(
+        roomLoader: roomLoader,
+        roomBookingLoader: roomBookingLoader,
+        roomRatingLoader: roomRatingLoader)
       let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
 
       return LiveRoomViewModel(interactor: interactor)
@@ -190,7 +193,8 @@ struct FreeroomsApp: App {
     -> (
       roomStatusLoader: LiveRoomStatusLoader,
       buildingRatingLoader: RemoteBuildingRatingLoader,
-      remoteBookingLoader: LiveRemoteRoomBookingLoader)
+      remoteBookingLoader: LiveRemoteRoomBookingLoader,
+      roomRatingLoader: LiveRoomRatingLoader)
   {
     let httpClient = makeHTTPClient()
     let (stagingURL, productionURL) = makeBaseURLs()
@@ -198,7 +202,8 @@ struct FreeroomsApp: App {
     let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: stagingURL)
     let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
     let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: productionURL)
+    let roomRatingLoader = LiveRoomRatingLoader(client: httpClient, baseURL: productionURL)
 
-    return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader)
+    return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader)
   }
 }

@@ -125,8 +125,8 @@ extension GenericCardView where T == Room {
 // MARK: - CardPreviewWrapper
 
 struct CardPreviewWrapper: View {
-  @State private var path = NavigationPath()
-  @State private var cardWidth: CGFloat?
+
+  // MARK: Internal
 
   let rooms: [Room] = [Room.exampleOne, Room.exampleTwo]
 
@@ -145,6 +145,12 @@ struct CardPreviewWrapper: View {
       }
     }
   }
+
+  // MARK: Private
+
+  @State private var path = NavigationPath()
+  @State private var cardWidth: CGFloat?
+
 }
 
 private let columns = [

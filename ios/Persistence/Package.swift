@@ -14,9 +14,13 @@ let package = Package(
       name: "PersistenceTestUtils",
       targets: ["PersistenceTestUtils"]),
   ],
+  dependencies: [
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+  ],
   targets: [
     .target(
       name: "Persistence",
+      dependencies: [.product(name: "VISOR", package: "VISOR")],
       swiftSettings: .defaultSettings),
     .target(
       name: "PersistenceTestUtils",

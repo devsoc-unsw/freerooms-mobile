@@ -6,7 +6,7 @@
 if command -v swiftformat >/dev/null 2>&1
 then
     echo "Running SwiftFormat"
-    swiftformat .
+    (cd "$(git rev-parse --show-toplevel)/ios" && swiftformat .)
 else
     echo "Warning: `swiftformat` command not found - run the command: brew install swiftformat"
 fi
@@ -14,7 +14,7 @@ fi
 if command -v swiftlint >/dev/null 2>&1
 then
     echo "Running SwiftLint"
-    swiftlint
+    (cd "$(git rev-parse --show-toplevel)/ios" && swiftlint --force-exclude)
 else
     echo "Warning: `swiftlint` command not found - run the command: brew install swiftlint"
 fi

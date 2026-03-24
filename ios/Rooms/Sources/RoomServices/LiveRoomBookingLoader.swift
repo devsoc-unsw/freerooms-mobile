@@ -7,6 +7,7 @@
 
 import Foundation
 import RoomModels
+import VISOR
 
 // MARK: - RoomBookingLoaderError
 
@@ -16,6 +17,7 @@ public enum RoomBookingLoaderError: Error {
 
 // MARK: - RoomBookingLoader
 
+@Stubbable
 public protocol RoomBookingLoader {
   func fetch(bookingsOf roomID: String) async -> Result<[RoomBooking], RoomBookingLoaderError>
 }
