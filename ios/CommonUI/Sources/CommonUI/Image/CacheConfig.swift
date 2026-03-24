@@ -5,10 +5,7 @@
 
 public struct CacheConfig {
 
-  // MARK: Public
-
-  public let nsCacheCountLimit: Int
-  public let nsCacheTotalCostLimit: Int
+  // MARK: Lifecycle
 
   public init(
     nsCacheCountLimit: Int = defaultNSCacheCountLimit,
@@ -18,7 +15,12 @@ public struct CacheConfig {
     self.nsCacheTotalCostLimit = nsCacheTotalCostLimit
   }
 
+  // MARK: Public
+
   public static let `default` = CacheConfig()
+
+  public let nsCacheCountLimit: Int
+  public let nsCacheTotalCostLimit: Int
 
   // MARK: Private
 
