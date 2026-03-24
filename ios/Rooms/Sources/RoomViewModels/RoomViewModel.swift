@@ -98,8 +98,6 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getRatingIsLoading = false
 
-  public var getRatingIsLoading = false
-
   /// Bookings for the **last** room that `getRoomBookings(roomId:)` loaded (e.g. detail / list UI).
   public var currentRoomBookings = [RoomBooking]()
 

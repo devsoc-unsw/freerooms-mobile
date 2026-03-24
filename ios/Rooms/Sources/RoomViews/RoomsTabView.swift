@@ -41,121 +41,120 @@ public struct RoomsTabView<Destination: View>: View {
 
   public var body: some View {
     NavigationStack(path: $path) {
-      VStack(spacing: 0) {
-        FilterBar(
-          showingDateFilter: $showingDateFilter,
-          showingRoomTypeFilter: $showingRoomTypeFilter,
-          showingDurationFilter: $showingDurationFilter,
-          showingCampusLocationFilter: $showingCampusLocationFilter,
-          showingCapacityFilter: $showingCapacityFilter)
-
-        // Rooms list
-        roomView
-          .refreshable {
-            Task {
-              await roomViewModel.reloadRooms()
-            }
+      roomView
+        .refreshable {
+          Task {
+            await roomViewModel.reloadRooms()
           }
-          .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
-          .overlay {
-            if roomViewModel.isLoading {
-              VStack(spacing: 12) {
-                ProgressView()
-                  .controlSize(.large)
-                Text("Applying filters...")
-                  .font(.subheadline)
-                  .foregroundStyle(.secondary)
-              }
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-              .background(.ultraThinMaterial)
+        }
+        .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+        .overlay {
+          if roomViewModel.isLoading {
+            VStack(spacing: 12) {
+              ProgressView()
+                .controlSize(.large)
+              Text("Applying filters...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.ultraThinMaterial)
           }
-      }
-      .toolbar {
-        toolbarButtons
-      }
-      .background(Color.gray.opacity(0.1))
-      .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
-      .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
-      .shadow(
-        color: theme.label.primary.opacity(0.2),
-        radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
-      .navigationDestination(for: Room.self) { room in
-        roomDestinationBuilderView(room)
-      }
-      .task {
-        if !roomViewModel.hasLoaded {
-          await roomViewModel.onAppear()
         }
-      }
-      .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
-        Alert(
-          title: Text(error.title),
-          message: Text(error.message),
-          dismissButton: .default(Text("OK")))
-      }
-      .navigationTitle("Rooms")
-      .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
-      .sheet(isPresented: $showingDateFilter) {
-        DateFilterView(
-          selectedDate: $roomViewModel.selectedDate)
-        {
-          showingDateFilter = false
-          roomViewModel.applyFilters()
-          let vm = roomViewModel
-          Task { await vm.loadBookingsForFilteredRooms() }
+        .safeAreaInset(edge: .top, spacing: 0) {
+          FilterBar(
+            showingDateFilter: $showingDateFilter,
+            showingRoomTypeFilter: $showingRoomTypeFilter,
+            showingDurationFilter: $showingDurationFilter,
+            showingCampusLocationFilter: $showingCampusLocationFilter,
+            showingCapacityFilter: $showingCapacityFilter)
+            .background(Color(.systemBackground))
         }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.8)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingRoomTypeFilter) {
-        RoomTypeFilterView(
-          selectedRoomTypes: $roomViewModel.selectedRoomTypes)
-        {
-          showingRoomTypeFilter = false
-          roomViewModel.applyFilters()
+        .toolbar {
+          toolbarButtons
         }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.6)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingDurationFilter) {
-        DurationFilterView(onSelect: {
-          showingDurationFilter = false
-          roomViewModel.applyFilters()
-        })
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.35), .medium])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingCampusLocationFilter) {
-        CampusLocationFilterView(
-          selectedCampusLocation: $roomViewModel.selectedCampusLocation)
-        {
-          showingCampusLocationFilter = false
-          roomViewModel.applyFilters()
+        .background(Color.gray.opacity(0.1))
+        .listRowInsets(EdgeInsets()) // Removes the large default padding around a list
+        .scrollContentBackground(.hidden) // Hides default grey background of the list to allow shadow to appear correctly under section cards
+        .shadow(
+          color: theme.label.primary.opacity(0.2),
+          radius: 5) // Adds a shadow to section cards (and also the section header but thankfully it's not noticeable)
+        .navigationDestination(for: Room.self) { room in
+          roomDestinationBuilderView(room)
         }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.45)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingCapacityFilter) {
-        CapacityFilterView(
-          selectedCapacity: $roomViewModel.selectedCapacity)
-        {
-          showingCapacityFilter = false
-          roomViewModel.applyFilters()
+        .task {
+          if !roomViewModel.hasLoaded {
+            await roomViewModel.onAppear()
+          }
         }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.55)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
+        .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
+          Alert(
+            title: Text(error.title),
+            message: Text(error.message),
+            dismissButton: .default(Text("OK")))
+        }
+        .navigationTitle("Rooms")
+        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+        .sheet(isPresented: $showingDateFilter) {
+          DateFilterView(
+            selectedDate: $roomViewModel.selectedDate)
+          {
+            showingDateFilter = false
+            roomViewModel.applyFilters()
+            let vm = roomViewModel
+            Task { await vm.loadBookingsForFilteredRooms() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.8)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+        .sheet(isPresented: $showingRoomTypeFilter) {
+          RoomTypeFilterView(
+            selectedRoomTypes: $roomViewModel.selectedRoomTypes)
+          {
+            showingRoomTypeFilter = false
+            roomViewModel.applyFilters()
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.6)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+        .sheet(isPresented: $showingDurationFilter) {
+          DurationFilterView(onSelect: {
+            showingDurationFilter = false
+            roomViewModel.applyFilters()
+          })
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.35), .medium])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+        .sheet(isPresented: $showingCampusLocationFilter) {
+          CampusLocationFilterView(
+            selectedCampusLocation: $roomViewModel.selectedCampusLocation)
+          {
+            showingCampusLocationFilter = false
+            roomViewModel.applyFilters()
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.45)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+        .sheet(isPresented: $showingCapacityFilter) {
+          CapacityFilterView(
+            selectedCapacity: $roomViewModel.selectedCapacity)
+          {
+            showingCapacityFilter = false
+            roomViewModel.applyFilters()
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.55)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
     }
     .environment(roomViewModel)
     .tabItem {

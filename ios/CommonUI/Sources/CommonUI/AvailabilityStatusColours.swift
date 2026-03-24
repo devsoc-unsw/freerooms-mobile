@@ -61,8 +61,8 @@ extension Room {
   {
     if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
       return isFree
-        ? Theme.light.list.greenTransparent.opacity(0.15)
-        : Theme.light.list.redTransparent.opacity(0.54)
+        ? Theme.light.list.greenBackground.opacity(0.15)
+        : Theme.light.list.redBackground.opacity(0.54)
     }
     return statusBackgroundColor
   }
