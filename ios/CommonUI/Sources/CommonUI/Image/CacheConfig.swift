@@ -5,13 +5,23 @@
 
 public struct CacheConfig {
 
-  public let countLimit: Int
-  public let totalCostLimit: Int
+  // MARK: Public
 
-  public init(countLimit: Int = 50, totalCostLimit: Int = 50 * 1024 * 1024) {
-    self.countLimit = countLimit
-    self.totalCostLimit = totalCostLimit
+  public let nsCacheCountLimit: Int
+  public let nsCacheTotalCostLimit: Int
+
+  public init(
+    nsCacheCountLimit: Int = defaultNSCacheCountLimit,
+    nsCacheTotalCostLimit: Int = defaultNSCacheTotalCostLimit)
+  {
+    self.nsCacheCountLimit = nsCacheCountLimit
+    self.nsCacheTotalCostLimit = nsCacheTotalCostLimit
   }
 
   public static let `default` = CacheConfig()
+
+  // MARK: Private
+
+  private static let defaultNSCacheCountLimit = 50
+  private static let defaultNSCacheTotalCostLimit = 50 * 1024 * 1024 // 50 MB
 }

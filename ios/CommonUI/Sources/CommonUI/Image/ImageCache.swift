@@ -38,7 +38,8 @@ import UIKit
 /// ## Memory budget
 ///
 /// Default limits via `CacheConfig.default`: 50 items / 50 MB.
-/// Approximate per-thumbnail costs:
+/// Approximate per-thumbnail costs (uncompressed bitmap: width × height × 4 bytes/pixel,
+/// independent of source format — JPEG, HEIC, etc. decompress to the same bitmap size):
 /// - `.small` (200px):  ~120 KB
 /// - `.medium` (400px): ~480 KB
 /// - `.large` (1000px): ~3 MB
@@ -54,8 +55,8 @@ public final class ImageCache {
   ///
   /// - Parameter config: Cache limits. Defaults to `CacheConfig.default`.
   init(config: CacheConfig = .default) {
-    cache.countLimit = config.countLimit
-    cache.totalCostLimit = config.totalCostLimit
+    cache.countLimit = config.nsCacheCountLimit
+    cache.totalCostLimit = config.nsCacheTotalCostLimit
   }
 
   // MARK: Public
