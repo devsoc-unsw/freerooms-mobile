@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - GenericCardView
 
-public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName & HasRating>: View {
+public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName & HasRating, ImageContent: View>: View {
 
   // MARK: Lifecycle
 
@@ -22,7 +22,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     item: T,
     items: [T],
     isLoading: Bool,
-    imageProvider: @escaping (T.ID) -> Image)
+    imageProvider: @escaping (T.ID) -> ImageContent)
   {
     _path = path
     _cardWidth = cardWidth
@@ -40,7 +40,6 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     } label: {
       VStack(spacing: 0) {
         imageProvider(item.id)
-          .resizable()
           .scaledToFill()
           .frame(width: cardWidth, height: 116)
           .clipped()
@@ -76,7 +75,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
 
   let item: T
   let items: [T]
-  let imageProvider: (T.ID) -> Image
+  let imageProvider: (T.ID) -> ImageContent
   let isLoading: Bool
 
   var index: Int {
@@ -85,14 +84,14 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
 
 }
 
-extension GenericCardView where T == Building {
+extension GenericCardView where T == Building, ImageContent == CachedImage {
   public init(
     path: Binding<NavigationPath>,
     cardWidth: Binding<CGFloat?>,
     building: Building,
     buildings: [Building],
     isLoading: Bool,
-    imageProvider: @escaping (Building.ID) -> Image)
+    imageProvider: @escaping (Building.ID) -> CachedImage)
   {
     _path = path
     _cardWidth = cardWidth
@@ -103,14 +102,14 @@ extension GenericCardView where T == Building {
   }
 }
 
-extension GenericCardView where T == Room {
+extension GenericCardView where T == Room, ImageContent == CachedImage {
   public init(
     path: Binding<NavigationPath>,
     cardWidth: Binding<CGFloat?>,
     room: Room,
     rooms: [Room],
     isLoading: Bool,
-    imageProvider: @escaping (Room.ID) -> Image)
+    imageProvider: @escaping (Room.ID) -> CachedImage)
   {
     _path = path
     _cardWidth = cardWidth
@@ -139,7 +138,7 @@ struct CardPreviewWrapper: View {
           rooms: rooms,
           isLoading: true,
           imageProvider: { roomID in
-            Image(roomID, bundle: .module)
+            CachedImage(name: roomID, bundle: .module)
           })
       }
     }

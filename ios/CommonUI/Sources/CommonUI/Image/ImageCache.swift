@@ -48,10 +48,7 @@ import UIKit
 /// also purges automatically under system memory pressure.
 public final class ImageCache {
 
-  /// Shared singleton using `CacheConfig.default` limits (50 items / 50 MB).
-  public static let shared = ImageCache()
-
-  private let cache = NSCache<NSString, UIImage>()
+  // MARK: Lifecycle
 
   /// Creates a cache with the given configuration.
   ///
@@ -60,6 +57,11 @@ public final class ImageCache {
     cache.countLimit = config.countLimit
     cache.totalCostLimit = config.totalCostLimit
   }
+
+  // MARK: Public
+
+  /// Shared singleton using `CacheConfig.default` limits (50 items / 50 MB).
+  public static let shared = ImageCache()
 
   /// Loads an image from the asset catalog, downsamples it, and caches the result.
   ///
@@ -91,11 +93,12 @@ public final class ImageCache {
     }
 
     let aspectRatio = original.size.width / original.size.height
-    let thumbnailSize: CGSize = if aspectRatio > 1 {
-      CGSize(width: maxPixelSize, height: maxPixelSize / aspectRatio)
-    } else {
-      CGSize(width: maxPixelSize * aspectRatio, height: maxPixelSize)
-    }
+    let thumbnailSize: CGSize =
+      if aspectRatio > 1 {
+        CGSize(width: maxPixelSize, height: maxPixelSize / aspectRatio)
+      } else {
+        CGSize(width: maxPixelSize * aspectRatio, height: maxPixelSize)
+      }
 
     guard let thumbnail = original.preparingThumbnail(of: thumbnailSize) else {
       return original
@@ -114,4 +117,9 @@ public final class ImageCache {
   public func clearCache() {
     cache.removeAllObjects()
   }
+
+  // MARK: Private
+
+  private let cache = NSCache<NSString, UIImage>()
+
 }

@@ -25,8 +25,7 @@ public struct RoomDetailsView: View {
 
   public var body: some View {
     VStack(spacing: 0) {
-      RoomImage[room.id]
-        .resizable()
+      RoomImage[room.id, .large]
         .scaledToFill()
         .frame(height: screenHeight * 0.4)
         .clipped()
