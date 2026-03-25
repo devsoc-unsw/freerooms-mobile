@@ -23,13 +23,31 @@ struct RoomBookingCardView: View {
 
   // MARK: Internal
 
+  var topRadius: CGFloat {
+    if (start.hour ?? 0) < 9 {
+      0
+    } else if isSmallBooking {
+      10
+    } else {
+      15
+    }
+  }
+
+  var bottomRadius: CGFloat {
+    if isSmallBooking {
+      10
+    } else {
+      15
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       UnevenRoundedRectangle(
-        topLeadingRadius: isSmallBooking ? 10 : 15,
-        bottomLeadingRadius: isSmallBooking ? 10 : 15,
-        bottomTrailingRadius: isSmallBooking ? 10 : 15,
-        topTrailingRadius: isSmallBooking ? 10 : 15)
+        topLeadingRadius: topRadius,
+        bottomLeadingRadius: bottomRadius,
+        bottomTrailingRadius: bottomRadius,
+        topTrailingRadius: topRadius)
         .fill(theme.accent.primary)
 
       VStack(alignment: .leading, spacing: 2 * (isSmallBooking ? 0.5 : numberTimeSlots)) {
