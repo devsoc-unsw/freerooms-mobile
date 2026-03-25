@@ -296,99 +296,165 @@ enum RoomInteractorTests {
     @Test("Returns rooms filtered by minimum 30 minutes")
     func returnsRoomsFilteredBy30MinutesOrMore() async {
       // Given
+      let now = Date()
       let expectedRooms = createDifferentRooms()
       let roomBookings = createRoomBookingsFromStartToEnd(
         1,
-        from: Date().addingTimeInterval(40 * 60),
-        to: Date().addingTimeInterval(60 * 60))
+        from: now.addingTimeInterval(40 * 60),
+        to: now.addingTimeInterval(60 * 60))
       let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = sut.getRoomsFilteredByDuration(
+        for: 30,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: now)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print("Booking loader result: \(actualResult)")
-
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result == expectedRooms)
     }
 
     @Test("Returns rooms filtered by minimum 30 minutes with one room booked during current time")
     func returnsRoomsFilteredBy30MinutesOrMorDuringCurrentTime() async {
       // Given
+      let now = Date()
       let expectedRooms = createDifferentRooms()
       let roomBookings = createRoomBookingsFromStartToEnd(
         1,
-        from: Date(),
-        to: Date().addingTimeInterval(30 * 60))
+        from: now,
+        to: now.addingTimeInterval(30 * 60))
       let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = sut.getRoomsFilteredByDuration(
+        for: 30,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: now)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms.filter { $0.id != "K-G6-105" })
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print("Booking loader result: \(actualResult)")
-
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result == expectedRooms.filter { $0.id != "K-G6-105" })
     }
 
     @Test("Returns rooms filtered by minimum 1 hour")
     func returnsRoomsFilteredByOneHourOrMore() async {
       // Given
+      let now = Date()
       let expectedRooms = createDifferentRooms()
       let roomBookings = createRoomBookingsFromStartToEnd(
         1,
-        from: Date().addingTimeInterval(70 * 60),
-        to: Date().addingTimeInterval(90 * 60))
+        from: now.addingTimeInterval(70 * 60),
+        to: now.addingTimeInterval(90 * 60))
       let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 60, roomBookings: roomBookingsMapped)
+      let result = sut.getRoomsFilteredByDuration(
+        for: 60,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: now)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result == expectedRooms)
     }
 
     @Test("Returns rooms filtered by minimum 2 hour")
     func returnsRoomsFilteredByTwoHoursOrMore() async {
       // Given
+      let now = Date()
       let expectedRooms = createDifferentRooms()
       let roomBookings = createRoomBookingsFromStartToEnd(
         1,
-        from: Date().addingTimeInterval(130 * 60),
-        to: Date().addingTimeInterval(150 * 60))
+        from: now.addingTimeInterval(130 * 60),
+        to: now.addingTimeInterval(150 * 60))
       let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 120, roomBookings: roomBookingsMapped)
+      let result = sut.getRoomsFilteredByDuration(
+        for: 120,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: now)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result == expectedRooms)
+    }
+
+    @Test("8am with 9am booking: 30 min duration keeps all rooms available")
+    func eightAmWithNineAmBookingThirtyMinIncludesAllRooms() async {
+      var calendar = Calendar(identifier: .gregorian)
+      calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+      let eightAM = calendar.date(from: DateComponents(year: 2026, month: 6, day: 15, hour: 8, minute: 0))!
+      let nineAM = calendar.date(byAdding: .hour, value: 1, to: eightAM)!
+      let tenAM = calendar.date(byAdding: .hour, value: 2, to: eightAM)!
+
+      let expectedRooms = createDifferentRooms()
+      let roomBookings = createRoomBookingsFromStartToEnd(1, from: nineAM, to: tenAM)
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
+      let sut = makeRoomSUT(expect: expectedRooms)
+
+      let result = sut.getRoomsFilteredByDuration(
+        for: 30,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: eightAM)
+
+      #expect(result == expectedRooms)
+    }
+
+    @Test("8am with 9am booking: 90 min duration excludes booked room")
+    func eightAmWithNineAmBookingNinetyMinExcludesBookedRoom() async {
+      var calendar = Calendar(identifier: .gregorian)
+      calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+      let eightAM = calendar.date(from: DateComponents(year: 2026, month: 6, day: 15, hour: 8, minute: 0))!
+      let nineAM = calendar.date(byAdding: .hour, value: 1, to: eightAM)!
+      let tenAM = calendar.date(byAdding: .hour, value: 2, to: eightAM)!
+
+      let expectedRooms = createDifferentRooms()
+      let roomBookings = createRoomBookingsFromStartToEnd(1, from: nineAM, to: tenAM)
+      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
+      let sut = makeRoomSUT(expect: expectedRooms)
+
+      let result = sut.getRoomsFilteredByDuration(
+        for: 90,
+        roomBookings: roomBookingsMapped,
+        rooms: expectedRooms,
+        now: eightAM)
+
+      #expect(result == expectedRooms.filter { $0.id != "K-G6-105" })
+    }
+  }
+
+  struct RoomFilterReferenceInstant {
+    @Test("filteringReferenceInstant uses selectedDate when it differs from DateDefaults")
+    func filteringReferenceInstantUsesCustomSelectedDate() {
+      let savedDefault = DateDefaults.selectedDate
+      defer { DateDefaults.selectedDate = savedDefault }
+
+      let baseline = Date(timeIntervalSince1970: 1_700_000_000)
+      DateDefaults.selectedDate = baseline
+      let custom = baseline.addingTimeInterval(3_600)
+      let filter = RoomFilter(selectedDate: custom)
+
+      #expect(filter.filteringReferenceInstant(clockNow: Date()) == custom)
+    }
+
+    @Test("filteringReferenceInstant uses clock when selectedDate matches DateDefaults")
+    func filteringReferenceInstantUsesClockWhenDateIsDefault() {
+      let savedDefault = DateDefaults.selectedDate
+      defer { DateDefaults.selectedDate = savedDefault }
+
+      let baseline = Date(timeIntervalSince1970: 1_700_000_000)
+      DateDefaults.selectedDate = baseline
+      let clock = baseline.addingTimeInterval(123)
+      let filter = RoomFilter(selectedDate: baseline)
+
+      #expect(filter.filteringReferenceInstant(clockNow: clock) == clock)
     }
   }
 }

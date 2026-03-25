@@ -8,6 +8,7 @@
 import BuildingModels
 import Combine
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - GenericCardView
@@ -157,6 +158,8 @@ private let columns = [
 ]
 
 #Preview {
-  CardPreviewWrapper()
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return CardPreviewWrapper()
     .defaultTheme()
+    .environment(viewModel)
 }

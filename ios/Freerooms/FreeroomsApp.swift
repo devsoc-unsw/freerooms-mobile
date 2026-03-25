@@ -54,6 +54,9 @@ struct FreeroomsApp: App {
         .environment(\.buildingViewModel, buildingViewModel)
         .environment(\.mapViewModel, mapViewModel)
         .environment(\.roomViewModel, roomViewModel)
+        .environment(buildingViewModel)
+        .environment(mapViewModel)
+        .environment(roomViewModel)
     }
   }
 
