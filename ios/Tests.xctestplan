@@ -42,13 +42,6 @@
     },
     {
       "target" : {
-        "containerPath" : "container:",
-        "identifier" : "BuildingsTests",
-        "name" : "BuildingsTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:..\/Rooms",
         "identifier" : "RoomsTests",
         "name" : "RoomsTests"
