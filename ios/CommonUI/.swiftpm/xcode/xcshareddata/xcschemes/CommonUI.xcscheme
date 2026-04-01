@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1640"
+   LastUpgradeVersion = "2640"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96F9AFC92D9BCC1200671174"
-               BuildableName = "Freerooms.app"
-               BlueprintName = "Freerooms"
-               ReferencedContainer = "container:Freerooms.xcodeproj">
+               BlueprintIdentifier = "CommonUI"
+               BuildableName = "CommonUI"
+               BlueprintName = "CommonUI"
+               ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -39,17 +39,8 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96F9AFC92D9BCC1200671174"
-            BuildableName = "Freerooms.app"
-            BlueprintName = "Freerooms"
-            ReferencedContainer = "container:Freerooms.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
+      allowLocationSimulation = "YES"
+      queueDebuggingEnableBacktraceRecording = "Yes">
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -57,16 +48,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "96F9AFC92D9BCC1200671174"
-            BuildableName = "Freerooms.app"
-            BlueprintName = "Freerooms"
-            ReferencedContainer = "container:Freerooms.xcodeproj">
+            BlueprintIdentifier = "CommonUI"
+            BuildableName = "CommonUI"
+            BlueprintName = "CommonUI"
+            ReferencedContainer = "container:">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -7,13 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */ = {isa = PBXBuildFile; productRef = 30FB13AB2E1CDFAE0089793E /* Rooms */; };
-		4245BD272F6D6B0C0078BCD4 /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 4245BD262F6D6B0C0078BCD4 /* VISOR */; };
-		96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */ = {isa = PBXBuildFile; productRef = 96D65EDE2DA39EA30060D06B /* Buildings */; };
-		96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 96DE0C312DFBD4C200C77DD5 /* CommonUI */; };
+		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
+		546D1A982F7AACB9000667BC /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A972F7AACB9000667BC /* CommonUI */; };
+		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
+		546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA72F7AAD87000667BC /* RoomViews */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		54972F1D2F7D030900538E99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96F9AFC22D9BCC1200671174 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96F9AFC92D9BCC1200671174;
+			remoteInfo = Freerooms;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		54972F192F7D030900538E99 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		855865392DC3E3CA00FD9A1D /* Persistence */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Persistence; sourceTree = "<group>"; };
 		960DCBC32DB76060003D848F /* Location */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Location; sourceTree = "<group>"; };
 		96D65EDC2DA39DDA0060D06B /* Buildings */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Buildings; sourceTree = "<group>"; };
@@ -22,7 +33,6 @@
 		96DE0C302DFBD45C00C77DD5 /* CommonUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CommonUI; sourceTree = "<group>"; };
 		96F9AFCA2D9BCC1200671174 /* Freerooms.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freerooms.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96FF8A022E0025E500BC4365 /* Rooms */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Rooms; sourceTree = "<group>"; };
-		C06998882DC35B05008A72FF /* Tests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,14 +57,21 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		54972F162F7D030900538E99 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96F9AFC72D9BCC1200671174 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4245BD272F6D6B0C0078BCD4 /* VISOR in Frameworks */,
-				30FB13AC2E1CDFAE0089793E /* Rooms in Frameworks */,
-				96D65EDF2DA39EA30060D06B /* Buildings in Frameworks */,
-				96DE0C322DFBD4C200C77DD5 /* CommonUI in Frameworks */,
+				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
+				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
+				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
+				546D1A982F7AACB9000667BC /* CommonUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +95,6 @@
 		96F9AFC12D9BCC1200671174 = {
 			isa = PBXGroup;
 			children = (
-				C06998882DC35B05008A72FF /* Tests.xctestplan */,
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
@@ -91,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				96F9AFCA2D9BCC1200671174 /* Freerooms.app */,
+				54972F192F7D030900538E99 /* Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +115,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		54972F182F7D030900538E99 /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 54972F1F2F7D030900538E99 /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				54972F152F7D030900538E99 /* Sources */,
+				54972F162F7D030900538E99 /* Frameworks */,
+				54972F172F7D030900538E99 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				54972F1E2F7D030900538E99 /* PBXTargetDependency */,
+			);
+			name = Tests;
+			packageProductDependencies = (
+			);
+			productName = Tests;
+			productReference = 54972F192F7D030900538E99 /* Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		96F9AFC92D9BCC1200671174 /* Freerooms */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 96F9AFD92D9BCC1600671174 /* Build configuration list for PBXNativeTarget "Freerooms" */;
@@ -116,10 +153,10 @@
 			);
 			name = Freerooms;
 			packageProductDependencies = (
-				96D65EDE2DA39EA30060D06B /* Buildings */,
-				96DE0C312DFBD4C200C77DD5 /* CommonUI */,
-				30FB13AB2E1CDFAE0089793E /* Rooms */,
-				4245BD262F6D6B0C0078BCD4 /* VISOR */,
+				546D1A942F7AACA2000667BC /* VISOR */,
+				546D1A972F7AACB9000667BC /* CommonUI */,
+				546D1AA52F7AAD87000667BC /* RoomViewModels */,
+				546D1AA72F7AAD87000667BC /* RoomViews */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -132,9 +169,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					54972F182F7D030900538E99 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 96F9AFC92D9BCC1200671174;
+					};
 					96F9AFC92D9BCC1200671174 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -150,8 +191,10 @@
 			mainGroup = 96F9AFC12D9BCC1200671174;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */,
-				4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */,
+				546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */,
+				546D1A962F7AACB9000667BC /* XCLocalSwiftPackageReference "../CommonUI" */,
+				546D1A992F7AAD16000667BC /* XCLocalSwiftPackageReference "../Buildings" */,
+				546D1AA42F7AAD87000667BC /* XCLocalSwiftPackageReference "../Rooms" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -159,11 +202,19 @@
 			projectRoot = "";
 			targets = (
 				96F9AFC92D9BCC1200671174 /* Freerooms */,
+				54972F182F7D030900538E99 /* Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		54972F172F7D030900538E99 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96F9AFC82D9BCC1200671174 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -195,6 +246,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		54972F152F7D030900538E99 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		96F9AFC62D9BCC1200671174 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -204,7 +262,64 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		54972F1E2F7D030900538E99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96F9AFC92D9BCC1200671174 /* Freerooms */;
+			targetProxy = 54972F1D2F7D030900538E99 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		54972F202F7D030900538E99 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = VPNR8289C6;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freerooms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Freerooms";
+			};
+			name = Debug;
+		};
+		54972F212F7D030900538E99 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = VPNR8289C6;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.devsoc.Freerooms.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freerooms.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Freerooms";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		96F9AFD72D9BCC1600671174 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -418,6 +533,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		54972F1F2F7D030900538E99 /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				54972F202F7D030900538E99 /* Debug */,
+				54972F212F7D030900538E99 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		96F9AFC52D9BCC1200671174 /* Build configuration list for PBXProject "Freerooms" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -439,16 +563,24 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */ = {
+		546D1A962F7AACB9000667BC /* XCLocalSwiftPackageReference "../CommonUI" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = Rooms;
+			relativePath = ../CommonUI;
+		};
+		546D1A992F7AAD16000667BC /* XCLocalSwiftPackageReference "../Buildings" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Buildings;
+		};
+		546D1AA42F7AAD87000667BC /* XCLocalSwiftPackageReference "../Rooms" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Rooms;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */ = {
+		546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/avdn-dev/VISOR";
+			repositoryURL = "https://github.com/avdn-dev/VISOR.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 8.0.0;
@@ -457,22 +589,22 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
+		546D1A942F7AACA2000667BC /* VISOR */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Rooms;
-		};
-		4245BD262F6D6B0C0078BCD4 /* VISOR */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4245BD252F6D6B0C0078BCD4 /* XCRemoteSwiftPackageReference "VISOR" */;
+			package = 546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */;
 			productName = VISOR;
 		};
-		96D65EDE2DA39EA30060D06B /* Buildings */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Buildings;
-		};
-		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
+		546D1A972F7AACB9000667BC /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CommonUI;
+		};
+		546D1AA52F7AAD87000667BC /* RoomViewModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RoomViewModels;
+		};
+		546D1AA72F7AAD87000667BC /* RoomViews */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RoomViews;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
