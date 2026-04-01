@@ -27,7 +27,7 @@ public final class SwiftDataStore<Model: PersistentModel & IdentifiableModel>: P
   // MARK: Public
 
   public func deleteAll() throws {
-      try modelContext.delete(model: Self.Model.self)
+    try modelContext.delete(model: Self.Model.self)
   }
 
   /// Saves a single item to the persistent store.
