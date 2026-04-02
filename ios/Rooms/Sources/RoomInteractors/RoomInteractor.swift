@@ -136,11 +136,11 @@ public class RoomInteractor {
   }
 
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
-		switch await roomService.getRooms() {
+    switch await roomService.getRooms() {
     case .success(let rooms):
       var result = [String: [Room]]()
       for room in rooms {
-				result[room.buildingId, default: []].append(room)
+        result[room.buildingId, default: []].append(room)
       }
       return .success(result)
 
