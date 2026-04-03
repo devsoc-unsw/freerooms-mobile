@@ -73,6 +73,9 @@ public struct MapTabView: View {
         mapViewModel.updateMapHeading(context.camera.heading)
       }
       .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
+      .mapControls {
+        // Specifying no map controls removes the compass
+      }
       .bottomSheet(
         bottomSheetPosition: $mapViewModel.bottomSheetPosition,
         switchablePositions: [SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
