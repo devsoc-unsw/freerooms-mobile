@@ -13,12 +13,35 @@ import SwiftUI
 struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
-
+  @State private var scrollID: Int? = 1
+  
   public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, onDismiss: (() -> Void)? = nil) {
     self.dateSelect = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
     self.onDismiss = onDismiss
+  }
+  
+  var previousDateBinding: Binding<Date> {
+      Binding(
+          get: {
+            dateSelect - .day
+          },
+          set: { newPreviousDate in
+            dateSelect = newPreviousDate + .day
+          }
+      )
+  }
+  
+  var nextDateBinding: Binding<Date> {
+      Binding(
+          get: {
+            dateSelect + .day
+          },
+          set: { newPreviousDate in
+            dateSelect = newPreviousDate - .day
+          }
+      )
   }
 
   // MARK: Internal
@@ -48,13 +71,56 @@ struct RoomDetailsSheetView: View {
         }
 
         // Booking Grid
-        ScrollView {
-          RoomBookingsListView(
-            room: room,
-            roomViewModel: roomViewModel,
-            dateSelect: $dateSelect)
+        if #available(iOS 18.0, *) {
+          ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 0) {
+                RoomBookingsListView(
+                  room: room,
+                  roomViewModel: roomViewModel,
+                  dateSelect: previousDateBinding
+                )
+                .containerRelativeFrame(.horizontal)
+                .id(0)
+
+                RoomBookingsListView(
+                  room: room,
+                  roomViewModel: roomViewModel,
+                  dateSelect: $dateSelect
+                )
+                .containerRelativeFrame(.horizontal)
+                .id(1)
+
+                RoomBookingsListView(
+                  room: room,
+                  roomViewModel: roomViewModel,
+                  dateSelect: nextDateBinding
+                )
+                .containerRelativeFrame(.horizontal)
+                .id(2)
+              }
+            .scrollTargetLayout()
+          }
+          .scrollTargetBehavior(.viewAligned)
+          .scrollPosition(id: $scrollID)
+          .onScrollPhaseChange { oldPhase, newPhase in
+              if newPhase == .idle && (scrollID == 2 || scrollID == 0) {
+                if scrollID == 2 {
+                  dateSelect += .day
+                } else if scrollID == 0 {
+                  dateSelect -= .day
+                }
+                  scrollID = 1
+              }
+          }
+        } else {
+          ScrollView {
+            RoomBookingsListView(
+              room: room,
+              roomViewModel: roomViewModel,
+              dateSelect: $dateSelect)
+          }
         }
-      }
+        }
       .padding()
       .overlay(
         RoundedRectangle(cornerRadius: 12)
@@ -93,4 +159,8 @@ struct RoomDetailsSheetView: View {
 #Preview {
   RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
     .defaultTheme()
+}
+
+extension Double {
+  static let day: Double = 86_400
 }
