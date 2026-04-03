@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Freerooms/Freerooms.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Buildings">
+   </FileRef>
+   <FileRef
+      location = "group:CommonUI">
+   </FileRef>
+   <FileRef
+      location = "group:Location">
+   </FileRef>
+   <FileRef
+      location = "group:Networking">
+   </FileRef>
+   <FileRef
+      location = "group:Persistence">
+   </FileRef>
+   <FileRef
+      location = "group:Rooms">
+   </FileRef>
+   <FileRef
+      location = "group:TestingSupport">
+   </FileRef>
+   <FileRef
+      location = "group:Tests.xctestplan">
+   </FileRef>
+   <FileRef
+      location = "group:LICENSE">
+   </FileRef>
+   <FileRef
+      location = "group:README.md">
+   </FileRef>
+</Workspace>
