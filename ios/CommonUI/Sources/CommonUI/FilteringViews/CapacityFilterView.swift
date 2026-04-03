@@ -25,7 +25,7 @@ public struct CapacityFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 30) {
+    VStack(spacing: 15) {
       // Title
       Text("Capacity")
         .font(.title2)
@@ -59,26 +59,13 @@ public struct CapacityFilterView: View {
         }
       }
 
-      Button(role: .cancel, action: {
-        roomViewModel.clearCapacityFilter()
-        onSelect()
-      }) {
-        Text("Clear minimum capacity")
-          .font(.body)
-          .fontWeight(.medium)
-          .frame(maxWidth: .infinity)
-          .frame(height: 44)
-      }
+      ClearButton(filterName: "Minimum Capacity", clearFilter: roomViewModel.clearCapacityFilter, onSelect: onSelect)
 
-      // Select button
       SelectButton(onSelect: onSelect)
     }
     .padding(.horizontal, 20)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
-//    .onChange(of: capacityText) { _, newValue in
-//      selectedCapacity = newValue
-//    }
   }
 
   // MARK: Private

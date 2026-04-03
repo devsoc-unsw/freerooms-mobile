@@ -26,7 +26,7 @@ public struct CampusLocationFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: 15) {
       // Title
       Text("Campus Location")
         .font(.title2)
@@ -45,16 +45,7 @@ public struct CampusLocationFilterView: View {
         }
       }
 
-      Button(role: .cancel, action: {
-        roomViewModel.clearCampusLocationFilter()
-        onSelect()
-      }) {
-        Text("Any campus")
-          .font(.body)
-          .fontWeight(.medium)
-          .frame(maxWidth: .infinity)
-          .frame(height: 44)
-      }
+      ClearButton(filterName: "Campus", clearFilter: roomViewModel.clearCampusLocationFilter, onSelect: onSelect)
 
       SelectButton(onSelect: onSelect)
     }

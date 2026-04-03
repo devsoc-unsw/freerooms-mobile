@@ -97,13 +97,13 @@ public enum Duration: Int, CaseIterable, Identifiable {
   public var displayName: String {
     switch self {
     case .thirtyMinutes:
-      "30 Mins"
+      "30m"
     case .oneHour:
-      "1 Hour"
+      "1h"
     case .twoHours:
-      "2 Hours"
+      "2h"
     case .threeHours:
-      "3 Hours"
+      "3h"
     }
   }
 }

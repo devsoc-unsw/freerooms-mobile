@@ -22,7 +22,7 @@ public struct DurationFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: 15) {
       Text("Duration")
         .font(.title2)
         .fontWeight(.bold)
@@ -31,38 +31,14 @@ public struct DurationFilterView: View {
       Picker("Duration", selection: $selectedDuration) {
         ForEach(Duration.allCases, id: \.self) { duration in
           Text(duration.displayName)
-            .font(.title)
         }
       }
       .pickerStyle(.segmented)
-      .scaleEffect(x: 1.0, y: 1.4)
       .frame(height: 44 * 1.4)
 
-      Button(role: .cancel, action: {
-        roomViewModel.clearDurationFilter()
-        onSelect()
-      }) {
-        Text("Clear duration")
-          .font(.body)
-          .fontWeight(.medium)
-          .frame(maxWidth: .infinity)
-          .frame(height: 44)
-      }
+      ClearButton(filterName: "Duration", clearFilter: roomViewModel.clearDurationFilter, onSelect: onSelect)
 
-      Button(action: {
-        // Only apply the selection when user clicks Select
-        roomViewModel.selectedDuration = selectedDuration
-        onSelect()
-      }) {
-        Text("Select")
-          .font(.title3)
-          .bold()
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .frame(height: 50)
-          .background(theme.accent.primary)
-          .cornerRadius(20)
-      }
+      SelectButton(onSelect: onSelect)
     }
     .padding(.horizontal, 20)
     .padding(.top, FilterSheetLayout.contentTopPadding)
@@ -76,7 +52,6 @@ public struct DurationFilterView: View {
   // MARK: Private
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
-  @Environment(Theme.self) private var theme
   @State private var selectedDuration = Duration.oneHour
 
   private let onSelect: () -> Void

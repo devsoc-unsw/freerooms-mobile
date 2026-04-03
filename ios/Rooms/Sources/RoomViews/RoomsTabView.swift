@@ -192,7 +192,7 @@ public struct RoomsTabView<Destination: View>: View {
           VStack(spacing: 12) {
             ProgressView()
               .controlSize(.large)
-            Text("Applying filters...")
+            Text(roomViewModel.isLoading ? "Loading rooms..." : "Applying filters...")
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -254,7 +254,7 @@ public struct RoomsTabView<Destination: View>: View {
           roomViewModel.applyFilters()
         }
         .environment(roomViewModel)
-        .presentationDetents([.fraction(0.6)])
+        .presentationDetents([.fraction(0.52)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
       }
@@ -264,7 +264,7 @@ public struct RoomsTabView<Destination: View>: View {
           roomViewModel.applyFilters()
         })
         .environment(roomViewModel)
-        .presentationDetents([.fraction(0.35), .medium])
+        .presentationDetents([.fraction(0.32)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
       }
@@ -274,7 +274,7 @@ public struct RoomsTabView<Destination: View>: View {
           roomViewModel.applyFilters()
         }
         .environment(roomViewModel)
-        .presentationDetents([.fraction(0.45)])
+        .presentationDetents([.fraction(0.44)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
       }
@@ -284,7 +284,7 @@ public struct RoomsTabView<Destination: View>: View {
           roomViewModel.applyFilters()
         }
         .environment(roomViewModel)
-        .presentationDetents([.fraction(0.55)])
+        .presentationDetents([.fraction(0.47)])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color(.systemBackground))
       }

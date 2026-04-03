@@ -25,7 +25,7 @@ public struct DateFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: 15) {
       // Title
       Text("Date")
         .font(.title2)
@@ -57,16 +57,7 @@ public struct DateFilterView: View {
           .labelsHidden()
       }
 
-      Button(role: .cancel, action: {
-        roomViewModel.clearDateFilter()
-        onSelect()
-      }) {
-        Text("Use current date & time")
-          .font(.body)
-          .fontWeight(.medium)
-          .frame(maxWidth: .infinity)
-          .frame(height: 44)
-      }
+      ClearButton(filterName: "Date & Time", clearFilter: roomViewModel.clearDateFilter, onSelect: onSelect)
 
       SelectButton(onSelect: onSelect)
     }

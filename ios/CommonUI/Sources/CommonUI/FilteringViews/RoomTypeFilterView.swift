@@ -26,7 +26,7 @@ public struct RoomTypeFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 20) {
+    VStack(spacing: 15) {
       // Title
       Text("Room Types")
         .font(.title2)
@@ -45,16 +45,7 @@ public struct RoomTypeFilterView: View {
         }
       }
 
-      Button(role: .cancel, action: {
-        roomViewModel.clearRoomTypeFilter()
-        onSelect()
-      }) {
-        Text("Clear all types")
-          .font(.body)
-          .fontWeight(.medium)
-          .frame(maxWidth: .infinity)
-          .frame(height: 44)
-      }
+      ClearButton(filterName: "All Room Types", clearFilter: roomViewModel.clearRoomTypeFilter, onSelect: onSelect)
 
       SelectButton(onSelect: onSelect)
     }

@@ -18,16 +18,17 @@ public struct SelectButton: View {
   // MARK: Public
 
   public var body: some View {
-    Button(action: onSelect) {
+    Button {
+      onSelect()
+    } label: {
       Text("Select")
-        .font(.title3)
-        .fontWeight(.semibold)
-        .foregroundColor(.white)
+        .font(.headline)
         .frame(maxWidth: .infinity)
-        .frame(height: 50)
-        .background(theme.accent.primary)
-        .cornerRadius(12)
+        .frame(height: 35)
     }
+    .buttonStyle(.borderedProminent)
+    .tint(theme.accent.primary)
+    .buttonBorderShape(.roundedRectangle(radius: 20))
   }
 
   // MARK: Internal
