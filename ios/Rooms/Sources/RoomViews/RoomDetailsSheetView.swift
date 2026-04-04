@@ -62,18 +62,18 @@ struct RoomDetailsSheetView: View {
         }
         .scrollTargetBehavior(.paging)
         .scrollPosition(id: $scrollID)
-        .onChange(of: scrollID) { _, newValue in
-          if let newValue {
+        .onChange(of: scrollID) { oldValue, newValue in
+          if let newValue, let oldValue, abs(newValue - oldValue) == 1 {
             dateSelect = baseDate + (Double(newValue - Self.middleIndex) * .day)
           }
         }
         .onChange(of: dateSelect) { _, newValue in
-          if var scrollID {
-            let expectedDate = baseDate + (Double((scrollID - Self.middleIndex) - Self.middleIndex) * .day)
-            if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
-              baseDate = newValue
-              scrollID = Self.middleIndex
-            }
+          let currentScroll = scrollID ?? Self.middleIndex
+          let expectedDate = baseDate + (Double(currentScroll - Self.middleIndex) * .day)
+
+          if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
+            baseDate = newValue
+            scrollID = Self.middleIndex
           }
         }
       }
