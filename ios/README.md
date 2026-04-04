@@ -53,7 +53,7 @@ $ chmod +x install-hooks.sh
 $ ./install-hooks.sh
 ```
 
-6. Open `Freerooms.xcodeproj` in Xcode
+6. Open `FreeroomsApple.xcworkspace` in Xcode
 
 7. Build and run the app on a simulator or your device using the `Freerooms` scheme
 
