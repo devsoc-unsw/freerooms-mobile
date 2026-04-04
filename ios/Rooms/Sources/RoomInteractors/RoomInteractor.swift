@@ -87,52 +87,19 @@ public class RoomInteractor {
     }
   }
 
+  /// Per-room bookings keyed by `Room.id`.
   public func getRoomsFilteredByDuration(
     for minDuration: Int,
-    roomBookings: [String: [RoomBooking]])
-    async -> Result<[Room], FetchRoomError>
+    roomBookings: [String: [RoomBooking]],
+    rooms: [Room],
+    now: Date = Date())
+    -> [Room]
   {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      var result = [Room]()
-      for room in rooms {
-        let currentTime = Date()
-
-        // Sort classes by start time, then end time.
-        let classBookings: [RoomBooking] =
-          roomBookings[room.id]
-            ?? []
-            .sorted { $0.start < $1.start }
-            .sorted { $0.end < $1.end }
-
-        // Find the first class that *ends* after the current time
-        // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first {
-          $0.end >= currentTime
-        }
-        if firstClassEndsAfterCurrentTime == nil {
-          // class is free indefinitely meaning it is free the whole day from current time onwards
-          result.append(room)
-          continue
-        }
-
-        /// Check if from current time to the next first class duration satisfy minDuration
-        let start = firstClassEndsAfterCurrentTime!.start
-        if currentTime < start {
-          let duration = start.timeIntervalSince(currentTime) // in seconds
-          let durationInMinutes = Int(duration / 60)
-
-          if durationInMinutes >= minDuration {
-            result.append(room)
-          }
-        }
-      }
-
-      return .success(result)
-
-    case .failure(let error):
-      return .failure(error)
-    }
+    roomsFreeForMinimumDuration(
+      minDurationMinutes: minDuration,
+      now: now,
+      rooms: rooms,
+      bookingsForRoom: { room in roomBookings[room.id] ?? [] })
   }
 
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
@@ -167,8 +134,73 @@ public class RoomInteractor {
     }
   }
 
+  /// - Parameter roomBookingsByRoomId: Bookings keyed by `Room.id` for duration filtering. Rooms with no entry are treated as having no known bookings (they pass the duration filter until loaded).
+  public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookingsByRoomId: [String: [RoomBooking]]) -> [Room] {
+    var filteredRooms = rooms
+
+    // Filter by room type (usage)
+    if !filter.selectedRoomTypes.isEmpty {
+      filteredRooms = filteredRooms.filter { room in
+        let roomType = RoomType(rawValue: room.usage)
+        return roomType.map { filter.selectedRoomTypes.contains($0) } ?? false
+      }
+    }
+
+    // Filter by capacity
+    if let capacity = filter.selectedCapacity {
+      filteredRooms = filteredRooms.filter { $0.capacity >= capacity }
+    }
+
+    // Filter by campus location
+    if let campusLocation = filter.selectedCampusLocation {
+      filteredRooms = filteredRooms.filter { room in
+        let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
+        switch campusLocation {
+        case .upper:
+          return gridReference.campusSection == .upper
+        case .middle:
+          return gridReference.campusSection == .middle
+        case .lower:
+          return gridReference.campusSection == .lower
+        }
+      }
+    }
+
+    // Date/time chosen in the filter sheet (when not default) is the start of the duration window; see `RoomFilter.filteringReferenceInstant`.
+    let referenceInstant = filter.filteringReferenceInstant()
+
+    if let duration = filter.selectedDuration {
+      filteredRooms = getRoomsFilteredByDuration(
+        for: duration.rawValue,
+        roomBookings: roomBookingsByRoomId,
+        rooms: filteredRooms,
+        now: referenceInstant)
+    }
+
+    return filteredRooms
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
   private let locationService: LocationService
+
+  /// A booking blocks the room if it overlaps the interval from `now` for `minDurationMinutes`.
+  private func roomsFreeForMinimumDuration(
+    minDurationMinutes: Int,
+    now: Date,
+    rooms: [Room],
+    bookingsForRoom: (Room) -> [RoomBooking])
+    -> [Room]
+  {
+    let windowEnd = now.addingTimeInterval(TimeInterval(minDurationMinutes * 60))
+    return rooms.filter { room in
+      let bookings = bookingsForRoom(room)
+      let hasBlockingBooking = bookings.contains { booking in
+        booking.start < windowEnd && booking.end > now
+      }
+      return !hasBlockingBooking
+    }
+  }
+
 }

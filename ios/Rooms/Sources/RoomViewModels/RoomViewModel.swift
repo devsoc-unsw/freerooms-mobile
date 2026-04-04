@@ -6,7 +6,6 @@
 //
 
 import BuildingModels
-import CommonUI
 import Foundation
 import Location
 import Observation
@@ -35,6 +34,13 @@ public protocol RoomViewModel {
 
   var getBookingsIsLoading: Bool { get }
 
+  // Filter properties
+  var selectedDate: Date { get set }
+  var selectedRoomTypes: Set<RoomType> { get set }
+  var selectedDuration: Duration? { get set }
+  var selectedCampusLocation: CampusLocation? { get set }
+  var selectedCapacity: Int? { get set }
+  var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
   var loadRoomErrorMessage: AlertError? { get set }
@@ -60,6 +66,16 @@ public protocol RoomViewModel {
   func fetchRoomRating(roomID: String) async
 
   func clearRoomRating()
+
+  func applyFilters()
+  func loadBookingsForFilteredRooms() async
+  func clearAllFilters()
+
+  func clearDurationFilter()
+  func clearDateFilter()
+  func clearCampusLocationFilter()
+  func clearCapacityFilter()
+  func clearRoomTypeFilter()
 }
 
 // MARK: - LiveRoomViewModel
@@ -82,9 +98,13 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getRatingIsLoading = false
 
+  /// Bookings for the **last** room that `getRoomBookings(roomId:)` loaded (e.g. detail / list UI).
   public var currentRoomBookings = [RoomBooking]()
 
   public var currentRoomRating: RoomRating?
+
+  /// Cached bookings per `Room.id` for duration filtering. Rooms without an entry are not filtered out by duration until their bookings are loaded.
+  public var bookingsByRoomId = [String: [RoomBooking]]()
 
   public var hasLoaded = false
 
@@ -98,13 +118,35 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var searchText = ""
 
+  public var selectedDate: Date = DateDefaults.selectedDate
+  public var selectedRoomTypes: Set<RoomType> = []
+  public var selectedDuration: Duration?
+  public var selectedCampusLocation: CampusLocation?
+  public var selectedCapacity: Int?
+
+  public var hasActiveFilters: Bool {
+    selectedDate != DateDefaults.selectedDate ||
+      !selectedRoomTypes.isEmpty ||
+      selectedDuration != nil ||
+      selectedCampusLocation != nil ||
+      selectedCapacity != nil
+  }
+
   public var filteredRoomsByBuildingId: [String: [Room]] {
     var result = [String: [Room]]()
-    for (key, value) in roomsByBuildingId {
-      let sorted = interactor.getRoomsSortedAlphabetically(
-        rooms: value,
+    for (buildingId, rooms) in roomsByBuildingId {
+      var filteredRooms = rooms
+      if hasActiveFilters {
+        filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter, roomBookingsByRoomId: bookingsByRoomId)
+      }
+      let sortedRooms = interactor.getRoomsSortedAlphabetically(
+        rooms: filteredRooms,
         inAscendingOrder: roomsInAscendingOrder)
-      result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
+      let searchedRooms = interactor.filterRoomsByQueryString(sortedRooms, by: searchText)
+
+      if !searchedRooms.isEmpty {
+        result[buildingId] = searchedRooms
+      }
     }
     return result
   }
@@ -210,6 +252,8 @@ public class LiveRoomViewModel: RoomViewModel {
     switch await interactor.getRoomBookings(roomID: roomId) {
     case .success(let bookings):
       currentRoomBookings = bookings
+      bookingsByRoomId[roomId] = bookings
+
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
@@ -239,9 +283,75 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
+  public func applyFilters() {
+    // Trigger UI update by accessing filteredRoomsByBuildingId
+    _ = filteredRoomsByBuildingId
+  }
+
+  public func loadBookingsForFilteredRooms() async {
+    let roomIds = roomsByBuildingId.values
+      .flatMap { $0 }
+      .map(\.id)
+      .filter { bookingsByRoomId[$0] == nil }
+
+    guard !roomIds.isEmpty else { return }
+
+    isLoading = true
+    for roomId in roomIds {
+      switch await interactor.getRoomBookings(roomID: roomId) {
+      case .success(let bookings):
+        bookingsByRoomId[roomId] = bookings
+      case .failure:
+        break
+      }
+    }
+    isLoading = false
+  }
+
+  public func clearAllFilters() {
+    DateDefaults.selectedDate = Date()
+    selectedDate = DateDefaults.selectedDate
+    selectedRoomTypes.removeAll()
+    selectedDuration = nil
+    selectedCampusLocation = nil
+    selectedCapacity = nil
+    bookingsByRoomId = [:]
+    currentRoomBookings = []
+  }
+
+  public func clearDurationFilter() {
+    selectedDuration = nil
+  }
+
+  public func clearDateFilter() {
+    DateDefaults.selectedDate = Date()
+    selectedDate = DateDefaults.selectedDate
+  }
+
+  public func clearCampusLocationFilter() {
+    selectedCampusLocation = nil
+  }
+
+  public func clearCapacityFilter() {
+    selectedCapacity = nil
+  }
+
+  public func clearRoomTypeFilter() {
+    selectedRoomTypes.removeAll()
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
+
+  private var currentFilter: RoomFilter {
+    RoomFilter(
+      selectedDate: selectedDate,
+      selectedRoomTypes: selectedRoomTypes,
+      selectedDuration: selectedDuration,
+      selectedCampusLocation: selectedCampusLocation,
+      selectedCapacity: selectedCapacity)
+  }
 }
 
 // MARK: - PreviewRoomViewModel
@@ -253,7 +363,5 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
     super.init(interactor: RoomInteractor(
       roomService: PreviewRoomService(),
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
-
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
 }
