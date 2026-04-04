@@ -47,7 +47,8 @@ import UIKit
 /// 50 MB holds ~100 medium thumbnails — enough to scroll through the full
 /// buildings list AND a building's room list without evictions. `NSCache`
 /// also purges automatically under system memory pressure.
-public final class ImageCache {
+nonisolated
+public final class ImageCache: Sendable {
 
   // MARK: Lifecycle
 
@@ -71,12 +72,18 @@ public final class ImageCache {
   /// `preparingThumbnail(of:)`, stores the result, and returns it.
   /// Falls back to the original image if thumbnail creation fails.
   ///
+  /// > Warning:
+  /// > This method may create thumbmails on the calling actor.
+  /// > Make sure not to call this method on the `MainActor`.
+  /// > To create images in the background, use
+  /// > ``getImage(named:in:size:)`` instead.
+  ///
   /// - Parameters:
   ///   - name: The asset name in the catalog (e.g. `"K-J17-201"`).
   ///   - bundle: The resource bundle containing the asset catalog (e.g. `.module`).
   ///   - size: The target `ImageSize`. Defaults to `.medium` (400px).
   /// - Returns: A downsampled `UIImage`, or `nil` if the asset wasn't found.
-  public func image(
+  nonisolated public func image(
     named name: String,
     in bundle: Bundle,
     size: ImageSize = .medium)
@@ -111,6 +118,23 @@ public final class ImageCache {
     return thumbnail
   }
 
+  /// Gets an image matcing the provided size
+  ///
+  /// If a matching image is found in the cache, it is returned immediately.
+  /// Otherwise, a thumbnail is generated and then cached.
+  ///
+  /// > ``image(named:in:size:)``
+  /// > for sync function.
+  @concurrent
+  public func getImage(
+    named name: String,
+    in bundle: Bundle,
+    size: ImageSize = .medium)
+    async -> UIImage?
+  {
+    image(named: name, in: bundle, size: size)
+  }
+
   /// Removes all cached thumbnails.
   ///
   /// Useful for debugging or a "clear cache" setting. Under normal operation,
@@ -121,6 +145,10 @@ public final class ImageCache {
 
   // MARK: Private
 
+  /// `NSCache` is thread safe as long as the key and value types are `Sendable`
+  ///
+  /// Since `NSString` and `UIImage` are thread safe (and `Sendable`), `NSCache` is also thread safe.
+  @safe nonisolated(unsafe)
   private let cache = NSCache<NSString, UIImage>()
 
 }
