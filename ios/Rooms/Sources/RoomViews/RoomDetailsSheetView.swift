@@ -10,6 +10,8 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+// MARK: - RoomDetailsSheetView
+
 struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
@@ -23,13 +25,10 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Internal
 
-  @State var dateSelect = Date()
-
   let room: Room
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      // List {
       // Booking informations
       RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating)
 
@@ -48,11 +47,34 @@ struct RoomDetailsSheetView: View {
         }
 
         // Booking Grid
-        ScrollView {
-          RoomBookingsListView(
-            room: room,
-            roomViewModel: roomViewModel,
-            dateSelect: $dateSelect)
+        ScrollView(.horizontal, showsIndicators: false) {
+          LazyHStack(spacing: 0) {
+            ForEach(0..<Self.maxScrollID, id: \.self) { index in
+              RoomBookingsListView(
+                room: room,
+                roomViewModel: roomViewModel,
+                dateSelect: bindingFor(index: index))
+                .id(index)
+                .containerRelativeFrame(.horizontal)
+            }
+          }
+          .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.paging)
+        .scrollPosition(id: $scrollID)
+        .onChange(of: scrollID) { oldValue, newValue in
+          if let newValue, let oldValue, abs(newValue - oldValue) == 1 {
+            dateSelect = baseDate + (Double(newValue - Self.middleIndex) * .day)
+          }
+        }
+        .onChange(of: dateSelect) { _, newValue in
+          let currentScroll = scrollID ?? Self.middleIndex
+          let expectedDate = baseDate + (Double(currentScroll - Self.middleIndex) * .day)
+
+          if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
+            baseDate = newValue
+            scrollID = Self.middleIndex
+          }
         }
       }
       .padding()
@@ -80,7 +102,23 @@ struct RoomDetailsSheetView: View {
         })
   }
 
+  func bindingFor(index: Int) -> Binding<Date> {
+    Binding(
+      get: { baseDate + (Double(index - Self.middleIndex) * .day) },
+      set: { newDate in
+        baseDate = newDate + (Double(Self.middleIndex - index) * .day)
+      })
+  }
+
   // MARK: Private
+
+  // Paging is 0 <= page < middleindex * 2
+  private static let maxScrollID = Self.middleIndex * 2
+  private static let middleIndex = 500
+
+  @State private var scrollID: Int? = middleIndex
+  @State private var baseDate = Date()
+  @State private var dateSelect = Date()
 
   @Environment(Theme.self) private var theme
 
@@ -93,4 +131,14 @@ struct RoomDetailsSheetView: View {
 #Preview {
   RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
     .defaultTheme()
+}
+
+extension Double {
+  static let day: Double = 86_400
+}
+
+extension Date {
+  static func +(lhs: Date, rhs: Double) -> Date {
+    lhs.addingTimeInterval(rhs)
+  }
 }

@@ -67,7 +67,6 @@ struct RoomBookingsListView: View {
         }
         .frame(height: hoursToDisplay * 40)
       }
-      .frame(height: hoursToDisplay * 40)
       .clipShape(RoundedRectangle(cornerRadius: 12))
       .onAppear {
         let currentHour = max(dateComponent.hour ?? 0, 9)
