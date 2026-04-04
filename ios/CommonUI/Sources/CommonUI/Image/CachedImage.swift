@@ -46,7 +46,7 @@ public struct CachedImage: View {
   }
 
   // MARK: Private
-  
+
   @State private var resolved: UIImage?
 
   private let name: String
