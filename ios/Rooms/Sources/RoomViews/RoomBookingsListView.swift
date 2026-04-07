@@ -69,9 +69,13 @@ struct RoomBookingsListView: View {
       }
       .clipShape(RoundedRectangle(cornerRadius: 12))
       .onAppear {
-        let currentHour = max(dateComponent.hour ?? 0, 9)
-        withAnimation(.easeInOut(duration: 0.5)) {
-          proxy.scrollTo(currentHour, anchor: .top)
+        if Calendar.current.isDateInToday(dateSelect) {
+          let currentHour = max(dateComponent.hour ?? 0, 9)
+          withAnimation(.easeInOut(duration: 0.5)) {
+            proxy.scrollTo(currentHour, anchor: .top)
+          }
+        } else {
+          proxy.scrollTo(9, anchor: .top)
         }
       }
     }
