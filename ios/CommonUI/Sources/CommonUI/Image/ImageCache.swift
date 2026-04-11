@@ -89,17 +89,56 @@ public final class ImageCache: Sendable {
     size: ImageSize = .medium)
     -> UIImage?
   {
-    let maxPixelSize = size.rawValue
-    let key = "\(name)-\(Int(maxPixelSize))" as NSString
-
-    if let cached = cache.object(forKey: key) {
-      return cached
+    let key = _key(for: name, size: size)
+    if let image = cache.object(forKey: key) {
+      return image
     }
+    return _generateThumbnail(for: name, in: bundle, size: size, key: key)
+  }
 
+  /// Gets an image matcing the provided size
+  ///
+  /// If a matching image is found in the cache, it is returned immediately
+  /// without suspending.
+  ///
+  /// Otherwise, the thumbnail is generated in the background
+  /// and the resulting thumbnail is cached. The function suspends
+  /// until the thumbnail is generated.
+  ///
+  /// > ``image(named:in:size:)``
+  /// > for sync function.
+  nonisolated(nonsending)
+  public func getImage(
+    named name: String,
+    in bundle: Bundle,
+    size: ImageSize = .medium)
+    async -> UIImage?
+  {
+    let key = _key(for: name, size: size)
+    if let image = cache.object(forKey: key) {
+      return image
+    }
+    return await _generateThumbnailConcurrently(
+      for: name, in: bundle, size: size, key: key)
+  }
+  
+  private func _key(for name: String, size: ImageSize) -> NSString {
+    let maxPixelSize = size.rawValue
+    return "\(name)-\(Int(maxPixelSize))" as NSString
+  }
+  
+  private func _generateThumbnail(
+    for name: String,
+    in bundle: Bundle,
+    size: ImageSize,
+    key: NSString)
+    -> UIImage?
+  {
     guard let original = UIImage(named: name, in: bundle, with: nil) else {
       return nil
     }
-
+    
+    let maxPixelSize = size.rawValue
     let aspectRatio = original.size.width / original.size.height
     let thumbnailSize: CGSize =
       if aspectRatio > 1 {
@@ -117,23 +156,18 @@ public final class ImageCache: Sendable {
 
     return thumbnail
   }
-
-  /// Gets an image matcing the provided size
-  ///
-  /// If a matching image is found in the cache, it is returned immediately.
-  /// Otherwise, a thumbnail is generated and then cached.
-  ///
-  /// > ``image(named:in:size:)``
-  /// > for sync function.
+  
   @concurrent
-  public func getImage(
-    named name: String,
+  private func _generateThumbnailConcurrently(
+    for name: String,
     in bundle: Bundle,
-    size: ImageSize = .medium)
+    size: ImageSize,
+    key: NSString)
     async -> UIImage?
   {
-    image(named: name, in: bundle, size: size)
+    _generateThumbnail(for: name, in: bundle, size: size, key: key)
   }
+
 
   /// Removes all cached thumbnails.
   ///

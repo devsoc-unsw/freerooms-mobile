@@ -28,7 +28,7 @@ public struct CachedImage: View {
   // MARK: Public
 
   public var body: some View {
-    Group {
+    ZStack {
       if let resolved {
         Image(uiImage: resolved)
           .resizable()
