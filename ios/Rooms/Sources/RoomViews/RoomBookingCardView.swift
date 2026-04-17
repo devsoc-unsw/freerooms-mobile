@@ -24,20 +24,20 @@ struct RoomBookingCardView: View {
   // MARK: Internal
 
   var topRadius: CGFloat {
-    switch (bookingSize) {
-      case .small:
-          return 8
-      case .medium:
-        return 10
+    switch bookingSize {
+    case .small:
+      8
+    case .medium:
+      10
     }
   }
 
   var bottomRadius: CGFloat {
-    switch (bookingSize) {
-      case .small:
-          return 8
-      case .medium:
-        return 10
+    switch bookingSize {
+    case .small:
+      8
+    case .medium:
+      10
     }
   }
 
@@ -52,17 +52,17 @@ struct RoomBookingCardView: View {
 
       VStack(alignment: .leading, spacing: 3 * (bookingSize == .small ? 1 : 2)) {
         Text("\(time.0) - \(time.1)")
-          .font(.system(size: (bookingSize == .small ? 8 : 12), weight: .medium))
+          .font(.system(size: bookingSize == .small ? 8 : 12, weight: .medium))
 
         Text("\(booking.name)")
-          .font(.system(size: (bookingSize == .small ? 14 : 20), weight: .medium))
+          .font(.system(size: bookingSize == .small ? 14 : 20, weight: .medium))
       }
-      .padding(.vertical, (bookingSize == .small ? 1 : 4))
+      .padding(.vertical, bookingSize == .small ? 1 : 4)
       .padding(.horizontal, 10)
       .bold()
       .foregroundStyle(.white)
     }
-    .frame(height: ((30 * numberTimeSlots) - 4))
+    .frame(height: (30 * numberTimeSlots) - 4)
     .offset(
       x: 0,
       y: CGFloat(startMinutes) + 2)
@@ -99,6 +99,10 @@ struct RoomBookingCardView: View {
 
   // MARK: Private
 
+  private enum BookingSize {
+    case small, medium
+  }
+
   @Environment(Theme.self) private var theme
 
   private var room: Room
@@ -106,16 +110,12 @@ struct RoomBookingCardView: View {
   private var start: DateComponents
   private var end: DateComponents
   private let startMinutes: Int
-  
-  private enum BookingSize{
-      case small, medium
-  }
 
   private var bookingSize: BookingSize {
-    if (numberTimeSlots == 1) {
-      return .small
+    if numberTimeSlots == 1 {
+      .small
     } else {
-      return .medium
+      .medium
     }
   }
 
