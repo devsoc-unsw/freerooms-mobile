@@ -60,6 +60,30 @@ struct FavoriteRoomServiceTests {
       let testRoomID = UUID().uuidString
       #expect(!favoritesService.isFavorite(roomID: testRoomID))
     }
+    
+    @Test
+    func `Try to remove a favorite room`() {
+      let testRoomID = UUID().uuidString
+      #expect(favoritesService.addFavorite(roomID: testRoomID))
+      #expect(favoritesService.isFavorite(roomID: testRoomID))
+      #expect(favoritesService.removeFavorite(roomID: testRoomID))
+      #expect(!favoritesService.isFavorite(roomID: testRoomID))
+    }
+    
+    @Test
+    func `Removing an unfavorited room is ignored`() {
+      let testRoomID = UUID().uuidString
+      #expect(!favoritesService.removeFavorite(roomID: testRoomID))
+    }
+    
+    @Test
+    func `Favoriting a favorited room is ignored`() {
+      let testRoomID = UUID().uuidString
+      #expect(favoritesService.addFavorite(roomID: testRoomID))
+      #expect(favoritesService.isFavorite(roomID: testRoomID))
+      #expect(!favoritesService.addFavorite(roomID: testRoomID))
+      #expect(favoritesService.isFavorite(roomID: testRoomID))
+    }
 
   }
 

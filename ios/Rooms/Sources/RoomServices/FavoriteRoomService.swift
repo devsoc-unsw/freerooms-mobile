@@ -5,6 +5,7 @@
 //  Created by Matthew Yuen on 17/4/2026.
 //
 
+import Foundation
 import RoomModels
 import SwiftData
 import VISOR
@@ -18,7 +19,22 @@ public protocol FavoriteRoomService: AnyObject {
   /// Adds a new favorite
   ///
   /// If the room is already favorited, this method does nothing.
-  func addFavorite(roomID: Room.ID)
+  ///
+  /// > Returns:
+  /// > `true` if a new favorite was added,
+  /// > otherwise `false` if the room was already favorited.
+  @discardableResult
+  func addFavorite(roomID: Room.ID) -> Bool
+  
+  /// Removes a favorite
+  ///
+  /// If the room was already unfavorited, this method does nothing.
+  ///
+  /// > Returns:
+  /// > `true` if the favorite was removed,
+  /// > otherwise `false` if the room was already unfavorited.
+  @discardableResult
+  func removeFavorite(roomID: Room.ID) -> Bool
 
   /// Checks if a room is favorited
   func isFavorite(roomID: Room.ID) -> Bool
@@ -40,39 +56,57 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
 
   public init(context: ModelContext) throws {
     self.context = context
-    favoriteRoomIDs = try Set(context.fetch(Self._fetchDescriptor).map(\.roomID))
+    let favoriteRooms = try context.fetch(Self._fetchDescriptor)
+    self.favoriteRooms = Dictionary(uniqueKeysWithValues: favoriteRooms.map { ($0.roomID, $0) })
   }
 
   // MARK: Public
 
   public let context: ModelContext
-  public var favoriteRoomIDs: Set<Room.ID>
-
-  public func addFavorite(roomID: Room.ID) {
+  
+  @discardableResult
+  public func addFavorite(roomID: Room.ID) -> Bool {
     // Check if the room is already favorited
-    guard !favoriteRoomIDs.contains(roomID) else { return }
+    guard !favoriteRooms.keys.contains(roomID) else { return false }
 
     // Otherwise add the new room
     let favoriteRoom = SwiftDataFavoriteRoom(roomID: roomID)
     context.insert(favoriteRoom)
-    favoriteRoomIDs.insert(roomID)
+    favoriteRooms[roomID] = favoriteRoom
+    
+    return true
+  }
+  
+  @discardableResult
+  public func removeFavorite(roomID: Room.ID) -> Bool {
+    
+    // Check if the room is favorited. If it is, remove it
+    guard let favorite = favoriteRooms.removeValue(forKey: roomID) else { return false }
+    
+    // Remove the room from favorites
+    context.delete(favorite)
+    
+    return true
   }
 
   public func isFavorite(roomID: Room.ID) -> Bool {
-    favoriteRoomIDs.contains(roomID)
+    favoriteRooms.keys.contains(roomID)
   }
 
   public func getAllFavoriteRoomIds() -> [Room.ID] {
-    Array(favoriteRoomIDs)
+    Array(favoriteRooms.keys)
   }
 
   /// Saves changes and refetches
   public func sync() throws {
     try context.save()
-    favoriteRoomIDs = try Set(context.fetch(Self._fetchDescriptor).map(\.roomID))
+    let favoriteRooms = try context.fetch(Self._fetchDescriptor)
+    self.favoriteRooms = Dictionary(uniqueKeysWithValues: favoriteRooms.map { ($0.roomID, $0) })
   }
 
   // MARK: Private
+  
+  private var favoriteRooms: [Room.ID : SwiftDataFavoriteRoom]
 
   static private var _fetchDescriptor: FetchDescriptor<SwiftDataFavoriteRoom> {
     FetchDescriptor<SwiftDataFavoriteRoom>()
