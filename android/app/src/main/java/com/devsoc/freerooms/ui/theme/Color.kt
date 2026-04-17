@@ -2,10 +2,21 @@ package com.devsoc.freerooms.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val FR_Orange = Color(0xFFEF6C02)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Light_Orange = Color(0xFFFFFBF9)
+
+// Building room colors
+
+val Green = Color(0xFF46B693)
+
+// Building list Colors
+
+val Gold = Color(0xFFFFA600)
+
+val Bright_Red = Color(0xFFFF3B30)
+
+// Taskbar icon colors
+val Brown = Color(0xFF632410)
+
+val Medium_Orange = Color(0xFFD4613C)
