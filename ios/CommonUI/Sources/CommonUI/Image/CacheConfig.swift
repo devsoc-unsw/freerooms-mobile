@@ -3,7 +3,8 @@
 //  CommonUI
 //
 
-public struct CacheConfig {
+nonisolated
+public struct CacheConfig: Sendable {
 
   // MARK: Lifecycle
 
