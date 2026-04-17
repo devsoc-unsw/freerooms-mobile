@@ -121,12 +121,28 @@ public final class ImageCache: Sendable {
     return await _generateThumbnailConcurrently(
       for: name, in: bundle, size: size, key: key)
   }
-  
+
+  /// Removes all cached thumbnails.
+  ///
+  /// Useful for debugging or a "clear cache" setting. Under normal operation,
+  /// `NSCache` handles eviction automatically under memory pressure.
+  public func clearCache() {
+    cache.removeAllObjects()
+  }
+
+  // MARK: Private
+
+  /// `NSCache` is thread safe as long as the key and value types are `Sendable`
+  ///
+  /// Since `NSString` and `UIImage` are thread safe (and `Sendable`), `NSCache` is also thread safe.
+  @safe nonisolated(unsafe)
+  private let cache = NSCache<NSString, UIImage>()
+
   private func _key(for name: String, size: ImageSize) -> NSString {
     let maxPixelSize = size.rawValue
     return "\(name)-\(Int(maxPixelSize))" as NSString
   }
-  
+
   private func _generateThumbnail(
     for name: String,
     in bundle: Bundle,
@@ -137,7 +153,7 @@ public final class ImageCache: Sendable {
     guard let original = UIImage(named: name, in: bundle, with: nil) else {
       return nil
     }
-    
+
     let maxPixelSize = size.rawValue
     let aspectRatio = original.size.width / original.size.height
     let thumbnailSize: CGSize =
@@ -156,7 +172,7 @@ public final class ImageCache: Sendable {
 
     return thumbnail
   }
-  
+
   @concurrent
   private func _generateThumbnailConcurrently(
     for name: String,
@@ -167,22 +183,5 @@ public final class ImageCache: Sendable {
   {
     _generateThumbnail(for: name, in: bundle, size: size, key: key)
   }
-
-
-  /// Removes all cached thumbnails.
-  ///
-  /// Useful for debugging or a "clear cache" setting. Under normal operation,
-  /// `NSCache` handles eviction automatically under memory pressure.
-  public func clearCache() {
-    cache.removeAllObjects()
-  }
-
-  // MARK: Private
-
-  /// `NSCache` is thread safe as long as the key and value types are `Sendable`
-  ///
-  /// Since `NSString` and `UIImage` are thread safe (and `Sendable`), `NSCache` is also thread safe.
-  @safe nonisolated(unsafe)
-  private let cache = NSCache<NSString, UIImage>()
 
 }
