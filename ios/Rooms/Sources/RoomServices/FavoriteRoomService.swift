@@ -25,7 +25,7 @@ public protocol FavoriteRoomService: AnyObject {
   /// > otherwise `false` if the room was already favorited.
   @discardableResult
   func addFavorite(roomID: Room.ID) -> Bool
-  
+
   /// Removes a favorite
   ///
   /// If the room was already unfavorited, this method does nothing.
@@ -63,7 +63,7 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
   // MARK: Public
 
   public let context: ModelContext
-  
+
   @discardableResult
   public func addFavorite(roomID: Room.ID) -> Bool {
     // Check if the room is already favorited
@@ -73,19 +73,18 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
     let favoriteRoom = SwiftDataFavoriteRoom(roomID: roomID)
     context.insert(favoriteRoom)
     favoriteRooms[roomID] = favoriteRoom
-    
+
     return true
   }
-  
+
   @discardableResult
   public func removeFavorite(roomID: Room.ID) -> Bool {
-    
     // Check if the room is favorited. If it is, remove it
     guard let favorite = favoriteRooms.removeValue(forKey: roomID) else { return false }
-    
+
     // Remove the room from favorites
     context.delete(favorite)
-    
+
     return true
   }
 
@@ -105,11 +104,11 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
   }
 
   // MARK: Private
-  
-  private var favoriteRooms: [Room.ID : SwiftDataFavoriteRoom]
 
   static private var _fetchDescriptor: FetchDescriptor<SwiftDataFavoriteRoom> {
     FetchDescriptor<SwiftDataFavoriteRoom>()
   }
+
+  private var favoriteRooms: [Room.ID: SwiftDataFavoriteRoom]
 
 }
