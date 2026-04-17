@@ -97,6 +97,10 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
   }
 
   /// Saves changes and refetches
+  ///
+  /// > Warning:
+  /// > Normally you should not need to call this function if you are using a single RoomService.
+  /// > This is only necessary when you have multiple services, which you should not have in the first place.
   public func sync() throws {
     try context.save()
     let favoriteRooms = try context.fetch(Self._fetchDescriptor)
