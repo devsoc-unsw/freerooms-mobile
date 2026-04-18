@@ -24,20 +24,20 @@ struct RoomBookingCardView: View {
   // MARK: Internal
 
   var topRadius: CGFloat {
-    if (start.hour ?? 0) < 9 {
-      0
-    } else if isSmallBooking {
+    switch bookingSize {
+    case .small:
+      8
+    case .medium:
       10
-    } else {
-      15
     }
   }
 
   var bottomRadius: CGFloat {
-    if isSmallBooking {
+    switch bookingSize {
+    case .small:
+      8
+    case .medium:
       10
-    } else {
-      15
     }
   }
 
@@ -50,28 +50,22 @@ struct RoomBookingCardView: View {
         topTrailingRadius: topRadius)
         .fill(theme.accent.primary)
 
-      VStack(alignment: .leading, spacing: 2 * (isSmallBooking ? 0.5 : numberTimeSlots)) {
+      VStack(alignment: .leading, spacing: 3 * (bookingSize == .small ? 1 : 2)) {
         Text("\(time.0) - \(time.1)")
-          .font(
-            isSmallBooking
-              ? .system(size: 10, weight: .medium)
-              : .system(size: 12, weight: .medium))
+          .font(.system(size: bookingSize == .small ? 8 : 12, weight: .medium))
 
         Text("\(booking.name)")
-          .font(
-            isSmallBooking
-              ? .system(size: 18, weight: .medium)
-              : .system(size: 20, weight: .medium))
+          .font(.system(size: bookingSize == .small ? 14 : 20, weight: .medium))
       }
-      .padding(isSmallBooking ? 2 : 10)
-      .padding(.horizontal, isSmallBooking ? 10 : 0)
+      .padding(.vertical, bookingSize == .small ? 1 : 4)
+      .padding(.horizontal, 10)
       .bold()
       .foregroundStyle(.white)
     }
-    .frame(height: (20 * numberTimeSlots) - 4)
+    .frame(height: (30 * numberTimeSlots) - 4)
     .offset(
       x: 0,
-      y: CGFloat(startMinutes) * (40 / 60) + 2)
+      y: CGFloat(startMinutes) + 2)
   }
 
   var numberTimeSlots: CGFloat {
@@ -105,6 +99,10 @@ struct RoomBookingCardView: View {
 
   // MARK: Private
 
+  private enum BookingSize {
+    case small, medium
+  }
+
   @Environment(Theme.self) private var theme
 
   private var room: Room
@@ -113,8 +111,12 @@ struct RoomBookingCardView: View {
   private var end: DateComponents
   private let startMinutes: Int
 
-  private var isSmallBooking: Bool {
-    numberTimeSlots < 4
+  private var bookingSize: BookingSize {
+    if numberTimeSlots == 1 {
+      .small
+    } else {
+      .medium
+    }
   }
 
   private func formatHour(_ hour: Int, _ minute: Int) -> String {

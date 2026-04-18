@@ -25,6 +25,7 @@ struct RoomBookingsListView: View {
   @Binding var dateSelect: Date
 
   let hoursToDisplay: CGFloat = 24 - 9
+  let slotHeight: CGFloat = 60
 
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
@@ -44,7 +45,7 @@ struct RoomBookingsListView: View {
           if roomViewModel.getBookingsIsLoading {
             RoundedRectangle(cornerRadius: 12)
               .fill(Color.gray.opacity(0.3))
-              .frame(height: 24 * 40)
+              .frame(height: 24 * slotHeight)
           }
 
           // Background time grid
@@ -65,9 +66,9 @@ struct RoomBookingsListView: View {
               .padding(.trailing, 10)
           }
         }
-        .frame(height: hoursToDisplay * 40)
+        .frame(height: hoursToDisplay * slotHeight)
       }
-      .frame(height: hoursToDisplay * 40)
+      .frame(height: hoursToDisplay * slotHeight)
       .clipShape(RoundedRectangle(cornerRadius: 12))
       .onAppear {
         let currentHour = max(dateComponent.hour ?? 0, 9)
