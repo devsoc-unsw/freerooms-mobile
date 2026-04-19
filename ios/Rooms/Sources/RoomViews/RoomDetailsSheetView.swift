@@ -14,22 +14,14 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
-  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, onDismiss: (() -> Void)? = nil) {
-    self.dateSelect = dateSelect
+  public init(room: Room) {
     self.room = room
-    self.roomViewModel = roomViewModel
-    self.onDismiss = onDismiss
   }
 
   // MARK: Internal
 
-  @State var dateSelect = Date()
-
-  let room: Room
-
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      // List {
       // Booking informations
       RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating)
 
@@ -42,7 +34,7 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
+          DatePicker("Please Select a Date", selection: selectedDateBinding, displayedComponents: .date)
             .labelsHidden()
             .tint(theme.accent.primary)
         }
@@ -51,8 +43,7 @@ struct RoomDetailsSheetView: View {
         ScrollView {
           RoomBookingsListView(
             room: room,
-            roomViewModel: roomViewModel,
-            dateSelect: $dateSelect)
+            dateSelect: selectedDateBinding)
         }
       }
       .padding()
@@ -71,26 +62,27 @@ struct RoomDetailsSheetView: View {
     .task {
       await roomViewModel.fetchRoomRating(roomID: room.id)
     }
-    .gesture(
-      DragGesture(minimumDistance: 20, coordinateSpace: .local)
-        .onEnded { value in
-          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
-            onDismiss?()
-          }
-        })
   }
 
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private let onDismiss: (() -> Void)?
+  private let room: Room
 
-  private var roomViewModel: RoomViewModel
-
+  private var selectedDateBinding: Binding<Date> {
+    Binding<Date>(
+      get: { roomViewModel.selectedDate },
+      set: { newValue in
+        roomViewModel.selectedDate = newValue
+      })
+  }
 }
 
 #Preview {
-  RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return RoomDetailsSheetView(room: Room.exampleOne)
+    .environment(viewModel)
     .defaultTheme()
 }

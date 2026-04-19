@@ -8,6 +8,7 @@
 import BuildingModels
 import Combine
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - GenericListRowView
@@ -170,6 +171,8 @@ struct PreviewWrapper: View {
 }
 
 #Preview {
-  PreviewWrapper()
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return PreviewWrapper()
     .defaultTheme()
+    .environment(viewModel)
 }

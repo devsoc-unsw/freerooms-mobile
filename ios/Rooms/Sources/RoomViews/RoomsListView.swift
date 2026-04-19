@@ -17,12 +17,10 @@ public struct RoomsListView: View {
   // MARK: Lifecycle
 
   public init(
-    roomViewModel: RoomViewModel,
     building: Building,
     path: Binding<NavigationPath>,
     imageProvider: @escaping (String) -> CachedImage)
   {
-    self.roomViewModel = roomViewModel
     self.building = building
     _path = path
     self.imageProvider = imageProvider
@@ -88,8 +86,8 @@ public struct RoomsListView: View {
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private var roomViewModel: RoomViewModel
   private var building: Building
 
 }
@@ -100,12 +98,13 @@ private struct PreviewWrapper: View {
   @State var path = NavigationPath()
 
   var body: some View {
-    RoomsListView(
-      roomViewModel: PreviewRoomViewModel(),
+    let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+    return RoomsListView(
       building: Building(name: "AGSM", id: "K-B16", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
       path: $path, imageProvider: {
         RoomImage[$0] // This closure captures BuildingImage
       })
+      .environment(viewModel)
       .defaultTheme()
   }
 }

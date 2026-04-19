@@ -589,13 +589,24 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		30FB13AB2E1CDFAE0089793E /* Rooms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30FB13AA2E1CDFAE0089793E /* XCLocalSwiftPackageReference "Rooms" */;
+			productName = Rooms;
+		};
 		546D1A942F7AACA2000667BC /* VISOR */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */;
 			productName = VISOR;
 		};
-		546D1A972F7AACB9000667BC /* CommonUI */ = {
+		96D65EDE2DA39EA30060D06B /* Buildings */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 96D65EDD2DA39EA30060D06C /* XCLocalSwiftPackageReference "Buildings" */;
+			productName = Buildings;
+		};
+		96DE0C312DFBD4C200C77DD5 /* CommonUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96DE0C302DFBD4C200C77DD6 /* XCLocalSwiftPackageReference "CommonUI" */;
 			productName = CommonUI;
 		};
 		546D1AA52F7AAD87000667BC /* RoomViewModels */ = {
