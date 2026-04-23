@@ -1,6 +1,5 @@
-package com.devsoc.freerooms.ui.theme
+package com.devsoc.freerooms.core.ui
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +36,7 @@ private val LightColorScheme = lightColorScheme(
 fun FreeroomsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Should only be freerooms colours
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

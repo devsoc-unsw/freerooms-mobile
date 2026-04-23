@@ -1,4 +1,4 @@
-package com.devsoc.freerooms.ui.theme
+package com.devsoc.freerooms.core.ui
 
 import androidx.compose.ui.graphics.Color
 
