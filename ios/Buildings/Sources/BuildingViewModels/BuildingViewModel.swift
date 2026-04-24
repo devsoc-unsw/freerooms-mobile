@@ -12,10 +12,11 @@ import CommonUI
 import Foundation
 import Location
 import Observation
+import VISOR
 
 // MARK: - BuildingViewModel
 
-public protocol BuildingViewModel {
+public protocol BuildingViewModel: Observable {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }
   var displayedBuildings: CampusBuildings { get }
@@ -35,6 +36,7 @@ public protocol BuildingViewModel {
 
 // MARK: - LiveBuildingViewModel
 
+/// @ViewModel
 @Observable
 public class LiveBuildingViewModel: BuildingViewModel {
 
@@ -53,7 +55,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var loadBuildingErrorMessage: AlertError?
   public var selectedFilter = BuildingFilterOptions.Alphabetical
 
-  public var buildings: CampusBuildings = ([], [], [])
+  public var buildings: CampusBuildings = .empty()
 
   public var displayedBuildings: CampusBuildings {
     let isEmpty = buildings.upper.isEmpty && buildings.middle.isEmpty && buildings.lower.isEmpty
@@ -70,7 +72,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   public var allBuildings: [Building] {
-    let allBuildings = buildings.0 + buildings.1 + buildings.2
+    let allBuildings = buildings.allBuildings
     return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
   }
 
@@ -91,7 +93,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
     let middlePlaceholders = (2..<12).map(createPlaceholder)
     let lowerPlaceholders = (4..<18).map(createPlaceholder)
 
-    return (upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
+    return CampusBuildings(upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
   }
 
   public func reloadBuildings() {

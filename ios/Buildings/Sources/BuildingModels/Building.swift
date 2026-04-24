@@ -8,28 +8,28 @@
 import Foundation
 import Location
 
-// MARK: - Building
+// MARK: - CampusBuildings
 
 nonisolated
 public struct CampusBuildings: Sendable {
   public var upper: [Building]
   public var middle: [Building]
   public var lower: [Building]
-  
+
   public init(upper: [Building], middle: [Building], lower: [Building]) {
     self.upper = upper
     self.middle = middle
     self.lower = lower
   }
-  
+
   public static func empty() -> CampusBuildings {
-    return CampusBuildings(upper: [], middle: [], lower: [])
+    CampusBuildings(upper: [], middle: [], lower: [])
   }
-  
+
   public var allBuildings: [Building] {
     upper + middle + lower
   }
-  
+
 }
 
 // MARK: - Building
