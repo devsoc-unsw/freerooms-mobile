@@ -86,7 +86,7 @@ public class BuildingInteractor {
       return buildings.filter { $0.name.localizedCaseInsensitiveContains(query) }
     }
 
-    return (
+    return CampusBuildings(
       upper: filter(buildings.upper),
       middle: filter(buildings.middle),
       lower: filter(buildings.lower))
