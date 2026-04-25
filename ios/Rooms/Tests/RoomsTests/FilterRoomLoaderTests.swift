@@ -14,15 +14,17 @@ import Testing
 
 @Suite
 struct FilterRoomLoaderTests {
-  private let client: HTTPClientSpy
-  private let sut: LiveFilterRoomLoader
-  
-  init () {
-    self.client = HTTPClientSpy()
-    self.sut = LiveFilterRoomLoader(
+
+  // MARK: Lifecycle
+
+  init() {
+    client = HTTPClientSpy()
+    sut = LiveFilterRoomLoader(
       client: client,
       baseURL: URL(string: "https://freerooms.devsoc.app")!)
   }
+
+  // MARK: Internal
 
   @Test
   func fetchFilteredRooms_success_returnsRoomIdsFromResponseMap() async throws {
@@ -185,4 +187,10 @@ struct FilterRoomLoaderTests {
 
     #expect(result == .failure(.connectivity))
   }
+
+  // MARK: Private
+
+  private let client: HTTPClientSpy
+  private let sut: LiveFilterRoomLoader
+
 }
