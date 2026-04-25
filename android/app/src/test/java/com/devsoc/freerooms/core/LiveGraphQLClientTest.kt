@@ -1,2 +1,68 @@
-package com.devsoc.freerooms.core 
+package com.devsoc.freerooms.core
 
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Query
+import com.devsoc.freerooms.core.network.LiveGraphQLClient
+import com.devsoc.freerooms.core.network.NetworkResult
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import java.util.UUID
+
+class LiveGraphQLClientTest {
+
+    private lateinit var apolloClient: ApolloClient
+    private lateinit var liveGraphQLClient: LiveGraphQLClient
+
+    @Before
+    fun setUp() {
+        apolloClient = mockk()
+        liveGraphQLClient = LiveGraphQLClient(apolloClient)
+    }
+
+    @Test
+    fun `query success returns NetworkResult Success`() = runBlocking {
+        // Given
+        val mockQuery = mockk<Query<Query.Data>>()
+        val mockData = mockk<Query.Data>()
+        val mockCall = mockk<ApolloCall<Query.Data>>()
+        val mockResponse = ApolloResponse.Builder(
+            operation = mockQuery,
+            requestUuid = UUID.randomUUID(),
+        ).data(mockData).build()
+
+        every { apolloClient.query(mockQuery) } returns mockCall
+        coEvery { mockCall.execute() } returns mockResponse
+
+        // When
+        val result = liveGraphQLClient.query(mockQuery)
+
+        // Then
+        Assert.assertTrue(result is NetworkResult.Success)
+        Assert.assertEquals(mockData, (result as NetworkResult.Success).data)
+    }
+
+    @Test
+    fun `query failure returns NetworkResult Error`() = runBlocking {
+        // Given
+        val mockQuery = mockk<Query<Query.Data>>()
+        val mockCall = mockk<ApolloCall<Query.Data>>()
+        val exceptionMessage = "Network error"
+
+        every { apolloClient.query(mockQuery) } returns mockCall
+        coEvery { mockCall.execute() } throws Exception(exceptionMessage)
+
+        // When
+        val result = liveGraphQLClient.query(mockQuery)
+
+        // Then
+        Assert.assertTrue(result is NetworkResult.Error)
+        Assert.assertEquals(exceptionMessage, (result as NetworkResult.Error).message)
+    }
+}
