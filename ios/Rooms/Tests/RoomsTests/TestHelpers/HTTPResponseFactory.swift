@@ -8,12 +8,12 @@
 import Foundation
 
 /// A helper function to create a mock HTTP response for testing purposes
-/// 
+///
 /// - Parameters:
 ///  - route: The API route for which the response is being created (e.g., "/api/rooms/search")
 ///  - json: The JSON string representing the response body
 ///  - statusCode: The HTTP status code for the response (default is 200)
-/// 
+///
 /// - Returns: A tuple containing the response data and an HTTPURLResponse object
 func makeHTTPResponse(
   route: String,
