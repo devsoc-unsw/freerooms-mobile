@@ -101,8 +101,6 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
     // Create a NetworkCodableLoader to perform the GET request and decode the response into an array of RemoteFilterRoomMap
     let loader = NetworkCodableLoader<RemoteFilterRoomMap>(client: client, url: url)
 
-//    get the room ids from the get request
-//    and filter all the shown rooms based on the room ids fetched.
     switch await loader.fetch() {
     case .success(let response):
       let roomIds = Array(response.keys)
@@ -159,9 +157,3 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
   }
 
 }
-
-#warning("TODO: Need to standardise these error enums LOL")
-// case connectivity
-// case invalidBuildingId
-// case invalidRoomID
-// case invalidURL
