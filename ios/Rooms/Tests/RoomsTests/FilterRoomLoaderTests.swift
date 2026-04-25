@@ -14,11 +14,18 @@ import Testing
 
 @Suite
 struct FilterRoomLoaderTests {
+  private let client: HTTPClientSpy
+  private let sut: LiveFilterRoomLoader
+  
+  init () {
+    self.client = HTTPClientSpy()
+    self.sut = LiveFilterRoomLoader(
+      client: client,
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
+  }
 
   @Test
   func fetchFilteredRooms_success_returnsRoomIdsFromResponseMap() async throws {
-    let client = HTTPClientSpy()
-
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
@@ -35,10 +42,6 @@ struct FilterRoomLoaderTests {
           }
         }
         """))
-
-    let sut = LiveFilterRoomLoader(
-      client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: "2026-04-17T06:07:40.097Z",
@@ -62,8 +65,6 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_sendsFilterValuesAsQueryParameters() async throws {
-    let client = HTTPClientSpy()
-
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
@@ -75,10 +76,6 @@ struct FilterRoomLoaderTests {
           }
         }
         """))
-
-    let sut = LiveFilterRoomLoader(
-      client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     _ = await sut.fetchFilteredRooms(
       dateTime: "2026-04-17T06:07:40.097Z",
@@ -114,17 +111,11 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_withNilFilters_sendsEmptyQueryValues() async throws {
-    let client = HTTPClientSpy()
-
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         {}
         """))
-
-    let sut = LiveFilterRoomLoader(
-      client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     _ = await sut.fetchFilteredRooms(
       dateTime: nil,
@@ -157,12 +148,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_whenClientFails_returnsConnectivityError() async throws {
-    let client = HTTPClientSpy()
     client.result = .failure(AnyError())
-
-    let sut = LiveFilterRoomLoader(
-      client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: nil,
@@ -180,17 +166,11 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_whenResponseIsInvalidJSON_returnsConnectivityError() async throws {
-    let client = HTTPClientSpy()
-
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         not valid json
         """))
-
-    let sut = LiveFilterRoomLoader(
-      client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: nil,
