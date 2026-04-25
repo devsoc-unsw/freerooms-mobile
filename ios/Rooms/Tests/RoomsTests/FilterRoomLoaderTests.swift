@@ -9,8 +9,8 @@ import Foundation
 import Networking
 import RoomModels
 import RoomServices
-import Testing
 import RoomTestUtils
+import Testing
 
 @Suite
 struct FilterRoomLoaderTests {
@@ -22,25 +22,23 @@ struct FilterRoomLoaderTests {
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
-      {
-        "K-G27-108": {
-          "status": "free",
-          "endtime": "",
-          "name": "AGSM 108 Ex Phys Motor Control"
-        },
-        "K-G27-109": {
-          "status": "free",
-          "endtime": "",
-          "name": "AGSM 109 Exercise Physiology"
+        {
+          "K-G27-108": {
+            "status": "free",
+            "endtime": "",
+            "name": "AGSM 108 Ex Phys Motor Control"
+          },
+          "K-G27-109": {
+            "status": "free",
+            "endtime": "",
+            "name": "AGSM 109 Exercise Physiology"
+          }
         }
-      }
-      """
-    ))
+        """))
 
     let sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!
-    )
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: "2026-04-17T06:07:40.097Z",
@@ -51,12 +49,10 @@ struct FilterRoomLoaderTests {
       duration: 120,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false
-    )
+      SortedBySpecificSchoolId: false)
 
     switch result {
     case .success(let roomIds):
-      print(roomIds)
       #expect(Set(roomIds) == Set(["K-G27-108", "K-G27-109"]))
 
     case .failure(let error):
@@ -71,20 +67,18 @@ struct FilterRoomLoaderTests {
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
-      {
-        "K-G27-108": {
-          "status": "free",
-          "endtime": "",
-          "name": "AGSM 108 Ex Phys Motor Control"
+        {
+          "K-G27-108": {
+            "status": "free",
+            "endtime": "",
+            "name": "AGSM 108 Ex Phys Motor Control"
+          }
         }
-      }
-      """
-    ))
+        """))
 
     let sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!
-    )
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     _ = await sut.fetchFilteredRooms(
       dateTime: "2026-04-17T06:07:40.097Z",
@@ -95,16 +89,14 @@ struct FilterRoomLoaderTests {
       duration: 120,
       usage: "study",
       location: "Kensington",
-      SortedBySpecificSchoolId: true
-    )
+      SortedBySpecificSchoolId: true)
 
     let url = try #require(client.requestedURLs.first)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
     let queryItems = Dictionary(
       uniqueKeysWithValues: (components.queryItems ?? []).map {
         ($0.name, $0.value ?? "")
-      }
-    )
+      })
 
     #expect(components.path == "/api/rooms/search")
 
@@ -127,14 +119,12 @@ struct FilterRoomLoaderTests {
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
-      {}
-      """
-    ))
+        {}
+        """))
 
     let sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!
-    )
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     _ = await sut.fetchFilteredRooms(
       dateTime: nil,
@@ -145,16 +135,14 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false
-    )
+      SortedBySpecificSchoolId: false)
 
     let url = try #require(client.requestedURLs.first)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
     let queryItems = Dictionary(
       uniqueKeysWithValues: (components.queryItems ?? []).map {
         ($0.name, $0.value ?? "")
-      }
-    )
+      })
 
     #expect(queryItems["datetime"] == "")
     #expect(queryItems["startTime"] == "")
@@ -174,8 +162,7 @@ struct FilterRoomLoaderTests {
 
     let sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!
-    )
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: nil,
@@ -186,8 +173,7 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false
-    )
+      SortedBySpecificSchoolId: false)
 
     #expect(result == .failure(.connectivity))
   }
@@ -199,14 +185,12 @@ struct FilterRoomLoaderTests {
     client.result = .success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
-      not valid json
-      """
-    ))
+        not valid json
+        """))
 
     let sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!
-    )
+      baseURL: URL(string: "https://freerooms.devsoc.app")!)
 
     let result = await sut.fetchFilteredRooms(
       dateTime: nil,
@@ -217,8 +201,7 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false
-    )
+      SortedBySpecificSchoolId: false)
 
     #expect(result == .failure(.connectivity))
   }

@@ -8,18 +8,18 @@
 import Foundation
 import Networking
 
+// MARK: - HTTPClientSpy
 
-public final class HTTPClientSpy: HTTPClient {
-  
-  public init() { }
-  
-  public var requestedURLs: [URL] = []
-  public var result: Swift.Result<(Data, HTTPURLResponse), Error> = .failure(AnyError())
-  
-  public func get(from url: URL) async -> Swift.Result<(Data, HTTPURLResponse), Error> {
+final class HTTPClientSpy: HTTPClient {
+  var requestedURLs: [URL] = []
+  var result: Swift.Result<(Data, HTTPURLResponse), Error> = .failure(AnyError())
+
+  func get(from url: URL) async -> Swift.Result<(Data, HTTPURLResponse), Error> {
     requestedURLs.append(url)
     return result
   }
 }
 
-private struct AnyError: Error {}
+// MARK: - AnyError
+
+struct AnyError: Error { }
