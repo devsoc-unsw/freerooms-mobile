@@ -42,16 +42,7 @@ public protocol FilterRoomLoader {
   ///
   /// - Returns: A result containing either the filtered rooms or a
   ///   `FilterRoomLoaderError` if the request fails.
-  func fetchFilteredRooms(
-    dateTime: String?,
-    startTime: String?,
-    endTime: String?,
-    buildingId: String?,
-    capacity: Int?,
-    duration: Int?,
-    usage: String?,
-    location: String?,
-    SortedBySpecificSchoolId: Bool)
+  func fetchFilteredRooms(options: FilterRoomOptions)
     async -> Result<[String], FilterRoomLoaderError>
 }
 
@@ -70,30 +61,12 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
 
   // MARK: Public
 
-  public func fetchFilteredRooms(
-    dateTime: String?,
-    startTime: String?,
-    endTime: String?,
-    buildingId: String?,
-    capacity: Int?,
-    duration: Int?,
-    usage: String?,
-    location: String?,
-    SortedBySpecificSchoolId: Bool)
+  public func fetchFilteredRooms(options: FilterRoomOptions)
     async -> Result<[String], FilterRoomLoaderError>
   {
     // Construct the search URL with query parameters based on the provided filter conditions
     guard
-      let url = makeSearchRoomsURL(
-        dateTime: dateTime,
-        startTime: startTime,
-        endTime: endTime,
-        buildingId: buildingId,
-        capacity: capacity,
-        duration: duration,
-        usage: usage,
-        location: location,
-        SortedBySpecificSchoolId: SortedBySpecificSchoolId)
+      let url = makeSearchRoomsURL(options: options)
     else {
       return .failure(.invalidURL)
     }
@@ -119,18 +92,7 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
   private let endpointPath: String
 
   /// Helper method to construct the search URL with query parameters
-  private func makeSearchRoomsURL(
-    dateTime: String?,
-    startTime: String?,
-    endTime: String?,
-    buildingId: String?,
-    capacity: Int?,
-    duration: Int?,
-    usage: String?,
-    location: String?,
-    SortedBySpecificSchoolId: Bool)
-    -> URL?
-  {
+  private func makeSearchRoomsURL(options: FilterRoomOptions) -> URL? {
     // Construct the base endpoint URL and append query parameters for filtering rooms
     guard
       let baseEndpointURL = URL(string: endpointPath, relativeTo: baseURL),
@@ -141,15 +103,15 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
 
     // Add query items for each filter parameter, using empty strings for nil values and converting boolean to "true"/"false"
     components.queryItems = [
-      URLQueryItem(name: "datetime", value: dateTime ?? ""),
-      URLQueryItem(name: "startTime", value: startTime ?? ""),
-      URLQueryItem(name: "endTime", value: endTime ?? ""),
-      URLQueryItem(name: "buildingId", value: buildingId ?? ""),
-      URLQueryItem(name: "capacity", value: capacity.map(String.init) ?? ""),
-      URLQueryItem(name: "duration", value: duration.map(String.init) ?? ""),
-      URLQueryItem(name: "usage", value: usage ?? ""),
-      URLQueryItem(name: "location", value: location ?? ""),
-      URLQueryItem(name: "id", value: SortedBySpecificSchoolId ? "true" : "false"),
+      URLQueryItem(name: "datetime", value: options.dateTime ?? ""),
+      URLQueryItem(name: "startTime", value: options.startTime ?? ""),
+      URLQueryItem(name: "endTime", value: options.endTime ?? ""),
+      URLQueryItem(name: "buildingId", value: options.buildingId ?? ""),
+      URLQueryItem(name: "capacity", value: options.capacity.map(String.init) ?? ""),
+      URLQueryItem(name: "duration", value: options.duration.map(String.init) ?? ""),
+      URLQueryItem(name: "usage", value: options.usage ?? ""),
+      URLQueryItem(name: "location", value: options.location ?? ""),
+      URLQueryItem(name: "id", value: options.sortedBySpecificSchoolId ? "true" : "false"),
     ]
 
     // Return the fully constructed URL with query parameters

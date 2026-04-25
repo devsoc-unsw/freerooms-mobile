@@ -45,16 +45,7 @@ public protocol RoomService {
   func getRooms(buildingId: String) async -> GetRoomResult
   func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
   func getRoomRating(roomID: String) async -> GetRoomRatingResult
-  func getFilterRooms(
-    dateTime: String?,
-    startTime: String?,
-    endTime: String?,
-    buildingId: String?,
-    capacity: Int?,
-    duration: Int?,
-    usage: String?,
-    location: String?,
-    SortedBySpecificSchoolId: Bool)
+  func getFilterRooms(options: FilterRoomOptions)
     async -> GetRoomResult
 }
 
@@ -78,16 +69,7 @@ public final class LiveRoomService: RoomService {
 
   // MARK: Public
 
-  public func getFilterRooms(
-    dateTime: String?,
-    startTime: String?,
-    endTime: String?,
-    buildingId: String?,
-    capacity: Int?,
-    duration: Int?,
-    usage: String?,
-    location: String?,
-    SortedBySpecificSchoolId: Bool)
+  public func getFilterRooms(options: FilterRoomOptions)
     async -> GetRoomResult
   {
     // TODO: add a guard here later
@@ -99,17 +81,7 @@ public final class LiveRoomService: RoomService {
       return .failure(.connectivity)
     }
 
-    switch await roomFilterLoader.fetchFilteredRooms(
-      dateTime: dateTime,
-      startTime: startTime,
-      endTime: endTime,
-      buildingId: buildingId,
-      capacity: capacity,
-      duration: duration,
-      usage: usage,
-      location: location,
-      SortedBySpecificSchoolId: SortedBySpecificSchoolId)
-    {
+    switch await roomFilterLoader.fetchFilteredRooms(options: options) {
     case .success(let response):
       let filteredRooms = rooms.filter { response.contains($0.id) }
 
@@ -211,16 +183,7 @@ public final class PreviewRoomService: RoomService {
       averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 4.0)))
   }
 
-  public func getFilterRooms(
-    dateTime _: String?,
-    startTime _: String?,
-    endTime _: String?,
-    buildingId _: String?,
-    capacity _: Int?,
-    duration _: Int?,
-    usage _: String?,
-    location _: String?,
-    SortedBySpecificSchoolId _: Bool)
+  public func getFilterRooms(options _: FilterRoomOptions)
     async -> GetRoomResult
   {
     .success([Room.exampleOne, Room.exampleTwo])

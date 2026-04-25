@@ -45,7 +45,7 @@ struct FilterRoomLoaderTests {
         }
         """))
 
-    let result = await sut.fetchFilteredRooms(
+    let result = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: "2026-04-17T06:07:40.097Z",
       startTime: nil,
       endTime: nil,
@@ -54,7 +54,7 @@ struct FilterRoomLoaderTests {
       duration: 120,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false)
+      sortedBySpecificSchoolId: false))
 
     switch result {
     case .success(let roomIds):
@@ -79,7 +79,7 @@ struct FilterRoomLoaderTests {
         }
         """))
 
-    _ = await sut.fetchFilteredRooms(
+    _ = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: "2026-04-17T06:07:40.097Z",
       startTime: "09:00",
       endTime: "11:00",
@@ -88,7 +88,7 @@ struct FilterRoomLoaderTests {
       duration: 120,
       usage: "study",
       location: "Kensington",
-      SortedBySpecificSchoolId: true)
+      sortedBySpecificSchoolId: true))
 
     let url = try #require(client.requestedURLs.first)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
@@ -119,7 +119,7 @@ struct FilterRoomLoaderTests {
         {}
         """))
 
-    _ = await sut.fetchFilteredRooms(
+    _ = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: nil,
       startTime: nil,
       endTime: nil,
@@ -128,7 +128,7 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false)
+      sortedBySpecificSchoolId: false))
 
     let url = try #require(client.requestedURLs.first)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
@@ -152,7 +152,7 @@ struct FilterRoomLoaderTests {
   func fetchFilteredRooms_whenClientFails_returnsConnectivityError() async throws {
     client.result = .failure(AnyError())
 
-    let result = await sut.fetchFilteredRooms(
+    let result = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: nil,
       startTime: nil,
       endTime: nil,
@@ -161,7 +161,7 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false)
+      sortedBySpecificSchoolId: false))
 
     #expect(result == .failure(.connectivity))
   }
@@ -174,7 +174,7 @@ struct FilterRoomLoaderTests {
         not valid json
         """))
 
-    let result = await sut.fetchFilteredRooms(
+    let result = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: nil,
       startTime: nil,
       endTime: nil,
@@ -183,7 +183,7 @@ struct FilterRoomLoaderTests {
       duration: nil,
       usage: nil,
       location: nil,
-      SortedBySpecificSchoolId: false)
+      sortedBySpecificSchoolId: false))
 
     #expect(result == .failure(.connectivity))
   }
