@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import VISOR
 
 // MARK: - HTTPClient
+public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), Error>
 
+@Spyable
+@Stubbable
 public protocol HTTPClient {
-  typealias Result = Swift.Result<(Data, HTTPURLResponse), Error>
-
-  func get(from url: URL) async -> Result
+  func get(from url: URL) async -> HTTPClientResult
 }
 
 // MARK: - HTTPClientError

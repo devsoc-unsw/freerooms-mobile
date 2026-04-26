@@ -18,7 +18,7 @@ struct FilterRoomLoaderTests {
   // MARK: Lifecycle
 
   init() {
-    client = HTTPClientSpy()
+    client = SpyHTTPClient()
     sut = LiveFilterRoomLoader(
       client: client,
       baseURL: URL(string: "https://freerooms.devsoc.app")!)
@@ -28,7 +28,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_success_returnsRoomIdsFromResponseMap() async throws {
-    client.result = .success(makeHTTPResponse(
+    client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         {
@@ -67,7 +67,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_sendsFilterValuesAsQueryParameters() async throws {
-    client.result = .success(makeHTTPResponse(
+    client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         {
@@ -90,7 +90,7 @@ struct FilterRoomLoaderTests {
       location: "Kensington",
       sortedBySpecificSchoolId: true))
 
-    let url = try #require(client.requestedURLs.first)
+    let url = try #require(client.getReceivedUrl)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
     let queryItems = Dictionary(
       uniqueKeysWithValues: (components.queryItems ?? []).map {
@@ -113,7 +113,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_withNilFilters_sendsEmptyQueryValues() async throws {
-    client.result = .success(makeHTTPResponse(
+    client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         {}
@@ -130,7 +130,7 @@ struct FilterRoomLoaderTests {
       location: nil,
       sortedBySpecificSchoolId: false))
 
-    let url = try #require(client.requestedURLs.first)
+    let url = try #require(client.getReceivedUrl)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
     let queryItems = Dictionary(
       uniqueKeysWithValues: (components.queryItems ?? []).map {
@@ -150,7 +150,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_whenClientFails_returnsConnectivityError() async throws {
-    client.result = .failure(AnyError())
+    client.getReturnValue = HTTPClientResult.failure(AnyError())
 
     let result = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: nil,
@@ -168,7 +168,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_whenResponseIsInvalidJSON_returnsConnectivityError() async throws {
-    client.result = .success(makeHTTPResponse(
+    client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
         not valid json
@@ -190,7 +190,8 @@ struct FilterRoomLoaderTests {
 
   // MARK: Private
 
-  private let client: HTTPClientSpy
+  private let client: SpyHTTPClient
   private let sut: LiveFilterRoomLoader
 
 }
+

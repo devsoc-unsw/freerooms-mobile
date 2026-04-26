@@ -31,3 +31,5 @@ func makeHTTPResponse(
 
   return (Data(json.utf8), response)
 }
+
+struct AnyError: Error { }

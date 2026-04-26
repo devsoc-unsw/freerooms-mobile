@@ -19,7 +19,7 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Public
 
-  public func get(from url: URL) async -> HTTPClient.Result {
+  public func get(from url: URL) async -> HTTPClientResult {
     do {
       let (data, urlResponse) = try await session.data(from: url)
       guard let httpUrlResponse = urlResponse as? HTTPURLResponse else {
