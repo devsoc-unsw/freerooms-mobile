@@ -11,8 +11,9 @@ import VISOR
 // MARK: - HTTPClient
 public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), Error>
 
+// MARK: - HTTPClient
+
 @Spyable
-@Stubbable
 public protocol HTTPClient {
   func get(from url: URL) async -> HTTPClientResult
 }

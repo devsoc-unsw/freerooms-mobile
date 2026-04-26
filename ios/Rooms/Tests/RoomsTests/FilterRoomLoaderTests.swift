@@ -194,4 +194,3 @@ struct FilterRoomLoaderTests {
   private let sut: LiveFilterRoomLoader
 
 }
-
