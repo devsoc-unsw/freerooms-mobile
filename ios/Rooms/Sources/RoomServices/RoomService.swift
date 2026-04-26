@@ -45,6 +45,8 @@ public protocol RoomService {
   func getRooms(buildingId: String) async -> GetRoomResult
   func getRoomBookings(roomID: String) async -> GetRoomBookingsResult
   func getRoomRating(roomID: String) async -> GetRoomRatingResult
+  func getFilterRooms(options: FilterRoomOptions)
+    async -> GetRoomResult
 }
 
 // MARK: - LiveRoomService
@@ -53,13 +55,42 @@ public final class LiveRoomService: RoomService {
 
   // MARK: Lifecycle
 
-  public init(roomLoader: any RoomLoader, roomBookingLoader: any RoomBookingLoader, roomRatingLoader: any RoomRatingLoader) {
+  public init(
+    roomLoader: any RoomLoader,
+    roomBookingLoader: any RoomBookingLoader,
+    roomRatingLoader: any RoomRatingLoader,
+    roomFilterLoader: any FilterRoomLoader)
+  {
     self.roomLoader = roomLoader
     self.roomBookingLoader = roomBookingLoader
     self.roomRatingLoader = roomRatingLoader
+    self.roomFilterLoader = roomFilterLoader
   }
 
   // MARK: Public
+
+  public func getFilterRooms(options: FilterRoomOptions)
+    async -> GetRoomResult
+  {
+    // TODO: add a guard here later
+    var rooms: [Room] = []
+    switch await roomLoader.fetch() {
+    case .success(let response):
+      rooms = response
+    case .failure:
+      return .failure(.connectivity)
+    }
+
+    switch await roomFilterLoader.fetchFilteredRooms(options: options) {
+    case .success(let response):
+      let filteredRooms = rooms.filter { response.contains($0.id) }
+
+      return .success(filteredRooms)
+
+    case .failure:
+      return .failure(.connectivity)
+    }
+  }
 
   public func getRooms(buildingId: String) async -> GetRoomResult {
     // Validate input
@@ -114,6 +145,7 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
   private var roomBookingLoader: any RoomBookingLoader
   private var roomRatingLoader: any RoomRatingLoader
+  private var roomFilterLoader: any FilterRoomLoader
 }
 
 // MARK: - PreviewRoomService
@@ -149,5 +181,11 @@ public final class PreviewRoomService: RoomService {
       roomId: "K-J17-G03",
       overallRating: 4.0,
       averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 4.0)))
+  }
+
+  public func getFilterRooms(options _: FilterRoomOptions)
+    async -> GetRoomResult
+  {
+    .success([Room.exampleOne, Room.exampleTwo])
   }
 }
