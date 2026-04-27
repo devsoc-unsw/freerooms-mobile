@@ -21,6 +21,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Run Linter and Formatter
         run: ./gradlew detekt && ./gradlew ktfmtCheck
   Build:
@@ -36,6 +38,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Build Apk
         run: ./gradlew assembleDebug
   Tests:
@@ -51,5 +55,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Run Tests
         run: ./gradlew test
