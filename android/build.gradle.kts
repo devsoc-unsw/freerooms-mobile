@@ -6,5 +6,4 @@ plugins {
   alias(libs.plugins.apollo) apply false
 }
 
-
 ktfmt { googleStyle() }
