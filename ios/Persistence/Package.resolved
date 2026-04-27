@@ -1,0 +1,24 @@
+{
+  "originHash" : "b5d70099250c7bfb4bc093f0708db577cd255ad89045ff939ddbf816d7215dc5",
+  "pins" : [
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    },
+    {
+      "identity" : "visor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/avdn-dev/VISOR.git",
+      "state" : {
+        "revision" : "4ba6dd8d9845c431fca0edeecff2d5efbc105045",
+        "version" : "8.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}

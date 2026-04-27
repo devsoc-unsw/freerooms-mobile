@@ -20,7 +20,7 @@ public struct RoomsListView: View {
     roomViewModel: RoomViewModel,
     building: Building,
     path: Binding<NavigationPath>,
-    imageProvider: @escaping (String) -> Image)
+    imageProvider: @escaping (String) -> CachedImage)
   {
     self.roomViewModel = roomViewModel
     self.building = building
@@ -35,7 +35,6 @@ public struct RoomsListView: View {
 
     return List {
       imageProvider(building.id)
-        .resizable()
         .frame(height: screenHeight / 4)
         .clipShape(RoundedRectangle(cornerRadius: 15))
         .listRowInsets(EdgeInsets()) // remove default list padding
@@ -84,7 +83,7 @@ public struct RoomsListView: View {
 
   let screenHeight = UIScreen.main.bounds.height
 
-  let imageProvider: (String) -> Image
+  let imageProvider: (String) -> CachedImage
 
   // MARK: Private
 

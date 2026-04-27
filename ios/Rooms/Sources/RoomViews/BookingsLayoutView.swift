@@ -15,11 +15,12 @@ struct BookingsLayoutView: View {
   var hour: Int
 
   let borderColor = Color.gray.opacity(0.3)
+  let slotHeight: CGFloat = 60
 
   var body: some View {
     HStack {
       Text(formatHour(hour))
-        .frame(width: 50, height: 40, alignment: .topTrailing)
+        .frame(width: 50, height: slotHeight, alignment: .topTrailing)
         .foregroundStyle(theme.accent.primary)
         .overlay(
           VStack(spacing: 0) {
@@ -35,11 +36,11 @@ struct BookingsLayoutView: View {
       VStack(spacing: 0) {
         Rectangle()
           .strokeBorder(borderColor, lineWidth: 1)
-          .frame(height: 20)
+          .frame(height: slotHeight / 2)
 
         Rectangle()
           .fill(.clear)
-          .frame(height: 20)
+          .frame(height: slotHeight / 2)
           .overlay(alignment: .leading) {
             Rectangle()
               .frame(width: 1)
