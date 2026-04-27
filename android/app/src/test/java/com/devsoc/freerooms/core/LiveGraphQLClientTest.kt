@@ -1,5 +1,6 @@
 package com.devsoc.freerooms.core
 
+import android.util.Log
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
@@ -9,6 +10,7 @@ import com.devsoc.freerooms.core.network.NetworkResult
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
@@ -22,6 +24,12 @@ class LiveGraphQLClientTest {
 
     @Before
     fun setUp() {
+        // Mock Android Log class to avoid "Method d in android.util.Log not mocked"
+        mockkStatic(Log::class)
+        every { Log.d(any(), any()) } returns 0
+        every { Log.e(any(), any()) } returns 0
+        every { Log.e(any(), any(), any()) } returns 0
+
         apolloClient = mockk()
         liveGraphQLClient = LiveGraphQLClient(apolloClient)
     }

@@ -1,6 +1,5 @@
 query GetBuildings {
     buildings {
-        aliases
         id
         lat
         long
