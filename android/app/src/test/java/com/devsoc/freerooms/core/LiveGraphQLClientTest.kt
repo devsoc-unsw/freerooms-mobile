@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Query
+import com.apollographql.apollo.exception.ApolloException
 import com.devsoc.freerooms.core.network.LiveGraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
 import io.mockk.coEvery
@@ -62,9 +63,12 @@ class LiveGraphQLClientTest {
         val mockQuery = mockk<Query<Query.Data>>()
         val mockCall = mockk<ApolloCall<Query.Data>>()
         val exceptionMessage = "Network error"
+        val mockException = mockk<ApolloException>()
+        every { mockException.message } returns exceptionMessage
 
         every { apolloClient.query(mockQuery) } returns mockCall
-        coEvery { mockCall.execute() } throws Exception(exceptionMessage)
+        // Throw a mocked ApolloException since the constructor is protected
+        coEvery { mockCall.execute() } throws mockException
 
         // When
         val result = liveGraphQLClient.query(mockQuery)
