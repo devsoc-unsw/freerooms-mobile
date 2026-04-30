@@ -1,0 +1,21 @@
+query GetRooms {
+    rooms {
+        writingMedia
+        usage
+        service
+        seating
+        school
+        name
+        microphone
+        long
+        lat
+        infotechnology
+        id
+        floor
+        capacity
+        buildingId
+        audiovisual
+        accessibility
+        abbr
+    }
+}
