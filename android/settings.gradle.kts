@@ -25,3 +25,7 @@ dependencyResolutionManagement {
 rootProject.name = "Freerooms"
 
 include(":app")
+include(":core:ui")
+include(":core:network")
+include(":feature:buildings")
+include(":feature:rooms")
