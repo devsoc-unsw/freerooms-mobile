@@ -433,7 +433,8 @@ func makeRoomSUT(
   let roomService = LiveRoomService(
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
-    roomRatingLoader: StubRoomRatingLoader())
+    roomRatingLoader: StubRoomRatingLoader(),
+    roomFilterLoader: StubFilterRoomLoader())
 
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
@@ -446,7 +447,8 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
   let roomService = LiveRoomService(
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
-    roomRatingLoader: StubRoomRatingLoader())
+    roomRatingLoader: StubRoomRatingLoader(),
+    roomFilterLoader: StubFilterRoomLoader())
   return RoomInteractor(roomService: roomService, locationService: locationService)
 }
 
