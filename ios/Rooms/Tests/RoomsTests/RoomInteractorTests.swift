@@ -380,34 +380,6 @@ enum RoomInteractorTests {
       #expect(result == expectedRooms.filter { $0.id != "K-G6-105" })
     }
   }
-
-  struct RoomFilterReferenceInstant {
-    @Test("filteringReferenceInstant uses selectedDate when it differs from DateDefaults")
-    func filteringReferenceInstantUsesCustomSelectedDate() {
-      let savedDefault = DateDefaults.selectedDate
-      defer { DateDefaults.selectedDate = savedDefault }
-
-      let baseline = Date(timeIntervalSince1970: 1_700_000_000)
-      DateDefaults.selectedDate = baseline
-      let custom = baseline.addingTimeInterval(3_600)
-      let filter = RoomFilter(selectedDate: custom)
-
-      #expect(filter.filteringReferenceInstant(clockNow: Date()) == custom)
-    }
-
-    @Test("filteringReferenceInstant uses clock when selectedDate matches DateDefaults")
-    func filteringReferenceInstantUsesClockWhenDateIsDefault() {
-      let savedDefault = DateDefaults.selectedDate
-      defer { DateDefaults.selectedDate = savedDefault }
-
-      let baseline = Date(timeIntervalSince1970: 1_700_000_000)
-      DateDefaults.selectedDate = baseline
-      let clock = baseline.addingTimeInterval(123)
-      let filter = RoomFilter(selectedDate: baseline)
-
-      #expect(filter.filteringReferenceInstant(clockNow: clock) == clock)
-    }
-  }
 }
 
 /// Function to make the building SUT

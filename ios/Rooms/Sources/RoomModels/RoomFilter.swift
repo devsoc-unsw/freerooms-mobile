@@ -37,13 +37,6 @@ public struct RoomFilter: Equatable {
   public var selectedCapacity: Int?
 }
 
-extension RoomFilter {
-  /// Start instant for duration overlap: the user’s chosen date/time if they changed the date filter from `DateDefaults.selectedDate`, otherwise `clockNow` (typically “right now”).
-  public func filteringReferenceInstant(clockNow: Date = Date()) -> Date {
-    selectedDate != DateDefaults.selectedDate ? selectedDate : clockNow
-  }
-}
-
 // MARK: - RoomType
 
 /// Represents different types of rooms with their display names and usage codes

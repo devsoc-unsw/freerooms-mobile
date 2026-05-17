@@ -166,9 +166,6 @@ public class RoomInteractor {
       }
     }
 
-    // Date/time chosen in the filter sheet (when not default) is the start of the duration window; see `RoomFilter.filteringReferenceInstant`.
-    let referenceInstant = filter.filteringReferenceInstant()
-
     if let duration = filter.selectedDuration {
       filteredRooms = getRoomsFilteredByDuration(
         for: duration.rawValue,
