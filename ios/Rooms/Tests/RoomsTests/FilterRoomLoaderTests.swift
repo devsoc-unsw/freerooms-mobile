@@ -19,7 +19,7 @@ struct FilterRoomLoaderTests {
 
   init() {
     client = SpyHTTPClient()
-    sut = LiveFilterRoomLoader(
+    sut = LiveFilterRoomService(
       client: client,
       baseURL: URL(string: "https://freerooms.devsoc.app")!)
   }
@@ -191,6 +191,6 @@ struct FilterRoomLoaderTests {
   // MARK: Private
 
   private let client: SpyHTTPClient
-  private let sut: LiveFilterRoomLoader
+  private let sut: LiveFilterRoomService
 
 }

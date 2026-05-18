@@ -10,19 +10,19 @@ import Networking
 import RoomModels
 import VISOR
 
-// MARK: - FilterRoomLoaderError
+// MARK: - FilterRoomServiceError
 
-public enum FilterRoomLoaderError: Error, Equatable {
+public enum FilterRoomServiceError: Error, Equatable {
   case connectivity
   case invalidData
   case invalidURL
 }
 
-// MARK: - FilterRoomLoader
+// MARK: - FilterRoomService
 
 @Spyable
 @Stubbable
-public protocol FilterRoomLoader {
+public protocol FilterRoomService {
 
   /// Fetches rooms that match the provided filter conditions.
   ///
@@ -41,15 +41,15 @@ public protocol FilterRoomLoader {
   ///   - SortedBySpecificSchoolId: A flag used to filter by a specific school (non-CATS)
   ///
   /// - Returns: A result containing either the filtered rooms or a
-  ///   `FilterRoomLoaderError` if the request fails.
+  ///   `FilterRoomServiceError` if the request fails.
   func fetchFilteredRooms(options: FilterRoomOptions)
-    async -> Result<[String], FilterRoomLoaderError>
+    async -> Result<[String], FilterRoomServiceError>
 }
 
-// MARK: - LiveFilterRoomLoader
+// MARK: - LiveFilterRoomService
 
 /// Provides the current filtered room
-public final class LiveFilterRoomLoader: FilterRoomLoader {
+public final class LiveFilterRoomService: FilterRoomService {
 
   // MARK: Lifecycle
 
@@ -62,7 +62,7 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
   // MARK: Public
 
   public func fetchFilteredRooms(options: FilterRoomOptions)
-    async -> Result<[String], FilterRoomLoaderError>
+    async -> Result<[String], FilterRoomServiceError>
   {
     // Construct the search URL with query parameters based on the provided filter conditions
     guard

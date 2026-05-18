@@ -87,21 +87,6 @@ public class RoomInteractor {
     }
   }
 
-  /// Per-room bookings keyed by `Room.id`.
-  public func getRoomsFilteredByDuration(
-    for minDuration: Int,
-    roomBookings: [String: [RoomBooking]],
-    rooms: [Room],
-    now: Date = Date())
-    -> [Room]
-  {
-    roomsFreeForMinimumDuration(
-      minDurationMinutes: minDuration,
-      now: now,
-      rooms: rooms,
-      bookingsForRoom: { room in roomBookings[room.id] ?? [] })
-  }
-
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
@@ -135,7 +120,7 @@ public class RoomInteractor {
   }
 
   /// - Parameter roomBookingsByRoomId: Bookings keyed by `Room.id` for duration filtering. Rooms with no entry are treated as having no known bookings (they pass the duration filter until loaded).
-  public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookingsByRoomId: [String: [RoomBooking]]) -> [Room] {
+  public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookingsByRoomId _: [String: [RoomBooking]]) -> [Room] {
     var filteredRooms = rooms
 
     // Filter by room type (usage)
@@ -166,13 +151,7 @@ public class RoomInteractor {
       }
     }
 
-    if let duration = filter.selectedDuration {
-      filteredRooms = getRoomsFilteredByDuration(
-        for: duration.rawValue,
-        roomBookings: roomBookingsByRoomId,
-        rooms: filteredRooms,
-        now: referenceInstant)
-    }
+    if let duration = filter.selectedDuration { }
 
     return filteredRooms
   }
@@ -181,23 +160,4 @@ public class RoomInteractor {
 
   private let roomService: RoomService
   private let locationService: LocationService
-
-  /// A booking blocks the room if it overlaps the interval from `now` for `minDurationMinutes`.
-  private func roomsFreeForMinimumDuration(
-    minDurationMinutes: Int,
-    now: Date,
-    rooms: [Room],
-    bookingsForRoom: (Room) -> [RoomBooking])
-    -> [Room]
-  {
-    let windowEnd = now.addingTimeInterval(TimeInterval(minDurationMinutes * 60))
-    return rooms.filter { room in
-      let bookings = bookingsForRoom(room)
-      let hasBlockingBooking = bookings.contains { booking in
-        booking.start < windowEnd && booking.end > now
-      }
-      return !hasBlockingBooking
-    }
-  }
-
 }

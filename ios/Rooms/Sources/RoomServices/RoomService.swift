@@ -59,7 +59,7 @@ public final class LiveRoomService: RoomService {
     roomLoader: any RoomLoader,
     roomBookingLoader: any RoomBookingLoader,
     roomRatingLoader: any RoomRatingLoader,
-    roomFilterLoader: any FilterRoomLoader)
+    roomFilterLoader: any FilterRoomService)
   {
     self.roomLoader = roomLoader
     self.roomBookingLoader = roomBookingLoader
@@ -145,7 +145,7 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
   private var roomBookingLoader: any RoomBookingLoader
   private var roomRatingLoader: any RoomRatingLoader
-  private var roomFilterLoader: any FilterRoomLoader
+  private var roomFilterLoader: any FilterRoomService
 }
 
 // MARK: - PreviewRoomService
