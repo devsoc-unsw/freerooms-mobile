@@ -23,6 +23,9 @@
       location = "group:Rooms">
    </FileRef>
    <FileRef
+      location = "group:Errors">
+   </FileRef>
+   <FileRef
       location = "group:TestingSupport">
    </FileRef>
    <FileRef

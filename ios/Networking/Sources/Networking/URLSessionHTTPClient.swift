@@ -23,11 +23,11 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
     do {
       let (data, urlResponse) = try await session.data(from: url)
       guard let httpUrlResponse = urlResponse as? HTTPURLResponse else {
-        return .failure(HTTPClientError.invalidHTTPResponse)
+        return .failure(HTTPClientError.invalidHTTPResponse(url: url))
       }
       return .success((data, httpUrlResponse))
     } catch {
-      return .failure(HTTPClientError.networkFailure)
+      return .failure(HTTPClientError.networkFailure(url: url, networkError: error))
     }
   }
 

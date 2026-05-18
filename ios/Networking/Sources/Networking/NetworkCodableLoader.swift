@@ -21,6 +21,16 @@ public enum StatusCode: Int {
   case ok = 200
 }
 
+// MARK: - NetworkCodableError
+
+//struct NetworkCodableError: NetworkRequestError {
+//  
+//  enum Reason: Sendable {
+//    case clientError(HTTPClientError)
+//  }
+//  
+//}
+
 // MARK: - NetworkCodableLoader
 
 public final class NetworkCodableLoader<T: Codable>: CodableLoader {

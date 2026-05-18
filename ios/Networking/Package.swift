@@ -15,6 +15,7 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "TestingSupport", path: "../TestingSupport"),
+    .package(name: "Errors", path: "../Errors"),
     .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
@@ -23,6 +24,7 @@ let package = Package(
     .target(
       name: "Networking",
       dependencies: [
+        .product(name: "Errors", package: "Errors"),
         .product(name: "VISOR", package: "VISOR"),
       ],
       swiftSettings: .defaultSettings),
