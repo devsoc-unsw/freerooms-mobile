@@ -61,7 +61,9 @@ public struct MapTabView: View {
               building: building,
               isSelected: mapViewModel.isSelectedBuilding(building.id))
               .onTapGesture {
-                mapViewModel.onSelectBuilding(building.id)
+                  Task {
+                      await mapViewModel.onSelectBuilding(building.id)
+                  }
               }
           }
         }
@@ -76,9 +78,20 @@ public struct MapTabView: View {
       .mapControls {
         // Specifying no map controls removes the compass
       }
+      // when user taps outside of the sheet, it shrinks down to medium size
+      .simultaneousGesture(
+          TapGesture()
+              .onEnded {
+                  if mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition {
+                      withAnimation(.spring()) {
+                          mapViewModel.bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
+                      }
+                  }
+              }
+      )
       .bottomSheet(
         bottomSheetPosition: $mapViewModel.bottomSheetPosition,
-        switchablePositions: [SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
+        switchablePositions: [SheetPosition.top.bottomSheetPosition,   SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
       {
         VStack {
           if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
@@ -106,6 +119,7 @@ public struct MapTabView: View {
         mapViewModel.requestLocationPermission()
         await mapViewModel.loadBuildings()
       }
+      .zIndex(0)
       VStack(spacing: 0) {
         MapSearchBar(searchtxt: $mapViewModel.searchText)
           .padding(.bottom, 6)
@@ -114,6 +128,9 @@ public struct MapTabView: View {
         }
         Spacer()
       }
+      // search button is gone when sheet is at top
+      .opacity(mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition ? 0 : 1)
+      .animation(.easeInOut(duration: 0.3), value: mapViewModel.bottomSheetPosition)
     }
     .environment(mapViewModel)
     .ignoresSafeArea(.keyboard)
