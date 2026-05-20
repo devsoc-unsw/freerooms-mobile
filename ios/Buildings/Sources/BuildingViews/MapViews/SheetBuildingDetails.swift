@@ -13,11 +13,14 @@ public struct SheetBuildingDetails: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 12) {
-      headerSection
-      buildingImageSection
-      directionsButton
-    }
+      VStack(spacing: 12) {
+          headerSection
+          buildingImageSection
+          directionsButton
+          ScrollView {
+              buildingContentSection
+          }
+      }
   }
 
   // MARK: Private
@@ -46,6 +49,22 @@ public struct SheetBuildingDetails: View {
     }
   }
 
+  @ViewBuilder
+  private var buildingContentSection: some View {
+      if let _ = viewModel.selectedBuildingID {
+          ForEach(viewModel.availableRooms) { room in
+              // make the text in blocks
+              Text(room.name)
+                  .padding()
+                  .frame(maxWidth: .infinity, maxHeight: 75, alignment: .leading)
+                  .font(.headline)
+                  .foregroundColor(Theme.light.accent.primary)
+                  .overlay (RoundedRectangle(cornerRadius: 10)
+                    .stroke(Theme.light.accent.primary, lineWidth: 2))
+          }
+      }
+  }
+ 
   @ViewBuilder
   private var buildingImageSection: some View {
     if let buildingID = viewModel.selectedBuildingID {
