@@ -48,6 +48,7 @@ public final class LiveRoomLoader: RoomLoader {
     if !hasSavedData {
       switch await JSONRoomLoader.fetch() {
       case .success(let rooms):
+          _ = swiftDataRoomLoader.seed(rooms)
         var filteredRooms = rooms.filter { $0.buildingId == buildingId }
         await combineLiveAndSavedData(&filteredRooms)
         UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedRoomsData)
