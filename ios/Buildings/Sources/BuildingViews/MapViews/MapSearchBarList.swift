@@ -15,7 +15,9 @@ public struct MapSearchBarList: View {
   public var body: some View {
     List(viewModel.filteredBuildings, id: \.self) { building in
       Button {
-        viewModel.onSelectBuilding(building.id)
+        Task {
+            await viewModel.onSelectBuilding(building.id)
+        }
         viewModel.focusBuildingOnMap()
         viewModel.clearSearch()
         hideKeyboard()
