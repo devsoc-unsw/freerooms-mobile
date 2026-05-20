@@ -13,62 +13,68 @@ import Combine
 import Foundation
 import Location
 import LocationInteractors
+import RoomInteractors
+import RoomModels
+import RoomServices
 @preconcurrency import MapKit
 import SwiftUI
 
 // MARK: - MapViewModel
-
 @MainActor
 public protocol MapViewModel {
-  var buildings: [Building] { get }
-  var position: MapCameraPosition { get set }
-  var isLoading: Bool { get }
-  var selectedBuildingID: String? { get }
-  var selectedBuildingName: String { get }
-  var selectedBuildingAvailableRooms: Int { get }
-  var mapCameraBounds: MapCameraBounds { get }
-  var selectedBuildingAvailabilityColour: Color { get }
-
-  /// Sheet fields
-  var bottomSheetPosition: BottomSheetPosition { get set }
-
-  // Look Around Fields
-  var lookAroundScene: MKLookAroundScene? { get }
-  var isLoadingLookAround: Bool { get }
-
-  // Routing Fields
-  var currentRoute: MKRoute? { get }
-  var currentRouteETA: TimeInterval { get }
-  var userHeading: CLHeading { get }
-  var mapHeading: Double { get set }
-  var isLoadingCurrentRoute: Bool { get }
-  var currentRouteErrorMessage: String? { get }
-  func getDirectionToSelectedBuilding() async
-  func onGetDirection() async
-  func clearDirection()
-
-  // Search Bar
-  var searchText: String { get set }
-  var filteredBuildings: [Building] { get set }
-  func performSearch()
-  func executeSearch() async
-  func clearSearch()
-
-  func loadBuildings() async
-  func selectBuilding(_ buildingID: String)
-  func isSelectedBuilding(_ buildingID: String) -> Bool
-  func unselectBuilding()
-  func loadLookAroundScene(coordinate: CLLocationCoordinate2D) async
-  func requestLocationPermission()
-  func getUserLocation() -> Location?
-  func setupLocationUpdates()
-  func setupHeadingUpdates()
-  func updateMapHeading(_ heading: Double)
-  func handleLocationUpdate(_ newLocation: Location) async
-  func handleHeadingUpdate(_ newHeading: CLHeading)
-  func focusBuildingOnMap()
-  func onSelectBuilding(_ buildingID: String)
-  func onClearBuildingSelection()
+    var buildings: [Building] { get }
+    var position: MapCameraPosition { get set }
+    var isLoading: Bool { get }
+    var selectedBuildingID: String? { get }
+    var selectedBuildingName: String { get }
+    var selectedBuildingAvailableRooms: Int { get }
+    var mapCameraBounds: MapCameraBounds { get }
+    var selectedBuildingAvailabilityColour: Color { get }
+    
+    /// Sheet fields
+    var bottomSheetPosition: BottomSheetPosition { get set }
+    
+    // Look Around Fields
+    var lookAroundScene: MKLookAroundScene? { get }
+    var isLoadingLookAround: Bool { get }
+    
+    // Routing Fields
+    var currentRoute: MKRoute? { get }
+    var currentRouteETA: TimeInterval { get }
+    var userHeading: CLHeading { get }
+    var mapHeading: Double { get set }
+    var isLoadingCurrentRoute: Bool { get }
+    var currentRouteErrorMessage: String? { get }
+    func getDirectionToSelectedBuilding() async
+    func onGetDirection() async
+    func clearDirection()
+    
+    // Search Bar
+    var searchText: String { get set }
+    var filteredBuildings: [Building] { get set }
+    func performSearch()
+    func executeSearch() async
+    func clearSearch()
+    
+    func loadBuildings() async
+    func selectBuilding(_ buildingID: String)
+    func isSelectedBuilding(_ buildingID: String) -> Bool
+    func unselectBuilding()
+    func loadLookAroundScene(coordinate: CLLocationCoordinate2D) async
+    func requestLocationPermission()
+    func getUserLocation() -> Location?
+    func setupLocationUpdates()
+    func setupHeadingUpdates()
+    func updateMapHeading(_ heading: Double)
+    func handleLocationUpdate(_ newLocation: Location) async
+    func handleHeadingUpdate(_ newHeading: CLHeading)
+    func focusBuildingOnMap()
+    func onSelectBuilding(_ buildingID: String) async
+    func onClearBuildingSelection()
+    
+    // Room logics
+    var availableRooms: [Room] { get }
+    var isLoadingAvailableRoom: Bool { get }
 }
 
 // MARK: - SheetPosition
@@ -77,6 +83,7 @@ public enum SheetPosition {
   case hidden
   case short
   case medium
+  case top
 
   // MARK: Public
 
@@ -88,6 +95,8 @@ public enum SheetPosition {
       .relative(0.2)
     case .medium:
       .relative(0.55)
+    case .top:
+      .relativeTop(0.975)  
     }
   }
 }
@@ -157,15 +166,21 @@ public class LiveMapViewModel: MapViewModel {
   public init(
     buildingInteractor: BuildingInteractor,
     locationInteractor: LocationInteractor,
-    navigationInteractor: NavigationInteractor)
+    navigationInteractor: NavigationInteractor,
+    roomInteractor: RoomInteractor)
   {
     self.buildingInteractor = buildingInteractor
     self.locationInteractor = locationInteractor
     self.navigationInteractor = navigationInteractor
+    self.roomInteractor = roomInteractor
 
     setupLocationUpdates()
     setupHeadingUpdates()
   }
+  public var availableRooms: [Room] = []
+    
+  public var isLoadingAvailableRoom: Bool = false
+
 
   // MARK: Public
 
@@ -268,7 +283,17 @@ public class LiveMapViewModel: MapViewModel {
     await getDirectionToSelectedBuilding()
   }
 
-  public func onSelectBuilding(_ buildingID: String) {
+  public func onSelectBuilding(_ buildingID: String) async {
+    isLoadingAvailableRoom = true
+    availableRooms = []
+    switch await roomInteractor.getAvailableRoomsSortedAlphabetically(inAscendingOrder: true, buildingId: buildingID) {
+    case .success(let availableRooms):
+        self.availableRooms = availableRooms
+    case .failure(_):
+        self.availableRooms = []
+    }
+
+    isLoadingAvailableRoom = false
     clearDirection()
     selectBuilding(buildingID)
     bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
@@ -431,6 +456,8 @@ public class LiveMapViewModel: MapViewModel {
   nonisolated let buildingInteractor: BuildingInteractor
 
   nonisolated let navigationInteractor: NavigationInteractor
+    
+  let roomInteractor: RoomInteractor
 
   var selectedBuilding: Building? {
     guard let selectedBuildingID else { return nil }
@@ -461,7 +488,12 @@ public class PreviewMapViewModel: LiveMapViewModel {
         buildingService: PreviewBuildingService(),
         locationService: PreviewLocationService()),
       locationInteractor: LocationInteractor(locationService: PreviewLocationService()),
-      navigationInteractor: PreviewNavigationInteractor())
+      navigationInteractor: PreviewNavigationInteractor(),
+      roomInteractor: RoomInteractor(
+        roomService: PreviewRoomService(),
+        locationService: LiveLocationService(locationManager: LiveLocationManager())
+      )
+    )
 
     buildings = [
       Building(
