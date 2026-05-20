@@ -18,7 +18,8 @@ struct RoomBookingCardView: View {
     self.booking = booking
     start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
     end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
-    startMinutes = max((start.hour ?? 0) * 60 + (start.minute ?? 0), 9 * 60) - (60 * 9)
+    let startHourMinutes = RoomLayoutConstants.scheduleStartHour * 60
+    startMinutes = max((start.hour ?? 0) * 60 + (start.minute ?? 0), startHourMinutes) - startHourMinutes
   }
 
   // MARK: Internal
@@ -78,10 +79,11 @@ struct RoomBookingCardView: View {
     let endTotalMinutes = endTimeHour * 60 + endTimeMinute
     let range = abs(endTotalMinutes - startTotalMinutes)
 
-    // Remove extra time
+    // Remove extra time before schedule start
+    let scheduleStart = RoomLayoutConstants.scheduleStartHour
     let timeToRemove =
-      if startTimeHour < 9, endTimeHour > 9 {
-        9 * 60 - startTotalMinutes
+      if startTimeHour < scheduleStart, endTimeHour > scheduleStart {
+        scheduleStart * 60 - startTotalMinutes
       } else {
         0
       }

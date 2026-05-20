@@ -67,10 +67,10 @@ public struct RoomsListView: View {
         } label: {
           Image(systemName: "arrow.up.arrow.down")
             .resizable()
-            .frame(width: 25, height: 20)
+            .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
         }
       }
-      .padding(5)
+      .padding(RoomLayoutConstants.toolbarIconPadding)
       .foregroundStyle(theme.label.tertiary)
     }
     .background(Color(UIColor.systemGroupedBackground))
