@@ -1,0 +1,2781 @@
+schema {
+    query: query_root
+    subscription: subscription_root
+}
+
+"""whether this query should be cached (Hasura Cloud only)"""
+directive @cached(
+    """measured in seconds"""
+    ttl: Int! = 60
+
+    """refresh the cache entry"""
+    refresh: Boolean! = false
+) on QUERY
+
+scalar _text
+
+"""
+Boolean expression to compare columns of type "_text". All fields are combined with logical 'AND'.
+"""
+input _text_comparison_exp {
+    _eq: _text
+    _gt: _text
+    _gte: _text
+    _in: [_text!]
+    _is_null: Boolean
+    _lt: _text
+    _lte: _text
+    _neq: _text
+    _nin: [_text!]
+}
+
+scalar _varchar
+
+"""
+Boolean expression to compare columns of type "_varchar". All fields are combined with logical 'AND'.
+"""
+input _varchar_comparison_exp {
+    _eq: _varchar
+    _gt: _varchar
+    _gte: _varchar
+    _in: [_varchar!]
+    _is_null: Boolean
+    _lt: _varchar
+    _lte: _varchar
+    _neq: _varchar
+    _nin: [_varchar!]
+}
+
+"""
+columns and relationships of "bookings"
+"""
+type bookings {
+    bookingType: bookingtypeenum
+    end: timestamptz!
+    name: String!
+
+    """An object relationship"""
+    room: rooms!
+    roomId: String!
+    start: timestamptz!
+}
+
+"""
+aggregated selection of "bookings"
+"""
+type bookings_aggregate {
+    aggregate: bookings_aggregate_fields
+    nodes: [bookings!]!
+}
+
+input bookings_aggregate_bool_exp {
+    count: bookings_aggregate_bool_exp_count
+}
+
+input bookings_aggregate_bool_exp_count {
+    arguments: [bookings_select_column!]
+    distinct: Boolean
+    filter: bookings_bool_exp
+    predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "bookings"
+"""
+type bookings_aggregate_fields {
+    count(columns: [bookings_select_column!], distinct: Boolean): Int!
+    max: bookings_max_fields
+    min: bookings_min_fields
+}
+
+"""
+order by aggregate values of table "bookings"
+"""
+input bookings_aggregate_order_by {
+    count: order_by
+    max: bookings_max_order_by
+    min: bookings_min_order_by
+}
+
+"""
+Boolean expression to filter rows from the table "bookings". All fields are combined with a logical 'AND'.
+"""
+input bookings_bool_exp {
+    _and: [bookings_bool_exp!]
+    _not: bookings_bool_exp
+    _or: [bookings_bool_exp!]
+    bookingType: bookingtypeenum_comparison_exp
+    end: timestamptz_comparison_exp
+    name: String_comparison_exp
+    room: rooms_bool_exp
+    roomId: String_comparison_exp
+    start: timestamptz_comparison_exp
+}
+
+"""aggregate max on columns"""
+type bookings_max_fields {
+    bookingType: bookingtypeenum
+    end: timestamptz
+    name: String
+    roomId: String
+    start: timestamptz
+}
+
+"""
+order by max() on columns of table "bookings"
+"""
+input bookings_max_order_by {
+    bookingType: order_by
+    end: order_by
+    name: order_by
+    roomId: order_by
+    start: order_by
+}
+
+"""aggregate min on columns"""
+type bookings_min_fields {
+    bookingType: bookingtypeenum
+    end: timestamptz
+    name: String
+    roomId: String
+    start: timestamptz
+}
+
+"""
+order by min() on columns of table "bookings"
+"""
+input bookings_min_order_by {
+    bookingType: order_by
+    end: order_by
+    name: order_by
+    roomId: order_by
+    start: order_by
+}
+
+"""Ordering options when selecting data from "bookings"."""
+input bookings_order_by {
+    bookingType: order_by
+    end: order_by
+    name: order_by
+    room: rooms_order_by
+    roomId: order_by
+    start: order_by
+}
+
+"""
+select columns of table "bookings"
+"""
+enum bookings_select_column {
+    """column name"""
+    bookingType
+
+    """column name"""
+    end
+
+    """column name"""
+    name
+
+    """column name"""
+    roomId
+
+    """column name"""
+    start
+}
+
+"""
+Streaming cursor of the table "bookings"
+"""
+input bookings_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: bookings_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input bookings_stream_cursor_value_input {
+    bookingType: bookingtypeenum
+    end: timestamptz
+    name: String
+    roomId: String
+    start: timestamptz
+}
+
+scalar bookingtypeenum
+
+"""
+Boolean expression to compare columns of type "bookingtypeenum". All fields are combined with logical 'AND'.
+"""
+input bookingtypeenum_comparison_exp {
+    _eq: bookingtypeenum
+    _gt: bookingtypeenum
+    _gte: bookingtypeenum
+    _in: [bookingtypeenum!]
+    _is_null: Boolean
+    _lt: bookingtypeenum
+    _lte: bookingtypeenum
+    _neq: bookingtypeenum
+    _nin: [bookingtypeenum!]
+}
+
+"""
+columns and relationships of "buildings"
+"""
+type buildings {
+    aliases: _text!
+    id: String!
+    lat: float8!
+    long: float8!
+    name: String!
+
+    """An array relationship"""
+    rooms(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): [rooms!]!
+
+    """An aggregate relationship"""
+    rooms_aggregate(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): rooms_aggregate!
+}
+
+"""
+aggregated selection of "buildings"
+"""
+type buildings_aggregate {
+    aggregate: buildings_aggregate_fields
+    nodes: [buildings!]!
+}
+
+"""
+aggregate fields of "buildings"
+"""
+type buildings_aggregate_fields {
+    avg: buildings_avg_fields
+    count(columns: [buildings_select_column!], distinct: Boolean): Int!
+    max: buildings_max_fields
+    min: buildings_min_fields
+    stddev: buildings_stddev_fields
+    stddev_pop: buildings_stddev_pop_fields
+    stddev_samp: buildings_stddev_samp_fields
+    sum: buildings_sum_fields
+    var_pop: buildings_var_pop_fields
+    var_samp: buildings_var_samp_fields
+    variance: buildings_variance_fields
+}
+
+"""aggregate avg on columns"""
+type buildings_avg_fields {
+    lat: Float
+    long: Float
+}
+
+"""
+Boolean expression to filter rows from the table "buildings". All fields are combined with a logical 'AND'.
+"""
+input buildings_bool_exp {
+    _and: [buildings_bool_exp!]
+    _not: buildings_bool_exp
+    _or: [buildings_bool_exp!]
+    aliases: _text_comparison_exp
+    id: String_comparison_exp
+    lat: float8_comparison_exp
+    long: float8_comparison_exp
+    name: String_comparison_exp
+    rooms: rooms_bool_exp
+    rooms_aggregate: rooms_aggregate_bool_exp
+}
+
+"""aggregate max on columns"""
+type buildings_max_fields {
+    id: String
+    lat: float8
+    long: float8
+    name: String
+}
+
+"""aggregate min on columns"""
+type buildings_min_fields {
+    id: String
+    lat: float8
+    long: float8
+    name: String
+}
+
+"""Ordering options when selecting data from "buildings"."""
+input buildings_order_by {
+    aliases: order_by
+    id: order_by
+    lat: order_by
+    long: order_by
+    name: order_by
+    rooms_aggregate: rooms_aggregate_order_by
+}
+
+"""
+select columns of table "buildings"
+"""
+enum buildings_select_column {
+    """column name"""
+    aliases
+
+    """column name"""
+    id
+
+    """column name"""
+    lat
+
+    """column name"""
+    long
+
+    """column name"""
+    name
+}
+
+"""aggregate stddev on columns"""
+type buildings_stddev_fields {
+    lat: Float
+    long: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type buildings_stddev_pop_fields {
+    lat: Float
+    long: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type buildings_stddev_samp_fields {
+    lat: Float
+    long: Float
+}
+
+"""
+Streaming cursor of the table "buildings"
+"""
+input buildings_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: buildings_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input buildings_stream_cursor_value_input {
+    aliases: _text
+    id: String
+    lat: float8
+    long: float8
+    name: String
+}
+
+"""aggregate sum on columns"""
+type buildings_sum_fields {
+    lat: float8
+    long: float8
+}
+
+"""aggregate var_pop on columns"""
+type buildings_var_pop_fields {
+    lat: Float
+    long: Float
+}
+
+"""aggregate var_samp on columns"""
+type buildings_var_samp_fields {
+    lat: Float
+    long: Float
+}
+
+"""aggregate variance on columns"""
+type buildings_variance_fields {
+    lat: Float
+    long: Float
+}
+
+"""
+columns and relationships of "classes"
+"""
+type classes {
+    activity: String!
+    career: String!
+    census_date: String!
+    class_id: String!
+    class_notes: String
+    class_nr: String!
+    consent: String!
+
+    """An object relationship"""
+    course: courses!
+    course_enrolment: String!
+    course_id: String!
+    meeting_dates: String!
+    mode: String!
+    offering_period: String!
+    section: String!
+    status: status_enum
+    term: String!
+
+    """An array relationship"""
+    times(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): [times!]!
+
+    """An aggregate relationship"""
+    times_aggregate(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): times_aggregate!
+    year: Int!
+}
+
+"""
+aggregated selection of "classes"
+"""
+type classes_aggregate {
+    aggregate: classes_aggregate_fields
+    nodes: [classes!]!
+}
+
+input classes_aggregate_bool_exp {
+    count: classes_aggregate_bool_exp_count
+}
+
+input classes_aggregate_bool_exp_count {
+    arguments: [classes_select_column!]
+    distinct: Boolean
+    filter: classes_bool_exp
+    predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "classes"
+"""
+type classes_aggregate_fields {
+    avg: classes_avg_fields
+    count(columns: [classes_select_column!], distinct: Boolean): Int!
+    max: classes_max_fields
+    min: classes_min_fields
+    stddev: classes_stddev_fields
+    stddev_pop: classes_stddev_pop_fields
+    stddev_samp: classes_stddev_samp_fields
+    sum: classes_sum_fields
+    var_pop: classes_var_pop_fields
+    var_samp: classes_var_samp_fields
+    variance: classes_variance_fields
+}
+
+"""
+order by aggregate values of table "classes"
+"""
+input classes_aggregate_order_by {
+    avg: classes_avg_order_by
+    count: order_by
+    max: classes_max_order_by
+    min: classes_min_order_by
+    stddev: classes_stddev_order_by
+    stddev_pop: classes_stddev_pop_order_by
+    stddev_samp: classes_stddev_samp_order_by
+    sum: classes_sum_order_by
+    var_pop: classes_var_pop_order_by
+    var_samp: classes_var_samp_order_by
+    variance: classes_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type classes_avg_fields {
+    year: Float
+}
+
+"""
+order by avg() on columns of table "classes"
+"""
+input classes_avg_order_by {
+    year: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "classes". All fields are combined with a logical 'AND'.
+"""
+input classes_bool_exp {
+    _and: [classes_bool_exp!]
+    _not: classes_bool_exp
+    _or: [classes_bool_exp!]
+    activity: String_comparison_exp
+    career: String_comparison_exp
+    census_date: String_comparison_exp
+    class_id: String_comparison_exp
+    class_notes: String_comparison_exp
+    class_nr: String_comparison_exp
+    consent: String_comparison_exp
+    course: courses_bool_exp
+    course_enrolment: String_comparison_exp
+    course_id: String_comparison_exp
+    meeting_dates: String_comparison_exp
+    mode: String_comparison_exp
+    offering_period: String_comparison_exp
+    section: String_comparison_exp
+    status: status_enum_comparison_exp
+    term: String_comparison_exp
+    times: times_bool_exp
+    times_aggregate: times_aggregate_bool_exp
+    year: Int_comparison_exp
+}
+
+"""aggregate max on columns"""
+type classes_max_fields {
+    activity: String
+    career: String
+    census_date: String
+    class_id: String
+    class_notes: String
+    class_nr: String
+    consent: String
+    course_enrolment: String
+    course_id: String
+    meeting_dates: String
+    mode: String
+    offering_period: String
+    section: String
+    status: status_enum
+    term: String
+    year: Int
+}
+
+"""
+order by max() on columns of table "classes"
+"""
+input classes_max_order_by {
+    activity: order_by
+    career: order_by
+    census_date: order_by
+    class_id: order_by
+    class_notes: order_by
+    class_nr: order_by
+    consent: order_by
+    course_enrolment: order_by
+    course_id: order_by
+    meeting_dates: order_by
+    mode: order_by
+    offering_period: order_by
+    section: order_by
+    status: order_by
+    term: order_by
+    year: order_by
+}
+
+"""aggregate min on columns"""
+type classes_min_fields {
+    activity: String
+    career: String
+    census_date: String
+    class_id: String
+    class_notes: String
+    class_nr: String
+    consent: String
+    course_enrolment: String
+    course_id: String
+    meeting_dates: String
+    mode: String
+    offering_period: String
+    section: String
+    status: status_enum
+    term: String
+    year: Int
+}
+
+"""
+order by min() on columns of table "classes"
+"""
+input classes_min_order_by {
+    activity: order_by
+    career: order_by
+    census_date: order_by
+    class_id: order_by
+    class_notes: order_by
+    class_nr: order_by
+    consent: order_by
+    course_enrolment: order_by
+    course_id: order_by
+    meeting_dates: order_by
+    mode: order_by
+    offering_period: order_by
+    section: order_by
+    status: order_by
+    term: order_by
+    year: order_by
+}
+
+"""Ordering options when selecting data from "classes"."""
+input classes_order_by {
+    activity: order_by
+    career: order_by
+    census_date: order_by
+    class_id: order_by
+    class_notes: order_by
+    class_nr: order_by
+    consent: order_by
+    course: courses_order_by
+    course_enrolment: order_by
+    course_id: order_by
+    meeting_dates: order_by
+    mode: order_by
+    offering_period: order_by
+    section: order_by
+    status: order_by
+    term: order_by
+    times_aggregate: times_aggregate_order_by
+    year: order_by
+}
+
+"""
+select columns of table "classes"
+"""
+enum classes_select_column {
+    """column name"""
+    activity
+
+    """column name"""
+    career
+
+    """column name"""
+    census_date
+
+    """column name"""
+    class_id
+
+    """column name"""
+    class_notes
+
+    """column name"""
+    class_nr
+
+    """column name"""
+    consent
+
+    """column name"""
+    course_enrolment
+
+    """column name"""
+    course_id
+
+    """column name"""
+    meeting_dates
+
+    """column name"""
+    mode
+
+    """column name"""
+    offering_period
+
+    """column name"""
+    section
+
+    """column name"""
+    status
+
+    """column name"""
+    term
+
+    """column name"""
+    year
+}
+
+"""aggregate stddev on columns"""
+type classes_stddev_fields {
+    year: Float
+}
+
+"""
+order by stddev() on columns of table "classes"
+"""
+input classes_stddev_order_by {
+    year: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type classes_stddev_pop_fields {
+    year: Float
+}
+
+"""
+order by stddev_pop() on columns of table "classes"
+"""
+input classes_stddev_pop_order_by {
+    year: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type classes_stddev_samp_fields {
+    year: Float
+}
+
+"""
+order by stddev_samp() on columns of table "classes"
+"""
+input classes_stddev_samp_order_by {
+    year: order_by
+}
+
+"""
+Streaming cursor of the table "classes"
+"""
+input classes_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: classes_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input classes_stream_cursor_value_input {
+    activity: String
+    career: String
+    census_date: String
+    class_id: String
+    class_notes: String
+    class_nr: String
+    consent: String
+    course_enrolment: String
+    course_id: String
+    meeting_dates: String
+    mode: String
+    offering_period: String
+    section: String
+    status: status_enum
+    term: String
+    year: Int
+}
+
+"""aggregate sum on columns"""
+type classes_sum_fields {
+    year: Int
+}
+
+"""
+order by sum() on columns of table "classes"
+"""
+input classes_sum_order_by {
+    year: order_by
+}
+
+"""aggregate var_pop on columns"""
+type classes_var_pop_fields {
+    year: Float
+}
+
+"""
+order by var_pop() on columns of table "classes"
+"""
+input classes_var_pop_order_by {
+    year: order_by
+}
+
+"""aggregate var_samp on columns"""
+type classes_var_samp_fields {
+    year: Float
+}
+
+"""
+order by var_samp() on columns of table "classes"
+"""
+input classes_var_samp_order_by {
+    year: order_by
+}
+
+"""aggregate variance on columns"""
+type classes_variance_fields {
+    year: Float
+}
+
+"""
+order by variance() on columns of table "classes"
+"""
+input classes_variance_order_by {
+    year: order_by
+}
+
+"""
+columns and relationships of "courses"
+"""
+type courses {
+    campus: String
+    career: String!
+
+    """An array relationship"""
+    classes(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): [classes!]!
+
+    """An aggregate relationship"""
+    classes_aggregate(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): classes_aggregate!
+    course_code: String!
+    course_id: String!
+    course_name: String!
+    faculty: String
+    modes: _varchar
+    school: String
+    terms: _varchar
+    uoc: Int!
+    year: Int!
+}
+
+"""
+aggregated selection of "courses"
+"""
+type courses_aggregate {
+    aggregate: courses_aggregate_fields
+    nodes: [courses!]!
+}
+
+"""
+aggregate fields of "courses"
+"""
+type courses_aggregate_fields {
+    avg: courses_avg_fields
+    count(columns: [courses_select_column!], distinct: Boolean): Int!
+    max: courses_max_fields
+    min: courses_min_fields
+    stddev: courses_stddev_fields
+    stddev_pop: courses_stddev_pop_fields
+    stddev_samp: courses_stddev_samp_fields
+    sum: courses_sum_fields
+    var_pop: courses_var_pop_fields
+    var_samp: courses_var_samp_fields
+    variance: courses_variance_fields
+}
+
+"""aggregate avg on columns"""
+type courses_avg_fields {
+    uoc: Float
+    year: Float
+}
+
+"""
+Boolean expression to filter rows from the table "courses". All fields are combined with a logical 'AND'.
+"""
+input courses_bool_exp {
+    _and: [courses_bool_exp!]
+    _not: courses_bool_exp
+    _or: [courses_bool_exp!]
+    campus: String_comparison_exp
+    career: String_comparison_exp
+    classes: classes_bool_exp
+    classes_aggregate: classes_aggregate_bool_exp
+    course_code: String_comparison_exp
+    course_id: String_comparison_exp
+    course_name: String_comparison_exp
+    faculty: String_comparison_exp
+    modes: _varchar_comparison_exp
+    school: String_comparison_exp
+    terms: _varchar_comparison_exp
+    uoc: Int_comparison_exp
+    year: Int_comparison_exp
+}
+
+"""aggregate max on columns"""
+type courses_max_fields {
+    campus: String
+    career: String
+    course_code: String
+    course_id: String
+    course_name: String
+    faculty: String
+    school: String
+    uoc: Int
+    year: Int
+}
+
+"""aggregate min on columns"""
+type courses_min_fields {
+    campus: String
+    career: String
+    course_code: String
+    course_id: String
+    course_name: String
+    faculty: String
+    school: String
+    uoc: Int
+    year: Int
+}
+
+"""Ordering options when selecting data from "courses"."""
+input courses_order_by {
+    campus: order_by
+    career: order_by
+    classes_aggregate: classes_aggregate_order_by
+    course_code: order_by
+    course_id: order_by
+    course_name: order_by
+    faculty: order_by
+    modes: order_by
+    school: order_by
+    terms: order_by
+    uoc: order_by
+    year: order_by
+}
+
+"""
+select columns of table "courses"
+"""
+enum courses_select_column {
+    """column name"""
+    campus
+
+    """column name"""
+    career
+
+    """column name"""
+    course_code
+
+    """column name"""
+    course_id
+
+    """column name"""
+    course_name
+
+    """column name"""
+    faculty
+
+    """column name"""
+    modes
+
+    """column name"""
+    school
+
+    """column name"""
+    terms
+
+    """column name"""
+    uoc
+
+    """column name"""
+    year
+}
+
+"""aggregate stddev on columns"""
+type courses_stddev_fields {
+    uoc: Float
+    year: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type courses_stddev_pop_fields {
+    uoc: Float
+    year: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type courses_stddev_samp_fields {
+    uoc: Float
+    year: Float
+}
+
+"""
+Streaming cursor of the table "courses"
+"""
+input courses_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: courses_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input courses_stream_cursor_value_input {
+    campus: String
+    career: String
+    course_code: String
+    course_id: String
+    course_name: String
+    faculty: String
+    modes: _varchar
+    school: String
+    terms: _varchar
+    uoc: Int
+    year: Int
+}
+
+"""aggregate sum on columns"""
+type courses_sum_fields {
+    uoc: Int
+    year: Int
+}
+
+"""aggregate var_pop on columns"""
+type courses_var_pop_fields {
+    uoc: Float
+    year: Float
+}
+
+"""aggregate var_samp on columns"""
+type courses_var_samp_fields {
+    uoc: Float
+    year: Float
+}
+
+"""aggregate variance on columns"""
+type courses_variance_fields {
+    uoc: Float
+    year: Float
+}
+
+"""ordering argument of a cursor"""
+enum cursor_ordering {
+    """ascending ordering of the cursor"""
+    ASC
+
+    """descending ordering of the cursor"""
+    DESC
+}
+
+scalar float8
+
+"""
+Boolean expression to compare columns of type "float8". All fields are combined with logical 'AND'.
+"""
+input float8_comparison_exp {
+    _eq: float8
+    _gt: float8
+    _gte: float8
+    _in: [float8!]
+    _is_null: Boolean
+    _lt: float8
+    _lte: float8
+    _neq: float8
+    _nin: [float8!]
+}
+
+scalar floortypeenum
+
+"""
+Boolean expression to compare columns of type "floortypeenum". All fields are combined with logical 'AND'.
+"""
+input floortypeenum_comparison_exp {
+    _eq: floortypeenum
+    _gt: floortypeenum
+    _gte: floortypeenum
+    _in: [floortypeenum!]
+    _is_null: Boolean
+    _lt: floortypeenum
+    _lte: floortypeenum
+    _neq: floortypeenum
+    _nin: [floortypeenum!]
+}
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+    _eq: Int
+    _gt: Int
+    _gte: Int
+    _in: [Int!]
+    _is_null: Boolean
+    _lt: Int
+    _lte: Int
+    _neq: Int
+    _nin: [Int!]
+}
+
+"""column ordering options"""
+enum order_by {
+    """in ascending order, nulls last"""
+    asc
+
+    """in ascending order, nulls first"""
+    asc_nulls_first
+
+    """in ascending order, nulls last"""
+    asc_nulls_last
+
+    """in descending order, nulls first"""
+    desc
+
+    """in descending order, nulls first"""
+    desc_nulls_first
+
+    """in descending order, nulls last"""
+    desc_nulls_last
+}
+
+type query_root {
+    """An array relationship"""
+    bookings(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): [bookings!]!
+
+    """An aggregate relationship"""
+    bookings_aggregate(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): bookings_aggregate!
+
+    """fetch data from the table: "bookings" using primary key columns"""
+    bookings_by_pk(end: timestamptz!, roomId: String!, start: timestamptz!): bookings
+
+    """
+    fetch data from the table: "buildings"
+    """
+    buildings(
+        """distinct select on columns"""
+        distinct_on: [buildings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [buildings_order_by!]
+
+        """filter the rows returned"""
+        where: buildings_bool_exp
+    ): [buildings!]!
+
+    """
+    fetch aggregated fields from the table: "buildings"
+    """
+    buildings_aggregate(
+        """distinct select on columns"""
+        distinct_on: [buildings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [buildings_order_by!]
+
+        """filter the rows returned"""
+        where: buildings_bool_exp
+    ): buildings_aggregate!
+
+    """fetch data from the table: "buildings" using primary key columns"""
+    buildings_by_pk(id: String!): buildings
+
+    """An array relationship"""
+    classes(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): [classes!]!
+
+    """An aggregate relationship"""
+    classes_aggregate(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): classes_aggregate!
+
+    """fetch data from the table: "classes" using primary key columns"""
+    classes_by_pk(class_id: String!): classes
+
+    """
+    fetch data from the table: "courses"
+    """
+    courses(
+        """distinct select on columns"""
+        distinct_on: [courses_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [courses_order_by!]
+
+        """filter the rows returned"""
+        where: courses_bool_exp
+    ): [courses!]!
+
+    """
+    fetch aggregated fields from the table: "courses"
+    """
+    courses_aggregate(
+        """distinct select on columns"""
+        distinct_on: [courses_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [courses_order_by!]
+
+        """filter the rows returned"""
+        where: courses_bool_exp
+    ): courses_aggregate!
+
+    """fetch data from the table: "courses" using primary key columns"""
+    courses_by_pk(course_id: String!): courses
+
+    """An array relationship"""
+    rooms(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): [rooms!]!
+
+    """An aggregate relationship"""
+    rooms_aggregate(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): rooms_aggregate!
+
+    """fetch data from the table: "rooms" using primary key columns"""
+    rooms_by_pk(id: String!): rooms
+
+    """An array relationship"""
+    times(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): [times!]!
+
+    """An aggregate relationship"""
+    times_aggregate(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): times_aggregate!
+
+    """fetch data from the table: "times" using primary key columns"""
+    times_by_pk(time_id: String!): times
+}
+
+"""
+columns and relationships of "rooms"
+"""
+type rooms {
+    abbr: String!
+    accessibility: _text!
+    audiovisual: _text!
+
+    """An array relationship"""
+    bookings(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): [bookings!]!
+
+    """An aggregate relationship"""
+    bookings_aggregate(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): bookings_aggregate!
+
+    """An object relationship"""
+    building: buildings!
+    buildingId: String!
+    capacity: Int!
+    floor: floortypeenum
+    id: String!
+    infotechnology: _text!
+    lat: float8!
+    long: float8!
+    microphone: _text!
+    name: String!
+    school: String!
+    seating: seatingtypeenum
+    service: _text!
+    usage: String!
+    writingMedia: _text!
+}
+
+"""
+aggregated selection of "rooms"
+"""
+type rooms_aggregate {
+    aggregate: rooms_aggregate_fields
+    nodes: [rooms!]!
+}
+
+input rooms_aggregate_bool_exp {
+    avg: rooms_aggregate_bool_exp_avg
+    corr: rooms_aggregate_bool_exp_corr
+    count: rooms_aggregate_bool_exp_count
+    covar_samp: rooms_aggregate_bool_exp_covar_samp
+    max: rooms_aggregate_bool_exp_max
+    min: rooms_aggregate_bool_exp_min
+    stddev_samp: rooms_aggregate_bool_exp_stddev_samp
+    sum: rooms_aggregate_bool_exp_sum
+    var_samp: rooms_aggregate_bool_exp_var_samp
+}
+
+input rooms_aggregate_bool_exp_avg {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_avg_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_corr {
+    arguments: rooms_aggregate_bool_exp_corr_arguments!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_corr_arguments {
+    X: rooms_select_column_rooms_aggregate_bool_exp_corr_arguments_columns!
+    Y: rooms_select_column_rooms_aggregate_bool_exp_corr_arguments_columns!
+}
+
+input rooms_aggregate_bool_exp_count {
+    arguments: [rooms_select_column!]
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: Int_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_covar_samp {
+    arguments: rooms_aggregate_bool_exp_covar_samp_arguments!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_covar_samp_arguments {
+    X: rooms_select_column_rooms_aggregate_bool_exp_covar_samp_arguments_columns!
+    Y: rooms_select_column_rooms_aggregate_bool_exp_covar_samp_arguments_columns!
+}
+
+input rooms_aggregate_bool_exp_max {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_max_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_min {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_min_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_stddev_samp {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_stddev_samp_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_sum {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_sum_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+input rooms_aggregate_bool_exp_var_samp {
+    arguments: rooms_select_column_rooms_aggregate_bool_exp_var_samp_arguments_columns!
+    distinct: Boolean
+    filter: rooms_bool_exp
+    predicate: float8_comparison_exp!
+}
+
+"""
+aggregate fields of "rooms"
+"""
+type rooms_aggregate_fields {
+    avg: rooms_avg_fields
+    count(columns: [rooms_select_column!], distinct: Boolean): Int!
+    max: rooms_max_fields
+    min: rooms_min_fields
+    stddev: rooms_stddev_fields
+    stddev_pop: rooms_stddev_pop_fields
+    stddev_samp: rooms_stddev_samp_fields
+    sum: rooms_sum_fields
+    var_pop: rooms_var_pop_fields
+    var_samp: rooms_var_samp_fields
+    variance: rooms_variance_fields
+}
+
+"""
+order by aggregate values of table "rooms"
+"""
+input rooms_aggregate_order_by {
+    avg: rooms_avg_order_by
+    count: order_by
+    max: rooms_max_order_by
+    min: rooms_min_order_by
+    stddev: rooms_stddev_order_by
+    stddev_pop: rooms_stddev_pop_order_by
+    stddev_samp: rooms_stddev_samp_order_by
+    sum: rooms_sum_order_by
+    var_pop: rooms_var_pop_order_by
+    var_samp: rooms_var_samp_order_by
+    variance: rooms_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type rooms_avg_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by avg() on columns of table "rooms"
+"""
+input rooms_avg_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "rooms". All fields are combined with a logical 'AND'.
+"""
+input rooms_bool_exp {
+    _and: [rooms_bool_exp!]
+    _not: rooms_bool_exp
+    _or: [rooms_bool_exp!]
+    abbr: String_comparison_exp
+    accessibility: _text_comparison_exp
+    audiovisual: _text_comparison_exp
+    bookings: bookings_bool_exp
+    bookings_aggregate: bookings_aggregate_bool_exp
+    building: buildings_bool_exp
+    buildingId: String_comparison_exp
+    capacity: Int_comparison_exp
+    floor: floortypeenum_comparison_exp
+    id: String_comparison_exp
+    infotechnology: _text_comparison_exp
+    lat: float8_comparison_exp
+    long: float8_comparison_exp
+    microphone: _text_comparison_exp
+    name: String_comparison_exp
+    school: String_comparison_exp
+    seating: seatingtypeenum_comparison_exp
+    service: _text_comparison_exp
+    usage: String_comparison_exp
+    writingMedia: _text_comparison_exp
+}
+
+"""aggregate max on columns"""
+type rooms_max_fields {
+    abbr: String
+    buildingId: String
+    capacity: Int
+    floor: floortypeenum
+    id: String
+    lat: float8
+    long: float8
+    name: String
+    school: String
+    seating: seatingtypeenum
+    usage: String
+}
+
+"""
+order by max() on columns of table "rooms"
+"""
+input rooms_max_order_by {
+    abbr: order_by
+    buildingId: order_by
+    capacity: order_by
+    floor: order_by
+    id: order_by
+    lat: order_by
+    long: order_by
+    name: order_by
+    school: order_by
+    seating: order_by
+    usage: order_by
+}
+
+"""aggregate min on columns"""
+type rooms_min_fields {
+    abbr: String
+    buildingId: String
+    capacity: Int
+    floor: floortypeenum
+    id: String
+    lat: float8
+    long: float8
+    name: String
+    school: String
+    seating: seatingtypeenum
+    usage: String
+}
+
+"""
+order by min() on columns of table "rooms"
+"""
+input rooms_min_order_by {
+    abbr: order_by
+    buildingId: order_by
+    capacity: order_by
+    floor: order_by
+    id: order_by
+    lat: order_by
+    long: order_by
+    name: order_by
+    school: order_by
+    seating: order_by
+    usage: order_by
+}
+
+"""Ordering options when selecting data from "rooms"."""
+input rooms_order_by {
+    abbr: order_by
+    accessibility: order_by
+    audiovisual: order_by
+    bookings_aggregate: bookings_aggregate_order_by
+    building: buildings_order_by
+    buildingId: order_by
+    capacity: order_by
+    floor: order_by
+    id: order_by
+    infotechnology: order_by
+    lat: order_by
+    long: order_by
+    microphone: order_by
+    name: order_by
+    school: order_by
+    seating: order_by
+    service: order_by
+    usage: order_by
+    writingMedia: order_by
+}
+
+"""
+select columns of table "rooms"
+"""
+enum rooms_select_column {
+    """column name"""
+    abbr
+
+    """column name"""
+    accessibility
+
+    """column name"""
+    audiovisual
+
+    """column name"""
+    buildingId
+
+    """column name"""
+    capacity
+
+    """column name"""
+    floor
+
+    """column name"""
+    id
+
+    """column name"""
+    infotechnology
+
+    """column name"""
+    lat
+
+    """column name"""
+    long
+
+    """column name"""
+    microphone
+
+    """column name"""
+    name
+
+    """column name"""
+    school
+
+    """column name"""
+    seating
+
+    """column name"""
+    service
+
+    """column name"""
+    usage
+
+    """column name"""
+    writingMedia
+}
+
+"""
+select "rooms_aggregate_bool_exp_avg_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_avg_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_corr_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_corr_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_covar_samp_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_covar_samp_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_max_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_max_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_min_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_min_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_stddev_samp_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_stddev_samp_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_sum_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_sum_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""
+select "rooms_aggregate_bool_exp_var_samp_arguments_columns" columns of table "rooms"
+"""
+enum rooms_select_column_rooms_aggregate_bool_exp_var_samp_arguments_columns {
+    """column name"""
+    lat
+
+    """column name"""
+    long
+}
+
+"""aggregate stddev on columns"""
+type rooms_stddev_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by stddev() on columns of table "rooms"
+"""
+input rooms_stddev_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type rooms_stddev_pop_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by stddev_pop() on columns of table "rooms"
+"""
+input rooms_stddev_pop_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type rooms_stddev_samp_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by stddev_samp() on columns of table "rooms"
+"""
+input rooms_stddev_samp_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""
+Streaming cursor of the table "rooms"
+"""
+input rooms_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: rooms_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input rooms_stream_cursor_value_input {
+    abbr: String
+    accessibility: _text
+    audiovisual: _text
+    buildingId: String
+    capacity: Int
+    floor: floortypeenum
+    id: String
+    infotechnology: _text
+    lat: float8
+    long: float8
+    microphone: _text
+    name: String
+    school: String
+    seating: seatingtypeenum
+    service: _text
+    usage: String
+    writingMedia: _text
+}
+
+"""aggregate sum on columns"""
+type rooms_sum_fields {
+    capacity: Int
+    lat: float8
+    long: float8
+}
+
+"""
+order by sum() on columns of table "rooms"
+"""
+input rooms_sum_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""aggregate var_pop on columns"""
+type rooms_var_pop_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by var_pop() on columns of table "rooms"
+"""
+input rooms_var_pop_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""aggregate var_samp on columns"""
+type rooms_var_samp_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by var_samp() on columns of table "rooms"
+"""
+input rooms_var_samp_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+"""aggregate variance on columns"""
+type rooms_variance_fields {
+    capacity: Float
+    lat: Float
+    long: Float
+}
+
+"""
+order by variance() on columns of table "rooms"
+"""
+input rooms_variance_order_by {
+    capacity: order_by
+    lat: order_by
+    long: order_by
+}
+
+scalar seatingtypeenum
+
+"""
+Boolean expression to compare columns of type "seatingtypeenum". All fields are combined with logical 'AND'.
+"""
+input seatingtypeenum_comparison_exp {
+    _eq: seatingtypeenum
+    _gt: seatingtypeenum
+    _gte: seatingtypeenum
+    _in: [seatingtypeenum!]
+    _is_null: Boolean
+    _lt: seatingtypeenum
+    _lte: seatingtypeenum
+    _neq: seatingtypeenum
+    _nin: [seatingtypeenum!]
+}
+
+scalar status_enum
+
+"""
+Boolean expression to compare columns of type "status_enum". All fields are combined with logical 'AND'.
+"""
+input status_enum_comparison_exp {
+    _eq: status_enum
+    _gt: status_enum
+    _gte: status_enum
+    _in: [status_enum!]
+    _is_null: Boolean
+    _lt: status_enum
+    _lte: status_enum
+    _neq: status_enum
+    _nin: [status_enum!]
+}
+
+"""
+Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+    _eq: String
+    _gt: String
+    _gte: String
+
+    """does the column match the given case-insensitive pattern"""
+    _ilike: String
+    _in: [String!]
+
+    """
+    does the column match the given POSIX regular expression, case insensitive
+    """
+    _iregex: String
+    _is_null: Boolean
+
+    """does the column match the given pattern"""
+    _like: String
+    _lt: String
+    _lte: String
+    _neq: String
+
+    """does the column NOT match the given case-insensitive pattern"""
+    _nilike: String
+    _nin: [String!]
+
+    """
+    does the column NOT match the given POSIX regular expression, case insensitive
+    """
+    _niregex: String
+
+    """does the column NOT match the given pattern"""
+    _nlike: String
+
+    """
+    does the column NOT match the given POSIX regular expression, case sensitive
+    """
+    _nregex: String
+
+    """does the column NOT match the given SQL regular expression"""
+    _nsimilar: String
+
+    """
+    does the column match the given POSIX regular expression, case sensitive
+    """
+    _regex: String
+
+    """does the column match the given SQL regular expression"""
+    _similar: String
+}
+
+type subscription_root {
+    """An array relationship"""
+    bookings(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): [bookings!]!
+
+    """An aggregate relationship"""
+    bookings_aggregate(
+        """distinct select on columns"""
+        distinct_on: [bookings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [bookings_order_by!]
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): bookings_aggregate!
+
+    """fetch data from the table: "bookings" using primary key columns"""
+    bookings_by_pk(end: timestamptz!, roomId: String!, start: timestamptz!): bookings
+
+    """
+    fetch data from the table in a streaming manner: "bookings"
+    """
+    bookings_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [bookings_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: bookings_bool_exp
+    ): [bookings!]!
+
+    """
+    fetch data from the table: "buildings"
+    """
+    buildings(
+        """distinct select on columns"""
+        distinct_on: [buildings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [buildings_order_by!]
+
+        """filter the rows returned"""
+        where: buildings_bool_exp
+    ): [buildings!]!
+
+    """
+    fetch aggregated fields from the table: "buildings"
+    """
+    buildings_aggregate(
+        """distinct select on columns"""
+        distinct_on: [buildings_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [buildings_order_by!]
+
+        """filter the rows returned"""
+        where: buildings_bool_exp
+    ): buildings_aggregate!
+
+    """fetch data from the table: "buildings" using primary key columns"""
+    buildings_by_pk(id: String!): buildings
+
+    """
+    fetch data from the table in a streaming manner: "buildings"
+    """
+    buildings_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [buildings_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: buildings_bool_exp
+    ): [buildings!]!
+
+    """An array relationship"""
+    classes(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): [classes!]!
+
+    """An aggregate relationship"""
+    classes_aggregate(
+        """distinct select on columns"""
+        distinct_on: [classes_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [classes_order_by!]
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): classes_aggregate!
+
+    """fetch data from the table: "classes" using primary key columns"""
+    classes_by_pk(class_id: String!): classes
+
+    """
+    fetch data from the table in a streaming manner: "classes"
+    """
+    classes_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [classes_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: classes_bool_exp
+    ): [classes!]!
+
+    """
+    fetch data from the table: "courses"
+    """
+    courses(
+        """distinct select on columns"""
+        distinct_on: [courses_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [courses_order_by!]
+
+        """filter the rows returned"""
+        where: courses_bool_exp
+    ): [courses!]!
+
+    """
+    fetch aggregated fields from the table: "courses"
+    """
+    courses_aggregate(
+        """distinct select on columns"""
+        distinct_on: [courses_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [courses_order_by!]
+
+        """filter the rows returned"""
+        where: courses_bool_exp
+    ): courses_aggregate!
+
+    """fetch data from the table: "courses" using primary key columns"""
+    courses_by_pk(course_id: String!): courses
+
+    """
+    fetch data from the table in a streaming manner: "courses"
+    """
+    courses_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [courses_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: courses_bool_exp
+    ): [courses!]!
+
+    """An array relationship"""
+    rooms(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): [rooms!]!
+
+    """An aggregate relationship"""
+    rooms_aggregate(
+        """distinct select on columns"""
+        distinct_on: [rooms_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [rooms_order_by!]
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): rooms_aggregate!
+
+    """fetch data from the table: "rooms" using primary key columns"""
+    rooms_by_pk(id: String!): rooms
+
+    """
+    fetch data from the table in a streaming manner: "rooms"
+    """
+    rooms_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [rooms_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: rooms_bool_exp
+    ): [rooms!]!
+
+    """An array relationship"""
+    times(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): [times!]!
+
+    """An aggregate relationship"""
+    times_aggregate(
+        """distinct select on columns"""
+        distinct_on: [times_select_column!]
+
+        """limit the number of rows returned"""
+        limit: Int
+
+        """skip the first n rows. Use only with order_by"""
+        offset: Int
+
+        """sort the rows by one or more columns"""
+        order_by: [times_order_by!]
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): times_aggregate!
+
+    """fetch data from the table: "times" using primary key columns"""
+    times_by_pk(time_id: String!): times
+
+    """
+    fetch data from the table in a streaming manner: "times"
+    """
+    times_stream(
+        """maximum number of rows returned in a single batch"""
+        batch_size: Int!
+
+        """cursor to stream the results returned by the query"""
+        cursor: [times_stream_cursor_input]!
+
+        """filter the rows returned"""
+        where: times_bool_exp
+    ): [times!]!
+}
+
+"""
+columns and relationships of "times"
+"""
+type times {
+    career: String!
+    class_id: String!
+
+    """An object relationship"""
+    classe: classes!
+    day: String!
+    instructor: String
+    location: String!
+    time: String!
+    time_id: String!
+    weeks: String!
+    year: Int!
+}
+
+"""
+aggregated selection of "times"
+"""
+type times_aggregate {
+    aggregate: times_aggregate_fields
+    nodes: [times!]!
+}
+
+input times_aggregate_bool_exp {
+    count: times_aggregate_bool_exp_count
+}
+
+input times_aggregate_bool_exp_count {
+    arguments: [times_select_column!]
+    distinct: Boolean
+    filter: times_bool_exp
+    predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "times"
+"""
+type times_aggregate_fields {
+    avg: times_avg_fields
+    count(columns: [times_select_column!], distinct: Boolean): Int!
+    max: times_max_fields
+    min: times_min_fields
+    stddev: times_stddev_fields
+    stddev_pop: times_stddev_pop_fields
+    stddev_samp: times_stddev_samp_fields
+    sum: times_sum_fields
+    var_pop: times_var_pop_fields
+    var_samp: times_var_samp_fields
+    variance: times_variance_fields
+}
+
+"""
+order by aggregate values of table "times"
+"""
+input times_aggregate_order_by {
+    avg: times_avg_order_by
+    count: order_by
+    max: times_max_order_by
+    min: times_min_order_by
+    stddev: times_stddev_order_by
+    stddev_pop: times_stddev_pop_order_by
+    stddev_samp: times_stddev_samp_order_by
+    sum: times_sum_order_by
+    var_pop: times_var_pop_order_by
+    var_samp: times_var_samp_order_by
+    variance: times_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type times_avg_fields {
+    year: Float
+}
+
+"""
+order by avg() on columns of table "times"
+"""
+input times_avg_order_by {
+    year: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "times". All fields are combined with a logical 'AND'.
+"""
+input times_bool_exp {
+    _and: [times_bool_exp!]
+    _not: times_bool_exp
+    _or: [times_bool_exp!]
+    career: String_comparison_exp
+    class_id: String_comparison_exp
+    classe: classes_bool_exp
+    day: String_comparison_exp
+    instructor: String_comparison_exp
+    location: String_comparison_exp
+    time: String_comparison_exp
+    time_id: String_comparison_exp
+    weeks: String_comparison_exp
+    year: Int_comparison_exp
+}
+
+"""aggregate max on columns"""
+type times_max_fields {
+    career: String
+    class_id: String
+    day: String
+    instructor: String
+    location: String
+    time: String
+    time_id: String
+    weeks: String
+    year: Int
+}
+
+"""
+order by max() on columns of table "times"
+"""
+input times_max_order_by {
+    career: order_by
+    class_id: order_by
+    day: order_by
+    instructor: order_by
+    location: order_by
+    time: order_by
+    time_id: order_by
+    weeks: order_by
+    year: order_by
+}
+
+"""aggregate min on columns"""
+type times_min_fields {
+    career: String
+    class_id: String
+    day: String
+    instructor: String
+    location: String
+    time: String
+    time_id: String
+    weeks: String
+    year: Int
+}
+
+"""
+order by min() on columns of table "times"
+"""
+input times_min_order_by {
+    career: order_by
+    class_id: order_by
+    day: order_by
+    instructor: order_by
+    location: order_by
+    time: order_by
+    time_id: order_by
+    weeks: order_by
+    year: order_by
+}
+
+"""Ordering options when selecting data from "times"."""
+input times_order_by {
+    career: order_by
+    class_id: order_by
+    classe: classes_order_by
+    day: order_by
+    instructor: order_by
+    location: order_by
+    time: order_by
+    time_id: order_by
+    weeks: order_by
+    year: order_by
+}
+
+"""
+select columns of table "times"
+"""
+enum times_select_column {
+    """column name"""
+    career
+
+    """column name"""
+    class_id
+
+    """column name"""
+    day
+
+    """column name"""
+    instructor
+
+    """column name"""
+    location
+
+    """column name"""
+    time
+
+    """column name"""
+    time_id
+
+    """column name"""
+    weeks
+
+    """column name"""
+    year
+}
+
+"""aggregate stddev on columns"""
+type times_stddev_fields {
+    year: Float
+}
+
+"""
+order by stddev() on columns of table "times"
+"""
+input times_stddev_order_by {
+    year: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type times_stddev_pop_fields {
+    year: Float
+}
+
+"""
+order by stddev_pop() on columns of table "times"
+"""
+input times_stddev_pop_order_by {
+    year: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type times_stddev_samp_fields {
+    year: Float
+}
+
+"""
+order by stddev_samp() on columns of table "times"
+"""
+input times_stddev_samp_order_by {
+    year: order_by
+}
+
+"""
+Streaming cursor of the table "times"
+"""
+input times_stream_cursor_input {
+    """Stream column input with initial value"""
+    initial_value: times_stream_cursor_value_input!
+
+    """cursor ordering"""
+    ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input times_stream_cursor_value_input {
+    career: String
+    class_id: String
+    day: String
+    instructor: String
+    location: String
+    time: String
+    time_id: String
+    weeks: String
+    year: Int
+}
+
+"""aggregate sum on columns"""
+type times_sum_fields {
+    year: Int
+}
+
+"""
+order by sum() on columns of table "times"
+"""
+input times_sum_order_by {
+    year: order_by
+}
+
+"""aggregate var_pop on columns"""
+type times_var_pop_fields {
+    year: Float
+}
+
+"""
+order by var_pop() on columns of table "times"
+"""
+input times_var_pop_order_by {
+    year: order_by
+}
+
+"""aggregate var_samp on columns"""
+type times_var_samp_fields {
+    year: Float
+}
+
+"""
+order by var_samp() on columns of table "times"
+"""
+input times_var_samp_order_by {
+    year: order_by
+}
+
+"""aggregate variance on columns"""
+type times_variance_fields {
+    year: Float
+}
+
+"""
+order by variance() on columns of table "times"
+"""
+input times_variance_order_by {
+    year: order_by
+}
+
+scalar timestamptz
+
+"""
+Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
+"""
+input timestamptz_comparison_exp {
+    _eq: timestamptz
+    _gt: timestamptz
+    _gte: timestamptz
+    _in: [timestamptz!]
+    _is_null: Boolean
+    _lt: timestamptz
+    _lte: timestamptz
+    _neq: timestamptz
+    _nin: [timestamptz!]
+}
+

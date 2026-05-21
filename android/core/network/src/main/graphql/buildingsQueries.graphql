@@ -1,0 +1,8 @@
+query GetBuildings {
+    buildings {
+        id
+        lat
+        long
+        name
+    }
+}

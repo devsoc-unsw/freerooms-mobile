@@ -2,29 +2,49 @@
 
 TOP_LEVEL=$(git rev-parse --show-toplevel)
 
-if command -v swiftformat >/dev/null 2>&1
+if git diff --cached --name-only | grep -q "^ios/"
 then
-    echo "Checking formatting..."
-    (cd "$TOP_LEVEL" && swiftformat .)
-    
-    # check if swiftformat changed any files
-    if ! git diff --exit-code >/dev/null 2>&1
+    if command -v swiftformat >/dev/null 2>&1
     then
-        echo "Error: Files were modified by the formatter."
-        echo "stage the changes and try again."
+        echo "Checking iOS formatting..."
+        (cd "$TOP_LEVEL/ios" && swiftformat .)
+        
+        if ! git diff --exit-code "$TOP_LEVEL/ios" >/dev/null 2>&1
+        then
+            echo "Error: Files were modified by swiftformat."
+            echo "Stage the changes and try again."
+            exit 1
+        fi
+    else
+        echo "Warning: swiftformat not found."
         exit 1
     fi
-else
-    echo "Warning: swiftformat not found."
-    exit 1
+
+    if command -v swiftlint >/dev/null 2>&1
+    then
+        echo "Running SwiftLint..."
+        (cd "$TOP_LEVEL/ios" && swiftlint) || exit 1
+    else
+        echo "Warning: swiftlint not found."
+        exit 1
+    fi
 fi
 
-if command -v swiftlint >/dev/null 2>&1
+if git diff --cached --name-only | grep -q "^android/"
 then
-    echo "Running SwiftLint..."
-    (cd "$TOP_LEVEL" && swiftlint)
-    # the script will exit here if swiftlint fails
-else
-    echo "Warning: swiftlint not found."
-    exit 1
+    echo "Checking Android formatting..."
+    (
+        cd "$TOP_LEVEL/android" || exit 1
+        
+        if ! ./gradlew ktfmtCheck
+        then
+            echo "Formatting incorrect. Running ktfmtFormat..."
+            ./gradlew ktfmtFormat
+            echo "Stage the formatted files and try again."
+            exit 1
+        fi
+
+        echo "Running Detekt..."
+        ./gradlew detekt || exit 1
+    ) || exit 1
 fi
