@@ -2,7 +2,7 @@
 //  RoomTypeFilterView.swift
 //  Rooms
 //
-//  Created by Muqueet Mohsen Chowdhury on 13/10/2025.
+//  Created by select on 13/10/2025.
 //
 
 import RoomModels
@@ -15,10 +15,7 @@ public struct RoomTypeFilterView: View {
 
   // MARK: Lifecycle
 
-  public init(
-    selectedRoomTypes: Binding<Set<RoomType>>,
-    onSelect: @escaping () -> Void)
-  {
+  public init(selectedRoomTypes: Binding<Set<RoomType>>, onSelect: @escaping () -> Void) {
     _selectedRoomTypes = selectedRoomTypes
     self.onSelect = onSelect
   }
@@ -45,7 +42,10 @@ public struct RoomTypeFilterView: View {
         }
       }
 
-      ClearButton(filterName: "All Room Types", clearFilter: roomViewModel.clearRoomTypeFilter, onSelect: onSelect)
+      ClearButton(
+        filterName: "All Room Types",
+        clearFilter: roomViewModel.clearRoomTypeFilter,
+        onSelect: applyWithoutDismissing)
 
       SelectButton(onSelect: onSelect)
     }
@@ -57,7 +57,6 @@ public struct RoomTypeFilterView: View {
   // MARK: Private
 
   @Binding private var selectedRoomTypes: Set<RoomType>
-
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   private let onSelect: () -> Void
@@ -68,6 +67,13 @@ public struct RoomTypeFilterView: View {
     } else {
       selectedRoomTypes.insert(roomType)
     }
+    applyWithoutDismissing()
+  }
+
+  /// Re-runs the backend filter using the current selection but leaves the
+  /// sheet open so the user can keep toggling chips and watch results update.
+  private func applyWithoutDismissing() {
+    Task { await roomViewModel.applyFilters() }
   }
 }
 

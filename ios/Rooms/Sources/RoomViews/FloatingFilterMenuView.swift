@@ -40,7 +40,7 @@ struct FloatingFilterMenuView: View {
         }
         filterMenuAction("Reset all", systemImage: "arrow.counterclockwise", role: .destructive) {
           roomViewModel.clearAllFilters()
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
         }
       }
 

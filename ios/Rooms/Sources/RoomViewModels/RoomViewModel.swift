@@ -67,7 +67,7 @@ public protocol RoomViewModel {
 
   func clearRoomRating()
 
-  func applyFilters()
+  func applyFilters() async
   func loadBookingsForFilteredRooms() async
   func clearAllFilters()
 
@@ -135,10 +135,8 @@ public class LiveRoomViewModel: RoomViewModel {
   public var filteredRoomsByBuildingId: [String: [Room]] {
     var result = [String: [Room]]()
     for (buildingId, rooms) in roomsByBuildingId {
-      var filteredRooms = rooms
-      if hasActiveFilters {
-        filteredRooms = interactor.applyFilters(rooms: rooms, filter: currentFilter, roomBookingsByRoomId: bookingsByRoomId)
-      }
+      let filteredRooms = interactor.applyClientSideFilters(rooms: rooms, campusLocation: selectedCampusLocation)
+
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
         inAscendingOrder: roomsInAscendingOrder)
@@ -207,6 +205,7 @@ public class LiveRoomViewModel: RoomViewModel {
     isLoading = true
 
     let resultRooms = await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
+
     switch resultRooms {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
@@ -283,9 +282,17 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
-  public func applyFilters() {
-    // Trigger UI update by accessing filteredRoomsByBuildingId
-    _ = filteredRoomsByBuildingId
+  public func applyFilters() async {
+    isLoading = true
+    defer { isLoading = false }
+    switch await interactor.getFilteredRooms(options: currentFilterOptions) {
+    case .success(let rooms):
+      self.rooms = rooms
+      roomsByBuildingId = Dictionary(grouping: rooms, by: \.buildingId)
+
+    case .failure(let error):
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
+    }
   }
 
   public func loadBookingsForFilteredRooms() async {
@@ -344,14 +351,11 @@ public class LiveRoomViewModel: RoomViewModel {
 
   private let interactor: RoomInteractor
 
-  private var currentFilter: RoomFilter {
-    RoomFilter(
-      selectedDate: selectedDate,
-      selectedRoomTypes: selectedRoomTypes,
-      selectedDuration: selectedDuration,
-      selectedCampusLocation: selectedCampusLocation,
-      selectedCapacity: selectedCapacity)
-  }
+  private var currentFilterOptions: FilterRoomOptions { FilterRoomOptions.make(
+    selectedDate: selectedDate,
+    selectedRoomTypes: selectedRoomTypes,
+    selectedDuration: selectedDuration,
+    selectedCapacity: selectedCapacity) }
 }
 
 // MARK: - PreviewRoomViewModel

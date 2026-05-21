@@ -74,19 +74,6 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      let filtered = rooms.filter {
-        GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection
-      }
-      return .success(filtered)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
@@ -119,41 +106,31 @@ public class RoomInteractor {
     }
   }
 
-  /// - Parameter roomBookingsByRoomId: Bookings keyed by `Room.id` for duration filtering. Rooms with no entry are treated as having no known bookings (they pass the duration filter until loaded).
-  public func applyFilters(rooms: [Room], filter: RoomFilter, roomBookingsByRoomId _: [String: [RoomBooking]]) -> [Room] {
-    var filteredRooms = rooms
+  public func getFilteredRooms(options: FilterRoomOptions) async -> Result<[Room], FetchRoomError> {
+    switch await roomService.getFilterRooms(options: options) {
+    case .success(let rooms):
+      .success(rooms)
+    case .failure(let error):
+      .failure(error)
+    }
+  }
 
-    // Filter by room type (usage)
-    if !filter.selectedRoomTypes.isEmpty {
-      filteredRooms = filteredRooms.filter { room in
-        let roomType = RoomType(rawValue: room.usage)
-        return roomType.map { filter.selectedRoomTypes.contains($0) } ?? false
+  public func applyClientSideFilters(rooms: [Room], campusLocation: CampusLocation?) -> [Room] {
+    guard let campusLocation else {
+      return rooms
+    }
+
+    return rooms.filter { room in
+      let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
+      switch campusLocation {
+      case .upper:
+        return gridReference.campusSection == .upper
+      case .middle:
+        return gridReference.campusSection == .middle
+      case .lower:
+        return gridReference.campusSection == .lower
       }
     }
-
-    // Filter by capacity
-    if let capacity = filter.selectedCapacity {
-      filteredRooms = filteredRooms.filter { $0.capacity >= capacity }
-    }
-
-    // Filter by campus location
-    if let campusLocation = filter.selectedCampusLocation {
-      filteredRooms = filteredRooms.filter { room in
-        let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
-        switch campusLocation {
-        case .upper:
-          return gridReference.campusSection == .upper
-        case .middle:
-          return gridReference.campusSection == .middle
-        case .lower:
-          return gridReference.campusSection == .lower
-        }
-      }
-    }
-
-    if let duration = filter.selectedDuration { }
-
-    return filteredRooms
   }
 
   // MARK: Private

@@ -91,9 +91,13 @@ public final class LiveFilterRoomService: FilterRoomService {
   private let baseURL: URL
   private let endpointPath: String
 
-  /// Helper method to construct the search URL with query parameters
+  /// Helper method to construct the search URL with query parameters.
+  ///
+  /// Nil and empty-string fields are intentionally omitted from the query
+  /// string. The backend returns HTTP 400 when it receives a parameter with
+  /// an empty value (e.g. `startTime=`), so we only include fields the user
+  /// actually selected. `sortedBySpecificSchoolId` is sent only when `true`.
   private func makeSearchRoomsURL(options: FilterRoomOptions) -> URL? {
-    // Construct the base endpoint URL and append query parameters for filtering rooms
     guard
       let baseEndpointURL = URL(string: endpointPath, relativeTo: baseURL),
       var components = URLComponents(url: baseEndpointURL, resolvingAgainstBaseURL: true)
@@ -101,20 +105,25 @@ public final class LiveFilterRoomService: FilterRoomService {
       return nil
     }
 
-    // Add query items for each filter parameter, using empty strings for nil values and converting boolean to "true"/"false"
-    components.queryItems = [
-      URLQueryItem(name: "datetime", value: options.dateTime ?? ""),
-      URLQueryItem(name: "startTime", value: options.startTime ?? ""),
-      URLQueryItem(name: "endTime", value: options.endTime ?? ""),
-      URLQueryItem(name: "buildingId", value: options.buildingId ?? ""),
-      URLQueryItem(name: "capacity", value: options.capacity.map(String.init) ?? ""),
-      URLQueryItem(name: "duration", value: options.duration.map(String.init) ?? ""),
-      URLQueryItem(name: "usage", value: options.usage ?? ""),
-      URLQueryItem(name: "location", value: options.location ?? ""),
-      URLQueryItem(name: "id", value: options.sortedBySpecificSchoolId ? "true" : "false"),
+    let candidates: [(String, String?)] = [
+      ("datetime", options.dateTime),
+      ("startTime", options.startTime),
+      ("endTime", options.endTime),
+      ("buildingId", options.buildingId),
+      ("capacity", options.capacity.map(String.init)),
+      ("duration", options.duration.map(String.init)),
+      ("usage", options.usage),
+      ("location", options.location),
+      ("id", options.sortedBySpecificSchoolId ? "true" : nil),
     ]
 
-    // Return the fully constructed URL with query parameters
+    let items = candidates.compactMap { name, value -> URLQueryItem? in
+      guard let value, !value.isEmpty else { return nil }
+      return URLQueryItem(name: name, value: value)
+    }
+
+    components.queryItems = items.isEmpty ? nil : items
+
     return components.url
   }
 

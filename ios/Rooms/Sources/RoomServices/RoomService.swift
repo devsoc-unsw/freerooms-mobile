@@ -59,12 +59,12 @@ public final class LiveRoomService: RoomService {
     roomLoader: any RoomLoader,
     roomBookingLoader: any RoomBookingLoader,
     roomRatingLoader: any RoomRatingLoader,
-    roomFilterLoader: any FilterRoomService)
+    roomFilterService: any FilterRoomService)
   {
     self.roomLoader = roomLoader
     self.roomBookingLoader = roomBookingLoader
     self.roomRatingLoader = roomRatingLoader
-    self.roomFilterLoader = roomFilterLoader
+    self.roomFilterService = roomFilterService
   }
 
   // MARK: Public
@@ -81,7 +81,7 @@ public final class LiveRoomService: RoomService {
       return .failure(.connectivity)
     }
 
-    switch await roomFilterLoader.fetchFilteredRooms(options: options) {
+    switch await roomFilterService.fetchFilteredRooms(options: options) {
     case .success(let response):
       let filteredRooms = rooms.filter { response.contains($0.id) }
 
@@ -145,7 +145,7 @@ public final class LiveRoomService: RoomService {
   private var roomLoader: any RoomLoader
   private var roomBookingLoader: any RoomBookingLoader
   private var roomRatingLoader: any RoomRatingLoader
-  private var roomFilterLoader: any FilterRoomService
+  private var roomFilterService: any FilterRoomService
 }
 
 // MARK: - PreviewRoomService

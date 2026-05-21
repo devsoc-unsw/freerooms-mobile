@@ -239,7 +239,7 @@ public struct RoomsTabView<Destination: View>: View {
       .sheet(isPresented: $showingDateFilter) {
         DateFilterView(selectedDate: selectedDateBinding) {
           showingDateFilter = false
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
           let vm = roomViewModel
           Task { await vm.loadBookingsForFilteredRooms() }
         }
@@ -251,7 +251,7 @@ public struct RoomsTabView<Destination: View>: View {
       .sheet(isPresented: $showingRoomTypeFilter) {
         RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
           showingRoomTypeFilter = false
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
         }
         .environment(roomViewModel)
         .presentationDetents([.fraction(0.52)])
@@ -261,7 +261,7 @@ public struct RoomsTabView<Destination: View>: View {
       .sheet(isPresented: $showingDurationFilter) {
         DurationFilterView(onSelect: {
           showingDurationFilter = false
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
         })
         .environment(roomViewModel)
         .presentationDetents([.fraction(0.32)])
@@ -271,7 +271,7 @@ public struct RoomsTabView<Destination: View>: View {
       .sheet(isPresented: $showingCampusLocationFilter) {
         CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
           showingCampusLocationFilter = false
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
         }
         .environment(roomViewModel)
         .presentationDetents([.fraction(0.44)])
@@ -281,7 +281,7 @@ public struct RoomsTabView<Destination: View>: View {
       .sheet(isPresented: $showingCapacityFilter) {
         CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
           showingCapacityFilter = false
-          roomViewModel.applyFilters()
+          Task { await roomViewModel.applyFilters() }
         }
         .environment(roomViewModel)
         .presentationDetents([.fraction(0.47)])
