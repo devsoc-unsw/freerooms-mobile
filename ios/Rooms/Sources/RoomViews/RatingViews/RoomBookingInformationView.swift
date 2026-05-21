@@ -31,8 +31,6 @@ struct RoomBookingInformationView: View {
           .bold()
           .foregroundStyle(.primary)
 
-        Spacer()
-
         ZStack {
           RoundedRectangle(cornerRadius: 10)
             .fill(theme.accent.primary)
@@ -58,6 +56,19 @@ struct RoomBookingInformationView: View {
         }
         .frame(width: 65, height: 35)
         .padding(.horizontal, 6)
+        
+        Spacer()
+        
+        Button {
+          isFavourite.toggle()
+        } label: {
+          Image(systemName: "heart")
+            .foregroundStyle(theme.accent.primary)
+            .font(.system(size: 22))
+            .symbolVariant(isFavourite ? .fill : .none)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.circle)
       }
 
       VStack(alignment: .leading, spacing: 10) {
@@ -82,6 +93,7 @@ struct RoomBookingInformationView: View {
   // MARK: Private
 
   @State private var isShowingSheet: Bool = false
+  @State private var isFavourite: Bool = false
 
   @Environment(Theme.self) private var theme
 }
