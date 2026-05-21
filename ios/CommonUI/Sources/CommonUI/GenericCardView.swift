@@ -66,6 +66,14 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
       }
       .disabled(isLoading)
     }
+    .contextMenu {
+      Button {
+        isFavourite.toggle()
+      } label: {
+        isFavourite ? Label("Remove from Favourites", systemImage: "heart.slash.fill") :
+        Label("Add to Favourites", systemImage: "heart.fill")
+      }
+    }
   }
 
   // MARK: Internal
@@ -81,6 +89,8 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
   var index: Int {
     items.firstIndex(of: item)!
   }
+  
+  @State private var isFavourite : Bool = false
 
 }
 
