@@ -15,12 +15,16 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "TestingSupport", path: "../TestingSupport"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "Networking",
+      dependencies: [
+        .product(name: "VISOR", package: "VISOR"),
+      ],
       swiftSettings: .defaultSettings),
     .target(name: "NetworkingTestUtils", dependencies: ["Networking"], swiftSettings: .defaultSettings),
     .testTarget(

@@ -17,7 +17,7 @@ import RoomServices
 // MARK: - RoomViewModel
 
 @MainActor
-public protocol RoomViewModel {
+public protocol RoomViewModel: AnyObject {
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -60,6 +60,15 @@ public protocol RoomViewModel {
   func fetchRoomRating(roomID: String) async
 
   func clearRoomRating()
+
+  var scrollID: Int? { get set }
+  var baseDate: Date { get set }
+  var dateSelect: Date { get set }
+
+  func resetBookingScrollState(initialDate: Date)
+  func handleScrollIDChange(oldValue: Int?, newValue: Int?)
+  func handleDateSelectChange(oldValue: Date, newValue: Date)
+  func getScrollHour(for date: Date) -> Int
 }
 
 // MARK: - LiveRoomViewModel
@@ -75,6 +84,10 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   // MARK: Public
+
+  public var scrollID: Int? = RoomBookingConstants.middleIndex
+  public var baseDate = Date()
+  public var dateSelect = Date()
 
   public var loadRoomErrorMessage: AlertError?
 
@@ -239,6 +252,36 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
+  public func resetBookingScrollState(initialDate: Date) {
+    baseDate = initialDate
+    dateSelect = initialDate
+    scrollID = RoomBookingConstants.middleIndex
+  }
+
+  public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
+    guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
+    dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
+  }
+
+  public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
+    let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
+    let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
+
+    if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
+      baseDate = newValue
+      scrollID = RoomBookingConstants.middleIndex
+    }
+  }
+
+  public func getScrollHour(for date: Date) -> Int {
+    if Calendar.current.isDateInToday(date) {
+      let hour = Calendar.current.component(.hour, from: date)
+      return max(hour, RoomBookingConstants.startHour)
+    } else {
+      return RoomBookingConstants.startHour
+    }
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
@@ -256,4 +299,17 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
 
     currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
+}
+
+extension Double {
+  public static let day: Double = 86_400
+}
+
+// MARK: - RoomBookingConstants
+
+public enum RoomBookingConstants {
+  public static let startHour = 9
+  public static let endHour = 24
+  public static let scrollAnimationDuration = 0.5
+  public static let middleIndex = 500
 }

@@ -26,7 +26,8 @@ struct RoomServiceTests {
     let sut = LiveRoomService(
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
-      roomRatingLoader: StubRoomRatingLoader())
+      roomRatingLoader: StubRoomRatingLoader(),
+      roomFilterLoader: StubFilterRoomLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -50,7 +51,8 @@ struct RoomServiceTests {
     let sut = LiveRoomService(
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
-      roomRatingLoader: StubRoomRatingLoader())
+      roomRatingLoader: StubRoomRatingLoader(),
+      roomFilterLoader: StubFilterRoomLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-F21")
@@ -74,7 +76,8 @@ struct RoomServiceTests {
     let sut = LiveRoomService(
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
-      roomRatingLoader: StubRoomRatingLoader())
+      roomRatingLoader: StubRoomRatingLoader(),
+      roomFilterLoader: StubFilterRoomLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -99,7 +102,8 @@ struct RoomServiceTests {
     let sut = LiveRoomService(
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
-      roomRatingLoader: StubRoomRatingLoader())
+      roomRatingLoader: StubRoomRatingLoader(),
+      roomFilterLoader: StubFilterRoomLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -124,7 +128,8 @@ struct RoomServiceTests {
     let sut = LiveRoomService(
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
-      roomRatingLoader: StubRoomRatingLoader())
+      roomRatingLoader: StubRoomRatingLoader(),
+      roomFilterLoader: StubFilterRoomLoader())
 
     // When
     let result = await sut.getRooms(buildingId: "")
@@ -230,5 +235,6 @@ private func makeRoomServiceSUT(ratingLoader: StubRoomRatingLoader) -> LiveRoomS
   return LiveRoomService(
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
-    roomRatingLoader: ratingLoader)
+    roomRatingLoader: ratingLoader,
+    roomFilterLoader: StubFilterRoomLoader())
 }

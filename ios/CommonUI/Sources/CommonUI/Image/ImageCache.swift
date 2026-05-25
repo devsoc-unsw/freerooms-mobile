@@ -47,7 +47,8 @@ import UIKit
 /// 50 MB holds ~100 medium thumbnails — enough to scroll through the full
 /// buildings list AND a building's room list without evictions. `NSCache`
 /// also purges automatically under system memory pressure.
-public final class ImageCache {
+nonisolated
+public final class ImageCache: Sendable {
 
   // MARK: Lifecycle
 
@@ -71,28 +72,89 @@ public final class ImageCache {
   /// `preparingThumbnail(of:)`, stores the result, and returns it.
   /// Falls back to the original image if thumbnail creation fails.
   ///
+  /// > Warning:
+  /// > This method may create thumbmails on the calling actor.
+  /// > Make sure not to call this method on the `MainActor`.
+  /// > To create images in the background, use
+  /// > ``getImage(named:in:size:)`` instead.
+  ///
   /// - Parameters:
   ///   - name: The asset name in the catalog (e.g. `"K-J17-201"`).
   ///   - bundle: The resource bundle containing the asset catalog (e.g. `.module`).
   ///   - size: The target `ImageSize`. Defaults to `.medium` (400px).
   /// - Returns: A downsampled `UIImage`, or `nil` if the asset wasn't found.
-  public func image(
+  nonisolated public func image(
     named name: String,
     in bundle: Bundle,
     size: ImageSize = .medium)
     -> UIImage?
   {
-    let maxPixelSize = size.rawValue
-    let key = "\(name)-\(Int(maxPixelSize))" as NSString
-
-    if let cached = cache.object(forKey: key) {
-      return cached
+    let key = _key(for: name, size: size)
+    if let image = cache.object(forKey: key) {
+      return image
     }
+    return _generateThumbnail(for: name, in: bundle, size: size, key: key)
+  }
 
+  /// Gets an image matcing the provided size
+  ///
+  /// If a matching image is found in the cache, it is returned immediately
+  /// without suspending.
+  ///
+  /// Otherwise, the thumbnail is generated in the background
+  /// and the resulting thumbnail is cached. The function suspends
+  /// until the thumbnail is generated.
+  ///
+  /// > ``image(named:in:size:)``
+  /// > for sync function.
+  nonisolated(nonsending)
+  public func getImage(
+    named name: String,
+    in bundle: Bundle,
+    size: ImageSize = .medium)
+    async -> UIImage?
+  {
+    let key = _key(for: name, size: size)
+    if let image = cache.object(forKey: key) {
+      return image
+    }
+    return await _generateThumbnailConcurrently(
+      for: name, in: bundle, size: size, key: key)
+  }
+
+  /// Removes all cached thumbnails.
+  ///
+  /// Useful for debugging or a "clear cache" setting. Under normal operation,
+  /// `NSCache` handles eviction automatically under memory pressure.
+  public func clearCache() {
+    cache.removeAllObjects()
+  }
+
+  // MARK: Private
+
+  /// `NSCache` is thread safe as long as the key and value types are `Sendable`
+  ///
+  /// Since `NSString` and `UIImage` are thread safe (and `Sendable`), `NSCache` is also thread safe.
+  @safe nonisolated(unsafe)
+  private let cache = NSCache<NSString, UIImage>()
+
+  private func _key(for name: String, size: ImageSize) -> NSString {
+    let maxPixelSize = size.rawValue
+    return "\(name)-\(Int(maxPixelSize))" as NSString
+  }
+
+  private func _generateThumbnail(
+    for name: String,
+    in bundle: Bundle,
+    size: ImageSize,
+    key: NSString)
+    -> UIImage?
+  {
     guard let original = UIImage(named: name, in: bundle, with: nil) else {
       return nil
     }
 
+    let maxPixelSize = size.rawValue
     let aspectRatio = original.size.width / original.size.height
     let thumbnailSize: CGSize =
       if aspectRatio > 1 {
@@ -111,16 +173,15 @@ public final class ImageCache {
     return thumbnail
   }
 
-  /// Removes all cached thumbnails.
-  ///
-  /// Useful for debugging or a "clear cache" setting. Under normal operation,
-  /// `NSCache` handles eviction automatically under memory pressure.
-  public func clearCache() {
-    cache.removeAllObjects()
+  @concurrent
+  private func _generateThumbnailConcurrently(
+    for name: String,
+    in bundle: Bundle,
+    size: ImageSize,
+    key: NSString)
+    async -> UIImage?
+  {
+    _generateThumbnail(for: name, in: bundle, size: size, key: key)
   }
-
-  // MARK: Private
-
-  private let cache = NSCache<NSString, UIImage>()
 
 }

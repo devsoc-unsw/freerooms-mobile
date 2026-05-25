@@ -17,7 +17,7 @@ struct RoomDetailsSheetView: View {
   // MARK: Lifecycle
 
   public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, onDismiss: (() -> Void)? = nil) {
-    self.dateSelect = dateSelect
+    initialDate = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
     self.onDismiss = onDismiss
@@ -41,7 +41,9 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
+          DatePicker("Please Select a Date", selection: Binding(
+            get: { roomViewModel.dateSelect },
+            set: { roomViewModel.dateSelect = $0 }), displayedComponents: .date)
             .labelsHidden()
             .tint(theme.accent.primary)
         }
@@ -61,20 +63,14 @@ struct RoomDetailsSheetView: View {
           .scrollTargetLayout()
         }
         .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $scrollID)
-        .onChange(of: scrollID) { oldValue, newValue in
-          if let newValue, let oldValue, abs(newValue - oldValue) == 1 {
-            dateSelect = baseDate + (Double(newValue - Self.middleIndex) * .day)
-          }
+        .scrollPosition(id: Binding(
+          get: { roomViewModel.scrollID },
+          set: { roomViewModel.scrollID = $0 }))
+        .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
+          roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
         }
-        .onChange(of: dateSelect) { _, newValue in
-          let currentScroll = scrollID ?? Self.middleIndex
-          let expectedDate = baseDate + (Double(currentScroll - Self.middleIndex) * .day)
-
-          if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
-            baseDate = newValue
-            scrollID = Self.middleIndex
-          }
+        .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
+          roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
         }
       }
       .padding()
@@ -93,6 +89,9 @@ struct RoomDetailsSheetView: View {
     .task {
       await roomViewModel.fetchRoomRating(roomID: room.id)
     }
+    .onAppear {
+      roomViewModel.resetBookingScrollState(initialDate: initialDate)
+    }
     .gesture(
       DragGesture(minimumDistance: 20, coordinateSpace: .local)
         .onEnded { value in
@@ -104,9 +103,9 @@ struct RoomDetailsSheetView: View {
 
   func bindingFor(index: Int) -> Binding<Date> {
     Binding(
-      get: { baseDate + (Double(index - Self.middleIndex) * .day) },
+      get: { roomViewModel.baseDate + (Double(index - Self.middleIndex) * .day) },
       set: { newDate in
-        baseDate = newDate + (Double(Self.middleIndex - index) * .day)
+        roomViewModel.baseDate = newDate + (Double(Self.middleIndex - index) * .day)
       })
   }
 
@@ -114,15 +113,12 @@ struct RoomDetailsSheetView: View {
 
   // Paging is 0 <= page < middleindex * 2
   private static let maxScrollID = Self.middleIndex * 2
-  private static let middleIndex = 500
-
-  @State private var scrollID: Int? = middleIndex
-  @State private var baseDate = Date()
-  @State private var dateSelect = Date()
+  private static let middleIndex = RoomBookingConstants.middleIndex
 
   @Environment(Theme.self) private var theme
 
   private let onDismiss: (() -> Void)?
+  private let initialDate: Date
 
   private var roomViewModel: RoomViewModel
 
@@ -133,12 +129,8 @@ struct RoomDetailsSheetView: View {
     .defaultTheme()
 }
 
-extension Double {
-  static let day: Double = 86_400
-}
-
 extension Date {
-  static func +(lhs: Date, rhs: Double) -> Date {
+  fileprivate static func +(lhs: Date, rhs: Double) -> Date {
     lhs.addingTimeInterval(rhs)
   }
 }
