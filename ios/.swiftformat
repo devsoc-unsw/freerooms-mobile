@@ -87,7 +87,7 @@
 --rules redundantVoidReturnType
 --rules redundantOptionalBinding
 --rules redundantInternal
---rules redundantProperty
+--rules redundantVariable
 --rules unusedArguments
 --rules spaceInsideBrackets
 --rules spaceInsideBraces

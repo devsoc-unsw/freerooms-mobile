@@ -1,20 +1,30 @@
 #!/bin/sh
-#
-# Place appropriately named executable hook scripts into this directory
-# to intercept various actions that git takes.  See `git help hooks` for
-# more information.
+
+TOP_LEVEL=$(git rev-parse --show-toplevel)
+
 if command -v swiftformat >/dev/null 2>&1
 then
-    echo "Running SwiftFormat"
-    (cd "$(git rev-parse --show-toplevel)/ios" && swiftformat .)
+    echo "Checking formatting..."
+    (cd "$TOP_LEVEL" && swiftformat .)
+    
+    # check if swiftformat changed any files
+    if ! git diff --exit-code >/dev/null 2>&1
+    then
+        echo "Error: Files were modified by the formatter."
+        echo "stage the changes and try again."
+        exit 1
+    fi
 else
-    echo "Warning: `swiftformat` command not found - run the command: brew install swiftformat"
+    echo "Warning: swiftformat not found."
+    exit 1
 fi
 
 if command -v swiftlint >/dev/null 2>&1
 then
-    echo "Running SwiftLint"
-    (cd "$(git rev-parse --show-toplevel)/ios" && swiftlint)
+    echo "Running SwiftLint..."
+    (cd "$TOP_LEVEL" && swiftlint)
+    # the script will exit here if swiftlint fails
 else
-    echo "Warning: `swiftlint` command not found - run the command: brew install swiftlint"
+    echo "Warning: swiftlint not found."
+    exit 1
 fi

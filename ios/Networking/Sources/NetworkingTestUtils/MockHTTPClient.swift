@@ -26,7 +26,7 @@ public class MockHTTPClient: HTTPClient {
     stubbedError = NSError(domain: "test", code: 0)
   }
 
-  public func get(from url: URL) async -> HTTPClient.Result {
+  public func get(from url: URL) async -> HTTPClientResult {
     if let error = stubbedError {
       return .failure(error)
     }
