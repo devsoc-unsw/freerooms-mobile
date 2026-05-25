@@ -24,7 +24,11 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
+<<<<<<< HEAD
   let hoursToDisplay: CGFloat = CGFloat(RoomBookingConstants.endHour - RoomBookingConstants.startHour)
+=======
+  let hoursToDisplay: CGFloat = 24 - 9
+>>>>>>> 65d10b054bc5947624ebf0f01c710a50ab6bfa91
   let slotHeight: CGFloat = 60
 
   var dateComponent: DateComponents {
