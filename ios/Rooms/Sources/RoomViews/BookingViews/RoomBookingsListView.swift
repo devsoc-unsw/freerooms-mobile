@@ -24,8 +24,7 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
-  let hoursToDisplay: CGFloat = 24 - 9
-  let slotHeight: CGFloat = 60
+  let hoursToDisplay: CGFloat = CGFloat(RoomLayoutConstants.scheduleEndHour - RoomLayoutConstants.scheduleStartHour)
 
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
@@ -43,14 +42,14 @@ struct RoomBookingsListView: View {
       ScrollView(.vertical) {
         ZStack(alignment: .topLeading) {
           if roomViewModel.getBookingsIsLoading {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
               .fill(Color.gray.opacity(0.3))
-              .frame(height: 24 * slotHeight)
+              .frame(height: CGFloat(RoomLayoutConstants.scheduleEndHour) * RoomLayoutConstants.slotHeight)
           }
 
           // Background time grid
           VStack(spacing: 0) {
-            ForEach(9..<24, id: \.self) { hour in
+            ForEach(RoomLayoutConstants.scheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
               BookingsLayoutView(hour: hour)
                 .id(hour)
             }
@@ -66,12 +65,12 @@ struct RoomBookingsListView: View {
               .padding(.trailing, 10)
           }
         }
-        .frame(height: hoursToDisplay * slotHeight)
+        .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
       }
-      .frame(height: hoursToDisplay * slotHeight)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
+      .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
       .onAppear {
-        let currentHour = max(dateComponent.hour ?? 0, 9)
+        let currentHour = max(dateComponent.hour ?? 0, RoomLayoutConstants.scheduleStartHour)
         withAnimation(.easeInOut(duration: 0.5)) {
           proxy.scrollTo(currentHour, anchor: .top)
         }
