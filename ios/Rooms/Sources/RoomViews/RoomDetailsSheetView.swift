@@ -75,7 +75,7 @@ struct RoomDetailsSheetView: View {
       }
       .padding()
       .overlay(
-        RoundedRectangle(cornerRadius: 12)
+        RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
           .strokeBorder(LinearGradient(
             colors: [
               theme.accent.secondary,
@@ -93,9 +93,12 @@ struct RoomDetailsSheetView: View {
       roomViewModel.resetBookingScrollState(initialDate: initialDate)
     }
     .gesture(
-      DragGesture(minimumDistance: 20, coordinateSpace: .local)
+      DragGesture(minimumDistance: RoomLayoutConstants.dismissDragMinimumDistance, coordinateSpace: .local)
         .onEnded { value in
-          if value.translation.width > 50, value.translation.width > abs(value.translation.height) {
+          if
+            value.translation.width > RoomLayoutConstants.dismissDragMinimumWidth,
+            value.translation.width > abs(value.translation.height)
+          {
             onDismiss?()
           }
         })
