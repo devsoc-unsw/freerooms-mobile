@@ -8,6 +8,7 @@
 import Foundation
 import VISOR
 import Errors
+import TypeUtils
 
 // MARK: - HTTPClient
 public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), HTTPClientError>
@@ -22,9 +23,10 @@ public protocol HTTPClient {
 // MARK: - HTTPClientError
 
 nonisolated
-public struct HTTPClientError: FreeroomsError {
+public struct HTTPClientError: NetworkRequestError {
   
-  public enum Reason: Sendable {
+  @AddCaseKind
+  public enum Reason: Sendable, Equatable {
     case networkFailure
     case invalidHTTPResponse
   }
@@ -61,6 +63,30 @@ public struct HTTPClientError: FreeroomsError {
       networkError: networkError,
       url: url
     )
+  }
+  
+}
+
+extension HTTPClientError: Equatable {
+  
+  public static func == (lhs: HTTPClientError, rhs: HTTPClientError) -> Bool {
+    
+    let reasonsEqual: Bool
+    switch (lhs.networkError, rhs.networkError) {
+    case let (.some(lhs), .some(rhs)):
+      reasonsEqual = lhs.isSimilar(to: rhs)
+    case (nil, nil):
+      reasonsEqual = true
+    default:
+      reasonsEqual = false
+    }
+    
+    return (
+      lhs.reason == rhs.reason &&
+      reasonsEqual &&
+      lhs.url == rhs.url
+    )
+    
   }
   
 }

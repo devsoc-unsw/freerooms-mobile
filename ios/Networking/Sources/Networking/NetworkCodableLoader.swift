@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import TypeUtils
 
 // MARK: - CodableLoader
 
 public protocol CodableLoader: Sendable {
   associatedtype Generic: Codable
 
-  func fetch() async -> Swift.Result<Generic, Swift.Error>
+  func fetch() async -> Swift.Result<Generic, NetworkCodableError>
 }
 
 // MARK: - StatusCode
@@ -23,15 +24,85 @@ public enum StatusCode: Int {
 
 // MARK: - NetworkCodableError
 
-//struct NetworkCodableError: NetworkRequestError {
-//  
-//  enum Reason: Sendable {
-//    case clientError(HTTPClientError)
-//  }
-//  
-//}
+nonisolated
+public struct NetworkCodableError: NetworkRequestError {
+  
+  @AddCaseKind
+  public enum Reason: Sendable {
+    case clientError(HTTPClientError)
+    case decodingError(any Error)
+    case badResponse
+  }
+  
+  public var errorDescription: String {
+    switch reason {
+    case .clientError:
+      "HTTP client error"
+    case .decodingError:
+      "Server provided invalid data"
+    case .badResponse:
+      "Response was not ok"
+    }
+  }
+  
+  public var reason: Reason
+  public var url: URL
+  public var networkError: (any Error)?
+  public var httpResponse: HTTPURLResponse?
+  
+  public init(reason: Reason, url: URL, networkError: (any Error)? = nil, httpResponse: HTTPURLResponse? = nil) {
+    self.reason = reason
+    self.url = url
+    self.networkError = networkError
+    self.httpResponse = httpResponse
+  }
+  
+  public static func clientError(_ error: HTTPClientError) -> Self {
+    NetworkCodableError(
+      reason: .clientError(error),
+      url: error.url
+    )
+  }
+  
+  public static func decodingError(_ error: any Error, url: URL, response: HTTPURLResponse) -> Self {
+    NetworkCodableError(
+      reason: .decodingError(error),
+      url: url,
+      httpResponse: response
+    )
+  }
+  
+  public static func badResponse(url: URL, response: HTTPURLResponse) -> Self {
+    NetworkCodableError(
+      reason: .badResponse,
+      url: url,
+      httpResponse: response
+    )
+  }
+  
+}
+
+extension NetworkCodableError.Reason: Equatable {
+  
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    switch (lhs, rhs) {
+    case let (.clientError(lhs), .clientError(rhs)):
+      return lhs == rhs
+    case let (.decodingError(lhs), .decodingError(rhs)):
+      return lhs.isSimilar(to: rhs)
+    case (.badResponse, .badResponse):
+      return true
+    default:
+      return false
+    }
+  }
+  
+}
 
 // MARK: - NetworkCodableLoader
+
+// Can be shared safely between decoders, JSONDecoder is sendable
+private nonisolated let _networkCodableLoaderSharedDecoder = JSONDecoder()
 
 public final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
@@ -46,18 +117,17 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   // MARK: Public
 
-  public enum Error: Swift.Error {
-    case connectivity, invalidData
-  }
-
-  public typealias Result = Swift.Result<T, Swift.Error>
+  public typealias Result = Swift.Result<T, NetworkCodableError>
 
   public func fetch() async -> Result {
     switch await client.get(from: url) {
     case .success((let data, let response)):
-      await map(data, from: response)
-    case .failure:
-      .failure(Error.connectivity)
+      guard response.statusCode == StatusCode.ok.rawValue else {
+        return .failure(NetworkCodableError.badResponse(url: url, response: response))
+      }
+      return await map(data, httpResponse: response)
+    case .failure(let error):
+        return .failure(NetworkCodableError.clientError(error))
     }
   }
 
@@ -67,15 +137,12 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
   private let url: URL
 
   @concurrent
-  private func map(_ data: Data, from response: HTTPURLResponse) async -> Result {
-    guard
-      response.statusCode == StatusCode.ok.rawValue, let decodedData = try? JSONDecoder().decode(
-        T.self,
-        from: data)
-    else {
-      return .failure(Error.invalidData)
+  private func map(_ data: Data, httpResponse: HTTPURLResponse) async -> Result {
+    do {
+      let decodedData = try _networkCodableLoaderSharedDecoder.decode(T.self, from: data)
+      return .success(decodedData)
+    } catch {
+      return .failure(NetworkCodableError.decodingError(error, url: url, response: httpResponse))
     }
-
-    return .success(decodedData)
   }
 }

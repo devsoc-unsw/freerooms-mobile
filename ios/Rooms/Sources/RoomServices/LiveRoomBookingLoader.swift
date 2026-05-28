@@ -7,6 +7,8 @@
 
 import Foundation
 import RoomModels
+import Errors
+import Networking
 import VISOR
 
 // MARK: - RoomBookingLoaderError
@@ -14,6 +16,20 @@ import VISOR
 public enum RoomBookingLoaderError: Error {
   case connectivity, invalidBuildingID, invalidURL, invalidDateFormat
 }
+
+//nonisolated
+//public struct RoomBookingLoaderError: NetworkRequestError {
+//  
+//  public enum Reason: Sendable {
+//    case connectivity
+//    case invalidBuildingID
+//    case invalidURL
+//    case invalidDateFormat
+//  }
+//  
+//  
+//  
+//}
 
 // MARK: - RoomBookingLoader
 

@@ -16,12 +16,14 @@ import Testing
 struct FilterRoomLoaderTests {
 
   // MARK: Lifecycle
+  
+  let baseURL = URL(string: "https://freerooms.devsoc.app")!
 
   init() {
     client = SpyHTTPClient()
     sut = LiveFilterRoomLoader(
       client: client,
-      baseURL: URL(string: "https://freerooms.devsoc.app")!)
+      baseURL: baseURL)
   }
 
   // MARK: Internal
@@ -150,7 +152,7 @@ struct FilterRoomLoaderTests {
 
   @Test
   func fetchFilteredRooms_whenClientFails_returnsConnectivityError() async throws {
-    client.getReturnValue = HTTPClientResult.failure(AnyError())
+    client.getReturnValue = HTTPClientResult.failure(HTTPClientError.invalidHTTPResponse(url: baseURL))
 
     let result = await sut.fetchFilteredRooms(options: FilterRoomOptions(
       dateTime: nil,

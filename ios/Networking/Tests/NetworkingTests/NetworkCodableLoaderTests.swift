@@ -25,6 +25,8 @@ final class NetworkCodableLoaderTests {
   // MARK: Internal
 
   typealias SUT = NetworkCodableLoader<String>
+  
+  static let sutURL = URL(string: "https://a-url.com")!
 
   /// Ensures that no network calls are made when a `NetworkCodableLoader` is first created.
   @Test("Initialised loader does not request data")
@@ -40,7 +42,12 @@ final class NetworkCodableLoaderTests {
     let (client, sut) = makeSut()
     client.setNextRequestToFailWithClientError()
 
-    await expect(sut, toThrow: SUT.Error.connectivity)
+    await expect(
+      sut,
+      toThrow: NetworkCodableError.clientError(
+        .networkFailure(
+          url: Self.sutURL,
+          networkError: client.clientError)))
     #expect(client.networkCallCount == 1)
   }
 
@@ -48,9 +55,11 @@ final class NetworkCodableLoaderTests {
   @Test("Loader throws error on invalid data returned from network")
   func networkCodableLoaderThrowsErrorOnInvalidData() async {
     let (client, sut) = makeSut()
-    client.setNextRequestToSucceedWithReturnedData(try? JSONEncoder().encode(1))
+    
+    let encoder = JSONEncoder()
+    client.setNextRequestToSucceedWithReturnedData(try? encoder.encode(1))
 
-    await expect(sut, toThrow: SUT.Error.invalidData)
+    await expect(sut, toThrowErrorOfKind: .decodingError)
     #expect(client.networkCallCount == 1)
   }
 
@@ -59,8 +68,8 @@ final class NetworkCodableLoaderTests {
   func networkCodableLoaderThrowsErrorOnNon200HTTPResponse(statusCode code: Int) async {
     let (client, sut) = makeSut()
     client.setNextRequestToSucceedWithStatusCode(code)
-
-    await expect(sut, toThrow: SUT.Error.invalidData)
+    
+    await expect(sut, toThrowErrorOfKind: .badResponse)
     #expect(client.networkCallCount == 1)
   }
 
@@ -109,7 +118,7 @@ final class NetworkCodableLoaderTests {
 
   private func makeSut(sourceLocation: SourceLocation = #_sourceLocation) -> (client: MockHTTPClient, sut: SUT) {
     let client = MockHTTPClient()
-    let sut = NetworkCodableLoader<String>(client: client, url: URL(string: "https://a-url.com")!)
+    let sut = NetworkCodableLoader<String>(client: client, url: Self.sutURL)
     clientTracker = MemoryLeakTracker(instance: client, sourceLocation: sourceLocation)
     sutTracker = MemoryLeakTracker(instance: sut, sourceLocation: sourceLocation)
     return (client, sut)
@@ -119,12 +128,12 @@ final class NetworkCodableLoaderTests {
     UUID().uuidString
   }
 
-  private func expect(_ sut: SUT, toThrow error: SUT.Error, sourceLocation: SourceLocation = #_sourceLocation) async {
+  private func expect(_ sut: SUT, toThrow error: NetworkCodableError, sourceLocation: SourceLocation = #_sourceLocation) async {
     switch await sut.fetch() {
     case .success(let response):
       Issue.record("Expected an error but got \(response)", sourceLocation: sourceLocation)
     case .failure(let receivedError):
-      #expect(receivedError as? SUT.Error == error, sourceLocation: sourceLocation)
+      #expect(receivedError.reason == error.reason, sourceLocation: sourceLocation)
     }
   }
 
@@ -140,18 +149,23 @@ final class NetworkCodableLoaderTests {
 
     #expect(receivedString == string, sourceLocation: sourceLocation)
   }
+  
+  private func expect(_ sut: SUT, toThrowErrorOfKind errorKind: NetworkCodableError.Reason.Kind, sourceLocation: SourceLocation = #_sourceLocation) async {
+    switch await sut.fetch() {
+    case .success(let response):
+      Issue.record("Expected an error but got \(response)", sourceLocation: sourceLocation)
+    case .failure(let error):
+      #expect(error.reason.kind == errorKind, sourceLocation: sourceLocation)
+    }
+  }
 }
 
 // MARK: - MockHTTPClient
 
 /// Simulates network responses.
 private final class MockHTTPClient: HTTPClient {
-
-  // MARK: Public
-
-  public enum Error: Swift.Error {
-    case networkFailure
-  }
+  
+  typealias Error = HTTPClientError
 
   // MARK: Internal
 
@@ -159,7 +173,8 @@ private final class MockHTTPClient: HTTPClient {
   var returnedStringData: Data?
   // swiftlint:disable:next implicitly_unwrapped_optional
   var returnedStatusCode: Int!
-
+  let clientError: any Swift.Error = URLError(.unknown)
+  
   func setNextRequestToFailWithClientError() {
     returnedStringData = nil
   }
@@ -183,7 +198,7 @@ private final class MockHTTPClient: HTTPClient {
         returnedStringData,
         HTTPURLResponse(url: url, statusCode: returnedStatusCode, httpVersion: nil, headerFields: nil)!))
     } else {
-      return .failure(Error.networkFailure)
+      return .failure(HTTPClientError.networkFailure(url: url, networkError: clientError))
     }
   }
 }

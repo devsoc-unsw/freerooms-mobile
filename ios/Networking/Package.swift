@@ -17,6 +17,7 @@ let package = Package(
     .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(name: "Errors", path: "../Errors"),
     .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/floormatgen/swift-stdlib-utils", from: "0.3.1"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,6 +27,7 @@ let package = Package(
       dependencies: [
         .product(name: "Errors", package: "Errors"),
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "TypeUtils", package: "swift-stdlib-utils"),
       ],
       swiftSettings: .defaultSettings),
     .target(name: "NetworkingTestUtils", dependencies: ["Networking"], swiftSettings: .defaultSettings),
