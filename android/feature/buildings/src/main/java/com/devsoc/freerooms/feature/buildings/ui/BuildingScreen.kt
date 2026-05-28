@@ -1,6 +1,7 @@
 package com.devsoc.freerooms.feature.buildings.ui
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
@@ -36,7 +38,7 @@ fun BuildingScreen(
             val buildingSections = state.data.toBuildingSections()
 
             LazyColumn(
-                modifier = modifier,
+                modifier = modifier.background(Gray),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
