@@ -42,6 +42,10 @@ fun BuildingScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                item {
+                    BuildingSearchBox()
+                }
+
                 items(
                     items = buildingSections,
                     key = { section -> section.title },
