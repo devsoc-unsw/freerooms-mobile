@@ -38,7 +38,7 @@ struct RoomBookingsListView: View {
   }
 
   var body: some View {
-    ScrollViewReader { proxy in
+    ScrollViewReader { _ in
       ScrollView(.vertical) {
         ZStack(alignment: .topLeading) {
           if roomViewModel.getBookingsIsLoading {
@@ -67,14 +67,7 @@ struct RoomBookingsListView: View {
         }
         .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
       }
-      .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
       .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
-      .onAppear {
-        let currentHour = max(dateComponent.hour ?? 0, RoomLayoutConstants.scheduleStartHour)
-        withAnimation(.easeInOut(duration: 0.5)) {
-          proxy.scrollTo(currentHour, anchor: .top)
-        }
-      }
     }
     .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder : [])
   }
