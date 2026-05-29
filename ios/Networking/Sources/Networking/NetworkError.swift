@@ -5,8 +5,10 @@
 //  Created by Matthew Yuen on 18/5/2026.
 //
 
-import Foundation
 import Errors
+import Foundation
+
+// MARK: - NetworkRequestError
 
 /// Errors caused or involving a network request
 public protocol NetworkRequestError: FreeroomsError {
@@ -18,7 +20,7 @@ public protocol NetworkRequestError: FreeroomsError {
   var networkError: (any Error)? { get }
 }
 
-public extension NetworkRequestError {
-  var httpResponse: HTTPURLResponse? { nil }
-  var networkError: (any Error)? { nil }
+extension NetworkRequestError {
+  public var httpResponse: HTTPURLResponse? { nil }
+  public var networkError: (any Error)? { nil }
 }

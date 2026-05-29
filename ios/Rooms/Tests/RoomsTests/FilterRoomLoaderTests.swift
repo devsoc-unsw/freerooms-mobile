@@ -16,8 +16,6 @@ import Testing
 struct FilterRoomLoaderTests {
 
   // MARK: Lifecycle
-  
-  let baseURL = URL(string: "https://freerooms.devsoc.app")!
 
   init() {
     client = SpyHTTPClient()
@@ -27,6 +25,8 @@ struct FilterRoomLoaderTests {
   }
 
   // MARK: Internal
+
+  let baseURL = URL(string: "https://freerooms.devsoc.app")!
 
   @Test
   func fetchFilteredRooms_success_returnsRoomIdsFromResponseMap() async throws {
@@ -194,7 +194,7 @@ struct FilterRoomLoaderTests {
 
   private let client: SpyHTTPClient
   private let sut: LiveFilterRoomLoader
-  
+
   private func expect(
     _ result: Result<[String], FilterRoomLoaderError>,
     hasErrorOfKind errorKind: FilterRoomLoaderError.Reason.Kind,

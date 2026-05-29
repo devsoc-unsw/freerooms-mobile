@@ -25,7 +25,7 @@ final class NetworkCodableLoaderTests {
   // MARK: Internal
 
   typealias SUT = NetworkCodableLoader<String>
-  
+
   static let sutURL = URL(string: "https://a-url.com")!
 
   /// Ensures that no network calls are made when a `NetworkCodableLoader` is first created.
@@ -55,7 +55,7 @@ final class NetworkCodableLoaderTests {
   @Test("Loader throws error on invalid data returned from network")
   func networkCodableLoaderThrowsErrorOnInvalidData() async {
     let (client, sut) = makeSut()
-    
+
     let encoder = JSONEncoder()
     client.setNextRequestToSucceedWithReturnedData(try? encoder.encode(1))
 
@@ -68,7 +68,7 @@ final class NetworkCodableLoaderTests {
   func networkCodableLoaderThrowsErrorOnNon200HTTPResponse(statusCode code: Int) async {
     let (client, sut) = makeSut()
     client.setNextRequestToSucceedWithStatusCode(code)
-    
+
     await expect(sut, toThrowErrorOfKind: .badResponse)
     #expect(client.networkCallCount == 1)
   }
@@ -149,8 +149,13 @@ final class NetworkCodableLoaderTests {
 
     #expect(receivedString == string, sourceLocation: sourceLocation)
   }
-  
-  private func expect(_ sut: SUT, toThrowErrorOfKind errorKind: NetworkCodableError.Reason.Kind, sourceLocation: SourceLocation = #_sourceLocation) async {
+
+  private func expect(
+    _ sut: SUT,
+    toThrowErrorOfKind errorKind: NetworkCodableError.Reason.Kind,
+    sourceLocation: SourceLocation = #_sourceLocation)
+    async
+  {
     switch await sut.fetch() {
     case .success(let response):
       Issue.record("Expected an error but got \(response)", sourceLocation: sourceLocation)
@@ -164,17 +169,15 @@ final class NetworkCodableLoaderTests {
 
 /// Simulates network responses.
 private final class MockHTTPClient: HTTPClient {
-  
-  typealias Error = HTTPClientError
 
-  // MARK: Internal
+  typealias Error = HTTPClientError
 
   var networkCallCount = 0
   var returnedStringData: Data?
   // swiftlint:disable:next implicitly_unwrapped_optional
   var returnedStatusCode: Int!
   let clientError: any Swift.Error = URLError(.unknown)
-  
+
   func setNextRequestToFailWithClientError() {
     returnedStringData = nil
   }

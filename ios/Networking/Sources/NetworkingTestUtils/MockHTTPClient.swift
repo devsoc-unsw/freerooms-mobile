@@ -11,14 +11,14 @@ import Networking
 // MARK: - MockHTTPClient
 
 public class MockHTTPClient: HTTPClient {
-  
-  public static let defaultError = HTTPClientError.invalidHTTPResponse(url: URL(string: "https://example.com")!)
 
   // MARK: Lifecycle
 
   public init() { }
 
   // MARK: Public
+
+  public static let defaultError = HTTPClientError.invalidHTTPResponse(url: URL(string: "https://example.com")!)
 
   public func stubSuccess(_ data: some Codable, for _: String) {
     stubbedData = try? JSONEncoder().encode(data)

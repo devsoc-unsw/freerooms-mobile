@@ -40,7 +40,7 @@ struct URLSessionHTTPClientTests {
     // When
     let url = URL(string: "www.fake.com")!
     let res = await sut.get(from: url)
-                              
+
     // Then
     expect(res, toThrow: HTTPClientError.networkFailure(url: url, networkError: error))
   }
@@ -97,8 +97,8 @@ struct URLSessionHTTPClientTests {
   private func expect(
     _ res: HTTPClientResult,
     toThrow httpClientError: HTTPClientError,
-    sourceLocation: SourceLocation = #_sourceLocation
-  ) {
+    sourceLocation _: SourceLocation = #_sourceLocation)
+  {
     switch res {
     case .failure(let error):
       #expect(error == httpClientError)
@@ -111,8 +111,8 @@ struct URLSessionHTTPClientTests {
     _ res: HTTPClientResult,
     toFetch data: Data,
     and urlResponse: URLResponse,
-    sourceLocation: SourceLocation = #_sourceLocation
-  ) {
+    sourceLocation _: SourceLocation = #_sourceLocation)
+  {
     switch res {
     case .success(let (data, httpURLResponse)):
       #expect(data == data && httpURLResponse == urlResponse)

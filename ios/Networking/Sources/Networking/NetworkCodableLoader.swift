@@ -26,14 +26,30 @@ public enum StatusCode: Int {
 
 nonisolated
 public struct NetworkCodableError: NetworkRequestError {
-  
+
+  // MARK: Lifecycle
+
+  private init(reason: Reason, url: URL, networkError: (any Error)? = nil, httpResponse: HTTPURLResponse? = nil) {
+    self.reason = reason
+    self.url = url
+    self.networkError = networkError
+    self.httpResponse = httpResponse
+  }
+
+  // MARK: Public
+
   @AddCaseKind
   public enum Reason: Sendable {
     case clientError(HTTPClientError)
     case decodingError(any Error)
     case badResponse
   }
-  
+
+  public var reason: Reason
+  public var url: URL
+  public var networkError: (any Error)?
+  public var httpResponse: HTTPURLResponse?
+
   public var errorDescription: String {
     switch reason {
     case .clientError:
@@ -44,65 +60,54 @@ public struct NetworkCodableError: NetworkRequestError {
       "Response was not ok"
     }
   }
-  
-  public var reason: Reason
-  public var url: URL
-  public var networkError: (any Error)?
-  public var httpResponse: HTTPURLResponse?
-  
-  private init(reason: Reason, url: URL, networkError: (any Error)? = nil, httpResponse: HTTPURLResponse? = nil) {
-    self.reason = reason
-    self.url = url
-    self.networkError = networkError
-    self.httpResponse = httpResponse
-  }
-  
+
   public static func clientError(_ error: HTTPClientError) -> Self {
     NetworkCodableError(
       reason: .clientError(error),
-      url: error.url
-    )
+      url: error.url)
   }
-  
+
   public static func decodingError(_ error: any Error, url: URL, response: HTTPURLResponse) -> Self {
     NetworkCodableError(
       reason: .decodingError(error),
       url: url,
-      httpResponse: response
-    )
+      httpResponse: response)
   }
-  
+
   public static func badResponse(url: URL, response: HTTPURLResponse) -> Self {
     NetworkCodableError(
       reason: .badResponse,
       url: url,
-      httpResponse: response
-    )
+      httpResponse: response)
   }
-  
+
 }
 
+// MARK: - NetworkCodableError.Reason + Equatable
+
 extension NetworkCodableError.Reason: Equatable {
-  
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+
+  public static func ==(lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
-    case let (.clientError(lhs), .clientError(rhs)):
-      return lhs == rhs
-    case let (.decodingError(lhs), .decodingError(rhs)):
-      return lhs.isSimilar(to: rhs)
+    case (.clientError(let lhs), .clientError(let rhs)):
+      lhs == rhs
+    case (.decodingError(let lhs), .decodingError(let rhs)):
+      lhs.isSimilar(to: rhs)
     case (.badResponse, .badResponse):
-      return true
+      true
     default:
-      return false
+      false
     }
   }
-  
+
 }
 
 // MARK: - NetworkCodableLoader
 
-// Can be shared safely between decoders, JSONDecoder is sendable
+/// Can be shared safely between decoders, JSONDecoder is sendable
 private nonisolated let _networkCodableLoaderSharedDecoder = JSONDecoder()
+
+// MARK: - NetworkCodableLoader
 
 public final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
@@ -126,8 +131,9 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
         return .failure(NetworkCodableError.badResponse(url: url, response: response))
       }
       return await map(data, httpResponse: response)
+
     case .failure(let error):
-        return .failure(NetworkCodableError.clientError(error))
+      return .failure(NetworkCodableError.clientError(error))
     }
   }
 

@@ -5,61 +5,65 @@
 //  Created by Yanlin Li  on 17/4/2026.
 //
 
+import Errors
 import Foundation
 import Networking
 import RoomModels
 import TypeUtils
-import Errors
 import VISOR
 
 // MARK: - FilterRoomLoaderError
 
-//public enum FilterRoomLoaderError: Error, Equatable {
+// public enum FilterRoomLoaderError: Error, Equatable {
 //  case connectivity
 //  case invalidData
 //  case invalidURL
-//}
+// }
 
 public struct FilterRoomLoaderError: FreeroomsError {
-  
+
+  // MARK: Lifecycle
+
+  private init(reason: Reason) {
+    self.reason = reason
+  }
+
+  // MARK: Public
+
   @AddCaseKind
   public enum Reason: Sendable {
     case clientError(HTTPClientError)
     case invalidData(NetworkCodableError)
     case invalidURL
   }
-  
+
   public var reason: Reason
-  
+
   public var errorDescription: String {
     switch reason {
     case .clientError(let httpClientError):
-      return httpClientError.errorDescription
+      httpClientError.errorDescription
     case .invalidData(let networkCodableError):
-      return networkCodableError.errorDescription
+      networkCodableError.errorDescription
     case .invalidURL:
-      return "Invalid URL"
+      "Invalid URL"
     }
   }
-  
-  private init(reason: Reason) {
-    self.reason = reason
-  }
-  
+
   public static func invalidURL() -> Self {
     FilterRoomLoaderError(reason: .invalidURL)
   }
-  
+
   /// Chooses the best error for a `NetworkCodableError`
   public static func error(from networkCodableError: NetworkCodableError) -> Self {
     switch networkCodableError.reason {
     case .clientError(let clientError):
-      return FilterRoomLoaderError(reason: .clientError(clientError))
+      FilterRoomLoaderError(reason: .clientError(clientError))
     case .decodingError, .badResponse:
-      return FilterRoomLoaderError(reason: .invalidData(networkCodableError))
+      FilterRoomLoaderError(reason: .invalidData(networkCodableError))
     }
   }
-  
+
 }
 
 // MARK: - FilterRoomLoader
