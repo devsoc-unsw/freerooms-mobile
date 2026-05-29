@@ -44,7 +44,7 @@ public struct HTTPClientError: NetworkRequestError {
     }
   }
   
-  public init(reason: Reason, networkError: (any Error)? = nil, url: URL) {
+  private init(reason: Reason, networkError: (any Error)? = nil, url: URL) {
     self.reason = reason
     self.networkError = networkError
     self.url = url

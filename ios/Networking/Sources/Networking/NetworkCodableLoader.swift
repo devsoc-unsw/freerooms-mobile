@@ -50,7 +50,7 @@ public struct NetworkCodableError: NetworkRequestError {
   public var networkError: (any Error)?
   public var httpResponse: HTTPURLResponse?
   
-  public init(reason: Reason, url: URL, networkError: (any Error)? = nil, httpResponse: HTTPURLResponse? = nil) {
+  private init(reason: Reason, url: URL, networkError: (any Error)? = nil, httpResponse: HTTPURLResponse? = nil) {
     self.reason = reason
     self.url = url
     self.networkError = networkError

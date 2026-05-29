@@ -165,7 +165,7 @@ struct FilterRoomLoaderTests {
       location: nil,
       sortedBySpecificSchoolId: false))
 
-    #expect(result == .failure(.connectivity))
+    expect(result, hasErrorOfKind: .clientError)
   }
 
   @Test
@@ -187,12 +187,20 @@ struct FilterRoomLoaderTests {
       location: nil,
       sortedBySpecificSchoolId: false))
 
-    #expect(result == .failure(.connectivity))
+    expect(result, hasErrorOfKind: .invalidData)
   }
 
   // MARK: Private
 
   private let client: SpyHTTPClient
   private let sut: LiveFilterRoomLoader
+  
+  private func expect(
+    _ result: Result<[String], FilterRoomLoaderError>,
+    hasErrorOfKind errorKind: FilterRoomLoaderError.Reason.Kind,
+    sourceLocation: SourceLocation = #_sourceLocation)
+  {
+    #expect(result.error?.reason.kind == errorKind, sourceLocation: sourceLocation)
+  }
 
 }
