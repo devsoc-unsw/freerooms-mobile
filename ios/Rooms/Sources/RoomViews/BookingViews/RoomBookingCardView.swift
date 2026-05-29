@@ -1,0 +1,181 @@
+//
+//  RoomBookingCardView.swift
+//  Rooms
+//
+//  Created by Yanlin Li  on 26/9/2025.
+//
+
+import CommonUI
+import RoomModels
+import SwiftUI
+
+struct RoomBookingCardView: View {
+
+  // MARK: Lifecycle
+
+  public init(room: Room, booking: RoomBooking) {
+    self.room = room
+    self.booking = booking
+    start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
+    end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
+    startMinutes = max(
+      (start.hour ?? defaultTime) * minutesPerHour + (start.minute ?? defaultTime),
+      dayStartHour * minutesPerHour) - (minutesPerHour * dayStartHour)
+  }
+
+  // MARK: Internal
+
+  var topRadius: CGFloat {
+    switch bookingSize {
+    case .small:
+      smallRadius
+    case .medium:
+      mediumRadius
+    }
+  }
+
+  var bottomRadius: CGFloat {
+    switch bookingSize {
+    case .small:
+      smallRadius
+    case .medium:
+      mediumRadius
+    }
+  }
+
+  var body: some View {
+    ZStack(alignment: .topLeading) {
+      // Padding and spacing constants
+      let smallVerticalPadding: CGFloat = 1
+      let mediumVerticalPadding: CGFloat = 4
+      let horizontalPadding: CGFloat = 10
+      let spacingMultiplier: CGFloat = 3
+      let smallSpacingMultiplier: CGFloat = 1
+      let mediumSpacingMultiplier: CGFloat = 2
+
+      UnevenRoundedRectangle(
+        topLeadingRadius: topRadius,
+        bottomLeadingRadius: bottomRadius,
+        bottomTrailingRadius: bottomRadius,
+        topTrailingRadius: topRadius)
+        .fill(theme.accent.primary)
+
+      VStack(alignment: .leading, spacing: spacingMultiplier * (bookingSize == .small
+          ? smallSpacingMultiplier
+          : mediumSpacingMultiplier))
+      {
+        // Text size constants
+        let smallTimeSize: CGFloat = 8
+        let smallNameSize: CGFloat = 14
+        let mediumNameSize: CGFloat = 20
+        let mediumTimeSize: CGFloat = 12
+
+        Text("\(time.0) - \(time.1)")
+          .font(.system(size: bookingSize == .small ? smallTimeSize : mediumTimeSize, weight: .medium))
+
+        Text("\(booking.name)")
+          .font(.system(size: bookingSize == .small ? smallNameSize : mediumNameSize, weight: .medium))
+      }
+      .padding(.vertical, bookingSize == .small ? smallVerticalPadding : mediumVerticalPadding)
+      .padding(.horizontal, horizontalPadding)
+      .bold()
+      .foregroundStyle(.white)
+    }
+    .frame(height: (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset)
+    .offset(
+      x: xOffset,
+      y: CGFloat(startMinutes) + additionalYOffset)
+  }
+
+  // MARK: Private
+
+  private enum BookingSize {
+    case small, medium
+  }
+
+  @Environment(Theme.self) private var theme
+
+  // Global constants
+  private let minutesPerHour: Int = 60
+  private let dayStartHour: Int = 9
+  private let minutesPerSlot: Int = 30
+  private let defaultTime = 0
+
+  // Card radius
+  private let smallRadius: CGFloat = 8
+  private let mediumRadius: CGFloat = 10
+
+  // Booking offset
+  private let additionalYOffset: CGFloat = 2
+  private let frameHeightOffset: CGFloat = 4
+  private let xOffset: CGFloat = 0
+
+  private var room: Room
+  private var booking: RoomBooking
+  private var start: DateComponents
+  private var end: DateComponents
+  private let startMinutes: Int
+
+  private let smallTimeSlotAmount: CGFloat = 1
+
+  private var numberTimeSlots: CGFloat {
+    let startTimeMinute = start.minute ?? defaultTime
+    let startTimeHour = start.hour ?? defaultTime
+    let endTimeMinute = end.minute ?? defaultTime
+    let endTimeHour = end.hour ?? defaultTime
+
+    let startTotalMinutes = startTimeHour * minutesPerHour + startTimeMinute
+    let endTotalMinutes = endTimeHour * minutesPerHour + endTimeMinute
+    let range = abs(endTotalMinutes - startTotalMinutes)
+
+    // Remove extra time
+    let timeToRemove =
+      if startTimeHour < dayStartHour, endTimeHour > dayStartHour {
+        dayStartHour * minutesPerHour - startTotalMinutes
+      } else {
+        defaultTime
+      }
+    return CGFloat((range - timeToRemove) / minutesPerSlot)
+  }
+
+  private var time: (String, String) {
+    let startTimeMinute = start.minute ?? defaultTime
+    let startTimeHour = start.hour ?? defaultTime
+    let endTimeMinute = end.minute ?? defaultTime
+    let endTimeHour = end.hour ?? defaultTime
+
+    return ("\(formatHour(startTimeHour, startTimeMinute))", "\(formatHour(endTimeHour, endTimeMinute))")
+  }
+
+  private var bookingSize: BookingSize {
+    if numberTimeSlots == smallTimeSlotAmount {
+      .small
+    } else {
+      .medium
+    }
+  }
+
+  private func formatHour(_ hour: Int, _ minute: Int) -> String {
+    let midnightHour = 0
+    let twelveHourClock = 12
+    let halfHourMinute = 30
+
+    if hour == midnightHour {
+      return "12\(minute >= halfHourMinute ? ":30" : "") AM"
+    } else if hour < twelveHourClock {
+      return "\(hour)\(minute >= halfHourMinute ? ":30" : "") AM"
+    } else if hour == twelveHourClock {
+      return "12\(minute >= halfHourMinute ? ":30" : "") PM"
+    } else {
+      return "\(hour - twelveHourClock)\(minute >= halfHourMinute ? ":30" : "") PM"
+    }
+  }
+
+}
+
+#Preview {
+  RoomBookingCardView(
+    room: Room.exampleOne,
+    booking: RoomBooking.exampleOne)
+    .defaultTheme()
+}
