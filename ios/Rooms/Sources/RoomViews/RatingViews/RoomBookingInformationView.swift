@@ -13,9 +13,10 @@ struct RoomBookingInformationView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, currentRoomRating: RoomRating?) {
+  public init(room: Room, currentRoomRating: RoomRating?, isFavourite: Binding<Bool>) {
     self.room = room
     self.currentRoomRating = currentRoomRating
+    _isFavourite = isFavourite
   }
 
   // MARK: Internal
@@ -93,17 +94,21 @@ struct RoomBookingInformationView: View {
   // MARK: Private
 
   @State private var isShowingSheet: Bool = false
-  @State private var isFavourite: Bool = false
+
+  @Binding private var isFavourite: Bool
 
   @Environment(Theme.self) private var theme
 }
 
 #Preview {
+  @Previewable @State var isFavourite = false
+  
   RoomBookingInformationView(
     room: Room.exampleOne,
     currentRoomRating: RoomRating(
       roomId: "K-17",
       overallRating: 5.0,
-      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 5.0)))
+      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 5.0)),
+    isFavourite: $isFavourite)
     .defaultTheme()
 }
