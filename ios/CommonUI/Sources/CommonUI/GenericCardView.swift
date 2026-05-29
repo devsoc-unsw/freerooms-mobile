@@ -12,7 +12,10 @@ import SwiftUI
 
 // MARK: - GenericCardView
 
-public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName & HasRating, ImageContent: View>: View {
+public struct GenericCardView<
+  T: Equatable & Identifiable & Hashable & HasName & HasRating,
+  ImageContent: View
+>: View {
 
   // MARK: Lifecycle
 
@@ -22,14 +25,16 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     item: T,
     items: [T],
     isLoading: Bool,
-    imageProvider: @escaping (T.ID) -> ImageContent)
-  {
+    isFavourite: Binding<Bool>,
+    imageProvider: @escaping (T.ID) -> ImageContent
+  ) {
     _path = path
     _cardWidth = cardWidth
     self.item = item
     self.items = items
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 
   // MARK: Public
@@ -48,11 +53,14 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
               topLeadingRadius: 22,
               bottomLeadingRadius: 0,
               bottomTrailingRadius: 0,
-              topTrailingRadius: 22))
+              topTrailingRadius: 22
+            )
+          )
 
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
-          item: item)
+          item: item
+        )
 
         Spacer()
       }
@@ -70,8 +78,9 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
       Button {
         isFavourite.toggle()
       } label: {
-        isFavourite ? Label("Remove from Favourites", systemImage: "heart.slash.fill") :
-        Label("Add to Favourites", systemImage: "heart.fill")
+        isFavourite
+          ? Label("Remove from Favourites", systemImage: "heart.slash.fill")
+          : Label("Add to Favourites", systemImage: "heart.fill")
       }
     }
   }
@@ -85,12 +94,11 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
   let items: [T]
   let imageProvider: (T.ID) -> ImageContent
   let isLoading: Bool
+  @Binding var isFavourite: Bool
 
   var index: Int {
     items.firstIndex(of: item)!
   }
-  
-  @State private var isFavourite : Bool = false
 
 }
 
@@ -101,14 +109,16 @@ extension GenericCardView where T == Building, ImageContent == CachedImage {
     building: Building,
     buildings: [Building],
     isLoading: Bool,
-    imageProvider: @escaping (Building.ID) -> CachedImage)
-  {
+    isFavourite: Binding<Bool>,
+    imageProvider: @escaping (Building.ID) -> CachedImage
+  ) {
     _path = path
     _cardWidth = cardWidth
     item = building
     items = buildings
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 }
 
@@ -119,14 +129,16 @@ extension GenericCardView where T == Room, ImageContent == CachedImage {
     room: Room,
     rooms: [Room],
     isLoading: Bool,
-    imageProvider: @escaping (Room.ID) -> CachedImage)
-  {
+    isFavourite: Binding<Bool>,
+    imageProvider: @escaping (Room.ID) -> CachedImage
+  ) {
     _path = path
     _cardWidth = cardWidth
     item = room
     items = rooms
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 }
 
@@ -146,10 +158,23 @@ struct CardPreviewWrapper: View {
           cardWidth: $cardWidth,
           room: room,
           rooms: rooms,
-          isLoading: true,
+          isLoading: false,
+          isFavourite: Binding(
+            get: {
+              favourites.contains(room.id)
+            },
+            set: { newValue in
+              if newValue {
+                favourites.insert(room.id)
+              } else {
+                favourites.remove(room.id)
+              }
+            }
+          ),
           imageProvider: { roomID in
             CachedImage(name: roomID, bundle: .module)
-          })
+          }
+        )
       }
     }
   }
@@ -158,6 +183,7 @@ struct CardPreviewWrapper: View {
 
   @State private var path = NavigationPath()
   @State private var cardWidth: CGFloat?
+  @State private var favourites: Set<Room.ID> = []
 
 }
 
