@@ -1,6 +1,7 @@
-package com.devsoc.freerooms.feature.buildings.ui
+package com.devsoc.freerooms.core.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Brown
-import com.devsoc.freerooms.core.ui.Gray
-import com.devsoc.freerooms.core.ui.Gray2
-
-private val BottomNavLabels = listOf("buildings", "map", "rooms") // move somewhere else later?
 
 @Composable
-internal fun BuildingBottomNavBar(
+fun FreeroomsBottomNavBar(
+    selectedPage: FreeroomsPage,
+    onPageSelected: (FreeroomsPage) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -42,11 +40,15 @@ internal fun BuildingBottomNavBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BottomNavLabels.forEach { label ->
+            FreeroomsPage.entries.forEach { page ->
                 Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(enabled = page != selectedPage) {
+                            onPageSelected(page)
+                        },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
@@ -57,7 +59,7 @@ internal fun BuildingBottomNavBar(
                     )
 
                     Text(
-                        text = label,
+                        text = page.label,
                         style = MaterialTheme.typography.labelMedium,
                         color = Brown,
                     )
