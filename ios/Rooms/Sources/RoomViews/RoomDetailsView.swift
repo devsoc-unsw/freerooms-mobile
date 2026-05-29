@@ -28,7 +28,7 @@ public struct RoomDetailsView: View {
     VStack(spacing: 0) {
       RoomImage[room.id, .large]
         .scaledToFill()
-        .frame(height: screenHeight * 0.4)
+        .frame(height: screenHeight * RoomLayoutConstants.imageHeightFraction)
         .clipped()
         .ignoresSafeArea()
 
@@ -39,7 +39,7 @@ public struct RoomDetailsView: View {
         showDetails = false
         dismiss()
       }
-      .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
+      .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
@@ -95,6 +95,8 @@ public struct RoomDetailsView: View {
   // MARK: Internal
 
   @Environment(\.dismiss) var dismiss
+
+  let detentHeights: Set = [RoomLayoutConstants.sheetSmallDetent, RoomLayoutConstants.sheetMediumDetent, PresentationDetent.large]
 
   // MARK: Private
 
