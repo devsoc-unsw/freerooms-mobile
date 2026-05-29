@@ -117,6 +117,8 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
 
 }
 
+// MARK: - PreviewFavoriteRoomService
+
 @Observable
 public final class PreviewFavoriteRoomService: FavoriteRoomService {
 

@@ -14,7 +14,13 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
-  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, isFavourite: Binding<Bool>, onDismiss: (() -> Void)? = nil) {
+  public init(
+    dateSelect: Date = Date(),
+    room: Room,
+    roomViewModel: RoomViewModel,
+    isFavourite: Binding<Bool>,
+    onDismiss: (() -> Void)? = nil)
+  {
     self.dateSelect = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
@@ -89,6 +95,7 @@ struct RoomDetailsSheetView: View {
   @Environment(Theme.self) private var theme
 
   @Binding private var isFavourite: Bool
+
   private let onDismiss: (() -> Void)?
 
   private var roomViewModel: RoomViewModel
@@ -97,7 +104,7 @@ struct RoomDetailsSheetView: View {
 
 #Preview {
   @Previewable @State var isFavourite = false
-  
+
   RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
     .defaultTheme()
 }

@@ -146,10 +146,13 @@ struct FreeroomsApp: App {
         roomBookingLoader: roomBookingLoader,
         roomRatingLoader: roomRatingLoader,
         roomFilterLoader: roomFilterLoader)
-      
+
       let favouriteService = try SwiftDataFavoriteRoomService(context: FreeroomsApp.sharedContainer.mainContext)
-      
-      let interactor = RoomInteractor(roomService: roomService, locationService: locationService, favouriteService: favouriteService)
+
+      let interactor = RoomInteractor(
+        roomService: roomService,
+        locationService: locationService,
+        favouriteService: favouriteService)
 
       return LiveRoomViewModel(interactor: interactor)
     } catch {

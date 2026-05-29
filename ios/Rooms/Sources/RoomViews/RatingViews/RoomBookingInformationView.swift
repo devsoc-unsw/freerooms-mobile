@@ -26,12 +26,12 @@ struct RoomBookingInformationView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      HStack (alignment: .top) {
+      HStack(alignment: .top) {
         Text(room.name)
           .font(.title)
           .bold()
           .foregroundStyle(.primary)
-        
+
         Spacer()
 
         ZStack {
@@ -58,7 +58,7 @@ struct RoomBookingInformationView: View {
             .presentationCornerRadius(24)
         }
         .frame(width: 65, height: 35)
-        
+
         Button {
           isFavourite.toggle()
         } label: {
@@ -101,7 +101,7 @@ struct RoomBookingInformationView: View {
 
 #Preview {
   @Previewable @State var isFavourite = false
-  
+
   RoomBookingInformationView(
     room: Room.exampleOne,
     currentRoomRating: RoomRating(

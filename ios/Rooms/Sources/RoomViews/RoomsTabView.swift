@@ -136,10 +136,9 @@ public struct RoomsTabView<Destination: View>: View {
                   get: {
                     roomViewModel.isFavorite(roomID: room.id)
                   },
-                  set: {_ in 
+                  set: { _ in
                     roomViewModel.toggleFavorite(roomID: room.id)
-                  }
-                ),
+                  }),
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })

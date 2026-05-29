@@ -33,17 +33,16 @@ struct ContentView: View {
       BuildingsTabView(
         path: $buildingPath,
         viewModel: buildingViewModel,
-        selectedView: $selectedBuildingsView
-      ) { building in
+        selectedView: $selectedBuildingsView)
+      { building in
         RoomsListView(
           roomViewModel: roomViewModel,
           building: building,
           path: $buildingPath,
           imageProvider: {
             BuildingImage[$0]
-          }
-        )
-        .task { await roomViewModel.onAppear() }
+          })
+          .task { await roomViewModel.onAppear() }
       } _: { room in
         getRoomDetailsView(room: room)
       }
@@ -53,8 +52,8 @@ struct ContentView: View {
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab,
-        selectedView: $selectedRoomsView
-      ) { room in
+        selectedView: $selectedRoomsView)
+      { room in
         getRoomDetailsView(room: room)
       }
     }
@@ -71,14 +70,12 @@ struct ContentView: View {
         },
         set: { _ in
           roomViewModel.toggleFavorite(roomID: room.id)
+        }))
+        .task { await roomViewModel.onAppear() }
+        .task {
+          roomViewModel.clearRoomBookings()
+          await roomViewModel.getRoomBookings(roomId: room.id)
         }
-      )
-    )
-    .task { await roomViewModel.onAppear() }
-    .task {
-      roomViewModel.clearRoomBookings()
-      await roomViewModel.getRoomBookings(roomId: room.id)
-    }
   }
 
   // MARK: Private
@@ -116,7 +113,6 @@ extension EnvironmentValues {
       \.mapViewModel,
       MainActor.assumeIsolated {
         PreviewMapViewModel()
-      }
-    )
+      })
     .environment(\.roomViewModel, PreviewRoomViewModel())
 }

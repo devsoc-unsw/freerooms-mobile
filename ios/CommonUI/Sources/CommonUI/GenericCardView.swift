@@ -26,8 +26,8 @@ public struct GenericCardView<
     items: [T],
     isLoading: Bool,
     isFavourite: Binding<Bool>,
-    imageProvider: @escaping (T.ID) -> ImageContent
-  ) {
+    imageProvider: @escaping (T.ID) -> ImageContent)
+  {
     _path = path
     _cardWidth = cardWidth
     self.item = item
@@ -53,14 +53,11 @@ public struct GenericCardView<
               topLeadingRadius: 22,
               bottomLeadingRadius: 0,
               bottomTrailingRadius: 0,
-              topTrailingRadius: 22
-            )
-          )
+              topTrailingRadius: 22))
 
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
-          item: item
-        )
+          item: item)
 
         Spacer()
       }
@@ -90,11 +87,12 @@ public struct GenericCardView<
   @Binding var path: NavigationPath
   @Binding var cardWidth: CGFloat?
 
+  @Binding var isFavourite: Bool
+
   let item: T
   let items: [T]
   let imageProvider: (T.ID) -> ImageContent
   let isLoading: Bool
-  @Binding var isFavourite: Bool
 
   var index: Int {
     items.firstIndex(of: item)!
@@ -110,8 +108,8 @@ extension GenericCardView where T == Building, ImageContent == CachedImage {
     buildings: [Building],
     isLoading: Bool,
     isFavourite: Binding<Bool>,
-    imageProvider: @escaping (Building.ID) -> CachedImage
-  ) {
+    imageProvider: @escaping (Building.ID) -> CachedImage)
+  {
     _path = path
     _cardWidth = cardWidth
     item = building
@@ -130,8 +128,8 @@ extension GenericCardView where T == Room, ImageContent == CachedImage {
     rooms: [Room],
     isLoading: Bool,
     isFavourite: Binding<Bool>,
-    imageProvider: @escaping (Room.ID) -> CachedImage
-  ) {
+    imageProvider: @escaping (Room.ID) -> CachedImage)
+  {
     _path = path
     _cardWidth = cardWidth
     item = room
@@ -169,12 +167,10 @@ struct CardPreviewWrapper: View {
               } else {
                 favourites.remove(room.id)
               }
-            }
-          ),
+            }),
           imageProvider: { roomID in
             CachedImage(name: roomID, bundle: .module)
-          }
-        )
+          })
       }
     }
   }
