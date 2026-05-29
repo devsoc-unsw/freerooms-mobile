@@ -60,6 +60,12 @@ public protocol RoomViewModel {
   func fetchRoomRating(roomID: String) async
 
   func clearRoomRating()
+
+  func toggleFavorite(roomID: Room.ID)
+
+  func isFavorite(roomID: Room.ID) -> Bool
+
+  func getAllFavoriteRoomIds() -> [Room.ID]
 }
 
 // MARK: - LiveRoomViewModel
@@ -103,7 +109,8 @@ public class LiveRoomViewModel: RoomViewModel {
     for (key, value) in roomsByBuildingId {
       let sorted = interactor.getRoomsSortedAlphabetically(
         rooms: value,
-        inAscendingOrder: roomsInAscendingOrder)
+        inAscendingOrder: roomsInAscendingOrder
+      )
       result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
     }
     return result
@@ -131,7 +138,8 @@ public class LiveRoomViewModel: RoomViewModel {
         writingMedia: ["Whiteboard"],
         status: .available,
         endTime: nil,
-        overallRating: 4.0)
+        overallRating: 4.0
+      )
     }
   }
 
@@ -164,22 +172,29 @@ public class LiveRoomViewModel: RoomViewModel {
   public func loadRooms() async {
     isLoading = true
 
-    let resultRooms = await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
+    let resultRooms = await interactor.getRoomsSortedAlphabetically(
+      inAscendingOrder: roomsInAscendingOrder
+    )
     switch resultRooms {
     case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
+      rooms = interactor.getRoomsSortedAlphabetically(
+        rooms: roomsData,
+        inAscendingOrder: roomsInAscendingOrder
+      )
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
-    let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
+    let resultRoomsByBuildingId =
+      await interactor.getRoomsFilteredByAllBuildingId()
     switch resultRoomsByBuildingId {
     case .success(let roomsData):
       roomsByBuildingId = roomsData
       for key in roomsByBuildingId.keys {
         roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
           rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-          inAscendingOrder: roomsInAscendingOrder)
+          inAscendingOrder: roomsInAscendingOrder
+        )
       }
 
     case .failure(let error):
@@ -195,7 +210,8 @@ public class LiveRoomViewModel: RoomViewModel {
     for key in roomsByBuildingId.keys {
       roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
         rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-        inAscendingOrder: roomsInAscendingOrder)
+        inAscendingOrder: roomsInAscendingOrder
+      )
     }
     isLoading = false
   }
@@ -239,6 +255,18 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
+  public func toggleFavorite(roomID: Room.ID) {
+    interactor.toggleFavorite(roomID: roomID)
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    return interactor.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    return interactor.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
@@ -250,10 +278,18 @@ public class LiveRoomViewModel: RoomViewModel {
 public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
-    super.init(interactor: RoomInteractor(
-      roomService: PreviewRoomService(),
-      locationService: LiveLocationService(locationManager: LiveLocationManager())))
+    super.init(
+      interactor: RoomInteractor(
+        roomService: PreviewRoomService(),
+        locationService: LiveLocationService(
+          locationManager: LiveLocationManager()
+        ),
+        favouriteService: PreviewFavoriteRoomService()
+      )
+    )
 
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
+    currentRoomBookings = [
+      RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour,
+    ]
   }
 }
