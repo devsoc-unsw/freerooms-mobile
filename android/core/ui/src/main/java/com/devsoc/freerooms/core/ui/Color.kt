@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val FR_Orange = Color(0xFFEF6C02)
 val Gray = Color(0xFFF0F0F0)
 val Gray2 = Color(0xFFEAEAEB)
+val Gray3 = Color(0xFF8A8A8E)
 val Light_Orange = Color(0xFFFFFBF9)
 val Green = Color(0xFF46B693)
 val Gold = Color(0xFFFFA600)
