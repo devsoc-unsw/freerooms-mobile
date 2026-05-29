@@ -26,11 +26,13 @@ struct RoomBookingInformationView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      HStack {
+      HStack (alignment: .top) {
         Text(room.name)
           .font(.title)
           .bold()
           .foregroundStyle(.primary)
+        
+        Spacer()
 
         ZStack {
           RoundedRectangle(cornerRadius: 10)
@@ -56,9 +58,6 @@ struct RoomBookingInformationView: View {
             .presentationCornerRadius(24)
         }
         .frame(width: 65, height: 35)
-        .padding(.horizontal, 6)
-        
-        Spacer()
         
         Button {
           isFavourite.toggle()
