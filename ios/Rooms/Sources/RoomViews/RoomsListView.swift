@@ -73,7 +73,8 @@ public struct RoomsListView: View {
       .padding(5)
       .foregroundStyle(theme.label.tertiary)
     }
-    .background(Color(UIColor.systemGroupedBackground))
+    .scrollContentBackground(.hidden)
+    .background(theme.background.primary)
   }
 
   // MARK: Internal

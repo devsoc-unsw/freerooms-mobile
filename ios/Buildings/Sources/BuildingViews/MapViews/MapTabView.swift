@@ -90,7 +90,7 @@ public struct MapTabView: View {
         .padding(.horizontal)
       }
       .customBackground(
-        Color(uiColor: .systemBackground)
+        theme.background.secondary
           .cornerRadius(20)
           .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
       .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
@@ -126,10 +126,15 @@ public struct MapTabView: View {
   // MARK: Internal
 
   @Bindable var mapViewModel: LiveMapViewModel
+
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
 }
 
 // MARK: - Preview
 
 #Preview {
   MapTabView(mapViewModel: PreviewMapViewModel())
+    .defaultTheme()
 }

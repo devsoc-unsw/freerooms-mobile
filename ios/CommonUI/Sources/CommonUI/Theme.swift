@@ -19,7 +19,7 @@ public final class Theme {
 
   // MARK: Lifecycle
 
-  public init(accent: Accent, label: Label, background: Color, toolbar: Color, yellow: Color, white: Color, list: ListColors) {
+  public init(accent: Accent, label: Label, background: Background, toolbar: Color, yellow: Color, white: Color, list: ListColors) {
     self.accent = accent
     self.label = label
     self.background = background
@@ -54,6 +54,16 @@ public final class Theme {
       self.primary = primary
       self.secondary = secondary
       self.tertiary = tertiary
+    }
+  }
+
+  public struct Background {
+    public let primary: Color
+    public let secondary: Color
+
+    public init(primary: Color, secondary: Color) {
+      self.primary = primary
+      self.secondary = secondary
     }
   }
 
@@ -104,7 +114,9 @@ public final class Theme {
       primary: Color("LabelPrimary", bundle: .module),
       secondary: Color("LabelSecondary", bundle: .module),
       tertiary: Color("LabelTertiary", bundle: .module)),
-    background: .init("Background", bundle: .module),
+    background: .init(
+      primary: Color("BackgroundPrimary", bundle: .module),
+      secondary: Color("BackgroundSecondary", bundle: .module)),
     toolbar: .init("Toolbar", bundle: .module),
     yellow: .init("Yellow", bundle: .module),
     white: .init("White", bundle: .module),
@@ -120,7 +132,7 @@ public final class Theme {
 
   public var accent: Accent
   public var label: Label
-  public var background: Color
+  public var background: Background
   public var toolbar: Color
   public var yellow: Color
   public var white: Color

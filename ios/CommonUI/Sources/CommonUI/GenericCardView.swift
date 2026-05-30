@@ -57,7 +57,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
         Spacer()
       }
       .frame(width: cardWidth, height: 173)
-      .background(.white)
+      .background(theme.background.secondary)
       .clipShape(RoundedRectangle(cornerRadius: 22))
       .padding(0)
       .buttonStyle(.plain)
@@ -81,6 +81,10 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
   var index: Int {
     items.firstIndex(of: item)!
   }
+
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
 
 }
 

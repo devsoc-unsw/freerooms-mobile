@@ -48,7 +48,6 @@ struct FreeroomsApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
-        .preferredColorScheme(.light)
         .environment(theme)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
         .environment(\.buildingViewModel, buildingViewModel)

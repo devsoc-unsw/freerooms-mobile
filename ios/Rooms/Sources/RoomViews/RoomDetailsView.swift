@@ -33,6 +33,7 @@ public struct RoomDetailsView: View {
 
       Spacer()
     }
+    .background(theme.background.primary)
     .sheet(isPresented: $showDetails) {
       RoomDetailsSheetView(room: room, roomViewModel: roomViewModel) {
         showDetails = false

@@ -207,12 +207,12 @@ public struct RoomsTabView<Destination: View>: View {
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(0.1))
+      .background(theme.background.primary)
     } else {
       ScrollView {
         roomsCardView(buildingViewModel.allBuildings)
       }
-      .background(Color.gray.opacity(0.1))
+      .background(theme.background.primary)
       .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
