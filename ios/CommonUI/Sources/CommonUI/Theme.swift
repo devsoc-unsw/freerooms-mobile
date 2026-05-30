@@ -19,7 +19,15 @@ public final class Theme {
 
   // MARK: Lifecycle
 
-  public init(accent: Accent, label: Label, background: Background, toolbar: Color, yellow: Color, white: Color, list: ListColors) {
+  public init(
+    accent: Accent,
+    label: Label,
+    background: Background,
+    toolbar: Color,
+    yellow: Color,
+    white: Color,
+    list: ListColors
+  ) {
     self.accent = accent
     self.label = label
     self.background = background
