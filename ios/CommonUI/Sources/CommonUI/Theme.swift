@@ -26,8 +26,8 @@ public final class Theme {
     toolbar: Color,
     yellow: Color,
     white: Color,
-    list: ListColors
-  ) {
+    list: ListColors)
+  {
     self.accent = accent
     self.label = label
     self.background = background
