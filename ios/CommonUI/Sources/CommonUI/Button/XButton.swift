@@ -21,8 +21,10 @@ public struct XButton: View {
           .frame(width: 42, height: 42)
         Image(systemName: "xmark")
           .font(.system(size: 20, weight: .medium))
-          .foregroundStyle(Color.black)
+          .foregroundStyle(theme.black)
       }
     }
   }
+
+  @Environment(Theme.self) private var theme
 }

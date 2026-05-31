@@ -26,6 +26,7 @@ public final class Theme {
     toolbar: Color,
     yellow: Color,
     white: Color,
+    black: Color,
     list: ListColors)
   {
     self.accent = accent
@@ -34,6 +35,7 @@ public final class Theme {
     self.toolbar = toolbar
     self.yellow = yellow
     self.white = white
+    self.black = black
     self.list = list
   }
 
@@ -128,6 +130,7 @@ public final class Theme {
     toolbar: .init("Toolbar", bundle: .module),
     yellow: .init("Yellow", bundle: .module),
     white: .init("White", bundle: .module),
+    black: .init("Black", bundle: .module),
     list: .init(
       red: Color("Red", bundle: .module),
       redBackground: Color("RedBackground", bundle: .module),
@@ -144,6 +147,7 @@ public final class Theme {
   public var toolbar: Color
   public var yellow: Color
   public var white: Color
+  public var black: Color
   public var list: ListColors
 
   /// DO NOT CALL IN PREVIEWS
