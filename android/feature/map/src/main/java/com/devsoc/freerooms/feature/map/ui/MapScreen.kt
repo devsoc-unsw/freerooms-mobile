@@ -1,4 +1,4 @@
-package com.devsoc.freerooms.feature.buildings.ui
+package com.devsoc.freerooms.feature.map.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

@@ -32,4 +32,6 @@ include(":core:network")
 
 include(":feature:buildings")
 
+include(":feature:map")
+
 include(":feature:rooms")

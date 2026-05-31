@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.devsoc.freerooms.core.ui.FreeroomsTheme
 import com.devsoc.freerooms.feature.buildings.ui.BuildingScreen
-import com.devsoc.freerooms.feature.buildings.ui.MapScreen
+import com.devsoc.freerooms.feature.map.ui.MapScreen
 import com.devsoc.freerooms.feature.rooms.ui.RoomsScreen
 import com.devsoc.freerooms.navigation.FreeroomsApp
 import kotlinx.coroutines.channels.awaitClose

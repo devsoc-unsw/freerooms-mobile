@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:network"))
     implementation(project(":feature:buildings"))
+    implementation(project(":feature:map"))
     implementation(project(":feature:rooms"))
 
     implementation(libs.androidx.core.ktx)
