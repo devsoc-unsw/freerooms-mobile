@@ -203,20 +203,12 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public func loadRooms() async {
     isLoading = true
+``    defer { isLoading = false }
 
-    let resultRooms = await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
-
-    switch resultRooms {
+    switch await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder) {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
-    case .failure(let error):
-      loadRoomErrorMessage = AlertError(message: error.clientMessage)
-    }
-
-    let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
-    switch resultRoomsByBuildingId {
-    case .success(let roomsData):
-      roomsByBuildingId = roomsData
+      roomsByBuildingId = Dictionary(grouping: roomsData, by: \.buildingId)
       for key in roomsByBuildingId.keys {
         roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
           rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
@@ -225,9 +217,9 @@ public class LiveRoomViewModel: RoomViewModel {
 
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
+      rooms = []
+      roomsByBuildingId = [:]
     }
-
-    isLoading = false
   }
 
   public func getRoomsInOrder() {
@@ -303,7 +295,6 @@ public class LiveRoomViewModel: RoomViewModel {
 
     guard !roomIds.isEmpty else { return }
 
-    isLoading = true
     for roomId in roomIds {
       switch await interactor.getRoomBookings(roomID: roomId) {
       case .success(let bookings):
@@ -312,7 +303,6 @@ public class LiveRoomViewModel: RoomViewModel {
         break
       }
     }
-    isLoading = false
   }
 
   public func clearAllFilters() {

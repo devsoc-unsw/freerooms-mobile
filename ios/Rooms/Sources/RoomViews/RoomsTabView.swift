@@ -187,29 +187,18 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
-      .overlay {
-        if roomViewModel.isLoading {
-          VStack(spacing: 12) {
-            ProgressView()
-              .controlSize(.large)
-            Text(roomViewModel.isLoading ? "Loading rooms..." : "Applying filters...")
-              .font(.subheadline)
-              .foregroundStyle(.secondary)
-          }
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-          .background(.ultraThinMaterial)
-        }
-      }
       .overlay(alignment: .bottomTrailing) {
-        FloatingFilterMenuView(
-          showingDateFilter: $showingDateFilter,
-          showingRoomTypeFilter: $showingRoomTypeFilter,
-          showingDurationFilter: $showingDurationFilter,
-          showingCampusLocationFilter: $showingCampusLocationFilter,
-          showingCapacityFilter: $showingCapacityFilter,
-          showingFilterMenu: $showingFilterMenu)
-          .padding(.trailing, 16)
-          .padding(.bottom, 8)
+        if !roomViewModel.isLoading {
+          FloatingFilterMenuView(
+            showingDateFilter: $showingDateFilter,
+            showingRoomTypeFilter: $showingRoomTypeFilter,
+            showingDurationFilter: $showingDurationFilter,
+            showingCampusLocationFilter: $showingCampusLocationFilter,
+            showingCapacityFilter: $showingCapacityFilter,
+            showingFilterMenu: $showingFilterMenu)
+            .padding(.trailing, 16)
+            .padding(.bottom, 8)
+        }
       }
       .toolbar {
         toolbarButtons
@@ -221,6 +210,10 @@ public struct RoomsTabView<Destination: View>: View {
         roomDestinationBuilderView(room)
       }
       .task {
+        if !buildingViewModel.hasLoaded {
+          buildingViewModel.onAppear()
+        }
+
         if !roomViewModel.hasLoaded {
           await roomViewModel.onAppear()
         }
@@ -293,18 +286,61 @@ public struct RoomsTabView<Destination: View>: View {
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
-      List {
-        roomsListView(buildingViewModel.allBuildings)
+      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        List {
+          ForEach(placeholderRooms) { room in
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: placeholderRooms,
+              isLoading: true,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, 5)
+          }
+        }
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .background(Color.gray.opacity(0.1))
+      } else {
+        List {
+          roomsListView(buildingViewModel.allBuildings)
+        }
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .background(Color.gray.opacity(0.1))
       }
-      .listRowInsets(EdgeInsets())
-      .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(0.1))
     } else {
-      ScrollView {
-        roomsCardView(buildingViewModel.allBuildings)
+      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        ScrollView {
+          LazyVGrid(columns: columns, spacing: 24) {
+            ForEach(placeholderRooms) { room in
+              GenericCardView(
+                path: $path,
+                cardWidth: $cardWidth,
+                room: room,
+                rooms: placeholderRooms,
+                isLoading: true,
+                imageProvider: { roomID in
+                  RoomImage[roomID]
+                })
+            }
+          }
+          .padding(.horizontal, 16)
+        }
+        .background(Color.gray.opacity(0.1))
+        .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
+      } else {
+        ScrollView {
+          roomsCardView(buildingViewModel.allBuildings)
+        }
+        .background(Color.gray.opacity(0.1))
+        .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
       }
-      .background(Color.gray.opacity(0.1))
-      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
 
