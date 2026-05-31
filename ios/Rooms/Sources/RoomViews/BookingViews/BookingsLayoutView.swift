@@ -57,7 +57,6 @@ struct BookingsLayoutView: View {
           }
       }
     }
-    .id(hour)
   }
 
   // MARK: Private

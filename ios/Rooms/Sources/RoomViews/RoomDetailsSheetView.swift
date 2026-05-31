@@ -49,29 +49,32 @@ struct RoomDetailsSheetView: View {
         }
 
         // Booking Grid
-        ScrollView(.horizontal, showsIndicators: false) {
-          LazyHStack(spacing: 0) {
-            ForEach(0..<Self.maxScrollID, id: \.self) { index in
-              RoomBookingsListView(
-                room: room,
-                roomViewModel: roomViewModel,
-                dateSelect: bindingFor(index: index))
-                .id(index)
-                .containerRelativeFrame(.horizontal)
+        ScrollView(.vertical) {
+          ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 0) {
+              ForEach(0..<Self.maxScrollID, id: \.self) { index in
+                RoomBookingsListView(
+                  room: room,
+                  roomViewModel: roomViewModel,
+                  dateSelect: bindingFor(index: index))
+                  .id(index)
+                  .containerRelativeFrame(.horizontal)
+              }
             }
+            .scrollTargetLayout()
           }
-          .scrollTargetLayout()
+          .scrollTargetBehavior(.paging)
+          .scrollPosition(id: Binding(
+            get: { roomViewModel.scrollID },
+            set: { roomViewModel.scrollID = $0 }))
+          .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
+            roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
+          }
+          .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
+            roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
+          }
         }
-        .scrollTargetBehavior(.paging)
-        .scrollPosition(id: Binding(
-          get: { roomViewModel.scrollID },
-          set: { roomViewModel.scrollID = $0 }))
-        .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
-          roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
-        }
-        .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
-          roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
-        }
+        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
       }
       .padding()
       .overlay(

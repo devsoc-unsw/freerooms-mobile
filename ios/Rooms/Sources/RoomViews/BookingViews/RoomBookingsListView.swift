@@ -38,37 +38,33 @@ struct RoomBookingsListView: View {
   }
 
   var body: some View {
-    ScrollViewReader { _ in
-      ScrollView(.vertical) {
-        ZStack(alignment: .topLeading) {
-          if roomViewModel.getBookingsIsLoading {
-            RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
-              .fill(Color.gray.opacity(0.3))
-              .frame(height: CGFloat(RoomLayoutConstants.scheduleEndHour) * RoomLayoutConstants.slotHeight)
-          }
-
-          // Background time grid
-          VStack(spacing: 0) {
-            ForEach(RoomLayoutConstants.scheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
-              BookingsLayoutView(hour: hour)
-                .id(hour)
-            }
-          }
-          .padding(.trailing, 8)
-
-          // Overlaid booking cards
-          ForEach(filteredCurrentDayBookings, id: \.self) { booking in
-            RoomBookingCardView(
-              room: room,
-              booking: booking)
-              .padding(.leading, 60)
-              .padding(.trailing, 10)
-          }
-        }
-        .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
+    ZStack(alignment: .topLeading) {
+      if roomViewModel.getBookingsIsLoading {
+        RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
+          .fill(Color.gray.opacity(0.3))
+          .frame(height: CGFloat(RoomLayoutConstants.scheduleEndHour) * RoomLayoutConstants.slotHeight)
       }
-      .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
+
+      // Background time grid
+      VStack(spacing: 0) {
+        ForEach(RoomLayoutConstants.scheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
+          BookingsLayoutView(hour: hour)
+            .id("\(hour)")
+        }
+      }
+      .scrollTargetLayout()
+      .padding(.trailing, 8)
+
+      // Overlaid booking cards
+      ForEach(filteredCurrentDayBookings, id: \.self) { booking in
+        RoomBookingCardView(
+          room: room,
+          booking: booking)
+          .padding(.leading, 60)
+          .padding(.trailing, 10)
+      }
     }
+    .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
     .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder : [])
   }
 

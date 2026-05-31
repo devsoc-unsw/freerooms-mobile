@@ -289,7 +289,6 @@ public class LiveRoomViewModel: RoomViewModel {
 
 // MARK: - PreviewRoomViewModel
 
-@Observable
 public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
