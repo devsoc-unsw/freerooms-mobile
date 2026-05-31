@@ -4,14 +4,18 @@
 //
 //  Created by Dicko Evaldo on 10/10/2025.
 //
+
 import SwiftUI
 
 public struct XButton: View {
+
+  // MARK: Lifecycle
+
   public init(action: @escaping () -> Void) {
     self.action = action
   }
 
-  let action: () -> Void
+  // MARK: Public
 
   public var body: some View {
     Button(action: action) {
@@ -25,6 +29,12 @@ public struct XButton: View {
       }
     }
   }
+
+  // MARK: Internal
+
+  let action: () -> Void
+
+  // MARK: Private
 
   @Environment(Theme.self) private var theme
 }
