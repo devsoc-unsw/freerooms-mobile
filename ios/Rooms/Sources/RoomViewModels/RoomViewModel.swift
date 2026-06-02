@@ -68,7 +68,6 @@ public protocol RoomViewModel: AnyObject {
   func resetBookingScrollState(initialDate: Date)
   func handleScrollIDChange(oldValue: Int?, newValue: Int?)
   func handleDateSelectChange(oldValue: Date, newValue: Date)
-  func getScrollHour(for date: Date) -> Int
 }
 
 // MARK: - LiveRoomViewModel
@@ -252,17 +251,20 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
+  // Resets date for room booking list view
   public func resetBookingScrollState(initialDate: Date) {
     baseDate = initialDate
     dateSelect = initialDate
     scrollID = RoomBookingConstants.middleIndex
   }
 
+  // Handles horizontal scroll to change the date for room booking list view
   public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
     guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
     dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
   }
 
+  // Handles date picker to change the date for room booking list view
   public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
     let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
     let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
@@ -270,15 +272,6 @@ public class LiveRoomViewModel: RoomViewModel {
     if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
       baseDate = newValue
       scrollID = RoomBookingConstants.middleIndex
-    }
-  }
-
-  public func getScrollHour(for date: Date) -> Int {
-    if Calendar.current.isDateInToday(date) {
-      let hour = Calendar.current.component(.hour, from: date)
-      return max(hour, RoomBookingConstants.startHour)
-    } else {
-      return RoomBookingConstants.startHour
     }
   }
 
@@ -307,8 +300,5 @@ extension Double {
 // MARK: - RoomBookingConstants
 
 public enum RoomBookingConstants {
-  public static let startHour = 9
-  public static let endHour = 24
-  public static let scrollAnimationDuration = 0.5
   public static let middleIndex = 500
 }

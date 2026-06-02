@@ -49,7 +49,9 @@ struct RoomDetailsSheetView: View {
         }
 
         // Booking Grid
+        // Vertical scrolling for time
         ScrollView(.vertical) {
+          // Horizontal scrolling between days
           ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 0) {
               ForEach(0..<Self.maxScrollID, id: \.self) { index in
