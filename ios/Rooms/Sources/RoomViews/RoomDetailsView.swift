@@ -120,10 +120,11 @@ public struct RoomDetailsView: View {
 
 extension View {
   @ViewBuilder
-  func liquidGlass<GlassContent: View, FallbackContent: View>(
-    glass: (Self) -> GlassContent,
-    fallback: (Self) -> FallbackContent
-  ) -> some View {
+  func liquidGlass(
+    glass: (Self) -> some View,
+    fallback: (Self) -> some View)
+    -> some View
+  {
     if #available(iOS 26.0, *) {
       glass(self)
     } else {
