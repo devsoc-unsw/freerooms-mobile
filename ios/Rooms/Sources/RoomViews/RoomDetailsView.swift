@@ -67,7 +67,7 @@ public struct RoomDetailsView: View {
           else: {
             $0
               .buttonStyle(.borderedProminent)
-              .tint(.white)
+              .tint(theme.background.primary.opacity(0.85))
               .foregroundStyle(theme.accent.primary)
           })
       }
@@ -85,8 +85,8 @@ public struct RoomDetailsView: View {
           },
           else: {
             $0
-              .background(Color.white)
-              .cornerRadius(12)
+              .background(.regularMaterial)
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
           })
       }
     }
