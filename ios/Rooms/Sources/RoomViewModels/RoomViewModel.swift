@@ -251,20 +251,20 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
-  // Resets date for room booking list view
+  /// Resets date for room booking list view
   public func resetBookingScrollState(initialDate: Date) {
     baseDate = initialDate
     dateSelect = initialDate
     scrollID = RoomBookingConstants.middleIndex
   }
 
-  // Handles horizontal scroll to change the date for room booking list view
+  /// Handles horizontal scroll to change the date for room booking list view
   public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
     guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
     dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
   }
 
-  // Handles date picker to change the date for room booking list view
+  /// Handles date picker to change the date for room booking list view
   public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
     let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
     let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
