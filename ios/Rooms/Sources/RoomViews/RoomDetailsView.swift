@@ -61,11 +61,12 @@ public struct RoomDetailsView: View {
         .font(.title2)
         .buttonBorderShape(.circle)
         .liquidGlass(
-          if: {
+          glass: {
             $0
           },
-          else: {
+          fallback: {
             $0
+              .padding(8)
               .buttonStyle(.borderedProminent)
               .tint(theme.background.primary.opacity(0.85))
               .foregroundStyle(theme.accent.primary)
@@ -80,10 +81,10 @@ public struct RoomDetailsView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .liquidGlass(
-          if: {
+          glass: {
             $0
           },
-          else: {
+          fallback: {
             $0
               .background(.regularMaterial)
               .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -119,15 +120,14 @@ public struct RoomDetailsView: View {
 
 extension View {
   @ViewBuilder
-  func liquidGlass(
-    if transform1: (Self) -> some View,
-    else transform2: (Self) -> some View)
-    -> some View
-  {
+  func liquidGlass<GlassContent: View, FallbackContent: View>(
+    glass: (Self) -> GlassContent,
+    fallback: (Self) -> FallbackContent
+  ) -> some View {
     if #available(iOS 26.0, *) {
-      transform1(self)
+      glass(self)
     } else {
-      transform2(self)
+      fallback(self)
     }
   }
 }
