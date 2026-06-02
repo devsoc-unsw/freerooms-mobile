@@ -40,6 +40,7 @@ public struct RoomDetailsView: View {
       }
       .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
+      .presentationBackground(theme.background)
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
     }
