@@ -28,7 +28,7 @@
   "schemaDownloadConfiguration": {
     "downloadMethod": {
       "introspection": {
-        "endpointURL": "https://graphql.csesoc.app/v1/graphql",
+        "endpointURL": "https://graphql.devsoc.app/v1/graphql",
         "httpMethod": {
           "POST": {}
         },

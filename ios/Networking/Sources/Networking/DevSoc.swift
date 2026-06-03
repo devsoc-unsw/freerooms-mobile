@@ -11,30 +11,39 @@ import DevSocAPI
 import Foundation
 import OSLog
 
-// MARK: - DevSoc
-
-// TODO: Find a better name for this namespace and the generated package
-
 /// A `namespace` for DevSoc
 ///
 /// This `namespace` has members relating to the DevSoc **GraphQL** API.
-public /* namespace */ enum DevSoc {
+nonisolated public /* namespace */ enum DevSoc {
 
   /// The **production** GraphQL endpoint
-  public static let liveUrl = URL(string: "https://graphql.csesoc.app/v1/graphql")!
+  ///
+  /// ```swift
+  /// URL(string: "https://graphql.devsoc.app/v1/graphql")
+  /// ```
+  public static let defaultLiveUrl = URL(string: "https://graphql.devsoc.app/v1/graphql")!
 
-  /// Creates a live DevSoc `ApolloClient` for GraphQL requests
+  /// Creates a live DevSoc `ApolloClient` for GraphQL requests.
+  ///
+  /// To create a live client to make network requests:
+  /// ```swift
+  /// let cacheLocation = try DevSoc.onDiskCacheLocation
+  /// let cache   = try DevSoc.createOnDiskCache(at: cacheLocation)
+  /// let store   = ApolloStore(cache: cache)
+  /// let client  = try DevSoc.createLiveApolloClient(using: store)
+  /// ```
   ///
   /// - Parameters:
   ///   - url: The url to send requests to. Defaults to the live production `URL`.
-  ///   - store: The store for caching. By default
+  ///   - store: The store for caching.
+  ///   - urlSession: The session to use for requests. Defaults to `URLSession.shared` for real requests.
   ///
   /// - Returns:
   ///   The `ApolloClient` to make GraphQL requests to.
   public static func createLiveApolloClient(
-    for url: URL = DevSoc.liveUrl,
+    for url: URL = DevSoc.defaultLiveUrl,
     using store: ApolloStore,
-    urlSession: URLSession = .shared)
+    urlSession: any ApolloURLSession = URLSession.shared)
     throws -> ApolloClient
   {
     // Create the network transport
@@ -60,7 +69,7 @@ extension DevSoc {
   /// Get the `URL` of the on-disk cache
   ///
   /// This getter doesn't check for the existence of the cache, it merely provides
-  /// where it should be located
+  /// where it should be located.
   ///
   /// - Returns:
   ///   The cache location within the apps bundle.
@@ -71,11 +80,17 @@ extension DevSoc {
       // Find the caches directory on disk
       // For more information, see:
       // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW28
-      let cacheDirectory = try fm.url(
-        for: .cachesDirectory,
-        in: .userDomainMask,
-        appropriateFor: nil,
-        create: true)
+      let cacheDirectory: URL
+      do {
+        cacheDirectory = try fm.url(
+          for: .cachesDirectory,
+          in: .userDomainMask,
+          appropriateFor: nil,
+          create: true)
+      } catch let error {
+        logger.error("Failed to get caches directory: \(error)")
+        throw error
+      }
 
       logger.debug("Found cache directory: \(cacheDirectory.path)")
       let cacheURL = cacheDirectory.appendingPathComponent("apollo-cache.sqlite")
@@ -84,7 +99,14 @@ extension DevSoc {
       return cacheURL
     }
   }
-
+  
+  /// Attempts to create the cache at the provided location
+  ///
+  /// - Parameters:
+  ///   - url: The location to create the cache. Must be accessable by the application.
+  ///
+  /// - Returns:
+  ///   The `NormalizedCache` for caching on-disk
   public static func createOnDiskCache(at url: URL) throws -> some NormalizedCache {
     let database = try ApolloSQLiteDatabase(fileURL: url)
     return try SQLiteNormalizedCache(database: database)
