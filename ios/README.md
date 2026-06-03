@@ -1,5 +1,5 @@
 # Freerooms iOS Mobile App
-
+ 
 This is the native iOS mobile client for Freerooms. Freerooms is designed to help UNSW students easily find and browse available rooms and study spaces on campus. Built with speed, simplicity, and student experience in mind.
 
 # Planned Features
