@@ -54,4 +54,4 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Build swift project
-      run: "xcodebuild build -skipMacroValidation -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17'"
+      run: "xcodebuild clean build -skipMacroValidation -scheme Freerooms -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath CleanBuild/"
