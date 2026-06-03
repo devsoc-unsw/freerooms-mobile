@@ -33,7 +33,7 @@ public final actor MockApolloURLSession: ApolloURLSession {
 
   public func chunks(for request: URLRequest) throws -> (any Apollo.AsyncChunkSequence, URLResponse) {
     // Requests should be sent by the ApolloClient, should ideally never be null
-    guard let _ = request.url, let bodyData = request.httpBody else {
+    guard request.url != nil, let bodyData = request.httpBody else {
       throw Error.badRequest
     }
 

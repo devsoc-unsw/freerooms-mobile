@@ -89,10 +89,9 @@ struct LiveGraphQLBuildingLoaderTests {
         longitude: 0.0,
         aliases: []),
     ],
-    createRealBuildings()
+    createRealBuildings(),
   ])
   func `Loader can load buildings`(_ buildings: [Building]) async throws {
-
     let (data, response) = try createResponse(for: buildings)
 
     // Set the next session response
