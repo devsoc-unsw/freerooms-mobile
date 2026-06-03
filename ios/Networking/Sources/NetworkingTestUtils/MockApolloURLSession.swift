@@ -19,16 +19,44 @@ public final actor MockApolloURLSession: ApolloURLSession {
 
   // MARK: Public
 
+  /// Check if a `GraphQLQuery` type has a set response
+  ///
+  /// - Parameters:
+  ///   - graphQLQueryType: The type to check
+  ///
+  /// - Returns:
+  ///   `true` if the type has a corresponding response, otherwise `false`
   public func hasResponse(for graphQLQueryType: any GraphQLQuery.Type) -> Bool {
     nextResponses.keys.contains(_GraphQLQueryMetatypeWrapper(graphQLQueryType))
   }
 
+  /// Sets the response for a particular query
+  ///
+  /// - Parameters:
+  ///   - response: The response to return
+  ///   - data: The response body
+  ///   - graphQLQueryType: The query to set the response for
   public func setResponse(_ response: URLResponse, data: Data, for graphQLQueryType: any GraphQLQuery.Type) {
     nextResponses[_GraphQLQueryMetatypeWrapper(graphQLQueryType)] = (data, response)
   }
 
-  public func response(for graphQLQueryType: any GraphQLQuery.Type) -> (Data, URLResponse)? {
+  /// Gets the current response for a query type
+  ///
+  /// - Parameters:
+  ///   - graphQLQueryType: The query type to check
+  ///
+  /// - Returns:
+  ///   The current body and response for the query type, or `nil` if no response is set.
+  public func response(for graphQLQueryType: any GraphQLQuery.Type) -> (data: Data, response: URLResponse)? {
     nextResponses[_GraphQLQueryMetatypeWrapper(graphQLQueryType)]
+  }
+
+  /// Removes the saved response for a query type
+  ///
+  /// - Parameters:
+  ///   - graphQLQueryType: The query type
+  public func removeResponse(for graphQLQueryType: any GraphQLQuery.Type) {
+    nextResponses.removeValue(forKey: _GraphQLQueryMetatypeWrapper(graphQLQueryType))
   }
 
   public func chunks(for request: URLRequest) throws -> (any Apollo.AsyncChunkSequence, URLResponse) {
@@ -64,7 +92,10 @@ public final actor MockApolloURLSession: ApolloURLSession {
     throws -> (Data, URLResponse)
   {
     func getSavedResponse(for type: any GraphQLQuery.Type) -> (Data, URLResponse) {
-      nextResponses[_GraphQLQueryMetatypeWrapper(type)]!
+      let key = _GraphQLQueryMetatypeWrapper(type)
+      let nextResponse = nextResponses[key]!
+      nextResponses.removeValue(forKey: key)
+      return nextResponse
     }
 
     // Get all saved response types
