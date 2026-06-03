@@ -11,6 +11,8 @@ import DevSocAPI
 import Foundation
 import OSLog
 
+// MARK: - DevSoc
+
 /// A `namespace` for DevSoc
 ///
 /// This `namespace` has members relating to the DevSoc **GraphQL** API.
@@ -92,21 +94,22 @@ extension DevSoc {
         throw error
       }
 
+      // Add the filename to the path
       logger.debug("Found cache directory: \(cacheDirectory.path)")
-      let cacheURL = cacheDirectory.appendingPathComponent("apollo-cache.sqlite")
+      let cacheURL = cacheDirectory.appending(path: "apollo-cache.sqlite")
       logger.debug("Cache URL: \(cacheURL.path)")
 
       return cacheURL
     }
   }
-  
+
   /// Attempts to create the cache at the provided location
   ///
   /// - Parameters:
   ///   - url: The location to create the cache. Must be accessable by the application.
   ///
   /// - Returns:
-  ///   The `NormalizedCache` for caching on-disk
+  ///   The `NormalizedCache` for caching on-disk.
   public static func createOnDiskCache(at url: URL) throws -> some NormalizedCache {
     let database = try ApolloSQLiteDatabase(fileURL: url)
     return try SQLiteNormalizedCache(database: database)

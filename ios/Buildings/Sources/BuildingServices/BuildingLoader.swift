@@ -5,7 +5,9 @@
 //  Created by Chris Wong on 29/4/2025.
 //
 
+import Apollo
 import BuildingModels
+import DevSocAPI
 import Foundation
 import Networking
 import Persistence
@@ -33,8 +35,55 @@ public protocol BuildingLoader {
 // MARK: - RemoteBuildingLoader
 
 @Stubbable
+@available(*, deprecated, renamed: "BuildingLoader")
 public protocol RemoteBuildingLoader {
   func fetch() -> Result<[RemoteBuilding], BuildingLoaderError>
+}
+
+// MARK: - LiveGraphQLBuildingLoader
+
+nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
+
+  // MARK: Lifecycle
+
+  public init(client: ApolloClient) {
+    self.client = client
+  }
+
+  // MARK: Public
+
+  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+    // Fetch the buildings if required.
+    // The buildings will likley be stored on the device inside the
+    let graphQLBuildings: [DevSocAPI.AllBuildingsQuery.Data.Building]
+    do {
+      let response = try await client.fetch(query: AllBuildingsQuery())
+      guard let buildings = response.data?.buildings else {
+        return .failure(.noDataAvailable)
+      }
+      graphQLBuildings = buildings
+    } catch {
+      return .failure(.connectivity)
+    }
+
+    // Turn the GraphQL buildings into useable buildings
+    var buildings: [Building] = []
+    buildings.reserveCapacity(graphQLBuildings.count)
+    for gqlb in graphQLBuildings {
+      guard let building = Building(from: gqlb) else {
+        // TODO: How should be handle an invalid building?
+        continue
+      }
+      buildings.append(building)
+    }
+
+    return .success(buildings)
+  }
+
+  // MARK: Internal
+
+  let client: ApolloClient
+
 }
 
 // MARK: - LiveBuildingLoader
