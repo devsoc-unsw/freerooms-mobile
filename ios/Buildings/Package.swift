@@ -71,6 +71,7 @@ let package = Package(
         .product(name: "RoomServices", package: "Rooms"),
         .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "Location", package: "Location"),
+        .product(name: "NetworkingTestUtils", package: "Networking"),
       ],
       swiftSettings: .defaultSettings),
   ])
