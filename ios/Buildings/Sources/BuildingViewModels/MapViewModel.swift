@@ -75,6 +75,16 @@ public protocol MapViewModel {
     // Room logics
     var availableRooms: [Room] { get }
     var isLoadingAvailableRoom: Bool { get }
+    var buildingDetailsViewState: BuildingDetailsViewState { get }
+    var buildingDetailsErrorMessage: String? { get }
+}
+
+// MARK: - BuildingDetailsViewState
+
+public enum BuildingDetailsViewState {
+  case loading
+  case loaded
+  case error
 }
 
 // MARK: - SheetPosition
@@ -181,6 +191,10 @@ public class LiveMapViewModel: MapViewModel {
     
   public var isLoadingAvailableRoom: Bool = false
 
+  public var buildingDetailsViewState = BuildingDetailsViewState.loaded
+
+  public var buildingDetailsErrorMessage: String?
+
 
   // MARK: Public
 
@@ -275,6 +289,10 @@ public class LiveMapViewModel: MapViewModel {
 
   public func onClearBuildingSelection() {
     unselectBuilding()
+    availableRooms = []
+    isLoadingAvailableRoom = false
+    buildingDetailsErrorMessage = nil
+    buildingDetailsViewState = .loaded
     bottomSheetPosition = SheetPosition.hidden.bottomSheetPosition
   }
 
@@ -284,19 +302,29 @@ public class LiveMapViewModel: MapViewModel {
   }
 
   public func onSelectBuilding(_ buildingID: String) async {
-    isLoadingAvailableRoom = true
-    availableRooms = []
-    switch await roomInteractor.getAvailableRoomsSortedAlphabetically(inAscendingOrder: true, buildingId: buildingID) {
-    case .success(let availableRooms):
-        self.availableRooms = availableRooms
-    case .failure(_):
-        self.availableRooms = []
-    }
-
-    isLoadingAvailableRoom = false
-    clearDirection()
+    currentRoute = nil
     selectBuilding(buildingID)
     bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
+    buildingDetailsViewState = .loading
+    buildingDetailsErrorMessage = nil
+    isLoadingAvailableRoom = true
+    availableRooms = []
+
+    let result = await roomInteractor.getAvailableRoomsSortedAlphabetically(inAscendingOrder: true, buildingId: buildingID)
+
+    guard selectedBuildingID == buildingID else { return }
+
+    isLoadingAvailableRoom = false
+
+    switch result {
+    case .success(let availableRooms):
+      self.availableRooms = availableRooms
+      buildingDetailsViewState = .loaded
+    case .failure(let error):
+      self.availableRooms = []
+      buildingDetailsErrorMessage = error.clientMessage
+      buildingDetailsViewState = .error
+    }
   }
 
   public func handleHeadingUpdate(_ newHeading: CLHeading) {
