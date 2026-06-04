@@ -31,12 +31,24 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "BuildingViews",
-      dependencies: ["BuildingViewModels", "CommonUI", "BuildingModels", .product(name: "BottomSheet", package: "BottomSheet")],
+      dependencies: [
+        "BuildingViewModels",
+        "CommonUI",
+        "BuildingModels",
+        .product(name: "RoomInteractors", package: "Rooms"),
+        .product(name: "BottomSheet", package: "BottomSheet"),
+      ],
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingViewModels",
-      dependencies: ["BuildingInteractors", "BuildingModels", "CommonUI", .product(name: "BottomSheet", package: "BottomSheet")],
+      dependencies: [
+        "BuildingInteractors",
+        "BuildingModels",
+        "CommonUI",
+        .product(name: "RoomInteractors", package: "Rooms"),
+        .product(name: "BottomSheet", package: "BottomSheet"),
+      ],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingInteractors",
