@@ -45,11 +45,11 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
     case .success(let remoteRoomsResponse):
       return .success(remoteRoomsResponse.bookings)
 
-    case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.connectivity):
-      return .failure(.connectivity)
-
-    case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.invalidData):
-      return .failure(.invalidBuildingID)
+//    case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.connectivity):
+//      return .failure(.connectivity)
+//
+//    case .failure(NetworkCodableLoader<[RemoteRoomBooking]>.Error.invalidData):
+//      return .failure(.invalidBuildingID)
 
     case .failure:
       return .failure(.connectivity)

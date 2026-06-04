@@ -5,17 +5,65 @@
 //  Created by Yanlin Li  on 17/4/2026.
 //
 
+import Errors
 import Foundation
 import Networking
 import RoomModels
+import TypeUtils
 import VISOR
 
 // MARK: - FilterRoomLoaderError
 
-public enum FilterRoomLoaderError: Error, Equatable {
-  case connectivity
-  case invalidData
-  case invalidURL
+// public enum FilterRoomLoaderError: Error, Equatable {
+//  case connectivity
+//  case invalidData
+//  case invalidURL
+// }
+
+public struct FilterRoomLoaderError: FreeroomsError {
+
+  // MARK: Lifecycle
+
+  private init(reason: Reason) {
+    self.reason = reason
+  }
+
+  // MARK: Public
+
+  @AddCaseKind
+  public enum Reason: Sendable {
+    case clientError(HTTPClientError)
+    case invalidData(NetworkCodableError)
+    case invalidURL
+  }
+
+  public var reason: Reason
+
+  public var errorDescription: String {
+    switch reason {
+    case .clientError(let httpClientError):
+      httpClientError.errorDescription
+    case .invalidData(let networkCodableError):
+      networkCodableError.errorDescription
+    case .invalidURL:
+      "Invalid URL"
+    }
+  }
+
+  public static func invalidURL() -> Self {
+    FilterRoomLoaderError(reason: .invalidURL)
+  }
+
+  /// Chooses the best error for a `NetworkCodableError`
+  public static func error(from networkCodableError: NetworkCodableError) -> Self {
+    switch networkCodableError.reason {
+    case .clientError(let clientError):
+      FilterRoomLoaderError(reason: .clientError(clientError))
+    case .decodingError, .badResponse:
+      FilterRoomLoaderError(reason: .invalidData(networkCodableError))
+    }
+  }
+
 }
 
 // MARK: - FilterRoomLoader
@@ -68,7 +116,7 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
     guard
       let url = makeSearchRoomsURL(options: options)
     else {
-      return .failure(.invalidURL)
+      return .failure(.invalidURL())
     }
 
     // Create a NetworkCodableLoader to perform the GET request and decode the response into an array of RemoteFilterRoomMap
@@ -80,8 +128,8 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
 
       return .success(roomIds)
 
-    case .failure:
-      return .failure(.connectivity)
+    case .failure(let networkCodableError):
+      return .failure(.error(from: networkCodableError))
     }
   }
 

@@ -30,17 +30,19 @@ struct URLSessionHTTPClientTests {
   @Test("Client returns network failure error on network connection lost")
   func connectionLostDuringRequest() async throws {
     // Given
+    let error = URLError(.networkConnectionLost)
     let mockUrlSession = MockURLSession(
       data: Data(),
       urlResponse: HTTPURLResponse(),
-      error: URLError(.networkConnectionLost))
+      error: error)
     let sut = URLSessionHTTPClient(session: mockUrlSession)
 
     // When
-    let res = await sut.get(from: URL(string: "www.fake.com")!)
+    let url = URL(string: "www.fake.com")!
+    let res = await sut.get(from: url)
 
     // Then
-    expect(res, toThrow: HTTPClientError.networkFailure)
+    expect(res, toThrow: HTTPClientError.networkFailure(url: url, networkError: error))
   }
 
   @Test("Client returns invalid http error on invalid http response")
@@ -50,53 +52,67 @@ struct URLSessionHTTPClientTests {
     let sut = URLSessionHTTPClient(session: mockUrlSession)
 
     // When
-    let res = await sut.get(from: URL(string: "www.fake.com")!)
+    let url = URL(string: "www.fake.com")!
+    let res = await sut.get(from: url)
 
     // Then
-    expect(res, toThrow: HTTPClientError.invalidHTTPResponse)
+    expect(res, toThrow: HTTPClientError.invalidHTTPResponse(url: url))
   }
 
   @Test("Client returns network failure error on no internet connection")
   func noInternetConnection() async throws {
     // Given
+    let error = URLError(.notConnectedToInternet)
     let mockUrlSession = MockURLSession(
       data: Data(),
       urlResponse: URLResponse(),
-      error: URLError(.notConnectedToInternet))
+      error: error)
     let sut = URLSessionHTTPClient(session: mockUrlSession)
 
     // When
-    let res = await sut.get(from: URL(string: "www.fake.com")!)
+    let url = URL(string: "www.fake.com")!
+    let res = await sut.get(from: url)
 
     // Then
-    expect(res, toThrow: HTTPClientError.networkFailure)
+    expect(res, toThrow: HTTPClientError.networkFailure(url: url, networkError: error))
   }
 
   @Test("Client returns network failure error when any error is thrown")
   func unknownError() async throws {
     // Given
-    let mockUrlSession = MockURLSession(data: Data(), urlResponse: URLResponse(), error: URLError(.unknown))
+    let error = URLError(.unknown)
+    let mockUrlSession = MockURLSession(data: Data(), urlResponse: URLResponse(), error: error)
     let sut = URLSessionHTTPClient(session: mockUrlSession)
 
     // When
-    let res = await sut.get(from: URL(string: "www.fake.com")!)
+    let url = URL(string: "www.fake.com")!
+    let res = await sut.get(from: url)
 
     // Then
-    expect(res, toThrow: HTTPClientError.networkFailure)
+    expect(res, toThrow: HTTPClientError.networkFailure(url: url, networkError: error))
   }
 
   // MARK: Private
 
-  private func expect(_ res: HTTPClientResult, toThrow httpClientError: HTTPClientError) {
+  private func expect(
+    _ res: HTTPClientResult,
+    toThrow httpClientError: HTTPClientError,
+    sourceLocation _: SourceLocation = #_sourceLocation)
+  {
     switch res {
     case .failure(let error):
-      #expect(error as? HTTPClientError == httpClientError)
+      #expect(error == httpClientError)
     case .success(let response):
       Issue.record("Expected an error but got \(response)")
     }
   }
 
-  private func expect(_ res: HTTPClientResult, toFetch data: Data, and urlResponse: URLResponse) {
+  private func expect(
+    _ res: HTTPClientResult,
+    toFetch data: Data,
+    and urlResponse: URLResponse,
+    sourceLocation _: SourceLocation = #_sourceLocation)
+  {
     switch res {
     case .success(let (data, httpURLResponse)):
       #expect(data == data && httpURLResponse == urlResponse)

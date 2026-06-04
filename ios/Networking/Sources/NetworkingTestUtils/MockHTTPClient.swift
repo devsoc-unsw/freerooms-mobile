@@ -18,12 +18,14 @@ public class MockHTTPClient: HTTPClient {
 
   // MARK: Public
 
+  public static let defaultError = HTTPClientError.invalidHTTPResponse(url: URL(string: "https://example.com")!)
+
   public func stubSuccess(_ data: some Codable, for _: String) {
     stubbedData = try? JSONEncoder().encode(data)
   }
 
   public func stubFailure() {
-    stubbedError = NSError(domain: "test", code: 0)
+    stubbedError = Self.defaultError
   }
 
   public func get(from url: URL) async -> HTTPClientResult {
@@ -36,11 +38,11 @@ public class MockHTTPClient: HTTPClient {
       return .success((data, response))
     }
 
-    return .failure(NSError(domain: "test", code: 0))
+    return .failure(Self.defaultError)
   }
 
   // MARK: Private
 
   private var stubbedData: Data?
-  private var stubbedError: Error?
+  private var stubbedError: HTTPClientError?
 }
