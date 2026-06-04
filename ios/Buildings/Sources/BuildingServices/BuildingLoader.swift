@@ -49,10 +49,12 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
   public init(
     client: ApolloClient,
-    roomStatusLoader: any RoomStatusLoader)
+    roomStatusLoader: any RoomStatusLoader,
+    buildingRatingLoader: any BuildingRatingLoader)
   {
     self.client = client
     self.roomStatusLoader = roomStatusLoader
+    self.buildingRatingLoader = buildingRatingLoader
   }
 
   // MARK: Public
@@ -89,7 +91,8 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
     // Update buildings with their statuses, if they are available
     await _updateBuildingStatuses(&buildings)
-    // TODO: Update buildings with their ratings
+    // Add ratings to builings, if available
+    await _updateBuildingRatings(&buildings)
 
     return .success(buildings)
   }
@@ -98,6 +101,7 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
   let client: ApolloClient
   let roomStatusLoader: any RoomStatusLoader
+  let buildingRatingLoader: any BuildingRatingLoader
 
   // MARK: Private
 
@@ -123,6 +127,46 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
         continue
       }
       buildings[i].numberOfAvailableRooms = status.numAvailable
+    }
+  }
+
+  private func _updateBuildingRatings(_ buildings: inout sending [Building]) async {
+    let logger = logger
+    // Most buildings would have ratings
+    var ratingsByID = [Building.ID: Double]()
+    ratingsByID.reserveCapacity(buildings.count)
+
+    // Can fetch ratings concurrently
+    logger.trace("Fetching building ratings...")
+    let buildingRatingLoader = buildingRatingLoader
+    await withTaskGroup(of: (String, Double)?.self) { group in
+      // Get the rating for each building
+      for building in buildings {
+        // If the building rating is unavailable, we return nil
+        group.addTask {
+          do {
+            let result = try await buildingRatingLoader.fetch(buildingID: building.id).get()
+            return (building.id, result)
+          } catch {
+            logger.trace("Failed to fetch building rating for building with ID: \(building.id)")
+            return nil
+          }
+        }
+
+        for await pair in group {
+          guard let (buildingID, rating) = pair else {
+            continue
+          }
+          assert(!ratingsByID.keys.contains(buildingID), "Made two requests for building with ID: \(buildingID)")
+          ratingsByID[buildingID] = rating
+        }
+      }
+    }
+
+    // Update buildings with available ratings
+    for (i, building) in buildings.enumerated() {
+      guard let rating = ratingsByID[building.id] else { continue }
+      buildings[i].overallRating = rating
     }
   }
 
