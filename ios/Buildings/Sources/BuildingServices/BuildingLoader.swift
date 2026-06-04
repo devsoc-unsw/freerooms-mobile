@@ -10,6 +10,7 @@ import BuildingModels
 import DevSocAPI
 import Foundation
 import Networking
+import OSLog
 import Persistence
 import RoomServices
 import VISOR
@@ -46,23 +47,31 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
   // MARK: Lifecycle
 
-  public init(client: ApolloClient) {
+  public init(
+    client: ApolloClient,
+    roomStatusLoader: any RoomStatusLoader)
+  {
     self.client = client
+    self.roomStatusLoader = roomStatusLoader
   }
 
   // MARK: Public
 
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
     // Fetch the buildings if required.
-    // The buildings will likley be stored on the device inside the
+    // The buildings will likely be stored on the device inside the SQLCache
+    // in the running application
+    logger.trace("Fetching buildings from GraphQL")
     let graphQLBuildings: [DevSocAPI.AllBuildingsQuery.Data.Building]
     do {
       let response = try await client.fetch(query: AllBuildingsQuery())
       guard let buildings = response.data?.buildings else {
+        logger.error("Data for buildings is missing from GraphQL response")
         return .failure(.noDataAvailable)
       }
       graphQLBuildings = buildings
     } catch {
+      logger.warning("Could not fetch buildings from GraphQL: \(error)")
       return .failure(.connectivity)
     }
 
@@ -72,10 +81,15 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
     for gqlb in graphQLBuildings {
       guard let building = Building(from: gqlb) else {
         // TODO: How should be handle an invalid building?
+        logger.debug("Invalid building \(gqlb.name), skipping")
         continue
       }
       buildings.append(building)
     }
+
+    // Update buildings with their statuses, if they are available
+    await _updateBuildingStatuses(&buildings)
+    // TODO: Update buildings with their ratings
 
     return .success(buildings)
   }
@@ -83,6 +97,33 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   // MARK: Internal
 
   let client: ApolloClient
+  let roomStatusLoader: any RoomStatusLoader
+
+  // MARK: Private
+
+  private static let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader")
+
+  private var logger: Logger { Self.logger }
+  
+  private func _updateBuildingStatuses(_ buildings: inout [Building]) async {
+    logger.trace("Fetching building statuses...")
+    let buildingStatusesResult = await roomStatusLoader.fetchRoomStatus()
+    
+    // Make sure that we get a sucess response
+    guard case .success(var buildingStatuses) = buildingStatusesResult else {
+      logger.warning("Failed to get building statuses from loader: \(String(reflecting: self.roomStatusLoader))")
+      return
+    }
+    
+    // Apply each of the found building statuses
+    logger.trace("Applying found building statuses")
+    for (id, status) in buildingStatuses {
+      guard let buildingIdx = buildings.firstIndex(where: { $0.id == id }) else {
+        continue
+      }
+      buildings[buildingIdx].numberOfAvailableRooms = status.numAvailable
+    }
+  }
 
 }
 

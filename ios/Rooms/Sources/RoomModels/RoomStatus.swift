@@ -28,7 +28,7 @@ public typealias RemoteRoomStatus = [String: BuildingRoomStatus]
 // MARK: - BuildingRoomStatus
 
 /// Represents room status data for a specific building
-public struct BuildingRoomStatus: Codable, Equatable, Sendable {
+public nonisolated struct BuildingRoomStatus: Codable, Equatable, Sendable {
   public let numAvailable: Int
   public let roomStatuses: [String: RoomStatus]
 
