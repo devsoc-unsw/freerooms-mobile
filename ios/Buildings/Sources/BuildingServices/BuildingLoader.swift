@@ -104,24 +104,25 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   private static let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader")
 
   private var logger: Logger { Self.logger }
-  
+
   private func _updateBuildingStatuses(_ buildings: inout [Building]) async {
     logger.trace("Fetching building statuses...")
+    let roomStatusLoader = roomStatusLoader
     let buildingStatusesResult = await roomStatusLoader.fetchRoomStatus()
-    
+
     // Make sure that we get a sucess response
-    guard case .success(var buildingStatuses) = buildingStatusesResult else {
-      logger.warning("Failed to get building statuses from loader: \(String(reflecting: self.roomStatusLoader))")
+    guard case .success(let buildingStatuses) = buildingStatusesResult else {
+      logger.warning("Failed to get building statuses from loader: \(String(reflecting: roomStatusLoader))")
       return
     }
-    
+
     // Apply each of the found building statuses
     logger.trace("Applying found building statuses")
-    for (id, status) in buildingStatuses {
-      guard let buildingIdx = buildings.firstIndex(where: { $0.id == id }) else {
+    for (i, building) in buildings.enumerated() {
+      guard let status = buildingStatuses[building.id] else {
         continue
       }
-      buildings[buildingIdx].numberOfAvailableRooms = status.numAvailable
+      buildings[i].numberOfAvailableRooms = status.numAvailable
     }
   }
 
@@ -189,7 +190,7 @@ public final class LiveBuildingLoader: BuildingLoader, Sendable {
   private func combineLiveAndOfflineData(_ offlineBuildings: inout [Building]) async {
     if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
       for i in offlineBuildings.indices {
-        offlineBuildings[i].numberOfAvailableRooms = await roomStatusResponse[offlineBuildings[i].id]?.numAvailable
+        offlineBuildings[i].numberOfAvailableRooms = roomStatusResponse[offlineBuildings[i].id]?.numAvailable
       }
     }
 
