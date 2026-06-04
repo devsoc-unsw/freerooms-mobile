@@ -6,12 +6,11 @@
 //
 
 import BottomSheet
-import BuildingInteractors
 import BuildingModels
-import BuildingServices
 import BuildingViewModels
 import CommonUI
 import MapKit
+import RoomModels
 import SwiftUI
 
 extension View {
@@ -25,12 +24,18 @@ extension View {
 
 // MARK: - MapTabView
 
-public struct MapTabView: View {
+public struct MapTabView<RoomDestination: View>: View {
 
   // MARK: Lifecycle
 
-  public init(mapViewModel: LiveMapViewModel) {
+  public init(
+    mapViewModel: LiveMapViewModel,
+    roomImageProvider: @escaping (String) -> CachedImage,
+    roomDestinationBuilder: @escaping (Room) -> RoomDestination)
+  {
     self.mapViewModel = mapViewModel
+    self.roomImageProvider = roomImageProvider
+    self.roomDestinationBuilder = roomDestinationBuilder
   }
 
   // MARK: Public
@@ -97,10 +102,11 @@ public struct MapTabView: View {
           if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
             SheetDirectionDetails()
           } else {
-            SheetBuildingDetails()
+            SheetBuildingDetails(
+              imageProvider: roomImageProvider,
+              roomDestinationBuilder: roomDestinationBuilder)
           }
         }
-        .padding(.horizontal)
       }
       .customBackground(
         Color(uiColor: .systemBackground)
@@ -143,10 +149,20 @@ public struct MapTabView: View {
   // MARK: Internal
 
   @Bindable var mapViewModel: LiveMapViewModel
+
+  let roomImageProvider: (String) -> CachedImage
+  let roomDestinationBuilder: (Room) -> RoomDestination
 }
 
 // MARK: - Preview
 
 #Preview {
-  MapTabView(mapViewModel: PreviewMapViewModel())
+  MapTabView(
+    mapViewModel: PreviewMapViewModel(),
+    roomImageProvider: { roomID in
+      CachedImage(name: roomID, bundle: .module)
+    },
+    roomDestinationBuilder: { _ in
+      EmptyView()
+    })
 }
