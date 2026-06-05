@@ -17,7 +17,7 @@ import RoomServices
 // MARK: - RoomViewModel
 
 @MainActor
-public protocol RoomViewModel {
+public protocol RoomViewModel: AnyObject {
   var rooms: [Room] { get set }
 
   var roomsByBuildingId: [String: [Room]] { get set }
@@ -60,6 +60,14 @@ public protocol RoomViewModel {
   func fetchRoomRating(roomID: String) async
 
   func clearRoomRating()
+
+  var scrollID: Int? { get set }
+  var baseDate: Date { get set }
+  var dateSelect: Date { get set }
+
+  func resetBookingScrollState(initialDate: Date)
+  func handleScrollIDChange(oldValue: Int?, newValue: Int?)
+  func handleDateSelectChange(oldValue: Date, newValue: Date)
 }
 
 // MARK: - LiveRoomViewModel
@@ -75,6 +83,10 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   // MARK: Public
+
+  public var scrollID: Int? = RoomBookingConstants.middleIndex
+  public var baseDate = Date()
+  public var dateSelect = Date()
 
   public var loadRoomErrorMessage: AlertError?
 
@@ -239,6 +251,30 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
+  /// Resets date for room booking list view
+  public func resetBookingScrollState(initialDate: Date) {
+    baseDate = initialDate
+    dateSelect = initialDate
+    scrollID = RoomBookingConstants.middleIndex
+  }
+
+  /// Handles horizontal scroll to change the date for room booking list view
+  public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
+    guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
+    dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
+  }
+
+  /// Handles date picker to change the date for room booking list view
+  public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
+    let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
+    let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
+
+    if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
+      baseDate = newValue
+      scrollID = RoomBookingConstants.middleIndex
+    }
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
@@ -246,7 +282,6 @@ public class LiveRoomViewModel: RoomViewModel {
 
 // MARK: - PreviewRoomViewModel
 
-@Observable
 public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
@@ -256,4 +291,14 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
 
     currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
   }
+}
+
+extension Double {
+  public static let day: Double = 86_400
+}
+
+// MARK: - RoomBookingConstants
+
+public enum RoomBookingConstants {
+  public static let middleIndex = 500
 }
