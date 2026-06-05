@@ -10,6 +10,8 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+// MARK: - RoomDetailsSheetView
+
 struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
@@ -21,7 +23,7 @@ struct RoomDetailsSheetView: View {
     isFavourite: Binding<Bool>,
     onDismiss: (() -> Void)? = nil)
   {
-    self.dateSelect = dateSelect
+    initialDate = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
     _isFavourite = isFavourite
@@ -30,13 +32,10 @@ struct RoomDetailsSheetView: View {
 
   // MARK: Internal
 
-  @State var dateSelect = Date()
-
   let room: Room
 
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      // List {
       // Booking informations
       RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating, isFavourite: $isFavourite)
 
@@ -49,18 +48,42 @@ struct RoomDetailsSheetView: View {
 
           Spacer()
 
-          DatePicker("Please Select a Date", selection: $dateSelect, displayedComponents: .date)
+          DatePicker("Please Select a Date", selection: Binding(
+            get: { roomViewModel.dateSelect },
+            set: { roomViewModel.dateSelect = $0 }), displayedComponents: .date)
             .labelsHidden()
             .tint(theme.accent.primary)
         }
 
         // Booking Grid
-        ScrollView {
-          RoomBookingsListView(
-            room: room,
-            roomViewModel: roomViewModel,
-            dateSelect: $dateSelect)
+        // Vertical scrolling for time
+        ScrollView(.vertical) {
+          // Horizontal scrolling between days
+          ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 0) {
+              ForEach(0..<Self.maxScrollID, id: \.self) { index in
+                RoomBookingsListView(
+                  room: room,
+                  roomViewModel: roomViewModel,
+                  dateSelect: bindingFor(index: index))
+                  .id(index)
+                  .containerRelativeFrame(.horizontal)
+              }
+            }
+            .scrollTargetLayout()
+          }
+          .scrollTargetBehavior(.paging)
+          .scrollPosition(id: Binding(
+            get: { roomViewModel.scrollID },
+            set: { roomViewModel.scrollID = $0 }))
+          .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
+            roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
+          }
+          .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
+            roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
+          }
         }
+        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
       }
       .padding()
       .overlay(
@@ -78,6 +101,9 @@ struct RoomDetailsSheetView: View {
     .task {
       await roomViewModel.fetchRoomRating(roomID: room.id)
     }
+    .onAppear {
+      roomViewModel.resetBookingScrollState(initialDate: initialDate)
+    }
     .gesture(
       DragGesture(minimumDistance: RoomLayoutConstants.dismissDragMinimumDistance, coordinateSpace: .local)
         .onEnded { value in
@@ -90,13 +116,26 @@ struct RoomDetailsSheetView: View {
         })
   }
 
+  func bindingFor(index: Int) -> Binding<Date> {
+    Binding(
+      get: { roomViewModel.baseDate + (Double(index - Self.middleIndex) * .day) },
+      set: { newDate in
+        roomViewModel.baseDate = newDate + (Double(Self.middleIndex - index) * .day)
+      })
+  }
+
   // MARK: Private
+
+  // Paging is 0 <= page < middleindex * 2
+  private static let maxScrollID = Self.middleIndex * 2
+  private static let middleIndex = RoomBookingConstants.middleIndex
 
   @Environment(Theme.self) private var theme
 
   @Binding private var isFavourite: Bool
 
   private let onDismiss: (() -> Void)?
+  private let initialDate: Date
 
   private var roomViewModel: RoomViewModel
 
@@ -107,4 +146,10 @@ struct RoomDetailsSheetView: View {
 
   RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
     .defaultTheme()
+}
+
+extension Date {
+  fileprivate static func +(lhs: Date, rhs: Double) -> Date {
+    lhs.addingTimeInterval(rhs)
+  }
 }
