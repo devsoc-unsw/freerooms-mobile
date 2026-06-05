@@ -46,7 +46,7 @@ nonisolated public /* namespace */ enum DevSoc {
     for url: URL = DevSoc.defaultLiveUrl,
     using store: ApolloStore,
     urlSession: any ApolloURLSession = URLSession.shared)
-    throws -> ApolloClient
+    -> ApolloClient
   {
     // Create the network transport
     // We don't need any interceptors as we don't need auth for these requests (yet?)
