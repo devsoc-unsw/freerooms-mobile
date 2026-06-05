@@ -114,7 +114,7 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
     let roomStatusLoader = roomStatusLoader
     let buildingStatusesResult = await roomStatusLoader.fetchRoomStatus()
 
-    // Make sure that we get a sucess response
+    // Make sure that we get a success response
     guard case .success(let buildingStatuses) = buildingStatusesResult else {
       logger.warning("Failed to get building statuses from loader: \(String(reflecting: roomStatusLoader))")
       return
