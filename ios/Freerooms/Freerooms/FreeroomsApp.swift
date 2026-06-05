@@ -27,6 +27,42 @@ import SwiftUI
 
 @main
 struct FreeroomsApp: App {
+
+  // MARK: Lifecycle
+
+  init() {
+    // UI setup
+    Theme.registerFont(named: .ttCommonsPro)
+    setFontOnToolbars(.ttCommonsPro)
+    UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.light.accent.primary)
+
+    // Shared infrastructure
+    let locationService = FreeroomsApp.makeLocationService()
+    let httpClient = FreeroomsApp.makeHTTPClient()
+    let (stagingURL, productionURL) = FreeroomsApp.makeBaseURLs()
+    let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = FreeroomsApp
+      .makeRemoteLoaders()
+
+    // Shared interactors
+    let buildingInteractor = FreeroomsApp.makeBuildingInteractor(
+      locationService: locationService,
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
+    let roomInteractor = FreeroomsApp.makeRoomInteractor(
+      locationService: locationService,
+      roomStatusLoader: roomStatusLoader,
+      remoteBookingLoader: remoteBookingLoader,
+      roomRatingLoader: roomRatingLoader,
+      roomFilterLoader: roomFilterLoader)
+
+    _buildingViewModel = State(initialValue: LiveBuildingViewModel(interactor: buildingInteractor))
+    _roomViewModel = State(initialValue: LiveRoomViewModel(interactor: roomInteractor))
+    _mapViewModel = State(initialValue: FreeroomsApp.makeMapViewModel(
+      buildingInteractor: buildingInteractor,
+      roomInteractor: roomInteractor,
+      locationService: locationService))
+  }
+
   // MARK: Internal
 
   static var sharedContainer: ModelContainer = {
@@ -53,41 +89,6 @@ struct FreeroomsApp: App {
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
   @State private var theme = Theme.light
-
-  init() {
-      // UI setup
-      Theme.registerFont(named: .ttCommonsPro)
-      setFontOnToolbars(.ttCommonsPro)
-      UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.light.accent.primary)
-
-      // Shared infrastructure
-      let locationService = FreeroomsApp.makeLocationService()
-      let httpClient = FreeroomsApp.makeHTTPClient()
-      let (stagingURL, productionURL) = FreeroomsApp.makeBaseURLs()
-      let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = FreeroomsApp.makeRemoteLoaders()
-
-      // Shared interactors
-      let buildingInteractor = FreeroomsApp.makeBuildingInteractor(
-        locationService: locationService,
-        roomStatusLoader: roomStatusLoader,
-        buildingRatingLoader: buildingRatingLoader
-      )
-      let roomInteractor = FreeroomsApp.makeRoomInteractor(
-        locationService: locationService,
-        roomStatusLoader: roomStatusLoader,
-        remoteBookingLoader: remoteBookingLoader,
-        roomRatingLoader: roomRatingLoader,
-        roomFilterLoader: roomFilterLoader
-      )
-
-      _buildingViewModel = State(initialValue: LiveBuildingViewModel(interactor: buildingInteractor))
-      _roomViewModel = State(initialValue: LiveRoomViewModel(interactor: roomInteractor))
-      _mapViewModel = State(initialValue: FreeroomsApp.makeMapViewModel(
-        buildingInteractor: buildingInteractor,
-        roomInteractor: roomInteractor,
-        locationService: locationService
-      ))
-    }
 
   // MARK: - Factories
 
@@ -136,20 +137,19 @@ struct FreeroomsApp: App {
   private static func makeBuildingInteractor(
     locationService: LiveLocationService,
     roomStatusLoader: LiveRoomStatusLoader,
-    buildingRatingLoader: RemoteBuildingRatingLoader
-  ) -> BuildingInteractor {
+    buildingRatingLoader: RemoteBuildingRatingLoader)
+    -> BuildingInteractor
+  {
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: sharedContainer.mainContext)
       let buildingLoader = LiveBuildingLoader(
         swiftDataBuildingLoader: LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore),
         JSONBuildingLoader: LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>()),
         roomStatusLoader: roomStatusLoader,
-        buildingRatingLoader: buildingRatingLoader
-      )
+        buildingRatingLoader: buildingRatingLoader)
       return BuildingInteractor(
         buildingService: LiveBuildingService(buildingLoader: buildingLoader),
-        locationService: locationService
-      )
+        locationService: locationService)
     } catch {
       fatalError("Failed to create BuildingInteractor: \(error)")
     }
@@ -160,23 +160,21 @@ struct FreeroomsApp: App {
     roomStatusLoader: LiveRoomStatusLoader,
     remoteBookingLoader: LiveRemoteRoomBookingLoader,
     roomRatingLoader: LiveRoomRatingLoader,
-    roomFilterLoader: LiveFilterRoomLoader
-  ) -> RoomInteractor {
+    roomFilterLoader: LiveFilterRoomLoader)
+    -> RoomInteractor
+  {
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
       let roomLoader = LiveRoomLoader(
         JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
         roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
-      )
+        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
       return RoomInteractor(
         roomService: LiveRoomService(
           roomLoader: roomLoader,
           roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
-          roomRatingLoader: roomRatingLoader, roomFilterLoader: roomFilterLoader
-        ),
-        locationService: locationService
-      )
+          roomRatingLoader: roomRatingLoader, roomFilterLoader: roomFilterLoader),
+        locationService: locationService)
     } catch {
       fatalError("Failed to create RoomInteractor: \(error)")
     }
@@ -185,16 +183,15 @@ struct FreeroomsApp: App {
   private static func makeMapViewModel(
     buildingInteractor: BuildingInteractor,
     roomInteractor: RoomInteractor,
-    locationService: LiveLocationService
-  ) -> LiveMapViewModel {
+    locationService: LiveLocationService)
+    -> LiveMapViewModel
+  {
     let navigationInteractor = LiveNavigationInteractor(
-      nagivationService: LiveNavigationService()
-    )
+      nagivationService: LiveNavigationService())
     return LiveMapViewModel(
       buildingInteractor: buildingInteractor,
       locationInteractor: LocationInteractor(locationService: locationService),
       navigationInteractor: navigationInteractor,
-      roomInteractor: roomInteractor
-    )
+      roomInteractor: roomInteractor)
   }
 }

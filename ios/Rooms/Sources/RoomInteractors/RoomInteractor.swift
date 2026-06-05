@@ -17,17 +17,21 @@ public class RoomInteractor {
     self.roomService = roomService
     self.locationService = locationService
   }
-    
-   public func getAvailableRoomsSortedAlphabetically(inAscendingOrder: Bool, buildingId: String) async -> Result<[Room], FetchRoomError> {
-       switch await getRoomsFilteredAlphabeticallyByBuildingId(buildingId: buildingId, inAscendingOrder: inAscendingOrder) {
-       case .success(let rooms):
-           return .success(rooms.filter{ $0.status == .available})
-       case .failure(let error):
-           return .failure(error)
-       }
-   }
 
   // MARK: Public
+
+  public func getAvailableRoomsSortedAlphabetically(
+    inAscendingOrder: Bool,
+    buildingId: String)
+    async -> Result<[Room], FetchRoomError>
+  {
+    switch await getRoomsFilteredAlphabeticallyByBuildingId(buildingId: buildingId, inAscendingOrder: inAscendingOrder) {
+    case .success(let rooms):
+      .success(rooms.filter { $0.status == .available })
+    case .failure(let error):
+      .failure(error)
+    }
+  }
 
   public func getRoomsSortedAlphabetically(rooms: [Room], inAscendingOrder: Bool) -> [Room] {
     rooms.sorted { a, b in

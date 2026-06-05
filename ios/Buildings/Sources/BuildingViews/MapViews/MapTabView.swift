@@ -66,9 +66,9 @@ public struct MapTabView<RoomDestination: View>: View {
               building: building,
               isSelected: mapViewModel.isSelectedBuilding(building.id))
               .onTapGesture {
-                  Task {
-                      await mapViewModel.onSelectBuilding(building.id)
-                  }
+                Task {
+                  await mapViewModel.onSelectBuilding(building.id)
+                }
               }
           }
         }
@@ -85,28 +85,30 @@ public struct MapTabView<RoomDestination: View>: View {
       }
       // when user taps outside of the sheet, it shrinks down to medium size
       .simultaneousGesture(
-          TapGesture()
-              .onEnded {
-                  if mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition {
-                      withAnimation(.spring()) {
-                          mapViewModel.bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
-                      }
-                  }
+        TapGesture()
+          .onEnded {
+            if mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition {
+              withAnimation(.spring()) {
+                mapViewModel.bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
               }
-      )
+            }
+          })
       .bottomSheet(
         bottomSheetPosition: $mapViewModel.bottomSheetPosition,
-        switchablePositions: [SheetPosition.top.bottomSheetPosition,   SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
-      {
-        VStack {
-          if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
-            SheetDirectionDetails()
-          } else {
-            SheetBuildingDetails(
-              imageProvider: roomImageProvider,
-              roomDestinationBuilder: roomDestinationBuilder)
+        switchablePositions: [
+          SheetPosition.top.bottomSheetPosition,
+          SheetPosition.medium.bottomSheetPosition,
+          SheetPosition.short.bottomSheetPosition,
+        ]) {
+          VStack {
+            if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
+              SheetDirectionDetails()
+            } else {
+              SheetBuildingDetails(
+                imageProvider: roomImageProvider,
+                roomDestinationBuilder: roomDestinationBuilder)
+            }
           }
-        }
       }
       .customBackground(
         Color(uiColor: .systemBackground)
