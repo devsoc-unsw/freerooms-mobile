@@ -72,10 +72,12 @@ public struct SheetBuildingDetails<RoomDestination: View>: View {
         Text(viewModel.selectedBuildingName)
           .font(.title)
           .fontWeight(.regular)
+          .allowsHitTesting(false)
 
         HStack {
           Text("\(viewModel.selectedBuildingAvailableRooms) rooms available")
             .font(.subheadline)
+            .allowsHitTesting(false)
           Circle()
             .fill(viewModel.selectedBuildingAvailabilityColour)
             .frame(width: 12, height: 12)
