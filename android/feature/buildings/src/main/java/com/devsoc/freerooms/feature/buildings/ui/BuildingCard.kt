@@ -1,5 +1,6 @@
 package com.devsoc.freerooms.feature.buildings.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -9,15 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Light_Orange
+import com.devsoc.freerooms.feature.buildings.R
 import com.devsoc.freerooms.feature.buildings.data.Building
 
 @Composable
@@ -31,12 +36,31 @@ internal fun BuildingCard(
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Light_Orange),
-        )
+        val imageModifier = Modifier
+            .size(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+
+        val imageResId = buildingImageResId(building.id)
+        if (imageResId != null) {
+            Image(
+                painter = painterResource(imageResId),
+                contentDescription = building.name,
+                modifier = imageModifier,
+                contentScale = ContentScale.Crop,
+            )
+        } else {
+            Box(
+                modifier = imageModifier.background(Light_Orange),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_building),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Brown,
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.width(12.dp))
 
