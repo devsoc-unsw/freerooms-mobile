@@ -11,13 +11,23 @@ import Foundation
 
 // MARK: - MockApolloURLSession
 
+/// Mock for `ApolloURLSession`
 public final actor MockApolloURLSession: ApolloURLSession {
 
   // MARK: Lifecycle
 
-  public init() { }
+  /// Creates a new mock session
+  ///
+  /// - Parameters:
+  ///   - clearOnRequest: Whether to remove the response when a request is received
+  public init(clearOnRequest: Bool = true) {
+    self.clearOnRequest = clearOnRequest
+  }
 
   // MARK: Public
+
+  /// Whether to clear a saved response when a corresponding request is received.
+  public let clearOnRequest: Bool
 
   /// Check if a `GraphQLQuery` type has a set response
   ///
@@ -94,7 +104,9 @@ public final actor MockApolloURLSession: ApolloURLSession {
     func getSavedResponse(for type: any GraphQLQuery.Type) -> (Data, URLResponse) {
       let key = _GraphQLQueryMetatypeWrapper(type)
       let nextResponse = nextResponses[key]!
-      nextResponses.removeValue(forKey: key)
+      if clearOnRequest {
+        nextResponses.removeValue(forKey: key)
+      }
       return nextResponse
     }
 
