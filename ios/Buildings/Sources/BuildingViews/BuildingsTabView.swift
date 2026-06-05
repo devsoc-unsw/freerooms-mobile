@@ -45,9 +45,10 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         .toolbar {
           // Buttons on the right
           // Toolbar size and padding constants
-          let toolbarIconHeight: CGFloat = 23
-          let toolbarIconWidth: CGFloat = 23
-          let toolbarPadding: CGFloat = 5
+          let toolbarSortIconWidth: CGFloat = 25
+          let toolbarIconHeight: CGFloat = 20
+          let toolbarViewToggleIconWidth: CGFloat = 22
+          let toolbarIconPadding: CGFloat = 5
           ToolbarItemGroup(placement: .navigationBarTrailing) {
             HStack {
               Button {
@@ -55,7 +56,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
               } label: {
                 Image(systemName: "arrow.up.arrow.down")
                   .resizable()
-                  .frame(width: toolbarIconWidth, height: toolbarIconHeight)
+                  .frame(width: toolbarSortIconWidth, height: toolbarIconHeight)
               }
 
               Button {
@@ -67,10 +68,10 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
               } label: {
                 Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
                   .resizable()
-                  .frame(width: toolbarIconWidth, height: toolbarIconHeight)
+                  .frame(width: toolbarViewToggleIconWidth, height: toolbarIconHeight)
               }
             }
-            .padding(toolbarPadding)
+            .padding(toolbarIconPadding)
             .foregroundStyle(theme.label.tertiary)
           }
         }
