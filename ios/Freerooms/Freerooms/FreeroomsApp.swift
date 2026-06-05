@@ -22,6 +22,7 @@ import RoomServices
 import RoomViewModels
 import SwiftData
 import SwiftUI
+import Apollo
 
 // MARK: - FreeroomsApp
 
@@ -67,9 +68,9 @@ struct FreeroomsApp: App {
 
       let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
 
-      let buildingLoader = LiveBuildingLoader(
-        swiftDataBuildingLoader: swiftDataBuildingLoader,
-        JSONBuildingLoader: JSONBuildingLoader, roomStatusLoader: roomStatusLoader, buildingRatingLoader: buildingRatingLoader)
+      let buildingLoader = makeBuildingLoader(
+        roomStatusLoader: roomStatusLoader,
+        buildingRatingLoader: buildingRatingLoader)
 
       let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
 
@@ -96,9 +97,12 @@ struct FreeroomsApp: App {
 
       let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
 
-      let buildingLoader = LiveBuildingLoader(
-        swiftDataBuildingLoader: swiftDataBuildingLoader,
-        JSONBuildingLoader: JSONBuildingLoader,
+//      let buildingLoader = LiveBuildingLoader(
+//        swiftDataBuildingLoader: swiftDataBuildingLoader,
+//        JSONBuildingLoader: JSONBuildingLoader,
+//        roomStatusLoader: roomStatusLoader,
+//        buildingRatingLoader: buildingRatingLoader)
+      let buildingLoader = makeBuildingLoader(
         roomStatusLoader: roomStatusLoader,
         buildingRatingLoader: buildingRatingLoader)
 
@@ -205,5 +209,19 @@ struct FreeroomsApp: App {
     let roomFilterLoader = LiveFilterRoomLoader(client: httpClient, baseURL: productionURL)
 
     return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader)
+  }
+  
+  private static func makeBuildingLoader(
+    roomStatusLoader: some RoomStatusLoader,
+    buildingRatingLoader: some BuildingRatingLoader
+  ) -> some BuildingLoader {
+    
+    // TODO: Use .well_known url when available
+    let apolloClient = ApolloClient(url: DevSoc.defaultLiveUrl)
+    
+    return LiveGraphQLBuildingLoader(
+      client: apolloClient,
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
   }
 }
