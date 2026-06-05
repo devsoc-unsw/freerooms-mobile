@@ -175,7 +175,7 @@ public struct SheetBuildingDetails<RoomDestination: View>: View {
     isPlaceholder: Bool)
     -> some View
   {
-    if let _ = viewModel.selectedBuildingID {
+    if viewModel.selectedBuildingID != nil {
       if rooms.isEmpty, !isPlaceholder {
         ContentUnavailableView(
           "No Available Rooms",
