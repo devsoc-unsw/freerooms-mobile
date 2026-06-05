@@ -33,6 +33,10 @@ class MainActivity : ComponentActivity() {
         MainApplication.BuildingViewModelFactory
     }
 
+    private val roomViewModel by viewModels<com.devsoc.freerooms.feature.rooms.data.RoomViewModel> {
+        MainApplication.RoomViewModelFactory
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
@@ -51,6 +55,7 @@ class MainActivity : ComponentActivity() {
                     },
                     roomsContent = { modifier ->
                         RoomsScreen(
+                            viewModel = roomViewModel,
                             modifier = modifier,
                         )
                     },

@@ -6,6 +6,7 @@ import com.apollographql.apollo.network.okHttpClient
 import com.devsoc.freerooms.core.network.LiveGraphQLClient
 import com.devsoc.freerooms.core.network.NetworkConstants
 import com.devsoc.freerooms.feature.buildings.data.LiveBuildingRepository
+import com.devsoc.freerooms.feature.rooms.data.LiveRoomRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -27,4 +28,5 @@ class AppContainer {
     private val graphQLClient = LiveGraphQLClient(apolloClient)
 
     val buildingRepository = LiveBuildingRepository(graphQLClient)
+    val roomRepository = LiveRoomRepository(graphQLClient)
 }
