@@ -16,8 +16,34 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_KEY"),
+      is_key_content_base64: true
+    )
+
+    setup_ci
+
+    match(
+      type: "appstore",
+      readonly: true,
+      git_url: ENV.fetch("MATCH_GIT_URL"),
+      api_key: api_key
+    )
+
+    clear_derived_data
+
+    build_app(
+      workspace: "FreeroomsApple.xcworkspace",
+      scheme: "Freerooms",
+      export_method: "app-store"
+    )
+
+    upload_to_testflight(
+      api_key: api_key
+    )
   end
 end
