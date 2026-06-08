@@ -8,6 +8,7 @@
 import Foundation
 
 /// A building representation received from remote API sources.
+@available(*, deprecated, renamed: "Building")
 public struct RemoteBuilding: Equatable, Codable {
   public let name: String
   public let id: String
