@@ -51,12 +51,20 @@ struct ContentView: View {
           RoomImage[roomID]
         },
         roomDestinationBuilder: { room in
-          RoomDetailsView(room: room, roomViewModel: roomViewModel)
-            .task { await roomViewModel.onAppear() }
-            .task {
-              roomViewModel.clearRoomBookings()
-              await roomViewModel.getRoomBookings(roomId: room.id)
-            }
+//          RoomDetailsView(room: room, roomViewModel: roomViewModel)
+//            .task { await roomViewModel.onAppear() }
+//            .task {
+//              roomViewModel.clearRoomBookings()
+//              await roomViewModel.getRoomBookings(roomId: room.id)
+//            }
+
+          RoomDetailsSheetView(room: room, roomViewModel: roomViewModel)
+            .presentationDetents([.medium, .large])
+            .presentationBackgroundInteraction(.enabled)
+            .presentationBackground(theme.background)
+            .presentationCornerRadius(30)
+            .interactiveDismissDisabled()
+
         })
       RoomsTabView(
         path: $roomPath,

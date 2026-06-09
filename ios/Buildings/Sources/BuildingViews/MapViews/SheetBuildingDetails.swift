@@ -48,6 +48,15 @@ public struct SheetBuildingDetails<RoomDestination: View>: View {
       .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
       .navigationDestination(for: Room.self) { room in
         roomDestinationBuilder(room)
+          .navigationBarBackButtonHidden()
+//              .toolbar() {
+//                  ToolbarItem(placement: .topBarTrailing){
+//                      Text("Capcity \(String(room.capacity))")
+//                          .font(.caption)
+//                          .foregroundStyle(.red)
+//                  }
+//
+//              }
       }
     }
     .onChange(of: viewModel.selectedBuildingID) { _, _ in
