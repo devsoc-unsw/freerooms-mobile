@@ -11,42 +11,42 @@ import SwiftUI
 
 // MARK: - SheetBuildingDetails
 
-public struct SheetBuildingDetails<RoomDestination: View>: View {
+public struct SheetBuildingDetails: View {
 
   // MARK: Lifecycle
 
   public init(
     imageProvider: @escaping (String) -> CachedImage,
-    roomDestinationBuilder: @escaping (Room) -> RoomDestination,
-    path: Binding<NavigationPath>)
+    onSelectRoom: @escaping (Room) -> Void)
   {
     self.imageProvider = imageProvider
-    self.roomDestinationBuilder = roomDestinationBuilder
-    _path = path
+    self.onSelectRoom = onSelectRoom
   }
 
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 12) {
-      switch viewModel.buildingDetailsViewState {
-      case .loading:
-        loadedContent(
-          rooms: SheetBuildingDetailsMetrics.placeholderRooms,
-          isPlaceholder: true)
-          .allowsHitTesting(false)
-          .redacted(reason: .placeholder)
+    NavigationStack(path: $path) {
+      VStack(spacing: 12) {
+        switch viewModel.buildingDetailsViewState {
+        case .loading:
+          loadedContent(
+            rooms: SheetBuildingDetailsMetrics.placeholderRooms,
+            isPlaceholder: true)
+            .allowsHitTesting(false)
+            .redacted(reason: .placeholder)
 
-      case .loaded:
-        loadedContent(
-          rooms: viewModel.availableRooms,
-          isPlaceholder: false)
+        case .loaded:
+          loadedContent(
+            rooms: viewModel.availableRooms,
+            isPlaceholder: false)
 
-      case .error:
-        errorContent
+        case .error:
+          errorContent
+        }
       }
+      .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
     }
-    .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
     .onChange(of: viewModel.selectedBuildingID) { _, _ in
       path = NavigationPath()
       rowHeight = nil
@@ -57,11 +57,11 @@ public struct SheetBuildingDetails<RoomDestination: View>: View {
 
   @Environment(LiveMapViewModel.self) private var viewModel
 
-  @Binding private var path: NavigationPath
+  @State private var path = NavigationPath()
   @State private var rowHeight: CGFloat?
 
   private let imageProvider: (String) -> CachedImage
-  private let roomDestinationBuilder: (Room) -> RoomDestination
+  private let onSelectRoom: (Room) -> Void
 
   private var headerSection: some View {
     HStack(alignment: .top) {
@@ -188,6 +188,7 @@ public struct SheetBuildingDetails<RoomDestination: View>: View {
               room: room,
               rooms: rooms,
               isLoading: isPlaceholder || viewModel.isLoadingAvailableRoom,
+              onSelect: onSelectRoom,
               imageProvider: { roomID in
                 if isPlaceholder {
                   CachedImage(name: String(describing: roomID), bundle: .module)
