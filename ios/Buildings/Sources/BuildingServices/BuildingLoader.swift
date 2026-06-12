@@ -33,6 +33,12 @@ public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
+extension BuildingLoader {
+  func fetch() async throws(BuildingLoaderError) -> [Building] {
+    try await fetch().get()
+  }
+}
+
 // MARK: - RemoteBuildingLoader
 
 @Stubbable
@@ -50,19 +56,56 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   public init(
     client: ApolloClient,
     roomStatusLoader: any RoomStatusLoader,
-    buildingRatingLoader: any BuildingRatingLoader)
+    buildingRatingLoader: any BuildingRatingLoader,
+    buildingsCache: (any BuildingsCache)?)
   {
     self.client = client
     self.roomStatusLoader = roomStatusLoader
     self.buildingRatingLoader = buildingRatingLoader
+    self.buildingsCache = buildingsCache
   }
 
   // MARK: Public
-
+  
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
+    
+    // Check if we have a cache
+    guard let buildingsCache else {
+      return await _fetchBuildings_slowpath()
+    }
+    
+    // Check if we can use the cache
+    // TODO: Allow configuration of this value
+    let oldestAllowedCache = Date() - (60 * 60 * 24)
+    let lastUpdated: Date?
+    var buildings: [Building]
+    do {
+      lastUpdated = try await buildingsCache.lastUpdated
+      if let lastUpdated, lastUpdated > oldestAllowedCache {
+        logger.trace("Fetching buildings from cache...")
+        guard let cacheBuildings = try await buildingsCache.getBuildings() else {
+          logger.debug("No buildings in cache, falling back to slowpath")
+          return await _fetchBuildings_slowpath()
+        }
+        buildings = cacheBuildings
+      } else {
+        logger.debug("Cache is too old, falling back to slowpath")
+        return await _fetchBuildings_slowpath()
+      }
+    } catch let error {
+      logger.warning("Failed to load from cache, refetching buildings: \(error)")
+      return await _fetchBuildings_slowpath()
+    }
+    
+    // Get availability statuses for buildings
+    // this is intentionally not cached
+    await _updateBuildingStatuses(&buildings)
+    return .success(buildings)
+  }
+  
+  private func _fetchBuildings_slowpath() async -> Result<[Building], BuildingLoaderError> {
     // Fetch the buildings if required.
-    // The buildings will likely be stored on the device inside the SQLCache
-    // in the running application
+    // The buildings may be stored
     logger.trace("Fetching buildings from GraphQL")
     let graphQLBuildings: [DevSocAPI.AllBuildingsQuery.Data.Building]
     do {
@@ -89,10 +132,20 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
       buildings.append(building)
     }
 
-    // Update buildings with their statuses, if they are available
-    await _updateBuildingStatuses(&buildings)
     // Add ratings to builings, if available
     await _updateBuildingRatings(&buildings)
+    
+    // Save building results to cache
+    if let buildingsCache {
+      do {
+        try await buildingsCache.setBuildings(buildings)
+      } catch {
+        logger.warning("Failed to save to cache")
+      }
+    }
+    
+    // Update buildings with their statuses, if they are available
+    await _updateBuildingStatuses(&buildings)
 
     return .success(buildings)
   }
@@ -102,6 +155,7 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   let client: ApolloClient
   let roomStatusLoader: any RoomStatusLoader
   let buildingRatingLoader: any BuildingRatingLoader
+  let buildingsCache: (any BuildingsCache)?
 
   // MARK: Private
 

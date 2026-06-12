@@ -17,7 +17,7 @@ public typealias CampusBuildings = (upper: [Building], middle: [Building], lower
 
 /// A building on campus with location information and room availability data.
 public nonisolated
-struct Building: Equatable, Identifiable, Hashable, Sendable {
+struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
 
   // MARK: Lifecycle
 
