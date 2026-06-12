@@ -30,7 +30,8 @@ struct LiveGraphQLBuildingLoaderTests {
     loader = LiveGraphQLBuildingLoader(
       client: dataSource.client,
       roomStatusLoader: stubRoomStatusLoader,
-      buildingRatingLoader: stubBuildingRatingLoader)
+      buildingRatingLoader: stubBuildingRatingLoader,
+      buildingsCache: nil)
   }
 
   // MARK: Internal
