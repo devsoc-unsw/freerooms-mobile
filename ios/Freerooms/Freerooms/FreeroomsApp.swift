@@ -90,46 +90,45 @@ struct FreeroomsApp: App {
 
   static func makeLiveBuildingViewModel() -> LiveBuildingViewModel {
     let locationService = makeLocationService()
+    let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
 
-    do {
-      let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
+    let buildingLoader = makeBuildingLoader(
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
 
-      let buildingLoader = makeBuildingLoader(
-        roomStatusLoader: roomStatusLoader,
-        buildingRatingLoader: buildingRatingLoader)
+    let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+    let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
 
-      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
-
-      let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
-
-      return LiveBuildingViewModel(interactor: interactor)
-    }
+    return LiveBuildingViewModel(interactor: interactor)
   }
 
   static func makeLiveMapViewModel() -> LiveMapViewModel {
     let locationService = makeLocationService()
+    let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
 
-    do {
-      let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
+    let buildingLoader = makeBuildingLoader(
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
 
-      let buildingLoader = makeBuildingLoader(
-        roomStatusLoader: roomStatusLoader,
-        buildingRatingLoader: buildingRatingLoader)
+    let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+    let buildingInteractor = BuildingInteractor(
+      buildingService: buildingService,
+      locationService: locationService)
+    let locationInteractor = LocationInteractor(locationService: locationService)
+    let navigationService = LiveNavigationService()
+    let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
+    let roomInteractor = makeRoomInteractor(
+      locationService: locationService,
+      roomStatusLoader: roomStatusLoader,
+      remoteBookingLoader: remoteBookingLoader,
+      roomRatingLoader: roomRatingLoader,
+      roomFilterLoader: roomFilterLoader)
 
-      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
-      let buildingInteractor = BuildingInteractor(
-        buildingService: buildingService,
-        locationService: locationService)
-      let locationInteractor = LocationInteractor(locationService: locationService)
-
-      let navigationService = LiveNavigationService()
-      let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
-
-      return LiveMapViewModel(
-        buildingInteractor: buildingInteractor,
-        locationInteractor: locationInteractor,
-        navigationInteractor: navigationInteractor)
-    }
+    return LiveMapViewModel(
+      buildingInteractor: buildingInteractor,
+      locationInteractor: locationInteractor,
+      navigationInteractor: navigationInteractor,
+      roomInteractor: roomInteractor)
   }
 
   static func makeLiveRoomViewModel() -> LiveRoomViewModel {
@@ -214,6 +213,61 @@ struct FreeroomsApp: App {
     let roomFilterLoader = LiveFilterRoomLoader(client: httpClient, baseURL: productionURL)
 
     return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader)
+  }
+
+  private static func makeBuildingInteractor(
+    locationService: LiveLocationService,
+    roomStatusLoader: LiveRoomStatusLoader,
+    buildingRatingLoader: RemoteBuildingRatingLoader)
+    -> BuildingInteractor
+  {
+    let buildingLoader = makeBuildingLoader(
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
+    return BuildingInteractor(
+      buildingService: LiveBuildingService(buildingLoader: buildingLoader),
+      locationService: locationService)
+  }
+
+  private static func makeRoomInteractor(
+    locationService: LiveLocationService,
+    roomStatusLoader: LiveRoomStatusLoader,
+    remoteBookingLoader: LiveRemoteRoomBookingLoader,
+    roomRatingLoader: LiveRoomRatingLoader,
+    roomFilterLoader: LiveFilterRoomLoader)
+    -> RoomInteractor
+  {
+    do {
+      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
+      let roomLoader = LiveRoomLoader(
+        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
+        roomStatusLoader: roomStatusLoader,
+        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
+      return RoomInteractor(
+        roomService: LiveRoomService(
+          roomLoader: roomLoader,
+          roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
+          roomRatingLoader: roomRatingLoader,
+          roomFilterLoader: roomFilterLoader),
+        locationService: locationService)
+    } catch {
+      fatalError("Failed to create RoomInteractor: \(error)")
+    }
+  }
+
+  private static func makeMapViewModel(
+    buildingInteractor: BuildingInteractor,
+    roomInteractor: RoomInteractor,
+    locationService: LiveLocationService)
+    -> LiveMapViewModel
+  {
+    let navigationInteractor = LiveNavigationInteractor(
+      nagivationService: LiveNavigationService())
+    return LiveMapViewModel(
+      buildingInteractor: buildingInteractor,
+      locationInteractor: LocationInteractor(locationService: locationService),
+      navigationInteractor: navigationInteractor,
+      roomInteractor: roomInteractor)
   }
 
   private static func makeBuildingLoader(
