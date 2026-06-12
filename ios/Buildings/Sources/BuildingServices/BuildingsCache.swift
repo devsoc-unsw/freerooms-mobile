@@ -94,7 +94,8 @@ public final actor OnDiskBuildingsCache {
         assertionFailure("Must not use a version of a deleted file")
       }
     } else {
-      logger.warning("Unable to get file version, even though file exists (url: \(self.url))")
+      let url = url
+      logger.warning("Unable to get file version, even though file exists (url: \(url))")
       _lastUpdated = nil
     }
 

@@ -66,14 +66,13 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   }
 
   // MARK: Public
-  
+
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
-    
     // Check if we have a cache
     guard let buildingsCache else {
       return await _fetchBuildings_slowpath()
     }
-    
+
     // Check if we can use the cache
     // TODO: Allow configuration of this value
     let oldestAllowedCache = Date() - (60 * 60 * 24)
@@ -96,13 +95,30 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
       logger.warning("Failed to load from cache, refetching buildings: \(error)")
       return await _fetchBuildings_slowpath()
     }
-    
+
     // Get availability statuses for buildings
     // this is intentionally not cached
+    logger.trace("Fetched buildings & ratings from cache")
+
+    // Fetch the building statuses, this is not cached on purpose
     await _updateBuildingStatuses(&buildings)
+
     return .success(buildings)
   }
-  
+
+  // MARK: Internal
+
+  let client: ApolloClient
+  let roomStatusLoader: any RoomStatusLoader
+  let buildingRatingLoader: any BuildingRatingLoader
+  let buildingsCache: (any BuildingsCache)?
+
+  // MARK: Private
+
+  private static let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader")
+
+  private var logger: Logger { Self.logger }
+
   private func _fetchBuildings_slowpath() async -> Result<[Building], BuildingLoaderError> {
     // Fetch the buildings if required.
     // The buildings may be stored
@@ -134,7 +150,7 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
     // Add ratings to builings, if available
     await _updateBuildingRatings(&buildings)
-    
+
     // Save building results to cache
     if let buildingsCache {
       do {
@@ -143,25 +159,12 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
         logger.warning("Failed to save to cache")
       }
     }
-    
+
     // Update buildings with their statuses, if they are available
     await _updateBuildingStatuses(&buildings)
 
     return .success(buildings)
   }
-
-  // MARK: Internal
-
-  let client: ApolloClient
-  let roomStatusLoader: any RoomStatusLoader
-  let buildingRatingLoader: any BuildingRatingLoader
-  let buildingsCache: (any BuildingsCache)?
-
-  // MARK: Private
-
-  private static let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader")
-
-  private var logger: Logger { Self.logger }
 
   private func _updateBuildingStatuses(_ buildings: inout [Building]) async {
     logger.trace("Fetching building statuses...")
