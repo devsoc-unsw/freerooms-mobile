@@ -32,6 +32,7 @@ extension BuildingLoader {
     try await fetch().get()
   }
 }
+
 // MARK: - LiveGraphQLBuildingLoader
 
 nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
