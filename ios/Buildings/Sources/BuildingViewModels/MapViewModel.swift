@@ -73,8 +73,8 @@ public protocol MapViewModel {
   func onClearBuildingSelection()
 
   // Room logics
-  var availableRooms: [Room] { get }
-  var isLoadingAvailableRoom: Bool { get }
+  var selectedRooms: [Room] { get }
+  var isLoadingSelectedRoom: Bool { get }
   var buildingDetailsViewState: BuildingDetailsViewState { get }
   var buildingDetailsErrorMessage: String? { get }
 }
@@ -190,9 +190,9 @@ public class LiveMapViewModel: MapViewModel {
 
   // MARK: Public
 
-  public var availableRooms: [Room] = []
+  public var selectedRooms: [Room] = []
 
-  public var isLoadingAvailableRoom: Bool = false
+  public var isLoadingSelectedRoom: Bool = false
 
   public var buildingDetailsViewState = BuildingDetailsViewState.loaded
 
@@ -289,8 +289,8 @@ public class LiveMapViewModel: MapViewModel {
 
   public func onClearBuildingSelection() {
     unselectBuilding()
-    availableRooms = []
-    isLoadingAvailableRoom = false
+    selectedRooms = []
+    isLoadingSelectedRoom = false
     buildingDetailsErrorMessage = nil
     buildingDetailsViewState = .loaded
     bottomSheetPosition = SheetPosition.hidden.bottomSheetPosition
@@ -307,22 +307,22 @@ public class LiveMapViewModel: MapViewModel {
     bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
     buildingDetailsViewState = .loading
     buildingDetailsErrorMessage = nil
-    isLoadingAvailableRoom = true
-    availableRooms = []
+    isLoadingSelectedRoom = true
+    selectedRooms = []
 
-    let result = await roomInteractor.getAvailableRoomsSortedAlphabetically(inAscendingOrder: true, buildingId: buildingID)
+    let result = await roomInteractor.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: buildingID, inAscendingOrder: true)
 
     guard selectedBuildingID == buildingID else { return }
 
-    isLoadingAvailableRoom = false
+    isLoadingSelectedRoom = false
 
     switch result {
     case .success(let availableRooms):
-      self.availableRooms = availableRooms
+      selectedRooms = availableRooms
       buildingDetailsViewState = .loaded
 
     case .failure(let error):
-      availableRooms = []
+      selectedRooms = []
       buildingDetailsErrorMessage = error.clientMessage
       buildingDetailsViewState = .error
     }

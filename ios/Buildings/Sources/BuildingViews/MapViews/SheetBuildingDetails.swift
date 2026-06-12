@@ -38,7 +38,7 @@ public struct SheetBuildingDetails: View {
 
         case .loaded:
           loadedContent(
-            rooms: viewModel.availableRooms,
+            rooms: viewModel.selectedRooms,
             isPlaceholder: false)
 
         case .error:
@@ -187,7 +187,7 @@ public struct SheetBuildingDetails: View {
               rowHeight: $rowHeight,
               room: room,
               rooms: rooms,
-              isLoading: isPlaceholder || viewModel.isLoadingAvailableRoom,
+              isLoading: isPlaceholder || viewModel.isLoadingSelectedRoom,
               onSelect: onSelectRoom,
               imageProvider: { roomID in
                 if isPlaceholder {
