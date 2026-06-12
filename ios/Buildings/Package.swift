@@ -54,7 +54,6 @@ let package = Package(
         .product(name: "VISOR", package: "VISOR"),
         .product(name: "DevSocAPI", package: "DevSocAPI"),
       ],
-      resources: [.process("Resources")],
       swiftSettings: .defaultSettings),
     .target(
       name: "BuildingModels",

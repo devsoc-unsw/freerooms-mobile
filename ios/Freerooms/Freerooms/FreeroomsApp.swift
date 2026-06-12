@@ -43,7 +43,7 @@ struct FreeroomsApp: App {
 
   static let logger = Logger(subsystem: "com.devsoc.Freerooms", category: "FreeroomsApp")
   static var sharedContainer: ModelContainer = {
-    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self])
+    let schema = Schema([SwiftDataRoom.self])
     let config = ModelConfiguration(schema: schema)
     return try! ModelContainer(for: schema, configurations: [config])
   }()
