@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
+import DevSocAPI
 import Foundation
 import Location
 
@@ -141,4 +142,25 @@ public enum AvailabilityStatus: String, Sendable {
 
 public enum BuildingFilterOptions: Sendable {
   case Alphabetical, Location, CampusSection
+}
+
+// MARK: - Conversion from GraphQL Building
+
+extension Building {
+
+  public init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
+    // Make sure the lat and long are valid
+    guard let lat = Double(graphQLBuilding.lat), let long = Double(graphQLBuilding.long) else {
+      return nil
+    }
+
+    // Create the Building
+    self.init(
+      name: graphQLBuilding.name,
+      id: graphQLBuilding.id,
+      latitude: lat,
+      longitude: long,
+      aliases: [])
+  }
+
 }
