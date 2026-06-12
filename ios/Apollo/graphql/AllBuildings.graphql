@@ -1,0 +1,8 @@
+query AllBuildings {
+  buildings {
+    id
+    lat
+    long
+    name
+  }
+}

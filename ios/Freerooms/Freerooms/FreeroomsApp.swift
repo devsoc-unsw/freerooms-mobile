@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import Apollo
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -15,6 +16,7 @@ import Foundation
 import Location
 import LocationInteractors
 import Networking
+import OSLog
 import Persistence
 import RoomInteractors
 import RoomModels
@@ -65,11 +67,14 @@ struct FreeroomsApp: App {
 
   // MARK: Internal
 
+  static let logger = Logger(subsystem: "com.devsoc.Freerooms", category: "FreeroomsApp")
   static var sharedContainer: ModelContainer = {
-    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self])
+    let schema = Schema([SwiftDataRoom.self])
     let config = ModelConfiguration(schema: schema)
     return try! ModelContainer(for: schema, configurations: [config])
   }()
+
+  var logger: Logger { Self.logger }
 
   var body: some Scene {
     WindowGroup {
@@ -80,6 +85,83 @@ struct FreeroomsApp: App {
         .environment(\.buildingViewModel, buildingViewModel)
         .environment(\.mapViewModel, mapViewModel)
         .environment(\.roomViewModel, roomViewModel)
+    }
+  }
+
+  static func makeLiveBuildingViewModel() -> LiveBuildingViewModel {
+    let locationService = makeLocationService()
+
+    do {
+      let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
+
+      let buildingLoader = makeBuildingLoader(
+        roomStatusLoader: roomStatusLoader,
+        buildingRatingLoader: buildingRatingLoader)
+
+      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+
+      let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+
+      return LiveBuildingViewModel(interactor: interactor)
+    }
+  }
+
+  static func makeLiveMapViewModel() -> LiveMapViewModel {
+    let locationService = makeLocationService()
+
+    do {
+      let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
+
+      let buildingLoader = makeBuildingLoader(
+        roomStatusLoader: roomStatusLoader,
+        buildingRatingLoader: buildingRatingLoader)
+
+      let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+      let buildingInteractor = BuildingInteractor(
+        buildingService: buildingService,
+        locationService: locationService)
+      let locationInteractor = LocationInteractor(locationService: locationService)
+
+      let navigationService = LiveNavigationService()
+      let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
+
+      return LiveMapViewModel(
+        buildingInteractor: buildingInteractor,
+        locationInteractor: locationInteractor,
+        navigationInteractor: navigationInteractor)
+    }
+  }
+
+  static func makeLiveRoomViewModel() -> LiveRoomViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LiveLocationService(locationManager: locationManager)
+
+    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+
+    do {
+      // TODO: ignore unused warning, swiftDataStore is not implemented
+      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+
+      let (roomStatusLoader, _, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
+
+      let roomLoader = LiveRoomLoader(
+        JSONRoomLoader: JSONRoomLoader,
+        roomStatusLoader: roomStatusLoader,
+        swiftDataRoomLoader: swiftDataRoomLoader)
+
+      let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+
+      let roomService = LiveRoomService(
+        roomLoader: roomLoader,
+        roomBookingLoader: roomBookingLoader,
+        roomRatingLoader: roomRatingLoader,
+        roomFilterLoader: roomFilterLoader)
+      let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
+
+      return LiveRoomViewModel(interactor: interactor)
+    } catch {
+      fatalError("Failed to create LiveBuildingViewModel: \(error)")
     }
   }
 
@@ -134,64 +216,32 @@ struct FreeroomsApp: App {
     return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader)
   }
 
-  private static func makeBuildingInteractor(
-    locationService: LiveLocationService,
-    roomStatusLoader: LiveRoomStatusLoader,
-    buildingRatingLoader: RemoteBuildingRatingLoader)
-    -> BuildingInteractor
+  private static func makeBuildingLoader(
+    roomStatusLoader: some RoomStatusLoader,
+    buildingRatingLoader: some BuildingRatingLoader)
+    -> some BuildingLoader
   {
-    do {
-      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: sharedContainer.mainContext)
-      let buildingLoader = LiveBuildingLoader(
-        swiftDataBuildingLoader: LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore),
-        JSONBuildingLoader: LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>()),
-        roomStatusLoader: roomStatusLoader,
-        buildingRatingLoader: buildingRatingLoader)
-      return BuildingInteractor(
-        buildingService: LiveBuildingService(buildingLoader: buildingLoader),
-        locationService: locationService)
-    } catch {
-      fatalError("Failed to create BuildingInteractor: \(error)")
-    }
-  }
+    // TODO: Use .well_known url when available
 
-  private static func makeRoomInteractor(
-    locationService: LiveLocationService,
-    roomStatusLoader: LiveRoomStatusLoader,
-    remoteBookingLoader: LiveRemoteRoomBookingLoader,
-    roomRatingLoader: LiveRoomRatingLoader,
-    roomFilterLoader: LiveFilterRoomLoader)
-    -> RoomInteractor
-  {
+    // Use the on-disk cache
+    logger.trace("Attempting to access or create on-disk cache")
+    let cache: any NormalizedCache
     do {
-      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
-      let roomLoader = LiveRoomLoader(
-        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
-        roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
-      return RoomInteractor(
-        roomService: LiveRoomService(
-          roomLoader: roomLoader,
-          roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
-          roomRatingLoader: roomRatingLoader, roomFilterLoader: roomFilterLoader),
-        locationService: locationService)
+      let onDiskCacheLocation = try DevSoc.onDiskCacheLocation
+      let onDiskCache = try DevSoc.createOnDiskCache(at: onDiskCacheLocation)
+      cache = onDiskCache
+      logger.trace("Using on-disk cache: \(onDiskCacheLocation)")
     } catch {
-      fatalError("Failed to create RoomInteractor: \(error)")
+      logger.warning("Failed to access on-disk cache: \(error), falling back to in-memory cache")
+      cache = InMemoryNormalizedCache()
     }
-  }
 
-  private static func makeMapViewModel(
-    buildingInteractor: BuildingInteractor,
-    roomInteractor: RoomInteractor,
-    locationService: LiveLocationService)
-    -> LiveMapViewModel
-  {
-    let navigationInteractor = LiveNavigationInteractor(
-      nagivationService: LiveNavigationService())
-    return LiveMapViewModel(
-      buildingInteractor: buildingInteractor,
-      locationInteractor: LocationInteractor(locationService: locationService),
-      navigationInteractor: navigationInteractor,
-      roomInteractor: roomInteractor)
+    let store = ApolloStore(cache: cache)
+    let client = DevSoc.createLiveApolloClient(using: store)
+
+    return LiveGraphQLBuildingLoader(
+      client: client,
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
   }
 }
