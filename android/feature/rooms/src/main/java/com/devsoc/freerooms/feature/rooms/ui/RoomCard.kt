@@ -1,9 +1,11 @@
 package com.devsoc.freerooms.feature.rooms.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Light_Orange
@@ -33,10 +37,20 @@ internal fun RoomCard(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(64.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Light_Orange),
-        )
+        ) {
+            val imageResId = roomImageResId(room.id)
+            if (imageResId != null) {
+                Image(
+                    painter = painterResource(id = imageResId),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.width(12.dp))
 
