@@ -18,15 +18,13 @@ struct RoomBookingCardView: View {
     self.booking = booking
     start = Calendar.current.dateComponents(
       [.hour, .minute],
-      from: booking.start
-    )
+      from: booking.start)
     end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
     startMinutes =
       max(
         (start.hour ?? defaultTime) * minutesPerHour
           + (start.minute ?? defaultTime),
-        dayStartHour * minutesPerHour
-      ) - (minutesPerHour * dayStartHour)
+        dayStartHour * minutesPerHour) - (minutesPerHour * dayStartHour)
   }
 
   // MARK: Internal
@@ -55,46 +53,42 @@ struct RoomBookingCardView: View {
       time: time,
       bookingSize: bookingSize,
       topRadius: topRadius,
-      bottomRadius: bottomRadius
-    )
-    .frame(height: normalCardHeight)
-    .contextMenu {
-      Button {
-      } label: {
-        Label("View Booking", systemImage: "calendar")
+      bottomRadius: bottomRadius)
+      .frame(height: normalCardHeight)
+      .contextMenu {
+        Button { } label: {
+          Label("View Booking", systemImage: "calendar")
+        }
+        .disabled(true)
+      } preview: {
+        let previewPadding: CGFloat = 64
+        RoomBookingCardContent(
+          booking: booking,
+          time: time,
+          bookingSize: bookingSize,
+          topRadius: topRadius,
+          bottomRadius: bottomRadius)
+          .frame(
+            width: UIScreen.main.bounds.width - previewPadding,
+            height: numberTimeSlots <= 3 ? extendedCardHeight : normalCardHeight)
+          .environment(theme)
       }
-      .disabled(true)
-    } preview: {
-      let previewPadding: CGFloat = 64
-      RoomBookingCardContent(
-        booking: booking,
-        time: time,
-        bookingSize: bookingSize,
-        topRadius: topRadius,
-        bottomRadius: bottomRadius
-      )
-      .frame(
-        width: UIScreen.main.bounds.width - previewPadding,
-        height: numberTimeSlots <= 3 ? extendedCardHeight : normalCardHeight
-      )
-      .environment(theme)
-    }
-    .offset(
-      x: xOffset,
-      y: CGFloat(startMinutes) + additionalYOffset
-    )
+      .offset(
+        x: xOffset,
+        y: CGFloat(startMinutes) + additionalYOffset)
   }
 
   // MARK: Private
 
   private struct RoomBookingCardContent: View {
+
+    // MARK: Internal
+
     let booking: RoomBooking
     let time: (String, String)
     let bookingSize: RoomBookingCardView.BookingSize
     let topRadius: CGFloat
     let bottomRadius: CGFloat
-
-    @Environment(Theme.self) private var theme
 
     var body: some View {
       ZStack(alignment: .topLeading) {
@@ -110,17 +104,16 @@ struct RoomBookingCardView: View {
           topLeadingRadius: topRadius,
           bottomLeadingRadius: bottomRadius,
           bottomTrailingRadius: bottomRadius,
-          topTrailingRadius: topRadius
-        )
-        .fill(theme.accent.primary)
+          topTrailingRadius: topRadius)
+          .fill(theme.accent.primary)
 
         VStack(
           alignment: .leading,
           spacing: spacingMultiplier
             * (bookingSize == .small
               ? smallSpacingMultiplier
-              : mediumSpacingMultiplier)
-        ) {
+              : mediumSpacingMultiplier))
+        {
           // Text size constants
           let smallTimeSize: CGFloat = 8
           let smallNameSize: CGFloat = 14
@@ -131,27 +124,27 @@ struct RoomBookingCardView: View {
             .font(
               .system(
                 size: bookingSize == .small ? smallTimeSize : mediumTimeSize,
-                weight: .medium
-              )
-            )
+                weight: .medium))
 
           Text(booking.name)
             .font(
               .system(
                 size: bookingSize == .small ? smallNameSize : mediumNameSize,
-                weight: .medium
-              )
-            )
+                weight: .medium))
         }
         .padding(
           .vertical,
-          bookingSize == .small ? smallVerticalPadding : mediumVerticalPadding
-        )
+          bookingSize == .small ? smallVerticalPadding : mediumVerticalPadding)
         .padding(.horizontal, horizontalPadding)
         .bold()
         .foregroundStyle(.white)
       }
     }
+
+    // MARK: Private
+
+    @Environment(Theme.self) private var theme
+
   }
 
   private enum BookingSize {
@@ -211,8 +204,7 @@ struct RoomBookingCardView: View {
 
     return (
       "\(formatHour(startTimeHour, startTimeMinute))",
-      "\(formatHour(endTimeHour, endTimeMinute))"
-    )
+      "\(formatHour(endTimeHour, endTimeMinute))")
   }
 
   private var bookingSize: BookingSize {
@@ -221,6 +213,22 @@ struct RoomBookingCardView: View {
     } else {
       .medium
     }
+  }
+
+  private var normalCardHeight: CGFloat {
+    (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset
+  }
+
+  private var extendedCardHeight: CGFloat {
+    (CGFloat(minutesPerSlot) * (numberTimeSlots + 1)) - frameHeightOffset
+  }
+
+  private var normalCardHeight: CGFloat {
+    (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset
+  }
+
+  private var extendedCardHeight: CGFloat {
+    (CGFloat(minutesPerSlot) * (numberTimeSlots + 1)) - frameHeightOffset
   }
 
   private func formatHour(_ hour: Int, _ minute: Int) -> String {
@@ -240,20 +248,11 @@ struct RoomBookingCardView: View {
     }
   }
 
-  private var normalCardHeight: CGFloat {
-    (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset
-  }
-
-  private var extendedCardHeight: CGFloat {
-    (CGFloat(minutesPerSlot) * (numberTimeSlots + 1)) - frameHeightOffset
-  }
-
 }
 
 #Preview {
   RoomBookingCardView(
     room: Room.exampleOne,
-    booking: RoomBooking.exampleOne
-  )
-  .defaultTheme()
+    booking: RoomBooking.exampleOne)
+    .defaultTheme()
 }
