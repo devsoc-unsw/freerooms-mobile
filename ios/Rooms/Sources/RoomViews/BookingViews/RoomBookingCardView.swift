@@ -223,14 +223,6 @@ struct RoomBookingCardView: View {
     (CGFloat(minutesPerSlot) * (numberTimeSlots + 1)) - frameHeightOffset
   }
 
-  private var normalCardHeight: CGFloat {
-    (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset
-  }
-
-  private var extendedCardHeight: CGFloat {
-    (CGFloat(minutesPerSlot) * (numberTimeSlots + 1)) - frameHeightOffset
-  }
-
   private func formatHour(_ hour: Int, _ minute: Int) -> String {
     let midnightHour = 0
     let twelveHourClock = 12
