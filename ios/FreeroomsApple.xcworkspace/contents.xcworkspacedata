@@ -5,6 +5,9 @@
       location = "group:Freerooms/Freerooms.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:DevSocAPI">
+   </FileRef>
+   <FileRef
       location = "group:Buildings">
    </FileRef>
    <FileRef
@@ -33,5 +36,8 @@
    </FileRef>
    <FileRef
       location = "group:README.md">
+   </FileRef>
+   <FileRef
+      location = "group:Apollo">
    </FileRef>
 </Workspace>
