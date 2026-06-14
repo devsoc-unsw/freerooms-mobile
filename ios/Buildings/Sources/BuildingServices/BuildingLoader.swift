@@ -61,12 +61,12 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
 
     // Check if we can use the cache
     // TODO: Allow configuration of this value
-    let oldestAllowedCache = Date() - (60 * 60 * 24)
+    let oldestAllowedCache = Date() + (60 * 60 * 24)
     let lastUpdated: Date?
     var buildings: [Building]
     do {
       lastUpdated = try await buildingsCache.lastUpdated
-      if let lastUpdated, lastUpdated > oldestAllowedCache {
+      if let lastUpdated, lastUpdated < oldestAllowedCache {
         logger.trace("Fetching buildings from cache...")
         guard let cacheBuildings = try await buildingsCache.getBuildings() else {
           logger.debug("No buildings in cache, falling back to slowpath")
