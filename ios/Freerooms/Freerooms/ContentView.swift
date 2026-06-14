@@ -14,13 +14,6 @@ import RoomViewModels
 import RoomViews
 import SwiftUI
 
-// MARK: - TabController
-
-@MainActor @Observable
-final class TabController {
-  var selectedTab: TabItem = .buildings
-}
-
 // MARK: - ContentView
 
 /// No logic, only UI
