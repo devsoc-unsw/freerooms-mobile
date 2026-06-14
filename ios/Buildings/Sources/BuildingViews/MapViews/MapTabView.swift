@@ -120,7 +120,7 @@ public struct MapTabView: View {
     .tabItem {
       Label("Map", systemImage: "map")
     }
-    .tag("Map")
+    .tag(TabItem.map)
   }
 
   // MARK: Internal

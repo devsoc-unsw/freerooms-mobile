@@ -23,7 +23,7 @@ public struct RoomsTabView<Destination: View>: View {
     path: Binding<NavigationPath>,
     roomViewModel: RoomViewModel,
     buildingViewModel: BuildingViewModel,
-    selectedTab: Binding<String>,
+    selectedTab: Binding<TabItem>,
     selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
@@ -92,15 +92,15 @@ public struct RoomsTabView<Destination: View>: View {
         .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "CSE")
     }
     .tabItem {
-      Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
+      Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
     }
-    .tag("Rooms")
+    .tag(TabItem.rooms)
   }
 
   // MARK: Internal
 
   @State var buildingViewModel: BuildingViewModel
-  @Binding var selectedTab: String
+  @Binding var selectedTab: TabItem
 
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
@@ -230,7 +230,7 @@ private struct PreviewWrapper: View {
       path: $path,
       roomViewModel: PreviewRoomViewModel(),
       buildingViewModel: PreviewBuildingViewModel(),
-      selectedTab: .constant("Rooms"),
+      selectedTab: .constant(.rooms),
       selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
