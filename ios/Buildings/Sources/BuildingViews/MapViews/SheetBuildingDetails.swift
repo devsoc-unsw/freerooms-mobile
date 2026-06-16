@@ -26,7 +26,6 @@ public struct SheetBuildingDetails: View {
   // MARK: Public
 
   public var body: some View {
-    NavigationStack(path: $path) {
       VStack(spacing: 12) {
         switch viewModel.buildingDetailsViewState {
         case .loading:
@@ -46,11 +45,6 @@ public struct SheetBuildingDetails: View {
         }
       }
       .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
-    }
-    .onChange(of: viewModel.selectedBuildingID) { _, _ in
-      path = NavigationPath()
-      rowHeight = nil
-    }
   }
 
   // MARK: Private
