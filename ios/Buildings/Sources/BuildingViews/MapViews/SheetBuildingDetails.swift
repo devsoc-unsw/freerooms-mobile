@@ -26,25 +26,25 @@ public struct SheetBuildingDetails: View {
   // MARK: Public
 
   public var body: some View {
-      VStack(spacing: 12) {
-        switch viewModel.buildingDetailsViewState {
-        case .loading:
-          loadedContent(
-            rooms: SheetBuildingDetailsMetrics.placeholderRooms,
-            isPlaceholder: true)
-            .allowsHitTesting(false)
-            .redacted(reason: .placeholder)
+    VStack(spacing: 12) {
+      switch viewModel.buildingDetailsViewState {
+      case .loading:
+        loadedContent(
+          rooms: SheetBuildingDetailsMetrics.placeholderRooms,
+          isPlaceholder: true)
+          .allowsHitTesting(false)
+          .redacted(reason: .placeholder)
 
-        case .loaded:
-          loadedContent(
-            rooms: viewModel.selectedRooms,
-            isPlaceholder: false)
+      case .loaded:
+        loadedContent(
+          rooms: viewModel.selectedRooms,
+          isPlaceholder: false)
 
-        case .error:
-          errorContent
-        }
+      case .error:
+        errorContent
       }
-      .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
+    }
+    .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
   }
 
   // MARK: Private
