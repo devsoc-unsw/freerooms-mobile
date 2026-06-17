@@ -183,7 +183,7 @@ struct FreeroomsApp: App {
     let httpClient = makeHTTPClient()
     let (stagingURL, productionURL) = makeBaseURLs()
 
-    let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: stagingURL)
+    let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: productionURL)
     let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
     let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: productionURL)
     let roomRatingLoader = LiveRoomRatingLoader(client: httpClient, baseURL: productionURL)
@@ -215,9 +215,18 @@ struct FreeroomsApp: App {
     let store = ApolloStore(cache: cache)
     let client = DevSoc.createLiveApolloClient(using: store)
 
+    let buildingsCache: (any BuildingsCache)?
+    do {
+      buildingsCache = try OnDiskBuildingsCache.shared.get()
+    } catch {
+      logger.warning("Failed to access buildings cache: \(error), disabling caching for buildings")
+      buildingsCache = nil
+    }
+
     return LiveGraphQLBuildingLoader(
       client: client,
       roomStatusLoader: roomStatusLoader,
-      buildingRatingLoader: buildingRatingLoader)
+      buildingRatingLoader: buildingRatingLoader,
+      buildingsCache: buildingsCache)
   }
 }
