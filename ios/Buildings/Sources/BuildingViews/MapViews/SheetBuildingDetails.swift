@@ -45,6 +45,7 @@ public struct SheetBuildingDetails: View {
       }
     }
     .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
+    .padding(.bottom, 80)
   }
 
   // MARK: Private
