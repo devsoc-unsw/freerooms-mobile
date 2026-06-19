@@ -217,7 +217,7 @@ struct FreeroomsApp: App {
 
     let buildingsCache: (any BuildingsCache)?
     do {
-      buildingsCache = try OnDiskBuildingsCache.shared.get()
+      buildingsCache = try FileBackedCodable.sharedBuildingsCache.get()
     } catch {
       logger.warning("Failed to access buildings cache: \(error), disabling caching for buildings")
       buildingsCache = nil

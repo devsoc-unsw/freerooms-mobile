@@ -10,13 +10,14 @@ import Dispatch
 import Foundation
 import OSLog
 import VISOR
+import Networking
 
 // MARK: - BuildingsCache
 
 public nonisolated protocol BuildingsCache: Actor, Sendable {
-  func getBuildings() throws -> [Building]?
-  func setBuildings(_ buildings: [Building]?) throws
-  func clear() throws
+  func getBuildings() async throws -> [Building]?
+  func setBuildings(_ buildings: [Building]?) async throws
+  func clear() async throws
   var lastUpdated: Date? { get throws }
 }
 
@@ -27,6 +28,8 @@ public nonisolated protocol BuildingsCache: Actor, Sendable {
 /// > Warning:
 /// > This object assumes that it is the only cache for the file at the url,
 /// > do not create multiple instances of this object for the same url.
+///
+@available(*, deprecated, renamed: "FileBackedCodable", message: "Use FileBackedCodable instead")
 public final actor OnDiskBuildingsCache {
 
   // MARK: Lifecycle
@@ -124,6 +127,7 @@ public final actor OnDiskBuildingsCache {
 
 // MARK: BuildingsCache
 
+@available(*, deprecated)
 extension OnDiskBuildingsCache: BuildingsCache {
 
   public var lastUpdated: Date? {
@@ -148,4 +152,44 @@ extension OnDiskBuildingsCache: BuildingsCache {
     try _setBuildings(nil)
   }
 
+}
+
+// MARK: - FileBackedCodable
+
+extension FileBackedCodable: BuildingsCache where T == [Building] {
+  
+  public func getBuildings() async throws -> [Building]? {
+    try await getValue()
+  }
+  
+  public func setBuildings(_ buildings: [Building]?) async throws {
+    try await setValue(buildings)
+  }
+  
+  public func clear() async throws {
+    try await setValue(nil)
+  }
+  
+  public var lastUpdated: Date? {
+    get throws {
+      guard let version = cachedFileVersion else { return nil }
+      return version.modificationDate
+    }
+  }
+  
+  public static let sharedBuildingsCache = Result<FileBackedCodable, any Error> {
+    let fm = FileManager.default
+
+    // Does this fail?
+    let cachesDirectory = try fm.url(
+      for: .cachesDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: false)
+    let buildingsCacheURL = cachesDirectory.appending(path: "buildingsCache.json")
+//    logger.debug("Create buildings cache at: \(buildingsCacheURL.path)")
+
+    return FileBackedCodable(fileURL: buildingsCacheURL)
+  }
+  
 }

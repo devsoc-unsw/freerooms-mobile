@@ -137,7 +137,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Preform the coordinated read
     let intent = NSFileAccessIntent.readingIntent(with: url)
     
-    let result: (data: Data?, fileVersionState: FileVersionState) = try await _withCoordinatedAccess(for: intent) {
+    let result: (data: Data?, fileVersionState: FileVersionState) = try await _withCoordinatedAccess(for: intent) { _ in
       
       // Check if the file exists
       guard fileManager.fileExists(atPath: url.path) else {
@@ -173,10 +173,26 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   public func setValue(_ newValue: T?) async throws {
     
     let url = currentFileURL
-    let intent = NSFileAccessIntent.writingIntent(with: url)
+    let intent: NSFileAccessIntent
+    let isDeleting: Bool
+    if newValue != nil {
+      intent = .writingIntent(with: url)
+      isDeleting = false
+    } else {
+      intent = .writingIntent(with: url, options: .forDeleting)
+      isDeleting = true
+    }
     
     // Write the new version of the data
-    let newFileVersion: NSFileVersion = try await _withCoordinatedAccess(for: intent) { [encoder] in
+    nonisolated(unsafe) let fileManager = fileManager
+    let newFileVersion: NSFileVersion? = try await _withCoordinatedAccess(for: intent) { [encoder] coordinator in
+      
+      // Check if we are deleting the file
+      guard !isDeleting else {
+        // Try to delete the file
+        try fileManager.removeItem(at: intent.url)
+        return nil
+      }
       
       // Perform the write
       let data = try encoder.encode(newValue)
@@ -193,17 +209,21 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     
     // Update the object cache
     _cachedValue = newValue
-    _fileVersionState = .updated(newFileVersion)
+    if let newFileVersion {
+      _fileVersionState = .updated(newFileVersion)
+    } else {
+      _fileVersionState = .deleted
+    }
   }
   
   private func _withCoordinatedAccess<R>(
     returning _: R.Type = R.self,
     for intent: NSFileAccessIntent,
-    operation: @escaping @Sendable () throws -> sending R
+    operation: @escaping @Sendable (_ coordinator: NSFileCoordinator) throws -> sending R
   ) async throws -> sending R {
     
     // Create a coordinator for the operation
-    let coordinator = NSFileCoordinator(filePresenter: _presenter)
+    nonisolated(unsafe) let coordinator = NSFileCoordinator(filePresenter: _presenter)
     return try await withCheckedThrowingContinuation { continuation in
       coordinator.coordinate(with: [intent], queue: _coordinatorOperationQueue) { error in
         
@@ -216,7 +236,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
         
         // Otherwise run the operation
         do {
-          continuation.resume(returning: try operation())
+          continuation.resume(returning: try operation(coordinator))
         } catch {
           continuation.resume(throwing: error)
         }
