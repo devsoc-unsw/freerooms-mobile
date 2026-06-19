@@ -1,0 +1,21 @@
+query AllRoom {
+  rooms {
+    abbr
+    accessibility
+    audiovisual
+    buildingId
+    capacity
+    floor
+    id
+    infotechnology
+    lat
+    long
+    microphone
+    name
+    school
+    seating
+    service
+    usage
+    writingMedia
+  }
+}
