@@ -100,7 +100,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     .tabItem {
       Label("Buildings", systemImage: "building")
     }
-    .tag("Buildings")
+    .tag(TabItem.buildings)
   }
 
   // MARK: Internal

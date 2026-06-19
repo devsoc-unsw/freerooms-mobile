@@ -24,12 +24,13 @@ struct ContentView: View {
   @Environment(\.buildingViewModel) var buildingViewModel
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
-  @State var selectedTab = "Buildings"
+  @Environment(TabController.self) var tabController
   @State var selectedRoomsView = ViewOrientation.List
   @State var selectedBuildingsView = ViewOrientation.List
 
   var body: some View {
-    TabView(selection: $selectedTab) {
+    @Bindable var tabController = tabController
+    TabView(selection: $tabController.selectedTab) {
       BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in
         RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
@@ -45,12 +46,13 @@ struct ContentView: View {
             await roomViewModel.getRoomBookings(roomId: room.id)
           }
       }
+      .tag(TabItem.buildings)
       MapTabView(mapViewModel: mapViewModel)
       RoomsTabView(
         path: $roomPath,
         roomViewModel: roomViewModel,
         buildingViewModel: buildingViewModel,
-        selectedTab: $selectedTab,
+        selectedTab: $tabController.selectedTab,
         selectedView: $selectedRoomsView)
       { room in
         RoomDetailsView(room: room, roomViewModel: roomViewModel)

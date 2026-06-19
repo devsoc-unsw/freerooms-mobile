@@ -6,6 +6,7 @@
 //
 
 import Apollo
+import AppIntents
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -55,6 +56,7 @@ struct FreeroomsApp: App {
       ContentView()
         .preferredColorScheme(.light)
         .environment(theme)
+        .environment(tabController)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
         .environment(\.buildingViewModel, buildingViewModel)
         .environment(\.mapViewModel, mapViewModel)
@@ -147,6 +149,8 @@ struct FreeroomsApp: App {
   @State private var roomViewModel = FreeroomsApp.makeLiveRoomViewModel()
   @State private var theme = Theme.light
 
+  @State private var tabController = FreeroomsApp.makeTabController()
+
   private static func makeLocationService() -> LiveLocationService {
     let locationManager = LiveLocationManager()
     return LiveLocationService(locationManager: locationManager)
@@ -228,5 +232,14 @@ struct FreeroomsApp: App {
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader,
       buildingsCache: buildingsCache)
+  }
+
+  private static func makeTabController() -> TabController {
+    let controller = TabController()
+
+    let manager = AppDependencyManager.shared
+    manager.add(dependency: controller)
+
+    return controller
   }
 }
