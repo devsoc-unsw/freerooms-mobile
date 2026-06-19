@@ -245,6 +245,7 @@ struct FreeroomsApp: App {
   {
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
+      let favouriteService = try SwiftDataFavoriteRoomService(context: sharedContainer.mainContext)
       let roomLoader = LiveRoomLoader(
         JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
         roomStatusLoader: roomStatusLoader,
@@ -255,7 +256,8 @@ struct FreeroomsApp: App {
           roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
           roomRatingLoader: roomRatingLoader,
           roomFilterLoader: roomFilterLoader),
-        locationService: locationService)
+        locationService: locationService,
+        favouriteService: favouriteService)
     } catch {
       fatalError("Failed to create RoomInteractor: \(error)")
     }

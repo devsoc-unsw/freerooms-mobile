@@ -52,12 +52,7 @@ struct ContentView: View {
           RoomImage[roomID]
         },
         roomDestinationBuilder: { room in
-          RoomDetailsView(room: room, roomViewModel: roomViewModel)
-            .task { await roomViewModel.onAppear() }
-            .task {
-              roomViewModel.clearRoomBookings()
-              await roomViewModel.getRoomBookings(roomId: room.id)
-            }
+          getRoomDetailsView(room: room)
         })
       RoomsTabView(
         path: $roomPath,
