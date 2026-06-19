@@ -20,6 +20,7 @@ public struct SheetDirectionDetails: View {
       XButton {
         viewModel.clearDirection()
       }
+      .padding([.leading, .trailing], 10)
     }
     .redacted(reason: viewModel.isLoadingCurrentRoute ? .placeholder : [])
   }
@@ -35,14 +36,17 @@ public struct SheetDirectionDetails: View {
         .font(.headline)
         .fontWeight(.semibold)
         .foregroundColor(.red)
+        .padding(.leading)
     } else if viewModel.isLoadingCurrentRoute {
       Text("15 min walk (450m)")
         .font(.title)
         .fontWeight(.semibold)
+        .padding(.leading)
     } else {
       Text("\(viewModel.currentRouteETA.detailedWalkingTime) (\(formattedDistance))")
         .font(.title)
         .fontWeight(.semibold)
+        .padding(.leading)
     }
   }
 

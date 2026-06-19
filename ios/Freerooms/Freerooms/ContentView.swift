@@ -46,7 +46,19 @@ struct ContentView: View {
       } _: { room in
         getRoomDetailsView(room: room)
       }
-      MapTabView(mapViewModel: mapViewModel)
+      MapTabView(
+        mapViewModel: mapViewModel,
+        roomImageProvider: { roomID in
+          RoomImage[roomID]
+        },
+        roomDestinationBuilder: { room in
+          RoomDetailsView(room: room, roomViewModel: roomViewModel)
+            .task { await roomViewModel.onAppear() }
+            .task {
+              roomViewModel.clearRoomBookings()
+              await roomViewModel.getRoomBookings(roomId: room.id)
+            }
+        })
       RoomsTabView(
         path: $roomPath,
         roomViewModel: roomViewModel,

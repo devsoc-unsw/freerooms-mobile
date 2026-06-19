@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - RoomDetailsSheetView
 
-struct RoomDetailsSheetView: View {
+public struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
@@ -30,11 +30,9 @@ struct RoomDetailsSheetView: View {
     self.onDismiss = onDismiss
   }
 
-  // MARK: Internal
+  // MARK: Public
 
-  let room: Room
-
-  var body: some View {
+  public var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       // Booking informations
       RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating, isFavourite: $isFavourite)
@@ -115,6 +113,10 @@ struct RoomDetailsSheetView: View {
           }
         })
   }
+
+  // MARK: Internal
+
+  let room: Room
 
   func bindingFor(index: Int) -> Binding<Date> {
     Binding(
