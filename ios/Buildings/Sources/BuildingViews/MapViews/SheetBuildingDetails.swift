@@ -65,6 +65,7 @@ public struct SheetBuildingDetails: View {
           .font(.title)
           .fontWeight(.regular)
           .allowsHitTesting(false)
+          .fixedSize(horizontal: false, vertical: true)
 
         HStack {
           Text("\(viewModel.selectedBuildingAvailableRooms) rooms available")
