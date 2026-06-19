@@ -321,10 +321,6 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
   }
 }
 
-extension Double {
-  public static let day: Double = 86_400
-}
-
 // MARK: - RoomBookingConstants
 
 public enum RoomBookingConstants {
@@ -333,10 +329,4 @@ public enum RoomBookingConstants {
 
 extension Double {
   public static let day: Double = 86_400
-}
-
-// MARK: - RoomBookingConstants
-
-public enum RoomBookingConstants {
-  public static let middleIndex = 500
 }

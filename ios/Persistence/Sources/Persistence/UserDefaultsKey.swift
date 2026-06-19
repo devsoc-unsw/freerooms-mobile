@@ -7,6 +7,5 @@
 
 public nonisolated
 enum UserDefaultsKeys {
-  public static let hasSavedBuildingsData = "hasSavedBuildingsData"
   public static let hasSavedRoomsData = "hasSavedRoomsData"
 }

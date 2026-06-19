@@ -30,7 +30,10 @@ public class RoomInteractor {
   public func filterRoomsByQueryString(_ rooms: [Room], by searchText: String) -> [Room] {
     guard !searchText.isEmpty else { return rooms }
     let loweredQuery = searchText.lowercased()
-    return rooms.filter { $0.name.lowercased().contains(loweredQuery) }
+    return rooms.filter {
+      $0.name.lowercased().contains(loweredQuery) ||
+        $0.abbreviation.lowercased().contains(loweredQuery)
+    }
   }
 
   public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], FetchRoomError> {
