@@ -40,9 +40,21 @@ struct FreeroomsApp: App {
   // MARK: Internal
 
   static var sharedContainer: ModelContainer = {
-    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self])
+    let schema = Schema([SwiftDataBuilding.self, SwiftDataRoom.self, SwiftDataFavoriteRoom.self])
     let config = ModelConfiguration(schema: schema)
-    return try! ModelContainer(for: schema, configurations: [config])
+    do {
+      return try ModelContainer(for: schema, configurations: [config])
+    } catch {
+      // Schema changed (FavoriteRoom added) — wipe cached store and seed flags so loaders
+      // fall back to bundled JSON on next fetch rather than reading an empty store.
+      let url = config.url
+      try? FileManager.default.removeItem(atPath: url.path)
+      try? FileManager.default.removeItem(atPath: url.path + "-wal")
+      try? FileManager.default.removeItem(atPath: url.path + "-shm")
+      UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedBuildingsData)
+      UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.hasSavedRoomsData)
+      return try! ModelContainer(for: schema, configurations: [config])
+    }
   }()
 
   var body: some Scene {
@@ -87,11 +99,7 @@ struct FreeroomsApp: App {
     let JSONBuildingLoader = LiveJSONBuildingLoader(using: LiveJSONLoader<[DecodableBuilding]>())
 
     do {
-      let schema = Schema([SwiftDataBuilding.self])
-      let modelConfiguration = ModelConfiguration(schema: schema)
-      let modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-      let modelContext = ModelContext(modelContainer)
-      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: modelContext)
+      let swiftDataStore = try SwiftDataStore<SwiftDataBuilding>(modelContext: FreeroomsApp.sharedContainer.mainContext)
       let swiftDataBuildingLoader = LiveSwiftDataBuildingLoader(swiftDataStore: swiftDataStore)
 
       let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
