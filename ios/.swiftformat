@@ -2,6 +2,10 @@
 
 --exclude Carthage,Pods,.build
 
+# Exclude generated files
+
+--exclude DevSocAPI/**/*.graphql.swift
+
 # options
 
 --swiftversion 6.0
