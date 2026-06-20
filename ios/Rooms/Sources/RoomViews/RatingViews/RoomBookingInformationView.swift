@@ -61,18 +61,21 @@ struct RoomBookingInformationView: View {
       }
 
       VStack(alignment: .leading, spacing: 10) {
-        if room.school.trimmingCharacters(in: .whitespaces) == "" {
-          EmptyView()
-        } else {
-          Text("School of \(room.school)")
+        HStack {
+          Text("\(room.abbreviation)")
             .font(.title3)
             .bold()
             .foregroundStyle(.primary)
+          Spacer()
+          Text("\(room.statusText)")
+            .font(.system(size: 20, weight: .light))
+            .foregroundStyle(room.statusTextColour)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(
+              RoundedRectangle(cornerRadius: 5)
+                .fill(room.statusBackgroundColor))
         }
-        Text("\(room.abbreviation)")
-          .font(.callout)
-          .foregroundStyle(.primary)
-          .bold()
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.vertical, 12)
