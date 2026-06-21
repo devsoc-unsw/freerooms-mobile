@@ -6,17 +6,15 @@
 //
 
 import BottomSheet
-import BuildingInteractors
 import BuildingModels
-import BuildingServices
 import BuildingViewModels
 import CommonUI
 import MapKit
+import RoomModels
 import SwiftUI
 
 extension View {
   func hideKeyboard() {
-    // Dismiss keyboard - this will automatically unfocus
     UIApplication.shared.sendAction(
       #selector(UIResponder.resignFirstResponder),
       to: nil, from: nil, for: nil)
@@ -25,12 +23,18 @@ extension View {
 
 // MARK: - MapTabView
 
-public struct MapTabView: View {
+public struct MapTabView<RoomDestination: View>: View {
 
   // MARK: Lifecycle
 
-  public init(mapViewModel: LiveMapViewModel) {
+  public init(
+    mapViewModel: LiveMapViewModel,
+    roomImageProvider: @escaping (String) -> CachedImage,
+    roomDestinationBuilder: @escaping (Room) -> RoomDestination)
+  {
     self.mapViewModel = mapViewModel
+    self.roomImageProvider = roomImageProvider
+    self.roomDestinationBuilder = roomDestinationBuilder
   }
 
   // MARK: Public
@@ -45,7 +49,6 @@ public struct MapTabView: View {
           }
         }
 
-        // if currentRoute exist show route
         if let route = mapViewModel.currentRoute {
           let coordinates = route.polyline.coordinates
           MapPolyline(coordinates: coordinates)
@@ -61,51 +64,34 @@ public struct MapTabView: View {
               building: building,
               isSelected: mapViewModel.isSelectedBuilding(building.id))
               .onTapGesture {
-                mapViewModel.onSelectBuilding(building.id)
+                Task {
+                  await mapViewModel.onSelectBuilding(building.id)
+                }
               }
           }
         }
       }
-      .onChange(of: mapViewModel.selectedBuildingID) { _, _ in
-        // This onChange forces view updates without needing visible UI
-      }
+      .onChange(of: mapViewModel.selectedBuildingID) { _, _ in }
       .onMapCameraChange { context in
         mapViewModel.updateMapHeading(context.camera.heading)
       }
       .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
-      .mapControls {
-        // Specifying no map controls removes the compass
-      }
-      .bottomSheet(
-        bottomSheetPosition: $mapViewModel.bottomSheetPosition,
-        switchablePositions: [SheetPosition.medium.bottomSheetPosition, SheetPosition.short.bottomSheetPosition])
-      {
-        VStack {
-          if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
-            SheetDirectionDetails()
-          } else {
-            SheetBuildingDetails()
-          }
-        }
-        .padding(.horizontal)
-      }
-      .customBackground(
-        theme.background.secondary
-          .cornerRadius(20)
-          .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
-      .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
-        if newValue == SheetPosition.medium.bottomSheetPosition {
-          mapViewModel.clearDirection()
-        } else if newValue == SheetPosition.short.bottomSheetPosition {
-          Task {
-            await mapViewModel.getDirectionToSelectedBuilding()
-          }
-        }
-      }
+      .mapControls { }
+      .simultaneousGesture(
+        TapGesture()
+          .onEnded {
+            if mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition {
+              withAnimation(.spring()) {
+                mapViewModel.bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
+              }
+            }
+          })
       .task {
         mapViewModel.requestLocationPermission()
         await mapViewModel.loadBuildings()
       }
+      .zIndex(0)
+
       VStack(spacing: 0) {
         MapSearchBar(searchtxt: $mapViewModel.searchText)
           .padding(.bottom, 6)
@@ -114,9 +100,48 @@ public struct MapTabView: View {
         }
         Spacer()
       }
+      .opacity(mapViewModel.bottomSheetPosition == SheetPosition.top.bottomSheetPosition ? 0 : 1)
+      .animation(.easeInOut(duration: 0.3), value: mapViewModel.bottomSheetPosition)
+    }
+    .bottomSheet(
+      bottomSheetPosition: $mapViewModel.bottomSheetPosition,
+      switchablePositions: [
+        SheetPosition.top.bottomSheetPosition,
+        SheetPosition.medium.bottomSheetPosition,
+        SheetPosition.short.bottomSheetPosition,
+      ]) {
+        VStack {
+          if mapViewModel.bottomSheetPosition == SheetPosition.short.bottomSheetPosition {
+            SheetDirectionDetails()
+          } else {
+            SheetBuildingDetails(
+              imageProvider: roomImageProvider,
+              onSelectRoom: { room in
+                selectedRoom = room
+              })
+          }
+        }
+    }
+    .customBackground(
+      theme.background.secondary
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
+    .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
+      if newValue == SheetPosition.medium.bottomSheetPosition {
+        mapViewModel.clearDirection()
+      } else if newValue == SheetPosition.short.bottomSheetPosition {
+        Task {
+          await mapViewModel.getDirectionToSelectedBuilding()
+        }
+      }
     }
     .environment(mapViewModel)
     .ignoresSafeArea(.keyboard)
+    .fullScreenCover(item: $selectedRoom) { room in
+      NavigationStack {
+        roomDestinationBuilder(room)
+      }
+    }
     .tabItem {
       Label("Map", systemImage: "map")
     }
@@ -127,14 +152,25 @@ public struct MapTabView: View {
 
   @Bindable var mapViewModel: LiveMapViewModel
 
+  let roomImageProvider: (String) -> CachedImage
+  let roomDestinationBuilder: (Room) -> RoomDestination
+
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @State private var selectedRoom: Room?
 }
 
 // MARK: - Preview
 
 #Preview {
-  MapTabView(mapViewModel: PreviewMapViewModel())
+  MapTabView(
+    mapViewModel: PreviewMapViewModel(),
+    roomImageProvider: { roomID in
+      CachedImage(name: roomID, bundle: .module)
+    },
+    roomDestinationBuilder: { _ in
+      EmptyView()
+    })
     .defaultTheme()
 }

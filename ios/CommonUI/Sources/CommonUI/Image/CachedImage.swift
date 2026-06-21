@@ -37,7 +37,7 @@ public struct CachedImage: View {
           .fill(.gray.opacity(0.15))
       }
     }
-    .task {
+    .task(id: name) {
       resolved = await cache.getImage(named: name, in: bundle, size: size)
       if resolved == nil, let fallbackName {
         resolved = await cache.getImage(named: fallbackName, in: fallbackBundle, size: size)
