@@ -429,7 +429,10 @@ func makeRoomSUT(
     roomRatingLoader: StubRoomRatingLoader(),
     roomFilterService: StubFilterRoomService())
 
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
@@ -442,7 +445,10 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
     roomBookingLoader: roomBookingLoader,
     roomRatingLoader: StubRoomRatingLoader(),
     roomFilterService: StubFilterRoomService())
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 /// SUT for the backend-filtered path: configures both the room loader (full
@@ -469,7 +475,10 @@ func makeRoomSUT(
     roomRatingLoader: StubRoomRatingLoader(),
     roomFilterService: stubFilterService)
 
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func createDifferentRooms() -> [Room] {

@@ -72,6 +72,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             building: building,
             buildings: buildings,
             isLoading: buildingViewModel.isLoading,
+            isFavourite: .constant(false),
             imageProvider: { roomID in
               BuildingImage[roomID]
             })

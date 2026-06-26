@@ -37,15 +37,7 @@ struct ContentView: View {
         .task { await roomViewModel.onAppear() }
         .environment(roomViewModel)
       } _: { room in
-        RoomDetailsView(room: room)
-          .environment(roomViewModel)
-          .task {
-            await roomViewModel.onAppear()
-          }
-          .task {
-            roomViewModel.clearRoomBookings()
-            await roomViewModel.getRoomBookings(roomId: room.id)
-          }
+        roomDetailsView(for: room)
       }
       MapTabView(
         mapViewModel: mapViewModel,
@@ -53,31 +45,29 @@ struct ContentView: View {
           RoomImage[roomID]
         },
         roomDestinationBuilder: { room in
-          RoomDetailsView(room: room)
-            .environment(roomViewModel)
-            .task { await roomViewModel.onAppear() }
-            .task {
-              roomViewModel.clearRoomBookings()
-              await roomViewModel.getRoomBookings(roomId: room.id)
-            }
+          roomDetailsView(for: room)
         })
       RoomsTabView(
         path: $roomPath,
         selectedTab: $selectedTab,
         selectedView: $selectedRoomsView)
       { room in
-        RoomDetailsView(room: room)
-          .environment(roomViewModel)
-          .task { await roomViewModel.onAppear() }
-          .task {
-            roomViewModel.clearRoomBookings()
-            await roomViewModel.getRoomBookings(roomId: room.id)
-          }
+        roomDetailsView(for: room)
       }
     }
     .environment(roomViewModel)
     .environment(buildingViewModel)
     .tint(theme.accent.primary)
+  }
+
+  func roomDetailsView(for room: Room) -> some View {
+    RoomDetailsView(room: room)
+      .environment(roomViewModel)
+      .task { await roomViewModel.onAppear() }
+      .task {
+        roomViewModel.clearRoomBookings()
+        await roomViewModel.getRoomBookings(roomId: room.id)
+      }
   }
 
   // MARK: Private
@@ -101,7 +91,8 @@ extension LiveMapViewModel {
 }
 
 extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel.preview
+  @Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel
+    .preview
   @Entry var mapViewModel: LiveMapViewModel = LiveMapViewModel.preview
   @Entry var roomViewModel: LiveRoomViewModel = LiveRoomViewModel.preview
 }
@@ -110,8 +101,10 @@ extension EnvironmentValues {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
-    .environment(\.mapViewModel, MainActor.assumeIsolated {
-      PreviewMapViewModel()
-    })
+    .environment(
+      \.mapViewModel,
+      MainActor.assumeIsolated {
+        PreviewMapViewModel()
+      })
     .environment(\.roomViewModel, PreviewRoomViewModel())
 }

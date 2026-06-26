@@ -1,6 +1,5 @@
 //
 //  RoomsTabView.swift
-//  RoomsTabView.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.
@@ -73,6 +72,13 @@ public struct RoomsTabView<Destination: View>: View {
                 room: room,
                 rooms: rooms,
                 isLoading: roomViewModel.isLoading,
+                isFavourite: Binding(
+                  get: {
+                    roomViewModel.isFavorite(roomID: room.id)
+                  },
+                  set: { _ in
+                    roomViewModel.toggleFavorite(roomID: room.id)
+                  }),
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })
@@ -325,6 +331,7 @@ public struct RoomsTabView<Destination: View>: View {
                 room: room,
                 rooms: placeholderRooms,
                 isLoading: true,
+                isFavourite: .constant(false),
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })

@@ -84,6 +84,12 @@ public protocol RoomViewModel: AnyObject {
   func resetBookingScrollState(initialDate: Date)
   func handleScrollIDChange(oldValue: Int?, newValue: Int?)
   func handleDateSelectChange(oldValue: Date, newValue: Date)
+
+  func toggleFavorite(roomID: Room.ID)
+
+  func isFavorite(roomID: Room.ID) -> Bool
+
+  func getAllFavoriteRoomIds() -> [Room.ID]
 }
 
 // MARK: - LiveRoomViewModel
@@ -374,6 +380,18 @@ public class LiveRoomViewModel: RoomViewModel {
     }
   }
 
+  public func toggleFavorite(roomID: Room.ID) {
+    interactor.toggleFavorite(roomID: roomID)
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    interactor.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    interactor.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
@@ -390,18 +408,25 @@ public class LiveRoomViewModel: RoomViewModel {
 public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
-    super.init(interactor: RoomInteractor(
-      roomService: PreviewRoomService(),
-      locationService: LiveLocationService(locationManager: LiveLocationManager())))
-  }
-}
+    super.init(
+      interactor: RoomInteractor(
+        roomService: PreviewRoomService(),
+        locationService: LiveLocationService(
+          locationManager: LiveLocationManager()),
+        favouriteService: PreviewFavoriteRoomService()))
 
-extension Double {
-  public static let day: Double = 86_400
+    currentRoomBookings = [
+      RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour,
+    ]
+  }
 }
 
 // MARK: - RoomBookingConstants
 
 public enum RoomBookingConstants {
   public static let middleIndex = 500
+}
+
+extension Double {
+  public static let day: Double = 86_400
 }

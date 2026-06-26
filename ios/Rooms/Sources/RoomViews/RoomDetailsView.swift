@@ -33,7 +33,7 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room) {
+      RoomDetailsSheetView(room: room, isFavourite: favouriteBinding) {
         showDetails = false
         dismiss()
       }
@@ -111,11 +111,18 @@ public struct RoomDetailsView: View {
 
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
+
+  private var favouriteBinding: Binding<Bool> {
+    Binding(
+      get: { roomViewModel.isFavorite(roomID: room.id) },
+      set: { _ in roomViewModel.toggleFavorite(roomID: room.id) })
+  }
 }
 
 #Preview {
   NavigationStack {
     RoomDetailsView(room: Room.exampleOne)
+      .environment(PreviewRoomViewModel())
       .defaultTheme()
   }
 }

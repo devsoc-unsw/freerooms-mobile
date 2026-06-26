@@ -116,3 +116,52 @@ public final class SwiftDataFavoriteRoomService: FavoriteRoomService {
   private var favoriteRooms: [Room.ID: SwiftDataFavoriteRoom]
 
 }
+
+// MARK: - PreviewFavoriteRoomService
+
+@Observable
+public final class PreviewFavoriteRoomService: FavoriteRoomService {
+
+  // MARK: Lifecycle
+
+  public init() { }
+
+  // MARK: Public
+
+  @discardableResult
+  public func addFavorite(roomID: Room.ID) -> Bool {
+    // Check if the room is already favorited
+    guard !favoriteRooms.keys.contains(roomID) else { return false }
+
+    // Otherwise add the new room
+    let favoriteRoom = SwiftDataFavoriteRoom(roomID: roomID)
+    favoriteRooms[roomID] = favoriteRoom
+
+    return true
+  }
+
+  @discardableResult
+  public func removeFavorite(roomID: Room.ID) -> Bool {
+    // Check if the room is favorited. If it is, remove it
+    guard favoriteRooms.removeValue(forKey: roomID) != nil else { return false }
+
+    return true
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    favoriteRooms.keys.contains(roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    Array(favoriteRooms.keys)
+  }
+
+  // MARK: Private
+
+  static private var _fetchDescriptor: FetchDescriptor<SwiftDataFavoriteRoom> {
+    FetchDescriptor<SwiftDataFavoriteRoom>()
+  }
+
+  private var favoriteRooms: [Room.ID: SwiftDataFavoriteRoom] = [:]
+
+}
