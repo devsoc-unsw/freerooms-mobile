@@ -199,7 +199,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(backgroundOpacity))
+      .background(theme.background.primary)
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
@@ -207,7 +207,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsCardSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
       }
       // .padding(.horizontal)
-      .background(Color.gray.opacity(backgroundOpacity))
+      .background(theme.background.primary.opacity(backgroundOpacity))
       .shadow(color: theme.label.primary.opacity(cardShadowOpacity), radius: cardShadowRadius)
     }
   }

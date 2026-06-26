@@ -15,26 +15,26 @@ extension Room {
   public var statusTextColour: Color {
     switch status {
     case .available:
-      Theme.light.list.green
+      Theme.default.list.green
     case .availableSoon:
-      Theme.light.list.yellow
+      Theme.default.list.yellow
     case .unavailable:
-      Theme.light.list.red
+      Theme.default.list.red
     case .unknown:
-      Theme.light.list.gray
+      Theme.default.list.gray
     }
   }
 
   public var statusBackgroundColor: Color {
     switch status {
     case .available:
-      Theme.light.list.greenBackground.opacity(0.15)
+      Theme.default.list.greenBackground.opacity(0.15)
     case .availableSoon:
-      Theme.light.list.yellowBackground.opacity(0.20)
+      Theme.default.list.yellowBackground.opacity(0.20)
     case .unavailable:
-      Theme.light.list.redBackground.opacity(0.54)
+      Theme.default.list.redBackground.opacity(0.54)
     case .unknown:
-      Theme.light.list.grayBackground.opacity(0.20)
+      Theme.default.list.grayBackground.opacity(0.20)
     }
   }
 }

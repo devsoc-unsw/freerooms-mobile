@@ -76,7 +76,9 @@ public struct MapTabView<RoomDestination: View>: View {
         mapViewModel.updateMapHeading(context.camera.heading)
       }
       .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
-      .mapControls { }
+      .mapControls {
+        // Specifying no map controls removes the compass
+      }
       .simultaneousGesture(
         TapGesture()
           .onEnded {
@@ -123,7 +125,7 @@ public struct MapTabView<RoomDestination: View>: View {
         }
     }
     .customBackground(
-      Color(uiColor: .systemBackground)
+      theme.background.secondary
         .cornerRadius(20)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
     .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
@@ -157,8 +159,8 @@ public struct MapTabView<RoomDestination: View>: View {
 
   // MARK: Private
 
+  @Environment(Theme.self) private var theme
   @State private var selectedRoom: Room?
-
 }
 
 // MARK: - Preview
@@ -172,4 +174,5 @@ public struct MapTabView<RoomDestination: View>: View {
     roomDestinationBuilder: { _ in
       EmptyView()
     })
+    .defaultTheme()
 }

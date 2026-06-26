@@ -6,6 +6,7 @@
 //
 import BuildingModels
 import BuildingViewModels
+import CommonUI
 import SwiftUI
 
 public struct MapSearchBarList: View {
@@ -38,7 +39,7 @@ public struct MapSearchBarList: View {
               x: 0,
               y: 1)
           Text(building.name)
-            .foregroundStyle(.black)
+            .foregroundStyle(theme.black)
         }
       }
     }
@@ -51,4 +52,5 @@ public struct MapSearchBarList: View {
   // MARK: Private
 
   @Environment(LiveMapViewModel.self) private var viewModel
+  @Environment(Theme.self) private var theme
 }
