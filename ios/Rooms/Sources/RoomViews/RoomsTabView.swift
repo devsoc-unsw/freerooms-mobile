@@ -351,7 +351,7 @@ public struct RoomsTabView<Destination: View>: View {
       } label: {
         Image(systemName: "arrow.up.arrow.down")
           .resizable()
-          .frame(width: 25, height: 20)
+          .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }
 
       Button {
@@ -363,10 +363,10 @@ public struct RoomsTabView<Destination: View>: View {
       } label: {
         Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
           .resizable()
-          .frame(width: 22, height: 20)
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }
     }
-    .padding(5)
+    .padding(RoomLayoutConstants.toolbarIconPadding)
     .foregroundStyle(theme.label.tertiary)
   }
 }

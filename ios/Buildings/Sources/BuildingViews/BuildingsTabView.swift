@@ -59,8 +59,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   @ViewBuilder
   func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
+    let gridHorizontalPadding: CGFloat = 16
+    let sectionLabelLeadingPadding: CGFloat = 10
+    let sectionHeaderTopPadding: CGFloat = 10
     Section {
-      LazyVGrid(columns: columns, spacing: 24) {
+      let gridSpacing = 24.0
+      LazyVGrid(columns: columns, spacing: gridSpacing) {
         ForEach(buildings) { building in
           GenericCardView(
             path: $path,
@@ -73,16 +77,18 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             })
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, gridHorizontalPadding)
+      // .listRowSeparator(.hidden)
+      // .listRowBackground(Color.clear)
     } header: {
       HStack {
         Text(campus)
           .textCase(.uppercase)
           .foregroundStyle(theme.label.primary)
-          .padding(.leading, 10)
+          .padding(.leading, sectionLabelLeadingPadding)
         Spacer()
       }
-      .padding(.top, 10)
+      .padding(.top, sectionHeaderTopPadding)
     }
   }
 
@@ -92,6 +98,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       EmptyView()
     } else {
       Section {
+        let listRowVerticalPadding: CGFloat = 5
         ForEach(buildings) { building in
           GenericListRowView(
             path: $path,
@@ -102,7 +109,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             imageProvider: { buildingID in
               BuildingImage[buildingID]
             })
-            .padding(.vertical, 5)
+            .padding(.vertical, listRowVerticalPadding)
         }
       } header: {
         Text(campus)
@@ -168,6 +175,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   @ViewBuilder
   private var buildingsView: some View {
+    let backgroundOpacity: Double = 0.1
+    let cardShadowOpacity: Double = 0.2
+    let cardShadowRadius: CGFloat = 5
     if selectedView == ViewOrientation.List {
       List {
         buildingsListSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
@@ -176,15 +186,16 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(0.1))
+      .background(Color.gray.opacity(backgroundOpacity))
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
         buildingsCardSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
         buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
       }
-      .background(Color.gray.opacity(0.1))
-      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
+      // .padding(.horizontal)
+      .background(Color.gray.opacity(backgroundOpacity))
+      .shadow(color: theme.label.primary.opacity(cardShadowOpacity), radius: cardShadowRadius)
     }
   }
 

@@ -23,6 +23,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     item: T,
     items: [T],
     isLoading: Bool,
+    onSelect: ((T) -> Void)? = nil,
     imageProvider: @escaping (T.ID) -> ImageContent)
   {
     _path = path
@@ -30,6 +31,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     self.item = item
     self.items = items
     self.isLoading = isLoading
+    self.onSelect = onSelect
     self.imageProvider = imageProvider
   }
 
@@ -37,7 +39,11 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
 
   public var body: some View {
     Button {
-      path.append(item)
+      if let onSelect {
+        onSelect(item)
+      } else {
+        path.append(item)
+      }
     } label: {
       HStack(spacing: 0) {
         imageProvider(item.id)
@@ -82,6 +88,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   let item: T
   let items: [T]
   let isLoading: Bool
+  let onSelect: ((T) -> Void)?
   let imageProvider: (T.ID) -> ImageContent
 
   var cornerRadii: RectangleCornerRadii {
@@ -110,6 +117,7 @@ extension GenericListRowView where T == Building, ImageContent == CachedImage {
     building: Building,
     buildings: [Building],
     isLoading: Bool,
+    onSelect: ((Building) -> Void)? = nil,
     imageProvider: @escaping (Building.ID) -> CachedImage)
   {
     _path = path
@@ -117,6 +125,7 @@ extension GenericListRowView where T == Building, ImageContent == CachedImage {
     item = building
     items = buildings
     self.isLoading = isLoading
+    self.onSelect = onSelect
     self.imageProvider = imageProvider
   }
 }
@@ -128,6 +137,7 @@ extension GenericListRowView where T == Room, ImageContent == CachedImage {
     room: Room,
     rooms: [Room],
     isLoading: Bool,
+    onSelect: ((Room) -> Void)? = nil,
     imageProvider: @escaping (Room.ID) -> CachedImage)
   {
     _path = path
@@ -135,6 +145,7 @@ extension GenericListRowView where T == Room, ImageContent == CachedImage {
     item = room
     items = rooms
     self.isLoading = isLoading
+    self.onSelect = onSelect
     self.imageProvider = imageProvider
   }
 }

@@ -5,10 +5,12 @@ TOP_LEVEL=$(git rev-parse --show-toplevel)
 if command -v swiftformat >/dev/null 2>&1
 then
     echo "Checking formatting..."
+    DIFF_BEFORE=$(git diff)
     (cd "$TOP_LEVEL" && swiftformat .)
+    DIFF_AFTER=$(git diff)
     
     # check if swiftformat changed any files
-    if ! git diff --exit-code >/dev/null 2>&1
+    if [ "$DIFF_BEFORE" != "$DIFF_AFTER" ]
     then
         echo "Error: Files were modified by the formatter."
         echo "stage the changes and try again."

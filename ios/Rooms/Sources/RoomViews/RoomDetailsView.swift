@@ -26,19 +26,23 @@ public struct RoomDetailsView: View {
     VStack(spacing: 0) {
       RoomImage[room.id, .large]
         .scaledToFill()
-        .frame(height: screenHeight * 0.4)
+        .frame(height: screenHeight * RoomLayoutConstants.imageHeightFraction)
         .clipped()
         .ignoresSafeArea()
 
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room)
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.65), .fraction(0.75), .large], selection: $detent)
-        .presentationBackgroundInteraction(.enabled(upThrough: .large))
-        .presentationCornerRadius(30)
-        .interactiveDismissDisabled(true)
+      RoomDetailsSheetView(room: room) {
+        showDetails = false
+        dismiss()
+      }
+      .environment(roomViewModel)
+      .presentationDetents(detentHeights, selection: $detent)
+      .presentationBackgroundInteraction(.enabled)
+      .presentationBackground(theme.background)
+      .presentationCornerRadius(30)
+      .interactiveDismissDisabled()
     }
     .background(
       NavigationPopObserver {
@@ -87,6 +91,14 @@ public struct RoomDetailsView: View {
       }
     }
   }
+
+  // MARK: Internal
+
+  let detentHeights: Set<PresentationDetent> = [
+    RoomLayoutConstants.sheetSmallDetent,
+    RoomLayoutConstants.sheetMediumDetent,
+    .large,
+  ]
 
   // MARK: Private
 
