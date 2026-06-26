@@ -215,7 +215,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
 // MARK: - PreviewWrapper
 
-struct PreviewWrapper: View {
+private struct PreviewWrapper: View {
   @State var path = NavigationPath()
   @State var selectedView = ViewOrientation.List
 
