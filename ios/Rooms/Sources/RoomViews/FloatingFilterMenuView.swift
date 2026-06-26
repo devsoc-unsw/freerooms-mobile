@@ -13,30 +13,26 @@ struct FloatingFilterMenuView: View {
 
   // MARK: Internal
 
-  @Binding var showingDateFilter: Bool
-  @Binding var showingRoomTypeFilter: Bool
-  @Binding var showingDurationFilter: Bool
-  @Binding var showingCampusLocationFilter: Bool
-  @Binding var showingCapacityFilter: Bool
+  @Binding var activeFilterSheet: RoomFilterSheet?
   @Binding var showingFilterMenu: Bool
 
   var body: some View {
     VStack(alignment: .trailing, spacing: 10) {
       if showingFilterMenu {
         filterMenuAction("Date", systemImage: "calendar") {
-          showingDateFilter = true
+          activeFilterSheet = .date
         }
         filterMenuAction("Duration", systemImage: "clock") {
-          showingDurationFilter = true
+          activeFilterSheet = .duration
         }
         filterMenuAction("Room Type", systemImage: "square.grid.2x2") {
-          showingRoomTypeFilter = true
+          activeFilterSheet = .roomType
         }
         filterMenuAction("Campus", systemImage: "building.2") {
-          showingCampusLocationFilter = true
+          activeFilterSheet = .campusLocation
         }
         filterMenuAction("Capacity", systemImage: "person.2") {
-          showingCapacityFilter = true
+          activeFilterSheet = .capacity
         }
         filterMenuAction("Reset all", systemImage: "arrow.counterclockwise", role: .destructive) {
           roomViewModel.clearAllFilters()
@@ -94,10 +90,6 @@ struct FloatingFilterMenuView: View {
 
 #Preview {
   FloatingFilterMenuView(
-    showingDateFilter: .constant(false),
-    showingRoomTypeFilter: .constant(false),
-    showingDurationFilter: .constant(false),
-    showingCampusLocationFilter: .constant(false),
-    showingCapacityFilter: .constant(false),
+    activeFilterSheet: .constant(nil),
     showingFilterMenu: .constant(false))
 }

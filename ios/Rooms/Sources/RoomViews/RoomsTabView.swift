@@ -12,6 +12,18 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+// MARK: - RoomFilterSheet
+
+enum RoomFilterSheet: String, Identifiable {
+  case date
+  case roomType
+  case duration
+  case campusLocation
+  case capacity
+
+  var id: String { rawValue }
+}
+
 // MARK: - RoomsTabView
 
 public struct RoomsTabView<Destination: View>: View {
@@ -135,12 +147,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Private
 
-  // Filter sheet states
-  @State private var showingDateFilter = false
-  @State private var showingRoomTypeFilter = false
-  @State private var showingDurationFilter = false
-  @State private var showingCampusLocationFilter = false
-  @State private var showingCapacityFilter = false
+  @State private var activeFilterSheet: RoomFilterSheet?
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
@@ -196,11 +203,7 @@ public struct RoomsTabView<Destination: View>: View {
       .overlay(alignment: .bottomTrailing) {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
-            showingDateFilter: $showingDateFilter,
-            showingRoomTypeFilter: $showingRoomTypeFilter,
-            showingDurationFilter: $showingDurationFilter,
-            showingCampusLocationFilter: $showingCampusLocationFilter,
-            showingCapacityFilter: $showingCapacityFilter,
+            activeFilterSheet: $activeFilterSheet,
             showingFilterMenu: $showingFilterMenu)
             .padding(.trailing, 16)
             .padding(.bottom, 8)
@@ -235,57 +238,60 @@ public struct RoomsTabView<Destination: View>: View {
       }
       .navigationTitle("Rooms")
       .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
-      .sheet(isPresented: $showingDateFilter) {
-        DateFilterView(selectedDate: selectedDateBinding) {
-          showingDateFilter = false
-          Task { await roomViewModel.applyFilters() }
-          let vm = roomViewModel
-          Task { await vm.loadBookingsForFilteredRooms() }
+      .sheet(item: $activeFilterSheet) { sheet in
+        switch sheet {
+        case .date:
+          DateFilterView(selectedDate: selectedDateBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+            let vm = roomViewModel
+            Task { await vm.loadBookingsForFilteredRooms() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.8)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .roomType:
+          RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.52)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .duration:
+          DurationFilterView(onSelect: {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          })
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.32)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .campusLocation:
+          CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.44)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .capacity:
+          CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([.fraction(0.47)])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
         }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.8)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingRoomTypeFilter) {
-        RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
-          showingRoomTypeFilter = false
-          Task { await roomViewModel.applyFilters() }
-        }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.52)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingDurationFilter) {
-        DurationFilterView(onSelect: {
-          showingDurationFilter = false
-          Task { await roomViewModel.applyFilters() }
-        })
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.32)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingCampusLocationFilter) {
-        CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
-          showingCampusLocationFilter = false
-          Task { await roomViewModel.applyFilters() }
-        }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.44)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
-      }
-      .sheet(isPresented: $showingCapacityFilter) {
-        CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
-          showingCapacityFilter = false
-          Task { await roomViewModel.applyFilters() }
-        }
-        .environment(roomViewModel)
-        .presentationDetents([.fraction(0.47)])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(Color(.systemBackground))
       }
   }
 
