@@ -12,7 +12,10 @@ import SwiftUI
 
 // MARK: - GenericCardView
 
-public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName & HasRating, ImageContent: View>: View {
+public struct GenericCardView<
+  T: Equatable & Identifiable & Hashable & HasName & HasRating,
+  ImageContent: View
+>: View {
 
   // MARK: Lifecycle
 
@@ -22,6 +25,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     item: T,
     items: [T],
     isLoading: Bool,
+    isFavourite: Binding<Bool>,
     imageProvider: @escaping (T.ID) -> ImageContent)
   {
     _path = path
@@ -30,6 +34,7 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
     self.items = items
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 
   // MARK: Public
@@ -66,12 +71,23 @@ public struct GenericCardView<T: Equatable & Identifiable & Hashable & HasName &
       }
       .disabled(isLoading)
     }
+    .contextMenu {
+      Button {
+        isFavourite.toggle()
+      } label: {
+        isFavourite
+          ? Label("Remove from Favourites", systemImage: "heart.slash.fill")
+          : Label("Add to Favourites", systemImage: "heart.fill")
+      }
+    }
   }
 
   // MARK: Internal
 
   @Binding var path: NavigationPath
   @Binding var cardWidth: CGFloat?
+
+  @Binding var isFavourite: Bool
 
   let item: T
   let items: [T]
@@ -95,6 +111,7 @@ extension GenericCardView where T == Building, ImageContent == CachedImage {
     building: Building,
     buildings: [Building],
     isLoading: Bool,
+    isFavourite: Binding<Bool>,
     imageProvider: @escaping (Building.ID) -> CachedImage)
   {
     _path = path
@@ -103,6 +120,7 @@ extension GenericCardView where T == Building, ImageContent == CachedImage {
     items = buildings
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 }
 
@@ -113,6 +131,7 @@ extension GenericCardView where T == Room, ImageContent == CachedImage {
     room: Room,
     rooms: [Room],
     isLoading: Bool,
+    isFavourite: Binding<Bool>,
     imageProvider: @escaping (Room.ID) -> CachedImage)
   {
     _path = path
@@ -121,6 +140,7 @@ extension GenericCardView where T == Room, ImageContent == CachedImage {
     items = rooms
     self.imageProvider = imageProvider
     self.isLoading = isLoading
+    _isFavourite = isFavourite
   }
 }
 
@@ -140,7 +160,18 @@ struct CardPreviewWrapper: View {
           cardWidth: $cardWidth,
           room: room,
           rooms: rooms,
-          isLoading: true,
+          isLoading: false,
+          isFavourite: Binding(
+            get: {
+              favourites.contains(room.id)
+            },
+            set: { newValue in
+              if newValue {
+                favourites.insert(room.id)
+              } else {
+                favourites.remove(room.id)
+              }
+            }),
           imageProvider: { roomID in
             CachedImage(name: roomID, bundle: .module)
           })
@@ -152,6 +183,7 @@ struct CardPreviewWrapper: View {
 
   @State private var path = NavigationPath()
   @State private var cardWidth: CGFloat?
+  @State private var favourites: Set<Room.ID> = []
 
 }
 

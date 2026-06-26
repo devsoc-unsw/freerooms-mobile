@@ -370,7 +370,10 @@ func makeRoomSUT(
     roomRatingLoader: StubRoomRatingLoader(),
     roomFilterLoader: StubFilterRoomLoader())
 
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
@@ -383,7 +386,10 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
     roomBookingLoader: roomBookingLoader,
     roomRatingLoader: StubRoomRatingLoader(),
     roomFilterLoader: StubFilterRoomLoader())
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func createDifferentRooms() -> [Room] {

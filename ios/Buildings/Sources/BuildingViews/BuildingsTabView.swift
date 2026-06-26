@@ -129,6 +129,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             building: building,
             buildings: buildings,
             isLoading: viewModel.isLoading,
+            isFavourite: Binding(projectedValue: .constant(false)),
             imageProvider: { roomID in
               BuildingImage[roomID]
             })

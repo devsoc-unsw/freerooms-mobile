@@ -13,9 +13,10 @@ public class RoomInteractor {
 
   // MARK: Lifecycle
 
-  public init(roomService: RoomService, locationService: LocationService) {
+  public init(roomService: RoomService, locationService: LocationService, favouriteService: FavoriteRoomService) {
     self.roomService = roomService
     self.locationService = locationService
+    self.favouriteService = favouriteService
   }
 
   // MARK: Public
@@ -170,8 +171,25 @@ public class RoomInteractor {
     }
   }
 
+  public func toggleFavorite(roomID: Room.ID) {
+    if favouriteService.isFavorite(roomID: roomID) {
+      favouriteService.removeFavorite(roomID: roomID)
+    } else {
+      favouriteService.addFavorite(roomID: roomID)
+    }
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    favouriteService.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    favouriteService.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
   private let locationService: LocationService
+  private let favouriteService: FavoriteRoomService
 }

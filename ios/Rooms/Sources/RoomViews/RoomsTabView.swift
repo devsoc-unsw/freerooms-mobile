@@ -132,6 +132,13 @@ public struct RoomsTabView<Destination: View>: View {
                 room: room,
                 rooms: rooms,
                 isLoading: roomViewModel.isLoading,
+                isFavourite: Binding(
+                  get: {
+                    roomViewModel.isFavorite(roomID: room.id)
+                  },
+                  set: { _ in
+                    roomViewModel.toggleFavorite(roomID: room.id)
+                  }),
                 imageProvider: { roomID in
                   RoomImage[roomID]
                 })

@@ -520,7 +520,8 @@ public class PreviewMapViewModel: LiveMapViewModel {
       navigationInteractor: PreviewNavigationInteractor(),
       roomInteractor: RoomInteractor(
         roomService: PreviewRoomService(),
-        locationService: LiveLocationService(locationManager: LiveLocationManager())))
+        locationService: LiveLocationService(locationManager: LiveLocationManager()),
+        favouriteService: PreviewFavoriteRoomService()))
 
     buildings = [
       Building(
