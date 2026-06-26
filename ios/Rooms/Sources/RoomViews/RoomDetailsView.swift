@@ -16,9 +16,10 @@ public struct RoomDetailsView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel) {
+  public init(room: Room, roomViewModel: RoomViewModel, isFavourite: Binding<Bool>) {
     self.room = room
     self.roomViewModel = roomViewModel
+    _isFavourite = isFavourite
   }
 
   // MARK: Public
@@ -34,7 +35,7 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel) {
+      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel, isFavourite: $isFavourite) {
         showDetails = false
         dismiss()
       }
@@ -105,14 +106,18 @@ public struct RoomDetailsView: View {
   @State private var detent = PresentationDetent.fraction(0.75)
   @State private var showDetails = true
 
+  @Binding private var isFavourite: Bool
+
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
   private var roomViewModel: RoomViewModel
 }
 
 #Preview {
+  @Previewable @State var isFavourite = false
+
   NavigationStack {
-    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
+    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
       .defaultTheme()
   }
 }

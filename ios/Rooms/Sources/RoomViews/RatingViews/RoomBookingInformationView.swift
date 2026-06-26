@@ -13,9 +13,10 @@ struct RoomBookingInformationView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, currentRoomRating: RoomRating?) {
+  public init(room: Room, currentRoomRating: RoomRating?, isFavourite: Binding<Bool>) {
     self.room = room
     self.currentRoomRating = currentRoomRating
+    _isFavourite = isFavourite
   }
 
   // MARK: Internal
@@ -25,7 +26,7 @@ struct RoomBookingInformationView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      HStack {
+      HStack(alignment: .top) {
         Text(room.name)
           .font(.title)
           .bold()
@@ -57,7 +58,17 @@ struct RoomBookingInformationView: View {
             .presentationCornerRadius(24)
         }
         .frame(width: 65, height: 35)
-        .padding(.horizontal, 6)
+
+        Button {
+          isFavourite.toggle()
+        } label: {
+          Image(systemName: "heart")
+            .foregroundStyle(theme.accent.primary)
+            .font(.system(size: 22))
+            .symbolVariant(isFavourite ? .fill : .none)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.circle)
       }
 
       VStack(alignment: .leading, spacing: 10) {
@@ -86,15 +97,20 @@ struct RoomBookingInformationView: View {
 
   @State private var isShowingSheet: Bool = false
 
+  @Binding private var isFavourite: Bool
+
   @Environment(Theme.self) private var theme
 }
 
 #Preview {
+  @Previewable @State var isFavourite = false
+
   RoomBookingInformationView(
     room: Room.exampleOne,
     currentRoomRating: RoomRating(
       roomId: "K-17",
       overallRating: 5.0,
-      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 5.0)))
+      averageRating: AverageRating(cleanliness: 5.0, location: 5.0, quietness: 5.0)),
+    isFavourite: $isFavourite)
     .defaultTheme()
 }

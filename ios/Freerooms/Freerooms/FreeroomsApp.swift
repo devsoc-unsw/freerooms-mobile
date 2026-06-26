@@ -69,7 +69,7 @@ struct FreeroomsApp: App {
 
   static let logger = Logger(subsystem: "com.devsoc.Freerooms", category: "FreeroomsApp")
   static var sharedContainer: ModelContainer = {
-    let schema = Schema([SwiftDataRoom.self])
+    let schema = Schema([SwiftDataRoom.self, SwiftDataFavoriteRoom.self])
     let config = ModelConfiguration(schema: schema)
     return try! ModelContainer(for: schema, configurations: [config])
   }()
@@ -156,7 +156,13 @@ struct FreeroomsApp: App {
         roomBookingLoader: roomBookingLoader,
         roomRatingLoader: roomRatingLoader,
         roomFilterLoader: roomFilterLoader)
-      let interactor = RoomInteractor(roomService: roomService, locationService: locationService)
+
+      let favouriteService = try SwiftDataFavoriteRoomService(context: FreeroomsApp.sharedContainer.mainContext)
+
+      let interactor = RoomInteractor(
+        roomService: roomService,
+        locationService: locationService,
+        favouriteService: favouriteService)
 
       return LiveRoomViewModel(interactor: interactor)
     } catch {
@@ -239,6 +245,7 @@ struct FreeroomsApp: App {
   {
     do {
       let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
+      let favouriteService = try SwiftDataFavoriteRoomService(context: sharedContainer.mainContext)
       let roomLoader = LiveRoomLoader(
         JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
         roomStatusLoader: roomStatusLoader,
@@ -249,7 +256,8 @@ struct FreeroomsApp: App {
           roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
           roomRatingLoader: roomRatingLoader,
           roomFilterLoader: roomFilterLoader),
-        locationService: locationService)
+        locationService: locationService,
+        favouriteService: favouriteService)
     } catch {
       fatalError("Failed to create RoomInteractor: \(error)")
     }

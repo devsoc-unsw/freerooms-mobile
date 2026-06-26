@@ -16,10 +16,17 @@ public struct RoomDetailsSheetView: View {
 
   // MARK: Lifecycle
 
-  public init(dateSelect: Date = Date(), room: Room, roomViewModel: RoomViewModel, onDismiss: (() -> Void)? = nil) {
+  public init(
+    dateSelect: Date = Date(),
+    room: Room,
+    roomViewModel: RoomViewModel,
+    isFavourite: Binding<Bool>,
+    onDismiss: (() -> Void)? = nil)
+  {
     initialDate = dateSelect
     self.room = room
     self.roomViewModel = roomViewModel
+    _isFavourite = isFavourite
     self.onDismiss = onDismiss
   }
 
@@ -28,7 +35,7 @@ public struct RoomDetailsSheetView: View {
   public var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       // Booking informations
-      RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating)
+      RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating, isFavourite: $isFavourite)
 
       // Booking interactive section
       VStack(alignment: .leading, spacing: 16) {
@@ -127,6 +134,8 @@ public struct RoomDetailsSheetView: View {
 
   @Environment(Theme.self) private var theme
 
+  @Binding private var isFavourite: Bool
+
   private let onDismiss: (() -> Void)?
   private let initialDate: Date
 
@@ -135,7 +144,9 @@ public struct RoomDetailsSheetView: View {
 }
 
 #Preview {
-  RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel())
+  @Previewable @State var isFavourite = false
+
+  RoomDetailsSheetView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
     .defaultTheme()
 }
 
