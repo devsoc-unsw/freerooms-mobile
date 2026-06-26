@@ -76,7 +76,9 @@ public struct MapTabView<RoomDestination: View>: View {
         mapViewModel.updateMapHeading(context.camera.heading)
       }
       .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
-      .mapControls { }
+      .mapControls {
+        // Specifying no map controls removes the compass
+      }
       .simultaneousGesture(
         TapGesture()
           .onEnded {

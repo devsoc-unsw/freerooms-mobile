@@ -18,9 +18,12 @@
                         <subviews>
                             <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DoorOpen" translatesAutoresizingMaskIntoConstraints="NO" id="6Kz-K2-ieO">
                                 <rect key="frame" x="123" y="242" width="147" height="236"/>
+                                <color key="backgroundColor" name="BackgroundPrimary"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Freerooms" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Mc-Ve-87Q">
                                 <rect key="frame" x="109.00000000000001" y="485.33333333333331" width="175.33333333333337" height="40.666666666666686"/>
+                                <color key="backgroundColor" name="BackgroundPrimary"/>
+                                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="34"/>
                                 <color key="textColor" name="AccentPrimary"/>
                                 <nil key="highlightedColor"/>
@@ -28,7 +31,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" name="BackgroundPrimary"/>
-                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Kz-K2-ieO" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-66" id="QpK-xY-S16"/>
                             <constraint firstItem="1Mc-Ve-87Q" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="79.829999999999998" id="bfj-0I-3x4"/>

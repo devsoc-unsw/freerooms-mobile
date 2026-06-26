@@ -198,7 +198,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(theme.background.primary.opacity(backgroundOpacity))
+      .background(theme.background.primary)
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
