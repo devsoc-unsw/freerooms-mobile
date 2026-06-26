@@ -7,6 +7,7 @@
 
 import BuildingModels
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - WidthPreferenceKey
@@ -88,15 +89,26 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
 
       HStack(alignment: .center, spacing: 0) {
         if let room = item as? Room {
-          Text(room.statusText)
+          let isFilterActive = roomViewModel.selectedDate != DateDefaults.selectedDate
+          let bookings = roomViewModel.bookingsByRoomId[room.id]
+          Text(room.statusTextWhenFiltering(
+            referenceInstant: roomViewModel.selectedDate,
+            isCustomFilterActive: isFilterActive,
+            bookings: bookings))
             .font(.system(size: 12, weight: .light))
-            .foregroundStyle(room.statusTextColour)
+            .foregroundStyle(room.contextualStatusTextColour(
+              referenceInstant: roomViewModel.selectedDate,
+              isCustomFilterActive: isFilterActive,
+              bookings: bookings))
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
             .frame(maxWidth: .infinity)
             .background(
               RoundedRectangle(cornerRadius: 5)
-                .fill(room.statusBackgroundColor))
+                .fill(room.contextualStatusBackgroundColor(
+                  referenceInstant: roomViewModel.selectedDate,
+                  isCustomFilterActive: isFilterActive,
+                  bookings: bookings)))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
             .font(.system(size: 14, weight: .light))
@@ -117,6 +129,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   @Binding private var cardWidth: CGFloat?
 
@@ -126,9 +139,11 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
 
 #Preview {
   @Previewable @State var width: CGFloat? = nil
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
 
   GenericCardViewItem(
     cardWidth: $width,
     item: Room.exampleOne)
     .defaultTheme()
+    .environment(viewModel)
 }

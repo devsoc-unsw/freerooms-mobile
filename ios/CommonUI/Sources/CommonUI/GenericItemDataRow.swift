@@ -6,6 +6,7 @@
 //
 import BuildingModels
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - HeightPreferenceKey
@@ -65,14 +66,25 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
           .truncationMode(.tail)
 
         if let room = item as? Room {
-          Text(room.statusText)
+          let isFilterActive = roomViewModel.selectedDate != DateDefaults.selectedDate
+          let bookings = roomViewModel.bookingsByRoomId[room.id]
+          Text(room.statusTextWhenFiltering(
+            referenceInstant: roomViewModel.selectedDate,
+            isCustomFilterActive: isFilterActive,
+            bookings: bookings))
             .fontWeight(.semibold)
-            .foregroundStyle(room.statusTextColour)
+            .foregroundStyle(room.contextualStatusTextColour(
+              referenceInstant: roomViewModel.selectedDate,
+              isCustomFilterActive: isFilterActive,
+              bookings: bookings))
             .padding(.vertical, 2)
             .padding(.horizontal, 4)
             .background(
               RoundedRectangle(cornerRadius: 5)
-                .fill(room.statusBackgroundColor))
+                .fill(room.contextualStatusBackgroundColor(
+                  referenceInstant: roomViewModel.selectedDate,
+                  isCustomFilterActive: isFilterActive,
+                  bookings: bookings)))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
         }
@@ -98,6 +110,7 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   @Binding private var rowHeight: CGFloat?
 
@@ -107,9 +120,11 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
 #Preview {
   @Previewable @State var height: CGFloat? = nil
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
 
   GenericItemDataRow(
     rowHeight: $height,
     item: Room.exampleOne)
     .defaultTheme()
+    .environment(viewModel)
 }

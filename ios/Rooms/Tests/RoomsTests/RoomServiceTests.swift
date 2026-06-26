@@ -27,7 +27,7 @@ struct RoomServiceTests {
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
       roomRatingLoader: StubRoomRatingLoader(),
-      roomFilterLoader: StubFilterRoomLoader())
+      roomFilterService: StubFilterRoomService())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -52,7 +52,7 @@ struct RoomServiceTests {
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
       roomRatingLoader: StubRoomRatingLoader(),
-      roomFilterLoader: StubFilterRoomLoader())
+      roomFilterService: StubFilterRoomService())
 
     // When
     let result = await sut.getRooms(buildingId: "K-F21")
@@ -77,7 +77,7 @@ struct RoomServiceTests {
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
       roomRatingLoader: StubRoomRatingLoader(),
-      roomFilterLoader: StubFilterRoomLoader())
+      roomFilterService: StubFilterRoomService())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -103,7 +103,7 @@ struct RoomServiceTests {
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
       roomRatingLoader: StubRoomRatingLoader(),
-      roomFilterLoader: StubFilterRoomLoader())
+      roomFilterService: StubFilterRoomService())
 
     // When
     let result = await sut.getRooms(buildingId: "K-J17")
@@ -129,7 +129,7 @@ struct RoomServiceTests {
       roomLoader: stubLoader,
       roomBookingLoader: roomBookingLoader,
       roomRatingLoader: StubRoomRatingLoader(),
-      roomFilterLoader: StubFilterRoomLoader())
+      roomFilterService: StubFilterRoomService())
 
     // When
     let result = await sut.getRooms(buildingId: "")
@@ -236,5 +236,5 @@ private func makeRoomServiceSUT(ratingLoader: StubRoomRatingLoader) -> LiveRoomS
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
     roomRatingLoader: ratingLoader,
-    roomFilterLoader: StubFilterRoomLoader())
+    roomFilterService: StubFilterRoomService())
 }

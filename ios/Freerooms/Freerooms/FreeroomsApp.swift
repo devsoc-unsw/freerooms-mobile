@@ -85,6 +85,9 @@ struct FreeroomsApp: App {
         .environment(\.buildingViewModel, buildingViewModel)
         .environment(\.mapViewModel, mapViewModel)
         .environment(\.roomViewModel, roomViewModel)
+        .environment(buildingViewModel)
+        .environment(mapViewModel)
+        .environment(roomViewModel)
     }
   }
 
@@ -155,7 +158,7 @@ struct FreeroomsApp: App {
         roomLoader: roomLoader,
         roomBookingLoader: roomBookingLoader,
         roomRatingLoader: roomRatingLoader,
-        roomFilterLoader: roomFilterLoader)
+        roomFilterService: roomFilterLoader)
 
       let favouriteService = try SwiftDataFavoriteRoomService(context: FreeroomsApp.sharedContainer.mainContext)
 
@@ -188,6 +191,9 @@ struct FreeroomsApp: App {
     configuration.timeoutIntervalForRequest = 5
     configuration.timeoutIntervalForResource = 5
     configuration.waitsForConnectivity = false
+    configuration.httpAdditionalHeaders = [
+      "Accept-Encoding": "identity",
+    ]
     return URLSessionHTTPClient(session: URLSession(configuration: configuration))
   }
 
@@ -207,7 +213,7 @@ struct FreeroomsApp: App {
       buildingRatingLoader: RemoteBuildingRatingLoader,
       remoteBookingLoader: LiveRemoteRoomBookingLoader,
       roomRatingLoader: LiveRoomRatingLoader,
-      roomFilterLoader: LiveFilterRoomLoader)
+      roomFilterService: LiveFilterRoomService)
   {
     let httpClient = makeHTTPClient()
     let (stagingURL, productionURL) = makeBaseURLs()
@@ -216,9 +222,9 @@ struct FreeroomsApp: App {
     let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
     let remoteBookingLoader = LiveRemoteRoomBookingLoader(client: httpClient, baseURL: productionURL)
     let roomRatingLoader = LiveRoomRatingLoader(client: httpClient, baseURL: productionURL)
-    let roomFilterLoader = LiveFilterRoomLoader(client: httpClient, baseURL: productionURL)
+    let roomFilterService = LiveFilterRoomService(client: httpClient, baseURL: productionURL)
 
-    return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader)
+    return (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterService)
   }
 
   private static func makeBuildingInteractor(
@@ -240,7 +246,7 @@ struct FreeroomsApp: App {
     roomStatusLoader: LiveRoomStatusLoader,
     remoteBookingLoader: LiveRemoteRoomBookingLoader,
     roomRatingLoader: LiveRoomRatingLoader,
-    roomFilterLoader: LiveFilterRoomLoader)
+    roomFilterLoader: LiveFilterRoomService)
     -> RoomInteractor
   {
     do {
@@ -255,7 +261,7 @@ struct FreeroomsApp: App {
           roomLoader: roomLoader,
           roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
           roomRatingLoader: roomRatingLoader,
-          roomFilterLoader: roomFilterLoader),
+          roomFilterService: roomFilterLoader),
         locationService: locationService,
         favouriteService: favouriteService)
     } catch {

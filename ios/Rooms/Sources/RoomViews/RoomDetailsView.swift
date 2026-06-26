@@ -16,10 +16,8 @@ public struct RoomDetailsView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel, isFavourite: Binding<Bool>) {
+  public init(room: Room) {
     self.room = room
-    self.roomViewModel = roomViewModel
-    _isFavourite = isFavourite
   }
 
   // MARK: Public
@@ -35,10 +33,11 @@ public struct RoomDetailsView: View {
       Spacer()
     }
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel, isFavourite: $isFavourite) {
+      RoomDetailsSheetView(room: room, isFavourite: favouriteBinding) {
         showDetails = false
         dismiss()
       }
+      .environment(roomViewModel)
       .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
       .presentationBackground(theme.background)
@@ -95,29 +94,35 @@ public struct RoomDetailsView: View {
 
   // MARK: Internal
 
-  @Environment(\.dismiss) var dismiss
-
-  let detentHeights: Set = [RoomLayoutConstants.sheetSmallDetent, RoomLayoutConstants.sheetMediumDetent, PresentationDetent.large]
+  let detentHeights: Set<PresentationDetent> = [
+    RoomLayoutConstants.sheetSmallDetent,
+    RoomLayoutConstants.sheetMediumDetent,
+    .large,
+  ]
 
   // MARK: Private
 
+  @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   @State private var detent = PresentationDetent.fraction(0.75)
   @State private var showDetails = true
 
-  @Binding private var isFavourite: Bool
-
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
-  private var roomViewModel: RoomViewModel
+
+  private var favouriteBinding: Binding<Bool> {
+    Binding(
+      get: { roomViewModel.isFavorite(roomID: room.id) },
+      set: { _ in roomViewModel.toggleFavorite(roomID: room.id) })
+  }
 }
 
 #Preview {
-  @Previewable @State var isFavourite = false
-
   NavigationStack {
-    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
+    RoomDetailsView(room: Room.exampleOne)
+      .environment(PreviewRoomViewModel())
       .defaultTheme()
   }
 }
