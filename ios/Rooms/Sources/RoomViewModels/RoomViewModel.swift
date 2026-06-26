@@ -68,6 +68,12 @@ public protocol RoomViewModel: AnyObject {
   func resetBookingScrollState(initialDate: Date)
   func handleScrollIDChange(oldValue: Int?, newValue: Int?)
   func handleDateSelectChange(oldValue: Date, newValue: Date)
+
+  func toggleFavorite(roomID: Room.ID)
+
+  func isFavorite(roomID: Room.ID) -> Bool
+
+  func getAllFavoriteRoomIds() -> [Room.ID]
 }
 
 // MARK: - LiveRoomViewModel
@@ -176,15 +182,20 @@ public class LiveRoomViewModel: RoomViewModel {
   public func loadRooms() async {
     isLoading = true
 
-    let resultRooms = await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder)
+    let resultRooms = await interactor.getRoomsSortedAlphabetically(
+      inAscendingOrder: roomsInAscendingOrder)
     switch resultRooms {
     case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
+      rooms = interactor.getRoomsSortedAlphabetically(
+        rooms: roomsData,
+        inAscendingOrder: roomsInAscendingOrder)
+
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
 
-    let resultRoomsByBuildingId = await interactor.getRoomsFilteredByAllBuildingId()
+    let resultRoomsByBuildingId =
+      await interactor.getRoomsFilteredByAllBuildingId()
     switch resultRoomsByBuildingId {
     case .success(let roomsData):
       roomsByBuildingId = roomsData
@@ -275,6 +286,18 @@ public class LiveRoomViewModel: RoomViewModel {
     }
   }
 
+  public func toggleFavorite(roomID: Room.ID) {
+    interactor.toggleFavorite(roomID: roomID)
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    interactor.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    interactor.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let interactor: RoomInteractor
@@ -285,20 +308,25 @@ public class LiveRoomViewModel: RoomViewModel {
 public class PreviewRoomViewModel: LiveRoomViewModel {
 
   public init() {
-    super.init(interactor: RoomInteractor(
-      roomService: PreviewRoomService(),
-      locationService: LiveLocationService(locationManager: LiveLocationManager())))
+    super.init(
+      interactor: RoomInteractor(
+        roomService: PreviewRoomService(),
+        locationService: LiveLocationService(
+          locationManager: LiveLocationManager()),
+        favouriteService: PreviewFavoriteRoomService()))
 
-    currentRoomBookings = [RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour]
+    currentRoomBookings = [
+      RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour,
+    ]
   }
-}
-
-extension Double {
-  public static let day: Double = 86_400
 }
 
 // MARK: - RoomBookingConstants
 
 public enum RoomBookingConstants {
   public static let middleIndex = 500
+}
+
+extension Double {
+  public static let day: Double = 86_400
 }

@@ -129,6 +129,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             building: building,
             buildings: buildings,
             isLoading: viewModel.isLoading,
+            isFavourite: Binding(projectedValue: .constant(false)),
             imageProvider: { roomID in
               BuildingImage[roomID]
             })
@@ -215,7 +216,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
 // MARK: - PreviewWrapper
 
-struct PreviewWrapper: View {
+private struct PreviewWrapper: View {
   @State var path = NavigationPath()
   @State var selectedView = ViewOrientation.List
 

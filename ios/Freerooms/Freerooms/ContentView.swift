@@ -30,33 +30,30 @@ struct ContentView: View {
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(path: $buildingPath, viewModel: buildingViewModel, selectedView: $selectedBuildingsView) { building in
-        RoomsListView(roomViewModel: roomViewModel, building: building, path: $buildingPath, imageProvider: {
-          BuildingImage[$0]
-        })
-        .task { await roomViewModel.onAppear() }
+      BuildingsTabView(
+        path: $buildingPath,
+        viewModel: buildingViewModel,
+        selectedView: $selectedBuildingsView)
+      { building in
+        RoomsListView(
+          roomViewModel: roomViewModel,
+          building: building,
+          path: $buildingPath,
+          imageProvider: {
+            BuildingImage[$0]
+          })
+          .task { await roomViewModel.onAppear() }
       } _: { room in
-        RoomDetailsView(room: room, roomViewModel: roomViewModel)
-          .task {
-            await roomViewModel.onAppear()
-          }
-          .task {
-            roomViewModel.clearRoomBookings()
-            await roomViewModel.getRoomBookings(roomId: room.id)
-          }
+        getRoomDetailsView(room: room)
       }
       MapTabView(
+        path: $mapPath,
         mapViewModel: mapViewModel,
         roomImageProvider: { roomID in
           RoomImage[roomID]
         },
         roomDestinationBuilder: { room in
-          RoomDetailsView(room: room, roomViewModel: roomViewModel)
-            .task { await roomViewModel.onAppear() }
-            .task {
-              roomViewModel.clearRoomBookings()
-              await roomViewModel.getRoomBookings(roomId: room.id)
-            }
+          getRoomDetailsView(room: room)
         })
       RoomsTabView(
         path: $roomPath,
@@ -65,20 +62,34 @@ struct ContentView: View {
         selectedTab: $selectedTab,
         selectedView: $selectedRoomsView)
       { room in
-        RoomDetailsView(room: room, roomViewModel: roomViewModel)
-          .task { await roomViewModel.onAppear() }
-          .task {
-            roomViewModel.clearRoomBookings()
-            await roomViewModel.getRoomBookings(roomId: room.id)
-          }
+        getRoomDetailsView(room: room)
       }
     }
     .tint(theme.accent.primary)
   }
 
+  func getRoomDetailsView(room: Room) -> some View {
+    RoomDetailsView(
+      room: room,
+      roomViewModel: roomViewModel,
+      isFavourite: Binding(
+        get: {
+          roomViewModel.isFavorite(roomID: room.id)
+        },
+        set: { _ in
+          roomViewModel.toggleFavorite(roomID: room.id)
+        }))
+        .task { await roomViewModel.onAppear() }
+        .task {
+          roomViewModel.clearRoomBookings()
+          await roomViewModel.getRoomBookings(roomId: room.id)
+        }
+  }
+
   // MARK: Private
 
   @State private var buildingPath = NavigationPath()
+  @State private var mapPath = NavigationPath()
   @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
@@ -97,7 +108,8 @@ extension LiveMapViewModel {
 }
 
 extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel.preview
+  @Entry var buildingViewModel: LiveBuildingViewModel = LiveBuildingViewModel
+    .preview
   @Entry var mapViewModel: LiveMapViewModel = LiveMapViewModel.preview
   @Entry var roomViewModel: LiveRoomViewModel = LiveRoomViewModel.preview
 }
@@ -106,8 +118,10 @@ extension EnvironmentValues {
   ContentView()
     .defaultTheme()
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
-    .environment(\.mapViewModel, MainActor.assumeIsolated {
-      PreviewMapViewModel()
-    })
+    .environment(
+      \.mapViewModel,
+      MainActor.assumeIsolated {
+        PreviewMapViewModel()
+      })
     .environment(\.roomViewModel, PreviewRoomViewModel())
 }
