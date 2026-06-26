@@ -40,6 +40,7 @@ struct ContentView: View {
         roomDetailsView(for: room)
       }
       MapTabView(
+        path: $mapPath,
         mapViewModel: mapViewModel,
         roomImageProvider: { roomID in
           RoomImage[roomID]
@@ -73,6 +74,7 @@ struct ContentView: View {
   // MARK: Private
 
   @State private var buildingPath = NavigationPath()
+  @State private var mapPath = NavigationPath()
   @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
