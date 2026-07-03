@@ -61,6 +61,15 @@ public final actor MockApolloURLSession: ApolloURLSession {
     nextResponses[_GraphQLQueryMetatypeWrapper(graphQLQueryType)]
   }
 
+  /// Sets a handler for a specific response type
+  public func setResponseHandler<T: GraphQLQuery>(
+    for queryType: T.Type = T.self,
+    handler: @Sendable @escaping (_ query: String, _ operationName: String?) async throws -> (data: Data, response: URLResponse))
+  {
+    // Set the handler for the query type
+    responseHandlers[_GraphQLQueryMetatypeWrapper(queryType)] = handler
+  }
+
   /// Removes the saved response for a query type
   ///
   /// - Parameters:
@@ -69,7 +78,7 @@ public final actor MockApolloURLSession: ApolloURLSession {
     nextResponses.removeValue(forKey: _GraphQLQueryMetatypeWrapper(graphQLQueryType))
   }
 
-  public func chunks(for request: URLRequest) throws -> (any Apollo.AsyncChunkSequence, URLResponse) {
+  public func chunks(for request: URLRequest) async throws -> (any Apollo.AsyncChunkSequence, URLResponse) {
     // Requests should be sent by the ApolloClient, should ideally never be null
     guard request.url != nil, let bodyData = request.httpBody else {
       throw Error.badRequest
@@ -86,7 +95,7 @@ public final actor MockApolloURLSession: ApolloURLSession {
     let _ = body["variables"] as? [String: Any]
 
     // Get saved response if it exists
-    let (data, response) = try _savedResponse(query: query, operationName: operationName)
+    let (data, response) = try await _savedResponse(query: query, operationName: operationName)
 
     return (_AsyncSequenceOfOne(value: data), response)
   }
@@ -95,39 +104,49 @@ public final actor MockApolloURLSession: ApolloURLSession {
 
   /// The set next response for each response type
   private var nextResponses: [_GraphQLQueryMetatypeWrapper: (Data, URLResponse)] = [:]
+  private var responseHandlers: [_GraphQLQueryMetatypeWrapper: (String, String?) async throws -> (Data, URLResponse)] = [:]
 
   private func _savedResponse(
     query: String,
     operationName: String?)
-    throws -> (Data, URLResponse)
+    async throws -> (Data, URLResponse)
   {
-    func getSavedResponse(for type: any GraphQLQuery.Type) -> (Data, URLResponse) {
-      let key = _GraphQLQueryMetatypeWrapper(type)
-      let nextResponse = nextResponses[key]!
-      if clearOnRequest {
-        nextResponses.removeValue(forKey: key)
+    func getSavedResponse(for typeKey: _GraphQLQueryMetatypeWrapper) async throws -> (Data, URLResponse) {
+      // Use a saved response first if it exists
+      if let nextResponse = nextResponses[typeKey] {
+        if clearOnRequest {
+          nextResponses.removeValue(forKey: typeKey)
+        }
+        return nextResponse
       }
-      return nextResponse
+
+      // Otherwise use a response handler
+      if let responseHandler = responseHandlers[typeKey] {
+        return try await responseHandler(query, operationName)
+      }
+
+      preconditionFailure("unreachable, function assumes a response is set or a handler")
     }
 
     // Get all saved response types
-    let savedResponseTypes = nextResponses.keys.map(\.value)
+    let savedResponseTypes = Set(nextResponses.keys)
+      .union(responseHandlers.keys)
 
     // Check if we have a matching saved response
     for type in savedResponseTypes {
       // Use operationName if possible
       if let operationName {
-        if type.operationName == operationName {
-          return getSavedResponse(for: type)
+        if type.value.operationName == operationName {
+          return try await getSavedResponse(for: type)
         }
       }
 
       // Otherwise fallback on using query
       if
-        let definition = type.operationDocument.definition,
+        let definition = type.value.operationDocument.definition,
         definition.queryDocument == query
       {
-        return getSavedResponse(for: type)
+        return try await getSavedResponse(for: type)
       }
     }
 

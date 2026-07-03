@@ -8,9 +8,9 @@
 import BuildingModels
 import Dispatch
 import Foundation
+import Networking
 import OSLog
 import VISOR
-import Networking
 
 // MARK: - BuildingsCache
 
@@ -154,29 +154,10 @@ extension OnDiskBuildingsCache: BuildingsCache {
 
 }
 
-// MARK: - FileBackedCodable
+// MARK: - FileBackedCodable + BuildingsCache
 
 extension FileBackedCodable: BuildingsCache where T == [Building] {
-  
-  public func getBuildings() async throws -> [Building]? {
-    try await getValue()
-  }
-  
-  public func setBuildings(_ buildings: [Building]?) async throws {
-    try await setValue(buildings)
-  }
-  
-  public func clear() async throws {
-    try await setValue(nil)
-  }
-  
-  public var lastUpdated: Date? {
-    get throws {
-      guard let version = cachedFileVersion else { return nil }
-      return version.modificationDate
-    }
-  }
-  
+
   public static let sharedBuildingsCache = Result<FileBackedCodable, any Error> {
     let fm = FileManager.default
 
@@ -191,5 +172,24 @@ extension FileBackedCodable: BuildingsCache where T == [Building] {
 
     return FileBackedCodable(fileURL: buildingsCacheURL)
   }
-  
+
+  public var lastUpdated: Date? {
+    get throws {
+      guard let version = cachedFileVersion else { return nil }
+      return version.modificationDate
+    }
+  }
+
+  public func getBuildings() async throws -> [Building]? {
+    try await getValue()
+  }
+
+  public func setBuildings(_ buildings: [Building]?) async throws {
+    try await setValue(buildings)
+  }
+
+  public func clear() async throws {
+    try await setValue(nil)
+  }
+
 }
