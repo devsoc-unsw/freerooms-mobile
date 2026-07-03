@@ -71,6 +71,39 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.overallRating = overallRating
   }
 
+  // MARK: - GraphQL Conversion
+
+  /// Create a new ``Room`` from a GraphQL query result
+  public init?(from graphQLRoom: DevSocAPI.AllRoomQuery.Data.Room) {
+    guard
+      let lat = Double(graphQLRoom.lat),
+      let long = Double(graphQLRoom.long)
+    else {
+      return nil
+    }
+
+    self.init(
+      abbreviation: graphQLRoom.abbr,
+      accessibility: graphQLRoom.accessibility,
+      audioVisual: graphQLRoom.audiovisual,
+      buildingId: graphQLRoom.buildingId,
+      capacity: graphQLRoom.capacity,
+      floor: graphQLRoom.floor,
+      id: graphQLRoom.id,
+      infoTechnology: graphQLRoom.infotechnology,
+      latitude: lat,
+      longitude: long,
+      microphone: graphQLRoom.microphone,
+      name: graphQLRoom.name,
+      school: graphQLRoom.school,
+      seating: graphQLRoom.seating,
+      usage: graphQLRoom.usage,
+      service: graphQLRoom.service,
+      writingMedia: graphQLRoom.writingMedia,
+      endTime: nil,
+      overallRating: nil)
+  }
+
   // MARK: Public
 
   public static let exampleOne = Room(
@@ -207,29 +240,6 @@ public struct Room: Equatable, Identifiable, Hashable {
     formatter.dateFormat = "h:mm a"
     return formatter
   }()
-
-  // MARK: - GraphQL Conversion
-
-//  public init?(from graphQLRoom: DevSocAPI.AllRoomQuery.Data.Room) {
-//    self.init(
-//      abbreviation: graphQLRoom.abbr,
-//      accessibility: graphQLRoom.acc,
-//      audioVisual: <#T##[String]#>,
-//      buildingId: <#T##String#>,
-//      capacity: <#T##Int#>,
-//      floor: <#T##String?#>,
-//      id: <#T##String#>,
-//      infoTechnology: <#T##[String]#>,
-//      latitude: <#T##Double#>,
-//      longitude: <#T##Double#>,
-//      microphone: <#T##[String]#>,
-//      name: <#T##String#>,
-//      school: <#T##String#>,
-//      seating: <#T##String?#>,
-//      usage: <#T##String#>,
-//      service: <#T##[String]#>,
-//      writingMedia: <#T##[String]#>)
-//  }
 
 }
 
