@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 26/6/2025.
 //
 
+import DevSocAPI
 import Foundation
 
 // MARK: - Room
@@ -207,4 +208,37 @@ public struct Room: Equatable, Identifiable, Hashable {
     return formatter
   }()
 
+  // MARK: - GraphQL Conversion
+
+//  public init?(from graphQLRoom: DevSocAPI.AllRoomQuery.Data.Room) {
+//    self.init(
+//      abbreviation: graphQLRoom.abbr,
+//      accessibility: graphQLRoom.acc,
+//      audioVisual: <#T##[String]#>,
+//      buildingId: <#T##String#>,
+//      capacity: <#T##Int#>,
+//      floor: <#T##String?#>,
+//      id: <#T##String#>,
+//      infoTechnology: <#T##[String]#>,
+//      latitude: <#T##Double#>,
+//      longitude: <#T##Double#>,
+//      microphone: <#T##[String]#>,
+//      name: <#T##String#>,
+//      school: <#T##String#>,
+//      seating: <#T##String?#>,
+//      usage: <#T##String#>,
+//      service: <#T##[String]#>,
+//      writingMedia: <#T##[String]#>)
+//  }
+
+}
+
+import Apollo
+import ApolloAPI
+import Networking
+import Playgrounds
+
+#Playground {
+  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
+  let result = try await client.fetch(query: AllRoomQuery())
 }
