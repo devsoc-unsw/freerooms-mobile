@@ -39,44 +39,44 @@ nonisolated public struct AllRoomQuery: GraphQLQuery {
       @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
         .field("__typename", String.self),
         .field("abbr", String.self),
-        .field("accessibility", DevSocAPI._Text.self),
-        .field("audiovisual", DevSocAPI._Text.self),
+        .field("accessibility", [DevSocAPI._Text].self),
+        .field("audiovisual", [DevSocAPI._Text].self),
         .field("buildingId", String.self),
         .field("capacity", Int.self),
         .field("floor", DevSocAPI.Floortypeenum?.self),
         .field("id", String.self),
-        .field("infotechnology", DevSocAPI._Text.self),
+        .field("infotechnology", [DevSocAPI._Text].self),
         .field("lat", DevSocAPI.Float8.self),
         .field("long", DevSocAPI.Float8.self),
-        .field("microphone", DevSocAPI._Text.self),
+        .field("microphone", [DevSocAPI._Text].self),
         .field("name", String.self),
         .field("school", String.self),
         .field("seating", DevSocAPI.Seatingtypeenum?.self),
-        .field("service", DevSocAPI._Text.self),
+        .field("service", [DevSocAPI._Text].self),
         .field("usage", String.self),
-        .field("writingMedia", DevSocAPI._Text.self),
+        .field("writingMedia", [DevSocAPI._Text].self),
       ] }
       @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
         AllRoomQuery.Data.Room.self
       ] }
 
       public var abbr: String { __data["abbr"] }
-      public var accessibility: DevSocAPI._Text { __data["accessibility"] }
-      public var audiovisual: DevSocAPI._Text { __data["audiovisual"] }
+      public var accessibility: [DevSocAPI._Text] { __data["accessibility"] }
+      public var audiovisual: [DevSocAPI._Text] { __data["audiovisual"] }
       public var buildingId: String { __data["buildingId"] }
       public var capacity: Int { __data["capacity"] }
       public var floor: DevSocAPI.Floortypeenum? { __data["floor"] }
       public var id: String { __data["id"] }
-      public var infotechnology: DevSocAPI._Text { __data["infotechnology"] }
+      public var infotechnology: [DevSocAPI._Text] { __data["infotechnology"] }
       public var lat: DevSocAPI.Float8 { __data["lat"] }
       public var long: DevSocAPI.Float8 { __data["long"] }
-      public var microphone: DevSocAPI._Text { __data["microphone"] }
+      public var microphone: [DevSocAPI._Text] { __data["microphone"] }
       public var name: String { __data["name"] }
       public var school: String { __data["school"] }
       public var seating: DevSocAPI.Seatingtypeenum? { __data["seating"] }
-      public var service: DevSocAPI._Text { __data["service"] }
+      public var service: [DevSocAPI._Text] { __data["service"] }
       public var usage: String { __data["usage"] }
-      public var writingMedia: DevSocAPI._Text { __data["writingMedia"] }
+      public var writingMedia: [DevSocAPI._Text] { __data["writingMedia"] }
     }
   }
 }
