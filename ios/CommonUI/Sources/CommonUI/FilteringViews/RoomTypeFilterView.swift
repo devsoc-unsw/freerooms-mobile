@@ -23,7 +23,7 @@ public struct RoomTypeFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 15) {
+    VStack(spacing: FilterSheetLayout.contentSpacing) {
       // Title
       Text("Room Types")
         .font(.title2)
@@ -31,7 +31,12 @@ public struct RoomTypeFilterView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       // Room type grid
-      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: 12) {
+      LazyVGrid(
+        columns: Array(
+          repeating: GridItem(.flexible(), spacing: FilterSheetLayout.optionSpacing),
+          count: FilterSheetLayout.optionColumnCount),
+        spacing: FilterSheetLayout.optionSpacing)
+      {
         ForEach(RoomType.allCases) { roomType in
           RoomTypeButton(
             roomType: roomType,
@@ -49,7 +54,7 @@ public struct RoomTypeFilterView: View {
 
       SelectButton(onSelect: onSelect)
     }
-    .padding(.horizontal, 20)
+    .padding(.horizontal, FilterSheetLayout.horizontalPadding)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
   }
@@ -94,17 +99,24 @@ private struct RoomTypeButton: View {
         .fontWeight(.medium)
         .foregroundColor(isSelected ? .primary : .primary)
         .frame(maxWidth: .infinity)
-        .frame(height: 44)
-        .background(isSelected ? theme.accent.primary.opacity(0.3) : Color.gray.opacity(0.1))
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(isSelected ? Color.gray.opacity(0.3) : Color.clear, lineWidth: 1))
-        .cornerRadius(8)
+        .frame(height: FilterSheetLayout.optionHeight)
+        .background(isSelected
+          ? theme.accent.primary.opacity(Self.selectedBackgroundOpacity)
+          : Color.gray.opacity(FilterSheetLayout.unselectedOptionBackgroundOpacity))
+          .overlay(
+            RoundedRectangle(cornerRadius: FilterSheetLayout.optionCornerRadius)
+              .stroke(
+                isSelected ? Color.gray.opacity(Self.selectedStrokeOpacity) : Color.clear,
+                lineWidth: FilterSheetLayout.optionStrokeWidth))
+          .cornerRadius(FilterSheetLayout.optionCornerRadius)
     }
     .buttonStyle(PlainButtonStyle())
   }
 
   // MARK: Private
+
+  private static let selectedBackgroundOpacity = 0.3
+  private static let selectedStrokeOpacity = 0.3
 
   @Environment(Theme.self) private var theme
 }

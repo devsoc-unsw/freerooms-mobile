@@ -22,7 +22,7 @@ public struct DurationFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 15) {
+    VStack(spacing: FilterSheetLayout.contentSpacing) {
       Text("Duration")
         .font(.title2)
         .fontWeight(.bold)
@@ -34,13 +34,13 @@ public struct DurationFilterView: View {
         }
       }
       .pickerStyle(.segmented)
-      .frame(height: 44 * 1.4)
+      .frame(height: FilterSheetLayout.optionHeight * Self.segmentedPickerHeightMultiplier)
 
       ClearButton(filterName: "Duration", clearFilter: roomViewModel.clearDurationFilter, onSelect: onSelect)
 
       SelectButton(onSelect: onSelect)
     }
-    .padding(.horizontal, 20)
+    .padding(.horizontal, FilterSheetLayout.horizontalPadding)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
     .onAppear {
@@ -50,6 +50,8 @@ public struct DurationFilterView: View {
   }
 
   // MARK: Private
+
+  private static let segmentedPickerHeightMultiplier: CGFloat = 1.4
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
   @State private var selectedDuration = Duration.oneHour

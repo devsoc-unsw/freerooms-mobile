@@ -17,7 +17,7 @@ struct FloatingFilterMenuView: View {
   @Binding var showingFilterMenu: Bool
 
   var body: some View {
-    VStack(alignment: .trailing, spacing: 10) {
+    VStack(alignment: .trailing, spacing: Self.menuSpacing) {
       if showingFilterMenu {
         filterMenuAction("Date", systemImage: "calendar") {
           activeFilterSheet = .date
@@ -41,25 +41,41 @@ struct FloatingFilterMenuView: View {
       }
 
       Button {
-        withAnimation(.spring(duration: 0.25)) {
+        withAnimation(.spring(duration: Self.animationDuration)) {
           showingFilterMenu.toggle()
         }
       } label: {
         Image(systemName: showingFilterMenu ? "xmark" : "line.3.horizontal.decrease")
-          .font(.system(size: 20, weight: .semibold))
+          .font(.system(size: Self.toggleIconSize, weight: .semibold))
           .foregroundStyle(theme.accent.primary)
-          .frame(width: 56, height: 56)
+          .frame(width: Self.toggleButtonSize, height: Self.toggleButtonSize)
           .background(.regularMaterial)
           .clipShape(Circle())
-          .shadow(color: .black.opacity(0.15), radius: 8, y: 3)
+          .shadow(
+            color: .black.opacity(Self.toggleShadowOpacity),
+            radius: Self.toggleShadowRadius,
+            y: Self.toggleShadowYOffset)
       }
       .accessibilityLabel(showingFilterMenu ? "Close filters" : "Open filters")
       .accessibilityHint("Shows filter options near the tab bar")
     }
-    .animation(.spring(duration: 0.25), value: showingFilterMenu)
+    .animation(.spring(duration: Self.animationDuration), value: showingFilterMenu)
   }
 
   // MARK: Private
+
+  private static let menuSpacing: CGFloat = 10
+  private static let actionHorizontalPadding: CGFloat = 12
+  private static let actionVerticalPadding: CGFloat = 10
+  private static let actionShadowOpacity = 0.12
+  private static let actionShadowRadius: CGFloat = 6
+  private static let actionShadowYOffset: CGFloat = 2
+  private static let animationDuration = 0.25
+  private static let toggleButtonSize: CGFloat = 56
+  private static let toggleIconSize: CGFloat = 20
+  private static let toggleShadowOpacity = 0.15
+  private static let toggleShadowRadius: CGFloat = 8
+  private static let toggleShadowYOffset: CGFloat = 3
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
@@ -77,11 +93,14 @@ struct FloatingFilterMenuView: View {
       Label(title, systemImage: systemImage)
         .font(.subheadline.weight(.semibold))
         .foregroundStyle(role == .destructive ? theme.list.red : theme.label.primary)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, Self.actionHorizontalPadding)
+        .padding(.vertical, Self.actionVerticalPadding)
         .background(.regularMaterial)
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.12), radius: 6, y: 2)
+        .shadow(
+          color: .black.opacity(Self.actionShadowOpacity),
+          radius: Self.actionShadowRadius,
+          y: Self.actionShadowYOffset)
     }
     .buttonStyle(.plain)
   }

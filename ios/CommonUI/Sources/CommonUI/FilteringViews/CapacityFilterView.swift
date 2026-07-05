@@ -25,7 +25,7 @@ public struct CapacityFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 15) {
+    VStack(spacing: FilterSheetLayout.contentSpacing) {
       // Title
       Text("Capacity")
         .font(.title2)
@@ -33,15 +33,17 @@ public struct CapacityFilterView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       // Capacity input
-      VStack(alignment: .leading, spacing: 16) {
+      VStack(alignment: .leading, spacing: Self.fieldGroupSpacing) {
         Text("Minimum capacity")
           .font(.body)
           .foregroundColor(.secondary)
 
         // Quick picks so users don't need to type a value.
         LazyVGrid(
-          columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2),
-          spacing: 12)
+          columns: Array(
+            repeating: GridItem(.flexible(), spacing: FilterSheetLayout.optionSpacing),
+            count: FilterSheetLayout.optionColumnCount),
+          spacing: FilterSheetLayout.optionSpacing)
         {
           ForEach(Self.quickCapacityOptions, id: \.self) { option in
             capacityPresetButton(for: option)
@@ -63,7 +65,7 @@ public struct CapacityFilterView: View {
 
       SelectButton(onSelect: onSelect)
     }
-    .padding(.horizontal, 20)
+    .padding(.horizontal, FilterSheetLayout.horizontalPadding)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
   }
@@ -71,6 +73,9 @@ public struct CapacityFilterView: View {
   // MARK: Private
 
   private static let quickCapacityOptions: [Int] = [10, 25, 50, 100]
+  private static let fieldGroupSpacing: CGFloat = 16
+  private static let selectedPresetBackgroundOpacity = 0.25
+  private static let presetCornerRadius: CGFloat = 10
 
   @Binding private var selectedCapacity: Int?
   @Environment(LiveRoomViewModel.self) private var roomViewModel
@@ -88,14 +93,16 @@ public struct CapacityFilterView: View {
         .font(.body)
         .fontWeight(.semibold)
         .frame(maxWidth: .infinity)
-        .frame(height: 44)
+        .frame(height: FilterSheetLayout.optionHeight)
         .background(selectedCapacity == option
-          ? theme.accent.primary.opacity(0.25)
-          : Color.gray.opacity(0.1))
+          ? theme.accent.primary.opacity(Self.selectedPresetBackgroundOpacity)
+          : Color.gray.opacity(FilterSheetLayout.unselectedOptionBackgroundOpacity))
           .overlay(
-            RoundedRectangle(cornerRadius: 10)
-              .stroke(selectedCapacity == option ? theme.accent.primary : Color.clear, lineWidth: 1))
-          .cornerRadius(10)
+            RoundedRectangle(cornerRadius: Self.presetCornerRadius)
+              .stroke(
+                selectedCapacity == option ? theme.accent.primary : Color.clear,
+                lineWidth: FilterSheetLayout.optionStrokeWidth))
+          .cornerRadius(Self.presetCornerRadius)
     }
     .buttonStyle(.plain)
   }

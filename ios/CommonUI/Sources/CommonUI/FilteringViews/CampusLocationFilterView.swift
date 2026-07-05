@@ -26,7 +26,7 @@ public struct CampusLocationFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 15) {
+    VStack(spacing: FilterSheetLayout.contentSpacing) {
       // Title
       Text("Campus Location")
         .font(.title2)
@@ -34,7 +34,7 @@ public struct CampusLocationFilterView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       // Campus location options
-      VStack(spacing: 12) {
+      VStack(spacing: FilterSheetLayout.optionSpacing) {
         ForEach(CampusLocation.allCases) { location in
           CampusLocationButton(
             location: location,
@@ -49,13 +49,15 @@ public struct CampusLocationFilterView: View {
 
       SelectButton(onSelect: onSelect)
     }
-    .padding(.horizontal, 20)
+    .padding(.horizontal, FilterSheetLayout.horizontalPadding)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
-    .cornerRadius(20, corners: [.topLeft, .topRight])
+    .cornerRadius(Self.sheetCornerRadius, corners: [.topLeft, .topRight])
   }
 
   // MARK: Private
+
+  private static let sheetCornerRadius: CGFloat = 20
 
   @Binding private var selectedCampusLocation: CampusLocation?
 
@@ -87,17 +89,21 @@ private struct CampusLocationButton: View {
         .fontWeight(.medium)
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
-        .frame(height: 44)
-        .background(isSelected ? theme.accent.primary.opacity(0.1) : Color.gray.opacity(0.1))
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(isSelected ? Color.orange : Color.clear, lineWidth: 1))
-        .cornerRadius(8)
+        .frame(height: FilterSheetLayout.optionHeight)
+        .background(isSelected
+          ? theme.accent.primary.opacity(Self.selectedBackgroundOpacity)
+          : Color.gray.opacity(FilterSheetLayout.unselectedOptionBackgroundOpacity))
+          .overlay(
+            RoundedRectangle(cornerRadius: FilterSheetLayout.optionCornerRadius)
+              .stroke(isSelected ? Color.orange : Color.clear, lineWidth: FilterSheetLayout.optionStrokeWidth))
+          .cornerRadius(FilterSheetLayout.optionCornerRadius)
     }
     .buttonStyle(PlainButtonStyle())
   }
 
   // MARK: Private
+
+  private static let selectedBackgroundOpacity = 0.1
 
   @Environment(Theme.self) private var theme
 }

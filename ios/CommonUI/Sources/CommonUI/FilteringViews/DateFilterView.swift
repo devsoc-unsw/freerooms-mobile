@@ -25,7 +25,7 @@ public struct DateFilterView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 15) {
+    VStack(spacing: FilterSheetLayout.contentSpacing) {
       // Title
       Text("Date")
         .font(.title2)
@@ -42,8 +42,8 @@ public struct DateFilterView: View {
 
       // Divider
       Rectangle()
-        .fill(Color.gray.opacity(0.3))
-        .frame(height: 2)
+        .fill(Color.gray.opacity(Self.dividerOpacity))
+        .frame(height: Self.dividerHeight)
 
       // Time selection
       HStack {
@@ -61,12 +61,15 @@ public struct DateFilterView: View {
 
       SelectButton(onSelect: onSelect)
     }
-    .padding(.horizontal, 20)
+    .padding(.horizontal, FilterSheetLayout.horizontalPadding)
     .padding(.top, FilterSheetLayout.contentTopPadding)
     .padding(.bottom, FilterSheetLayout.contentBottomPadding)
   }
 
   // MARK: Private
+
+  private static let dividerHeight: CGFloat = 2
+  private static let dividerOpacity = 0.3
 
   @Binding private var selectedDate: Date
   @Environment(LiveRoomViewModel.self) private var roomViewModel

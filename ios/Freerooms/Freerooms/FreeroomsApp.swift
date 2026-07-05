@@ -191,9 +191,6 @@ struct FreeroomsApp: App {
     configuration.timeoutIntervalForRequest = 5
     configuration.timeoutIntervalForResource = 5
     configuration.waitsForConnectivity = false
-    configuration.httpAdditionalHeaders = [
-      "Accept-Encoding": "identity",
-    ]
     return URLSessionHTTPClient(session: URLSession(configuration: configuration))
   }
 

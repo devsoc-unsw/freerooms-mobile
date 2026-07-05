@@ -24,11 +24,11 @@ public struct SelectButton: View {
       Text("Select")
         .font(.headline)
         .frame(maxWidth: .infinity)
-        .frame(height: 35)
+        .frame(height: Self.buttonHeight)
     }
     .buttonStyle(.borderedProminent)
     .tint(theme.accent.primary)
-    .buttonBorderShape(.roundedRectangle(radius: 20))
+    .buttonBorderShape(.roundedRectangle(radius: Self.cornerRadius))
   }
 
   // MARK: Internal
@@ -36,6 +36,9 @@ public struct SelectButton: View {
   let onSelect: () -> Void
 
   // MARK: Private
+
+  private static let buttonHeight: CGFloat = 35
+  private static let cornerRadius: CGFloat = 20
 
   @Environment(Theme.self) private var theme
 }
