@@ -87,7 +87,6 @@ public struct CapacityFilterView: View {
   private func capacityPresetButton(for option: Int) -> some View {
     Button {
       selectedCapacity = option
-      onSelect()
     } label: {
       Text("\(option)")
         .font(.body)

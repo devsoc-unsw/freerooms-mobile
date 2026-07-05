@@ -50,7 +50,7 @@ public struct RoomTypeFilterView: View {
       ClearButton(
         filterName: "All Room Types",
         clearFilter: roomViewModel.clearRoomTypeFilter,
-        onSelect: applyWithoutDismissing)
+        onSelect: onSelect)
 
       SelectButton(onSelect: onSelect)
     }
@@ -72,13 +72,6 @@ public struct RoomTypeFilterView: View {
     } else {
       selectedRoomTypes.insert(roomType)
     }
-    applyWithoutDismissing()
-  }
-
-  /// Re-runs the backend filter using the current selection but leaves the
-  /// sheet open so the user can keep toggling chips and watch results update.
-  private func applyWithoutDismissing() {
-    Task { await roomViewModel.applyFilters() }
   }
 }
 
