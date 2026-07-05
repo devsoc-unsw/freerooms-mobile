@@ -19,20 +19,10 @@ struct FloatingFilterMenuView: View {
   var body: some View {
     VStack(alignment: .trailing, spacing: Self.menuSpacing) {
       if showingFilterMenu {
-        filterMenuAction("Date", systemImage: "calendar") {
-          activeFilterSheet = .date
-        }
-        filterMenuAction("Duration", systemImage: "clock") {
-          activeFilterSheet = .duration
-        }
-        filterMenuAction("Room Type", systemImage: "square.grid.2x2") {
-          activeFilterSheet = .roomType
-        }
-        filterMenuAction("Campus", systemImage: "building.2") {
-          activeFilterSheet = .campusLocation
-        }
-        filterMenuAction("Capacity", systemImage: "person.2") {
-          activeFilterSheet = .capacity
+        ForEach(FilterMenuItem.allCases) { item in
+          filterMenuAction(item.title, systemImage: item.systemImage) {
+            activeFilterSheet = item.sheet
+          }
         }
         filterMenuAction("Reset all", systemImage: "arrow.counterclockwise", role: .destructive) {
           roomViewModel.clearAllFilters()

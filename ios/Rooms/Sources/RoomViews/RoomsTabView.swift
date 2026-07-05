@@ -12,18 +12,6 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
-// MARK: - RoomFilterSheet
-
-enum RoomFilterSheet: String, Identifiable {
-  case date
-  case roomType
-  case duration
-  case campusLocation
-  case capacity
-
-  var id: String { rawValue }
-}
-
 // MARK: - RoomsTabView
 
 public struct RoomsTabView<Destination: View>: View {
