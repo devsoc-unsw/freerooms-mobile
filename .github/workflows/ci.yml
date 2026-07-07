@@ -46,6 +46,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Start simulator boot
+        run: xcrun simctl boot "iPhone 17" || true
       - name: Cache Xcode build data
         uses: irgaly/xcode-cache@v1
         with:
@@ -56,8 +58,21 @@ jobs:
           swiftpm-package-resolved-file: |
             ios/**/Package.resolved
           swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
+      - name: Wait for simulator boot
+        run: xcrun simctl bootstatus "iPhone 17" -b
       - name: Run tests
-        run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3"
+        run: |
+          XCTESTRUN_FILE="$(find DerivedData -name '*.xctestrun' -print -quit)"
+          if [ -z "$XCTESTRUN_FILE" ]; then
+            echo "No .xctestrun file found in DerivedData"
+            exit 1
+          fi
+          echo "Using .xctestrun file: $XCTESTRUN_FILE"
+          xcodebuild test-without-building \
+            -xctestrun "$XCTESTRUN_FILE" \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -parallel-testing-enabled YES \
+            -parallel-testing-worker-count 3
   build:
     name: Build
     runs-on: macos-26
