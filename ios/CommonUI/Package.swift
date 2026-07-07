@@ -22,8 +22,10 @@ let package = Package(
     .target(
       name: "CommonUI",
       dependencies: [
-        .product(name: "RoomModels", package: "Rooms"),
         .product(name: "BuildingModels", package: "Buildings"),
+//        .product(name: "BuildingViewModels", package: "Buildings"),
+        .product(name: "RoomModels", package: "Rooms"),
+        .product(name: "RoomViewModels", package: "Rooms"),
       ],
       resources: [.process("Resources")],
       swiftSettings: .defaultSettings),

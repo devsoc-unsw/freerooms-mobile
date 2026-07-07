@@ -30,4 +30,19 @@ enum RoomLayoutConstants {
   static let toolbarViewToggleIconWidth: CGFloat = 22
   static let toolbarIconPadding: CGFloat = 5
 
+  // MARK: - Room Lists
+
+  static let backgroundOpacity = 0.1
+  static let buildingHeroImageCornerRadius: CGFloat = 15
+  static let buildingHeroImageHeightFraction: CGFloat = 0.25
+  static let cardGridSpacing: CGFloat = 24
+  static let cardShadowOpacity = 0.2
+  static let cardShadowRadius: CGFloat = 5
+  static let contentHorizontalPadding: CGFloat = 16
+  static let filterMenuBottomPadding: CGFloat = 8
+  static let filterMenuTrailingPadding: CGFloat = 16
+  static let listRowVerticalPadding: CGFloat = 5
+  static let sectionHeaderLeadingPadding: CGFloat = 10
+  static let sectionHeaderTopPadding: CGFloat = 10
+
 }
