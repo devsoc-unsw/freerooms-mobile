@@ -7,22 +7,35 @@
 import SwiftUI
 
 public struct XButton: View {
+
+  // MARK: Lifecycle
+
   public init(action: @escaping () -> Void) {
     self.action = action
   }
 
-  let action: () -> Void
+  // MARK: Public
 
   public var body: some View {
     Button(action: action) {
       ZStack {
         Circle()
-          .fill(Color.gray.opacity(0.2))
-          .frame(width: 42, height: 42)
+          .fill(Color.gray.opacity(Self.backgroundOpacity))
+          .frame(width: Self.buttonSize, height: Self.buttonSize)
         Image(systemName: "xmark")
-          .font(.system(size: 20, weight: .medium))
+          .font(.system(size: Self.iconSize, weight: .medium))
           .foregroundStyle(Color.black)
       }
     }
   }
+
+  // MARK: Internal
+
+  let action: () -> Void
+
+  // MARK: Private
+
+  private static let backgroundOpacity = 0.2
+  private static let buttonSize: CGFloat = 42
+  private static let iconSize: CGFloat = 20
 }

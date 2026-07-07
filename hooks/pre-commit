@@ -24,7 +24,7 @@ fi
 if command -v swiftlint >/dev/null 2>&1
 then
     echo "Running SwiftLint..."
-    (cd "$TOP_LEVEL" && swiftlint --config ios/.swiftlint.yml)
+		(cd "$TOP_LEVEL/ios" && swiftlint --strict --config .swiftlint.yml)
     # the script will exit here if swiftlint fails
 else
     echo "Warning: swiftlint not found."

@@ -14,9 +14,8 @@ struct RoomBookingsListView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel, dateSelect: Binding<Date>) {
+  public init(room: Room, dateSelect: Binding<Date>) {
     self.room = room
-    self.roomViewModel = roomViewModel
     _dateSelect = dateSelect
   }
 
@@ -53,15 +52,15 @@ struct RoomBookingsListView: View {
         }
       }
       .scrollTargetLayout()
-      .padding(.trailing, 8)
+      .padding(.trailing, Self.gridTrailingPadding)
 
       // Overlaid booking cards
       ForEach(filteredCurrentDayBookings, id: \.self) { booking in
         RoomBookingCardView(
           room: room,
           booking: booking)
-          .padding(.leading, 60)
-          .padding(.trailing, 10)
+          .padding(.leading, Self.bookingLeadingPadding)
+          .padding(.trailing, Self.bookingTrailingPadding)
       }
     }
     .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
@@ -70,15 +69,21 @@ struct RoomBookingsListView: View {
 
   // MARK: Private
 
+  private static let bookingLeadingPadding: CGFloat = 60
+  private static let bookingTrailingPadding: CGFloat = 10
+  private static let gridTrailingPadding: CGFloat = 8
+
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+
   private let room: Room
-  private var roomViewModel: RoomViewModel
 
 }
 
 #Preview {
-  RoomBookingsListView(
+  let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+  return RoomBookingsListView(
     room: Room.exampleOne,
-    roomViewModel: PreviewRoomViewModel(),
     dateSelect: .constant(Date()))
+    .environment(viewModel)
     .defaultTheme()
 }
