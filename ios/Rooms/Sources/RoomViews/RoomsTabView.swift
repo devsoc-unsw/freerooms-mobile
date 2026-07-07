@@ -188,6 +188,19 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+      .overlay {
+        if showingFilterMenu, !roomViewModel.isLoading {
+          Color.black
+            .opacity(RoomLayoutConstants.filterMenuScrimOpacity)
+            .ignoresSafeArea()
+            .transition(.opacity)
+            .onTapGesture {
+              withAnimation(.spring(duration: RoomLayoutConstants.filterMenuAnimationDuration)) {
+                showingFilterMenu = false
+              }
+            }
+        }
+      }
       .overlay(alignment: .bottomTrailing) {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(

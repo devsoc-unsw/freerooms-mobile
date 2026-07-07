@@ -39,7 +39,9 @@ enum RoomLayoutConstants {
   static let cardShadowOpacity = 0.2
   static let cardShadowRadius: CGFloat = 5
   static let contentHorizontalPadding: CGFloat = 16
+  static let filterMenuAnimationDuration = 0.25
   static let filterMenuBottomPadding: CGFloat = 8
+  static let filterMenuScrimOpacity = 0.42
   static let filterMenuTrailingPadding: CGFloat = 16
   static let listRowVerticalPadding: CGFloat = 5
   static let sectionHeaderLeadingPadding: CGFloat = 10
