@@ -39,9 +39,8 @@ jobs:
           WORKING_DIRECTORY: ios
         with:
           args: --strict --config .swiftlint.yml
-  tests:
-    name: Tests
-    needs: ["build"]
+  ios-tests:
+    name: iOS Tests
     runs-on: macos-26
     timeout-minutes: 20
     steps:
@@ -58,6 +57,8 @@ jobs:
           swiftpm-package-resolved-file: |
             ios/**/Package.resolved
           swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
+      - name: Build for testing
+        run: "xcodebuild build-for-testing -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData"
       - name: Wait for simulator boot
         run: xcrun simctl bootstatus "iPhone 17" -b
       - name: Run tests
@@ -73,25 +74,3 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 3
-  build:
-    name: Build
-    runs-on: macos-26
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-
-      - name: Cache Xcode build data
-        uses: irgaly/xcode-cache@v1
-        with:
-          key: xcode-deriveddata-${{ runner.os }}-${{ github.workflow }}-${{ github.sha }}
-          restore-keys: |
-            xcode-deriveddata-${{ runner.os }}-${{ github.workflow }}-
-          deriveddata-directory: ios/DerivedData
-          swiftpm-package-resolved-file: |
-            ios/**/Package.resolved
-          swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
-
-      - name: Build swift project
-        run: "xcodebuild build-for-testing -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData"
