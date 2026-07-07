@@ -19,8 +19,8 @@ struct RoomBookingCardView: View {
     start = Calendar.current.dateComponents([.hour, .minute], from: booking.start)
     end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
     startMinutes = max(
-      (start.hour ?? defaultTime) * minutesPerHour + (start.minute ?? defaultTime),
-      dayStartHour * minutesPerHour) - (minutesPerHour * dayStartHour)
+      (start.hour ?? Self.defaultTime) * Self.minutesPerHour + (start.minute ?? Self.defaultTime),
+      Self.dayStartHour * Self.minutesPerHour) - (Self.minutesPerHour * Self.dayStartHour)
   }
 
   // MARK: Internal
@@ -28,31 +28,23 @@ struct RoomBookingCardView: View {
   var topRadius: CGFloat {
     switch bookingSize {
     case .small:
-      smallRadius
+      Self.smallRadius
     case .medium:
-      mediumRadius
+      Self.mediumRadius
     }
   }
 
   var bottomRadius: CGFloat {
     switch bookingSize {
     case .small:
-      smallRadius
+      Self.smallRadius
     case .medium:
-      mediumRadius
+      Self.mediumRadius
     }
   }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
-      // Padding and spacing constants
-      let smallVerticalPadding: CGFloat = 1
-      let mediumVerticalPadding: CGFloat = 4
-      let horizontalPadding: CGFloat = 10
-      let spacingMultiplier: CGFloat = 3
-      let smallSpacingMultiplier: CGFloat = 1
-      let mediumSpacingMultiplier: CGFloat = 2
-
       UnevenRoundedRectangle(
         topLeadingRadius: topRadius,
         bottomLeadingRadius: bottomRadius,
@@ -60,31 +52,25 @@ struct RoomBookingCardView: View {
         topTrailingRadius: topRadius)
         .fill(theme.accent.primary)
 
-      VStack(alignment: .leading, spacing: spacingMultiplier * (bookingSize == .small
-          ? smallSpacingMultiplier
-          : mediumSpacingMultiplier))
+      VStack(alignment: .leading, spacing: Self.textSpacingBase * (bookingSize == .small
+          ? Self.smallTextSpacingMultiplier
+          : Self.mediumTextSpacingMultiplier))
       {
-        // Text size constants
-        let smallTimeSize: CGFloat = 8
-        let smallNameSize: CGFloat = 14
-        let mediumNameSize: CGFloat = 20
-        let mediumTimeSize: CGFloat = 12
-
         Text("\(time.0) - \(time.1)")
-          .font(.system(size: bookingSize == .small ? smallTimeSize : mediumTimeSize, weight: .medium))
+          .font(.system(size: bookingSize == .small ? Self.smallTimeFontSize : Self.mediumTimeFontSize, weight: .medium))
 
         Text("\(booking.name)")
-          .font(.system(size: bookingSize == .small ? smallNameSize : mediumNameSize, weight: .medium))
+          .font(.system(size: bookingSize == .small ? Self.smallNameFontSize : Self.mediumNameFontSize, weight: .medium))
       }
-      .padding(.vertical, bookingSize == .small ? smallVerticalPadding : mediumVerticalPadding)
-      .padding(.horizontal, horizontalPadding)
+      .padding(.vertical, bookingSize == .small ? Self.smallVerticalPadding : Self.mediumVerticalPadding)
+      .padding(.horizontal, Self.horizontalPadding)
       .bold()
       .foregroundStyle(.white)
     }
-    .frame(height: (CGFloat(minutesPerSlot) * numberTimeSlots) - frameHeightOffset)
+    .frame(height: (CGFloat(Self.minutesPerSlot) * numberTimeSlots) - Self.frameHeightOffset)
     .offset(
-      x: xOffset,
-      y: CGFloat(startMinutes) + additionalYOffset)
+      x: Self.xOffset,
+      y: CGFloat(startMinutes) + Self.additionalYOffset)
   }
 
   // MARK: Private
@@ -93,22 +79,31 @@ struct RoomBookingCardView: View {
     case small, medium
   }
 
+  private static let additionalYOffset: CGFloat = 2
+  private static let dayStartHour: Int = RoomLayoutConstants.scheduleStartHour
+  private static let defaultTime = 0
+  private static let frameHeightOffset: CGFloat = 4
+  private static let halfHourMinute = 30
+  private static let horizontalPadding: CGFloat = 10
+  private static let mediumNameFontSize: CGFloat = 20
+  private static let mediumRadius: CGFloat = 10
+  private static let mediumTextSpacingMultiplier: CGFloat = 2
+  private static let mediumTimeFontSize: CGFloat = 12
+  private static let mediumVerticalPadding: CGFloat = 4
+  private static let midnightHour = 0
+  private static let minutesPerHour: Int = 60
+  private static let minutesPerSlot: Int = 30
+  private static let smallNameFontSize: CGFloat = 14
+  private static let smallRadius: CGFloat = 8
+  private static let smallTextSpacingMultiplier: CGFloat = 1
+  private static let smallTimeFontSize: CGFloat = 8
+  private static let smallTimeSlotAmount: CGFloat = 1
+  private static let smallVerticalPadding: CGFloat = 1
+  private static let textSpacingBase: CGFloat = 3
+  private static let twelveHourClock = 12
+  private static let xOffset: CGFloat = 0
+
   @Environment(Theme.self) private var theme
-
-  // Global constants
-  private let minutesPerHour: Int = 60
-  private let dayStartHour: Int = 9
-  private let minutesPerSlot: Int = 30
-  private let defaultTime = 0
-
-  // Card radius
-  private let smallRadius: CGFloat = 8
-  private let mediumRadius: CGFloat = 10
-
-  // Booking offset
-  private let additionalYOffset: CGFloat = 2
-  private let frameHeightOffset: CGFloat = 4
-  private let xOffset: CGFloat = 0
 
   private var room: Room
   private var booking: RoomBooking
@@ -116,39 +111,37 @@ struct RoomBookingCardView: View {
   private var end: DateComponents
   private let startMinutes: Int
 
-  private let smallTimeSlotAmount: CGFloat = 1
-
   private var numberTimeSlots: CGFloat {
-    let startTimeMinute = start.minute ?? defaultTime
-    let startTimeHour = start.hour ?? defaultTime
-    let endTimeMinute = end.minute ?? defaultTime
-    let endTimeHour = end.hour ?? defaultTime
+    let startTimeMinute = start.minute ?? Self.defaultTime
+    let startTimeHour = start.hour ?? Self.defaultTime
+    let endTimeMinute = end.minute ?? Self.defaultTime
+    let endTimeHour = end.hour ?? Self.defaultTime
 
-    let startTotalMinutes = startTimeHour * minutesPerHour + startTimeMinute
-    let endTotalMinutes = endTimeHour * minutesPerHour + endTimeMinute
+    let startTotalMinutes = startTimeHour * Self.minutesPerHour + startTimeMinute
+    let endTotalMinutes = endTimeHour * Self.minutesPerHour + endTimeMinute
     let range = abs(endTotalMinutes - startTotalMinutes)
 
     // Remove extra time
     let timeToRemove =
-      if startTimeHour < dayStartHour, endTimeHour > dayStartHour {
-        dayStartHour * minutesPerHour - startTotalMinutes
+      if startTimeHour < Self.dayStartHour, endTimeHour > Self.dayStartHour {
+        Self.dayStartHour * Self.minutesPerHour - startTotalMinutes
       } else {
-        defaultTime
+        Self.defaultTime
       }
-    return CGFloat((range - timeToRemove) / minutesPerSlot)
+    return CGFloat((range - timeToRemove) / Self.minutesPerSlot)
   }
 
   private var time: (String, String) {
-    let startTimeMinute = start.minute ?? defaultTime
-    let startTimeHour = start.hour ?? defaultTime
-    let endTimeMinute = end.minute ?? defaultTime
-    let endTimeHour = end.hour ?? defaultTime
+    let startTimeMinute = start.minute ?? Self.defaultTime
+    let startTimeHour = start.hour ?? Self.defaultTime
+    let endTimeMinute = end.minute ?? Self.defaultTime
+    let endTimeHour = end.hour ?? Self.defaultTime
 
     return ("\(formatHour(startTimeHour, startTimeMinute))", "\(formatHour(endTimeHour, endTimeMinute))")
   }
 
   private var bookingSize: BookingSize {
-    if numberTimeSlots == smallTimeSlotAmount {
+    if numberTimeSlots == Self.smallTimeSlotAmount {
       .small
     } else {
       .medium
@@ -156,18 +149,14 @@ struct RoomBookingCardView: View {
   }
 
   private func formatHour(_ hour: Int, _ minute: Int) -> String {
-    let midnightHour = 0
-    let twelveHourClock = 12
-    let halfHourMinute = 30
-
-    if hour == midnightHour {
-      return "12\(minute >= halfHourMinute ? ":30" : "") AM"
-    } else if hour < twelveHourClock {
-      return "\(hour)\(minute >= halfHourMinute ? ":30" : "") AM"
-    } else if hour == twelveHourClock {
-      return "12\(minute >= halfHourMinute ? ":30" : "") PM"
+    if hour == Self.midnightHour {
+      "12\(minute >= Self.halfHourMinute ? ":30" : "") AM"
+    } else if hour < Self.twelveHourClock {
+      "\(hour)\(minute >= Self.halfHourMinute ? ":30" : "") AM"
+    } else if hour == Self.twelveHourClock {
+      "12\(minute >= Self.halfHourMinute ? ":30" : "") PM"
     } else {
-      return "\(hour - twelveHourClock)\(minute >= halfHourMinute ? ":30" : "") PM"
+      "\(hour - Self.twelveHourClock)\(minute >= Self.halfHourMinute ? ":30" : "") PM"
     }
   }
 

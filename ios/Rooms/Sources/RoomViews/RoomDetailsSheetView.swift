@@ -31,10 +31,10 @@ public struct RoomDetailsSheetView: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: 10) {
+    VStack(alignment: .leading, spacing: Self.contentSpacing) {
       RoomBookingInformationView(room: room, currentRoomRating: roomViewModel.currentRoomRating, isFavourite: $isFavourite)
 
-      VStack(alignment: .leading, spacing: 16) {
+      VStack(alignment: .leading, spacing: Self.bookingSectionSpacing) {
         HStack {
           Text("Room Bookings")
             .font(.headline)
@@ -88,7 +88,7 @@ public struct RoomDetailsSheetView: View {
             ],
             startPoint: .top,
             endPoint: .bottom))
-          .stroke(Color.gray.secondary, lineWidth: 1))
+          .stroke(Color.gray.secondary, lineWidth: Self.bookingSectionBorderWidth))
     }
     .padding()
     .task {
@@ -125,6 +125,9 @@ public struct RoomDetailsSheetView: View {
 
   private static let maxScrollID = Self.middleIndex * 2
   private static let middleIndex = RoomBookingConstants.middleIndex
+  private static let bookingSectionBorderWidth: CGFloat = 1
+  private static let bookingSectionSpacing: CGFloat = 16
+  private static let contentSpacing: CGFloat = 10
 
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel

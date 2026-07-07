@@ -28,11 +28,11 @@ public struct ClearButton: View {
         .font(.body)
         .fontWeight(.medium)
         .frame(maxWidth: .infinity)
-        .frame(height: 35)
+        .frame(height: Self.buttonHeight)
     }
     .buttonStyle(.bordered)
     .tint(.red)
-    .buttonBorderShape(.roundedRectangle(radius: 20))
+    .buttonBorderShape(.roundedRectangle(radius: Self.cornerRadius))
   }
 
   // MARK: Internal
@@ -40,6 +40,11 @@ public struct ClearButton: View {
   let clearFilter: () -> Void
   let onSelect: () -> Void
   let filterName: String
+
+  // MARK: Private
+
+  private static let buttonHeight: CGFloat = 35
+  private static let cornerRadius: CGFloat = 20
 }
 
 #Preview {

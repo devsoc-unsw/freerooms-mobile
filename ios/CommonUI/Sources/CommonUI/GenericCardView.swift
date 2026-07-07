@@ -47,14 +47,14 @@ public struct GenericCardView<
       VStack(spacing: 0) {
         imageProvider(item.id)
           .scaledToFill()
-          .frame(width: cardWidth, height: 116)
+          .frame(width: cardWidth, height: GenericCardViewLayout.imageHeight)
           .clipped()
           .clipShape(
             UnevenRoundedRectangle(
-              topLeadingRadius: 22,
+              topLeadingRadius: GenericCardViewLayout.cornerRadius,
               bottomLeadingRadius: 0,
               bottomTrailingRadius: 0,
-              topTrailingRadius: 22))
+              topTrailingRadius: GenericCardViewLayout.cornerRadius))
 
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
@@ -62,9 +62,9 @@ public struct GenericCardView<
 
         Spacer()
       }
-      .frame(width: cardWidth, height: 173)
+      .frame(width: cardWidth, height: GenericCardViewLayout.cardHeight)
       .background(.white)
-      .clipShape(RoundedRectangle(cornerRadius: 22))
+      .clipShape(RoundedRectangle(cornerRadius: GenericCardViewLayout.cornerRadius))
       .padding(0)
       .buttonStyle(.plain)
       .onPreferenceChange(WidthPreferenceKey.self) {
@@ -99,6 +99,14 @@ public struct GenericCardView<
     items.firstIndex(of: item)!
   }
 
+}
+
+// MARK: - GenericCardViewLayout
+
+private enum GenericCardViewLayout {
+  static let cardHeight: CGFloat = 173
+  static let cornerRadius: CGFloat = 22
+  static let imageHeight: CGFloat = 116
 }
 
 extension GenericCardView where T == Building, ImageContent == CachedImage {

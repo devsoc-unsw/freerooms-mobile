@@ -58,7 +58,7 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
   public var body: some View {
     HStack(spacing: 0) {
-      VStack(alignment: .leading, spacing: 5) {
+      VStack(alignment: .leading, spacing: GenericItemDataRowLayout.contentSpacing) {
         Text(item.name)
           .bold()
           .foregroundStyle(theme.label.primary)
@@ -77,10 +77,10 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
               referenceInstant: roomViewModel.selectedDate,
               isCustomFilterActive: isFilterActive,
               bookings: bookings))
-            .padding(.vertical, 2)
-            .padding(.horizontal, 4)
+            .padding(.vertical, GenericItemDataRowLayout.statusBadgeVerticalPadding)
+            .padding(.horizontal, GenericItemDataRowLayout.statusBadgeHorizontalPadding)
             .background(
-              RoundedRectangle(cornerRadius: 5)
+              RoundedRectangle(cornerRadius: GenericItemDataRowLayout.statusBadgeCornerRadius)
                 .fill(room.contextualStatusBackgroundColor(
                   referenceInstant: roomViewModel.selectedDate,
                   isCustomFilterActive: isFilterActive,
@@ -116,6 +116,15 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
   private let item: T
 
+}
+
+// MARK: - GenericItemDataRowLayout
+
+private enum GenericItemDataRowLayout {
+  static let contentSpacing: CGFloat = 5
+  static let statusBadgeCornerRadius: CGFloat = 5
+  static let statusBadgeHorizontalPadding: CGFloat = 4
+  static let statusBadgeVerticalPadding: CGFloat = 2
 }
 
 #Preview {

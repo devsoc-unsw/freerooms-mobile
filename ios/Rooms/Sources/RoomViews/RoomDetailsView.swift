@@ -106,7 +106,7 @@ public struct RoomDetailsView: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  @State private var detent = PresentationDetent.fraction(0.75)
+  @State private var detent = RoomLayoutConstants.sheetMediumDetent
   @State private var showDetails = true
 
   private let screenHeight = UIScreen.main.bounds.height

@@ -21,4 +21,12 @@ public enum FilterSheetLayout {
   public static let optionCornerRadius: CGFloat = 8
   public static let optionStrokeWidth: CGFloat = 1
   public static let unselectedOptionBackgroundOpacity = 0.1
+
+  // MARK: - Sheet Detents
+
+  public static let capacityDetent = PresentationDetent.fraction(0.47)
+  public static let campusLocationDetent = PresentationDetent.fraction(0.44)
+  public static let dateDetent = PresentationDetent.fraction(0.8)
+  public static let durationDetent = PresentationDetent.fraction(0.32)
+  public static let roomTypeDetent = PresentationDetent.fraction(0.52)
 }

@@ -36,18 +36,18 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 6) {
+    VStack(spacing: GenericCardViewItemLayout.contentSpacing) {
       HStack(alignment: .center, spacing: 0) {
         if let room = item as? Room {
           Text(room.abbreviation)
-            .font(.system(size: 16, weight: .bold))
+            .font(.system(size: GenericCardViewItemLayout.titleFontSize, weight: .bold))
             .foregroundStyle(theme.label.primary)
             .lineLimit(1)
             .truncationMode(.tail)
 
         } else if let building = item as? Building {
           Text(building.name)
-            .font(.system(size: 16, weight: .bold))
+            .font(.system(size: GenericCardViewItemLayout.titleFontSize, weight: .bold))
             .foregroundStyle(theme.label.primary)
             .lineLimit(1)
             .truncationMode(.tail)
@@ -58,31 +58,31 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           HStack(spacing: 0) {
             Text(overallRating.formatted())
               .foregroundStyle(.white)
-              .font(.system(size: 12, weight: .semibold))
-              .padding(.leading, 2)
+              .font(.system(size: GenericCardViewItemLayout.ratingFontSize, weight: .semibold))
+              .padding(.leading, GenericCardViewItemLayout.badgeInnerLeadingPadding)
             Image(systemName: "star.fill")
-              .font(.system(size: 10, weight: .semibold))
+              .font(.system(size: GenericCardViewItemLayout.ratingIconSize, weight: .semibold))
               .foregroundStyle(.white)
           }
-          .padding(.horizontal, 4)
-          .padding(.vertical, 2)
+          .padding(.horizontal, GenericCardViewItemLayout.badgeHorizontalPadding)
+          .padding(.vertical, GenericCardViewItemLayout.badgeVerticalPadding)
           .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: GenericCardViewItemLayout.ratingBadgeCornerRadius)
               .fill(theme.label.tertiary))
         } else {
           HStack(spacing: 0) {
             Text("0")
               .foregroundStyle(.white)
-              .font(.system(size: 12, weight: .semibold))
-              .padding(.leading, 2)
+              .font(.system(size: GenericCardViewItemLayout.ratingFontSize, weight: .semibold))
+              .padding(.leading, GenericCardViewItemLayout.badgeInnerLeadingPadding)
             Image(systemName: "star.fill")
-              .font(.system(size: 10, weight: .semibold))
+              .font(.system(size: GenericCardViewItemLayout.ratingIconSize, weight: .semibold))
               .foregroundStyle(.white)
           }
-          .padding(.horizontal, 4)
-          .padding(.vertical, 2)
+          .padding(.horizontal, GenericCardViewItemLayout.badgeHorizontalPadding)
+          .padding(.vertical, GenericCardViewItemLayout.badgeVerticalPadding)
           .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: GenericCardViewItemLayout.ratingBadgeCornerRadius)
               .fill(theme.label.tertiary))
         }
       }
@@ -100,24 +100,24 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
               referenceInstant: roomViewModel.selectedDate,
               isCustomFilterActive: isFilterActive,
               bookings: bookings))
-            .padding(.vertical, 2)
-            .padding(.horizontal, 4)
+            .padding(.vertical, GenericCardViewItemLayout.badgeVerticalPadding)
+            .padding(.horizontal, GenericCardViewItemLayout.badgeHorizontalPadding)
             .frame(maxWidth: .infinity)
             .background(
-              RoundedRectangle(cornerRadius: 5)
+              RoundedRectangle(cornerRadius: GenericCardViewItemLayout.statusBadgeCornerRadius)
                 .fill(room.contextualStatusBackgroundColor(
                   referenceInstant: roomViewModel.selectedDate,
                   isCustomFilterActive: isFilterActive,
                   bookings: bookings)))
         } else if let building = item as? Building {
           Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
-            .font(.system(size: 14, weight: .light))
+            .font(.system(size: GenericCardViewItemLayout.subtitleFontSize, weight: .light))
             .frame(maxWidth: .infinity, alignment: .leading)
         }
       }
     }
-    .padding(.horizontal, 12)
-    .padding(.vertical, 6)
+    .padding(.horizontal, GenericCardViewItemLayout.contentHorizontalPadding)
+    .padding(.vertical, GenericCardViewItemLayout.contentVerticalPadding)
     .background(GeometryReader { geometry in
       // In a background the GeometryReader expands to the bounds of the foreground view
       Color.clear.preference(
@@ -135,6 +135,23 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
 
   private let item: T
 
+}
+
+// MARK: - GenericCardViewItemLayout
+
+private enum GenericCardViewItemLayout {
+  static let badgeHorizontalPadding: CGFloat = 4
+  static let badgeInnerLeadingPadding: CGFloat = 2
+  static let badgeVerticalPadding: CGFloat = 2
+  static let contentHorizontalPadding: CGFloat = 12
+  static let contentSpacing: CGFloat = 6
+  static let contentVerticalPadding: CGFloat = 6
+  static let ratingBadgeCornerRadius: CGFloat = 12
+  static let ratingFontSize: CGFloat = 12
+  static let ratingIconSize: CGFloat = 10
+  static let statusBadgeCornerRadius: CGFloat = 5
+  static let subtitleFontSize: CGFloat = 14
+  static let titleFontSize: CGFloat = 16
 }
 
 #Preview {

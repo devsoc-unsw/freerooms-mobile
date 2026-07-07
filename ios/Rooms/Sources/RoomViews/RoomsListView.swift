@@ -33,8 +33,8 @@ public struct RoomsListView: View {
 
     return List {
       imageProvider(building.id)
-        .frame(height: screenHeight / 4)
-        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .frame(height: screenHeight * RoomLayoutConstants.buildingHeroImageHeightFraction)
+        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
         .listRowInsets(EdgeInsets()) // remove default list padding
         .listRowBackground(Color.clear) // optional, to keep background consistent
         .padding(.bottom)
@@ -49,7 +49,7 @@ public struct RoomsListView: View {
           imageProvider: { roomID in
             RoomImage[roomID]
           })
-          .padding(.vertical, 5)
+          .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     }

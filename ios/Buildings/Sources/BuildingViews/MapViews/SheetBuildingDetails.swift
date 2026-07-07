@@ -26,7 +26,7 @@ public struct SheetBuildingDetails: View {
   // MARK: Public
 
   public var body: some View {
-    VStack(spacing: 12) {
+    VStack(spacing: SheetBuildingDetailsMetrics.sectionSpacing) {
       switch viewModel.buildingDetailsViewState {
       case .loading:
         loadedContent(
@@ -45,7 +45,7 @@ public struct SheetBuildingDetails: View {
       }
     }
     .padding(.top, SheetBuildingDetailsMetrics.contentTopPadding)
-    .padding(.bottom, 80)
+    .padding(.bottom, SheetBuildingDetailsMetrics.contentBottomPadding)
   }
 
   // MARK: Private
@@ -60,7 +60,7 @@ public struct SheetBuildingDetails: View {
 
   private var headerSection: some View {
     HStack(alignment: .top) {
-      VStack(alignment: .leading, spacing: 4) {
+      VStack(alignment: .leading, spacing: SheetBuildingDetailsMetrics.headerTextSpacing) {
         Text(viewModel.selectedBuildingName)
           .font(.title)
           .fontWeight(.regular)
@@ -73,7 +73,9 @@ public struct SheetBuildingDetails: View {
             .allowsHitTesting(false)
           Circle()
             .fill(viewModel.selectedBuildingAvailabilityColour)
-            .frame(width: 12, height: 12)
+            .frame(
+              width: SheetBuildingDetailsMetrics.availabilityDotSize,
+              height: SheetBuildingDetailsMetrics.availabilityDotSize)
         }
       }
       Spacer()
@@ -93,12 +95,12 @@ public struct SheetBuildingDetails: View {
       }
     } label: {
       Label("Get Directions", systemImage: "figure.walk")
-        .frame(maxWidth: .infinity, maxHeight: 8)
+        .frame(maxWidth: .infinity, maxHeight: SheetBuildingDetailsMetrics.directionsButtonMaxHeight)
         .font(.footnote)
         .padding()
         .background(Theme.light.accent.primary)
         .foregroundStyle(.white)
-        .cornerRadius(20)
+        .cornerRadius(SheetBuildingDetailsMetrics.directionsButtonCornerRadius)
     }
     .padding(.horizontal)
   }
@@ -106,7 +108,7 @@ public struct SheetBuildingDetails: View {
   // MARK: Error
 
   private var errorContent: some View {
-    VStack(spacing: 12) {
+    VStack(spacing: SheetBuildingDetailsMetrics.sectionSpacing) {
       headerSection
       ContentUnavailableView {
         Label("Unable to Load Rooms", systemImage: "exclamationmark.triangle.fill")
@@ -144,8 +146,8 @@ public struct SheetBuildingDetails: View {
   @ViewBuilder
   private func buildingImageSection(isPlaceholder: Bool) -> some View {
     if isPlaceholder {
-      RoundedRectangle(cornerRadius: 5)
-        .fill(Color.gray.opacity(0.2))
+      RoundedRectangle(cornerRadius: SheetBuildingDetailsMetrics.imageCornerRadius)
+        .fill(Color.gray.opacity(SheetBuildingDetailsMetrics.placeholderImageOpacity))
         .frame(maxWidth: .infinity)
         .frame(height: SheetBuildingDetailsMetrics.imageHeight)
         .padding(.horizontal)
@@ -154,7 +156,7 @@ public struct SheetBuildingDetails: View {
         .aspectRatio(contentMode: .fill)
         .frame(maxWidth: .infinity)
         .frame(height: SheetBuildingDetailsMetrics.imageHeight)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .clipShape(RoundedRectangle(cornerRadius: SheetBuildingDetailsMetrics.imageCornerRadius))
         .allowsHitTesting(false)
         .padding(.horizontal)
     }
@@ -215,7 +217,15 @@ private enum SheetBuildingDetailsMetrics {
   // MARK: Internal
 
   static let contentTopPadding: CGFloat = 8
+  static let contentBottomPadding: CGFloat = 80
   static let imageHeight: CGFloat = 150
+  static let availabilityDotSize: CGFloat = 12
+  static let directionsButtonCornerRadius: CGFloat = 20
+  static let directionsButtonMaxHeight: CGFloat = 8
+  static let headerTextSpacing: CGFloat = 4
+  static let imageCornerRadius: CGFloat = 5
+  static let placeholderImageOpacity = 0.2
+  static let sectionSpacing: CGFloat = 12
 
   static let placeholderRooms: [Room] = [
     placeholderRoom(id: "placeholder-room-1", name: "Placeholder Room Name"),

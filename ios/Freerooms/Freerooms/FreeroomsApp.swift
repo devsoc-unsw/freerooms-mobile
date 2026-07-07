@@ -175,6 +175,10 @@ struct FreeroomsApp: App {
 
   // MARK: Private
 
+  /// Keep room/building metadata requests responsive so loading states fail quickly instead of hanging.
+  private static let httpRequestTimeout: TimeInterval = 5
+  private static let httpResourceTimeout: TimeInterval = 5
+
   @State private var buildingViewModel: LiveBuildingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
@@ -188,8 +192,8 @@ struct FreeroomsApp: App {
 
   private static func makeHTTPClient() -> URLSessionHTTPClient {
     let configuration = URLSessionConfiguration.default
-    configuration.timeoutIntervalForRequest = 5
-    configuration.timeoutIntervalForResource = 5
+    configuration.timeoutIntervalForRequest = Self.httpRequestTimeout
+    configuration.timeoutIntervalForResource = Self.httpResourceTimeout
     configuration.waitsForConnectivity = false
     return URLSessionHTTPClient(session: URLSession(configuration: configuration))
   }

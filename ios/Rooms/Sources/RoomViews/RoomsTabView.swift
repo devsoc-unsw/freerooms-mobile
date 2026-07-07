@@ -64,7 +64,7 @@ public struct RoomsTabView<Destination: View>: View {
         EmptyView()
       } else {
         Section {
-          LazyVGrid(columns: columns, spacing: 24) {
+          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
             ForEach(rooms) { room in
               GenericCardView(
                 path: $path,
@@ -84,17 +84,17 @@ public struct RoomsTabView<Destination: View>: View {
                 })
             }
           }
-          .padding(.horizontal, 16)
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
         } header: {
           HStack {
             Text(buildingName)
               .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
-              .padding(.leading, 10)
+              .padding(.leading, RoomLayoutConstants.sectionHeaderLeadingPadding)
             Spacer()
           }
-          .padding(.horizontal, 16)
-          .padding(.top, 10)
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          .padding(.top, RoomLayoutConstants.sectionHeaderTopPadding)
         }
       }
     }
@@ -122,7 +122,7 @@ public struct RoomsTabView<Destination: View>: View {
               imageProvider: { roomID in
                 RoomImage[roomID]
               })
-              .padding(.vertical, 5)
+              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
           }
         } header: {
           Text(buildingName)
@@ -193,8 +193,8 @@ public struct RoomsTabView<Destination: View>: View {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
             showingFilterMenu: $showingFilterMenu)
-            .padding(.trailing, 16)
-            .padding(.bottom, 8)
+            .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
+            .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
       }
       .toolbar {
@@ -236,7 +236,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await vm.loadBookingsForFilteredRooms() }
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.8)])
+          .presentationDetents([FilterSheetLayout.dateDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
 
@@ -246,7 +246,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.52)])
+          .presentationDetents([FilterSheetLayout.roomTypeDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
 
@@ -256,7 +256,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           })
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.32)])
+          .presentationDetents([FilterSheetLayout.durationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
 
@@ -266,7 +266,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.44)])
+          .presentationDetents([FilterSheetLayout.campusLocationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
 
@@ -276,7 +276,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .presentationDetents([.fraction(0.47)])
+          .presentationDetents([FilterSheetLayout.capacityDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
         }
@@ -299,25 +299,25 @@ public struct RoomsTabView<Destination: View>: View {
               imageProvider: { roomID in
                 RoomImage[roomID]
               })
-              .padding(.vertical, 5)
+              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
           }
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       } else {
         List {
           roomsListView(buildingViewModel.allBuildings)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(Color.gray.opacity(0.1))
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       }
     } else {
       if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
         ScrollView {
-          LazyVGrid(columns: columns, spacing: 24) {
+          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
             ForEach(placeholderRooms) { room in
               GenericCardView(
                 path: $path,
@@ -331,16 +331,20 @@ public struct RoomsTabView<Destination: View>: View {
                 })
             }
           }
-          .padding(.horizontal, 16)
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
         }
-        .background(Color.gray.opacity(0.1))
-        .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .shadow(
+          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
       } else {
         ScrollView {
           roomsCardView(buildingViewModel.allBuildings)
         }
-        .background(Color.gray.opacity(0.1))
-        .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .shadow(
+          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
       }
     }
   }

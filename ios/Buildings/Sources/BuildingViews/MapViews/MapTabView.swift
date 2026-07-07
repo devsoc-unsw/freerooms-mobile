@@ -63,7 +63,7 @@ public struct MapTabView<RoomDestination: View>: View {
               .stroke(
                 .orange,
                 style: StrokeStyle(
-                  lineWidth: 5))
+                  lineWidth: MapLayoutConstants.routeLineWidth))
           }
 
           ForEach(mapViewModel.buildings, id: \.id) { building in
@@ -106,7 +106,7 @@ public struct MapTabView<RoomDestination: View>: View {
 
         VStack(spacing: 0) {
           MapSearchBar(searchtxt: $mapViewModel.searchText)
-            .padding(.bottom, 6)
+            .padding(.bottom, MapLayoutConstants.searchBarBottomPadding)
           if !mapViewModel.searchText.isEmpty {
             MapSearchBarList()
           }
@@ -114,10 +114,12 @@ public struct MapTabView<RoomDestination: View>: View {
         }
         .opacity(
           mapViewModel.bottomSheetPosition
-            == SheetPosition.top.bottomSheetPosition ? 0 : 1)
-        .animation(
-          .easeInOut(duration: 0.3),
-          value: mapViewModel.bottomSheetPosition)
+            == SheetPosition.top.bottomSheetPosition
+            ? MapLayoutConstants.searchOverlayHiddenOpacity
+            : MapLayoutConstants.searchOverlayVisibleOpacity)
+          .animation(
+            .easeInOut(duration: MapLayoutConstants.searchOverlayAnimationDuration),
+            value: mapViewModel.bottomSheetPosition)
       }
       .bottomSheet(
         bottomSheetPosition: $mapViewModel.bottomSheetPosition,
@@ -143,8 +145,12 @@ public struct MapTabView<RoomDestination: View>: View {
       }
       .customBackground(
         Color(uiColor: .systemBackground)
-          .cornerRadius(20)
-          .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5))
+          .cornerRadius(MapLayoutConstants.sheetCornerRadius)
+          .shadow(
+            color: .black.opacity(MapLayoutConstants.sheetShadowOpacity),
+            radius: MapLayoutConstants.sheetShadowRadius,
+            x: MapLayoutConstants.sheetShadowXOffset,
+            y: MapLayoutConstants.sheetShadowYOffset))
       .onChange(of: mapViewModel.bottomSheetPosition) { _, newValue in
         if newValue == SheetPosition.medium.bottomSheetPosition {
           mapViewModel.clearDirection()
