@@ -40,10 +40,20 @@ jobs:
         with:
           args: --strict --config .swiftlint.yml
   tests:
-    name: Tests
+    name: Tests (${{ matrix.name }})
     needs: ["build"]
     runs-on: macos-26
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Rooms
+            only_testing: "-only-testing:RoomsTests"
+          - name: Buildings
+            only_testing: "-only-testing:BuildingsTests"
+          - name: Other
+            only_testing: "-only-testing:NetworkingTests -only-testing:PersistenceTests -only-testing:LocationTests -only-testing:TestingSupportTests"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Cache Xcode build data
@@ -57,7 +67,7 @@ jobs:
             ios/**/Package.resolved
           swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
       - name: Run tests
-        run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3"
+        run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3 ${{ matrix.only_testing }}"
   build:
     name: Build
     runs-on: macos-26
