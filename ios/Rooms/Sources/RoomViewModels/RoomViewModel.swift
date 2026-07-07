@@ -6,7 +6,6 @@
 //
 
 import BuildingModels
-import CommonUI
 import Foundation
 import Location
 import Observation
@@ -35,6 +34,13 @@ public protocol RoomViewModel: AnyObject {
 
   var getBookingsIsLoading: Bool { get }
 
+  // Filter properties
+  var selectedDate: Date { get set }
+  var selectedRoomTypes: Set<RoomType> { get set }
+  var selectedDuration: Duration? { get set }
+  var selectedCampusLocation: CampusLocation? { get set }
+  var selectedCapacity: Int? { get set }
+  var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
   var loadRoomErrorMessage: AlertError? { get set }
@@ -60,6 +66,16 @@ public protocol RoomViewModel: AnyObject {
   func fetchRoomRating(roomID: String) async
 
   func clearRoomRating()
+
+  func applyFilters() async
+  func loadBookingsForFilteredRooms() async
+  func clearAllFilters()
+
+  func clearDurationFilter()
+  func clearDateFilter()
+  func clearCampusLocationFilter()
+  func clearCapacityFilter()
+  func clearRoomTypeFilter()
 
   var scrollID: Int? { get set }
   var baseDate: Date { get set }
@@ -100,9 +116,13 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var getRatingIsLoading = false
 
+  /// Bookings for the **last** room that `getRoomBookings(roomId:)` loaded (e.g. detail / list UI).
   public var currentRoomBookings = [RoomBooking]()
 
   public var currentRoomRating: RoomRating?
+
+  /// Cached bookings per `Room.id` for duration filtering. Rooms without an entry are not filtered out by duration until their bookings are loaded.
+  public var bookingsByRoomId = [String: [RoomBooking]]()
 
   public var hasLoaded = false
 
@@ -116,13 +136,33 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var searchText = ""
 
+  public var selectedDate: Date = DateDefaults.selectedDate
+  public var selectedRoomTypes: Set<RoomType> = []
+  public var selectedDuration: Duration?
+  public var selectedCampusLocation: CampusLocation?
+  public var selectedCapacity: Int?
+
+  public var hasActiveFilters: Bool {
+    selectedDate != DateDefaults.selectedDate ||
+      !selectedRoomTypes.isEmpty ||
+      selectedDuration != nil ||
+      selectedCampusLocation != nil ||
+      selectedCapacity != nil
+  }
+
   public var filteredRoomsByBuildingId: [String: [Room]] {
     var result = [String: [Room]]()
-    for (key, value) in roomsByBuildingId {
-      let sorted = interactor.getRoomsSortedAlphabetically(
-        rooms: value,
+    for (buildingId, rooms) in roomsByBuildingId {
+      let filteredRooms = interactor.applyClientSideFilters(rooms: rooms, campusLocation: selectedCampusLocation)
+
+      let sortedRooms = interactor.getRoomsSortedAlphabetically(
+        rooms: filteredRooms,
         inAscendingOrder: roomsInAscendingOrder)
-      result[key] = interactor.filterRoomsByQueryString(sorted, by: searchText)
+      let searchedRooms = interactor.filterRoomsByQueryString(sortedRooms, by: searchText)
+
+      if !searchedRooms.isEmpty {
+        result[buildingId] = searchedRooms
+      }
     }
     return result
   }
@@ -181,24 +221,12 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public func loadRooms() async {
     isLoading = true
+    defer { isLoading = false }
 
-    let resultRooms = await interactor.getRoomsSortedAlphabetically(
-      inAscendingOrder: roomsInAscendingOrder)
-    switch resultRooms {
+    switch await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder) {
     case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(
-        rooms: roomsData,
-        inAscendingOrder: roomsInAscendingOrder)
-
-    case .failure(let error):
-      loadRoomErrorMessage = AlertError(message: error.clientMessage)
-    }
-
-    let resultRoomsByBuildingId =
-      await interactor.getRoomsFilteredByAllBuildingId()
-    switch resultRoomsByBuildingId {
-    case .success(let roomsData):
-      roomsByBuildingId = roomsData
+      rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
+      roomsByBuildingId = Dictionary(grouping: roomsData, by: \.buildingId)
       for key in roomsByBuildingId.keys {
         roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
           rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
@@ -207,9 +235,9 @@ public class LiveRoomViewModel: RoomViewModel {
 
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
+      rooms = []
+      roomsByBuildingId = [:]
     }
-
-    isLoading = false
   }
 
   public func getRoomsInOrder() {
@@ -233,6 +261,8 @@ public class LiveRoomViewModel: RoomViewModel {
     switch await interactor.getRoomBookings(roomID: roomId) {
     case .success(let bookings):
       currentRoomBookings = bookings
+      bookingsByRoomId[roomId] = bookings
+
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
     }
@@ -262,20 +292,84 @@ public class LiveRoomViewModel: RoomViewModel {
     await loadRooms()
   }
 
-  /// Resets date for room booking list view
+  public func applyFilters() async {
+    isLoading = true
+    defer { isLoading = false }
+
+    switch await interactor.getFilteredRooms(options: currentFilterOptions) {
+    case .success(let rooms):
+      self.rooms = rooms
+      roomsByBuildingId = Dictionary(grouping: rooms, by: \.buildingId)
+
+    case .failure(let error):
+      loadRoomErrorMessage = AlertError(message: error.clientMessage)
+    }
+  }
+
+  public func loadBookingsForFilteredRooms() async {
+    let roomIds = roomsByBuildingId.values
+      .flatMap { $0 }
+      .map(\.id)
+      .filter { bookingsByRoomId[$0] == nil }
+
+    guard !roomIds.isEmpty else { return }
+
+    for roomId in roomIds {
+      switch await interactor.getRoomBookings(roomID: roomId) {
+      case .success(let bookings):
+        bookingsByRoomId[roomId] = bookings
+      case .failure:
+        break
+      }
+    }
+  }
+
+  public func clearAllFilters() {
+    DateDefaults.selectedDate = Date()
+    selectedDate = DateDefaults.selectedDate
+    selectedRoomTypes.removeAll()
+    selectedDuration = nil
+    selectedCampusLocation = nil
+    selectedCapacity = nil
+    bookingsByRoomId = [:]
+    currentRoomBookings = []
+  }
+
+  public func clearDurationFilter() {
+    selectedDuration = nil
+  }
+
+  public func clearDateFilter() {
+    DateDefaults.selectedDate = Date()
+    selectedDate = DateDefaults.selectedDate
+  }
+
+  public func clearCampusLocationFilter() {
+    selectedCampusLocation = nil
+  }
+
+  public func clearCapacityFilter() {
+    selectedCapacity = nil
+  }
+
+  public func clearRoomTypeFilter() {
+    selectedRoomTypes.removeAll()
+  }
+
+  /// Resets date for room booking list view.
   public func resetBookingScrollState(initialDate: Date) {
     baseDate = initialDate
     dateSelect = initialDate
     scrollID = RoomBookingConstants.middleIndex
   }
 
-  /// Handles horizontal scroll to change the date for room booking list view
+  /// Handles horizontal scroll to change the date for room booking list view.
   public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
     guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
     dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
   }
 
-  /// Handles date picker to change the date for room booking list view
+  /// Handles date picker changes for the room booking list view.
   public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
     let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
     let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
@@ -301,6 +395,12 @@ public class LiveRoomViewModel: RoomViewModel {
   // MARK: Private
 
   private let interactor: RoomInteractor
+
+  private var currentFilterOptions: FilterRoomOptions { FilterRoomOptions.make(
+    selectedDate: selectedDate,
+    selectedRoomTypes: selectedRoomTypes,
+    selectedDuration: selectedDuration,
+    selectedCapacity: selectedCapacity) }
 }
 
 // MARK: - PreviewRoomViewModel

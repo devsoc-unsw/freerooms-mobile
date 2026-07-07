@@ -21,15 +21,11 @@ public struct RoomsTabView<Destination: View>: View {
   /// init some viewModel to depend on
   public init(
     path: Binding<NavigationPath>,
-    roomViewModel: RoomViewModel,
-    buildingViewModel: BuildingViewModel,
     selectedTab: Binding<String>,
     selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
     _path = path
-    self.roomViewModel = roomViewModel
-    self.buildingViewModel = buildingViewModel
     _selectedTab = selectedTab
     _selectedView = selectedView
     self.roomDestinationBuilderView = roomDestinationBuilderView
@@ -39,57 +35,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   public var body: some View {
     NavigationStack(path: $path) {
-      roomView
-        .refreshable {
-          Task {
-            await roomViewModel.reloadRooms()
-          }
-        }
-        .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
-        .toolbar {
-          // Buttons on the right
-          ToolbarItemGroup(placement: .navigationBarTrailing) {
-            HStack {
-              Button {
-                roomViewModel.getRoomsInOrder()
-              } label: {
-                Image(systemName: "arrow.up.arrow.down")
-                  .resizable()
-                  .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-              }
-
-              Button {
-                if selectedView == ViewOrientation.Card {
-                  selectedView = ViewOrientation.List
-                } else {
-                  selectedView = ViewOrientation.Card
-                }
-              } label: {
-                Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
-                  .resizable()
-                  .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-              }
-            }
-            .padding(RoomLayoutConstants.toolbarIconPadding)
-            .foregroundStyle(theme.label.tertiary)
-          }
-        }
-        .navigationDestination(for: Room.self) { room in
-          roomDestinationBuilderView(room)
-        }
-        .task {
-          if !roomViewModel.hasLoaded {
-            await roomViewModel.onAppear()
-          }
-        }
-        .alert(item: $roomViewModel.loadRoomErrorMessage) { error in
-          Alert(
-            title: Text(error.title),
-            message: Text(error.message),
-            dismissButton: .default(Text("OK")))
-        }
-        .navigationTitle("Rooms")
-        .searchable(text: $roomViewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "CSE")
+      mainContent
     }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
@@ -99,18 +45,12 @@ public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Internal
 
-  @State var buildingViewModel: BuildingViewModel
   @Binding var selectedTab: String
-
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-
-  @State var roomViewModel: RoomViewModel
-
-  // search text is owned by the view model
 
   func roomsCardView(
     _ buildings: [Building])
@@ -124,7 +64,7 @@ public struct RoomsTabView<Destination: View>: View {
         EmptyView()
       } else {
         Section {
-          LazyVGrid(columns: columns, spacing: 24) {
+          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
             ForEach(rooms) { room in
               GenericCardView(
                 path: $path,
@@ -144,19 +84,17 @@ public struct RoomsTabView<Destination: View>: View {
                 })
             }
           }
-          .padding(.horizontal, 16)
-          // .listRowSeparator(.hidden)
-          // .listRowBackground(Color.clear)
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
         } header: {
           HStack {
             Text(buildingName)
               .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
-              .padding(.leading, 10)
+              .padding(.leading, RoomLayoutConstants.sectionHeaderLeadingPadding)
             Spacer()
           }
-          .padding(.horizontal, 16)
-          .padding(.top, 10)
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          .padding(.top, RoomLayoutConstants.sectionHeaderTopPadding)
         }
       }
     }
@@ -184,7 +122,7 @@ public struct RoomsTabView<Destination: View>: View {
               imageProvider: { roomID in
                 RoomImage[roomID]
               })
-              .padding(.vertical, 5)
+              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
           }
         } header: {
           Text(buildingName)
@@ -197,7 +135,12 @@ public struct RoomsTabView<Destination: View>: View {
 
   // MARK: Private
 
+  @State private var activeFilterSheet: RoomFilterSheet?
+  @State private var showingFilterMenu = false
+
   @Environment(Theme.self) private var theme
+  @Environment(LiveBuildingViewModel.self) private var buildingViewModel
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   private let columns = [
     GridItem(.flexible()),
@@ -206,24 +149,231 @@ public struct RoomsTabView<Destination: View>: View {
 
   private let roomDestinationBuilderView: (Room) -> Destination
 
+  private var searchTextBinding: Binding<String> {
+    Binding(
+      get: { roomViewModel.searchText },
+      set: { roomViewModel.searchText = $0 })
+  }
+
+  private var selectedDateBinding: Binding<Date> {
+    Binding(
+      get: { roomViewModel.selectedDate },
+      set: { roomViewModel.selectedDate = $0 })
+  }
+
+  private var selectedRoomTypesBinding: Binding<Set<RoomType>> {
+    Binding(
+      get: { roomViewModel.selectedRoomTypes },
+      set: { roomViewModel.selectedRoomTypes = $0 })
+  }
+
+  private var selectedCampusLocationBinding: Binding<CampusLocation?> {
+    Binding(
+      get: { roomViewModel.selectedCampusLocation },
+      set: { roomViewModel.selectedCampusLocation = $0 })
+  }
+
+  private var selectedCapacityBinding: Binding<Int?> {
+    Binding(
+      get: { roomViewModel.selectedCapacity },
+      set: { roomViewModel.selectedCapacity = $0 })
+  }
+
+  @ViewBuilder
+  private var mainContent: some View {
+    roomView
+      .refreshable {
+        Task {
+          await roomViewModel.reloadRooms()
+        }
+      }
+      .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+      .overlay(alignment: .bottomTrailing) {
+        if !roomViewModel.isLoading {
+          FloatingFilterMenuView(
+            activeFilterSheet: $activeFilterSheet,
+            showingFilterMenu: $showingFilterMenu)
+            .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
+            .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
+        }
+      }
+      .toolbar {
+        toolbarButtons
+      }
+      .background(Color.gray.opacity(0.1))
+      .listRowInsets(EdgeInsets())
+      .scrollContentBackground(.hidden)
+      .navigationDestination(for: Room.self) { room in
+        roomDestinationBuilderView(room)
+      }
+      .task {
+        if !buildingViewModel.hasLoaded {
+          buildingViewModel.onAppear()
+        }
+
+        if !roomViewModel.hasLoaded {
+          await roomViewModel.onAppear()
+        }
+      }
+      .alert(item: Binding(
+        get: { roomViewModel.loadRoomErrorMessage },
+        set: { roomViewModel.loadRoomErrorMessage = $0 }))
+      { error in
+        Alert(
+          title: Text(error.title),
+          message: Text(error.message),
+          dismissButton: .default(Text("OK")))
+      }
+      .navigationTitle("Rooms")
+      .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
+      .sheet(item: $activeFilterSheet) { sheet in
+        switch sheet {
+        case .date:
+          DateFilterView(selectedDate: selectedDateBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+            let vm = roomViewModel
+            Task { await vm.loadBookingsForFilteredRooms() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([FilterSheetLayout.dateDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .roomType:
+          RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([FilterSheetLayout.roomTypeDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .duration:
+          DurationFilterView(onSelect: {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          })
+          .environment(roomViewModel)
+          .presentationDetents([FilterSheetLayout.durationDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .campusLocation:
+          CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([FilterSheetLayout.campusLocationDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
+        case .capacity:
+          CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
+            activeFilterSheet = nil
+            Task { await roomViewModel.applyFilters() }
+          }
+          .environment(roomViewModel)
+          .presentationDetents([FilterSheetLayout.capacityDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+        }
+      }
+  }
+
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
-      List {
-        roomsListView(buildingViewModel.allBuildings)
+      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        List {
+          ForEach(placeholderRooms) { room in
+            GenericListRowView(
+              path: $path,
+              rowHeight: $rowHeight,
+              room: room,
+              rooms: placeholderRooms,
+              isLoading: true,
+              imageProvider: { roomID in
+                RoomImage[roomID]
+              })
+              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
+          }
+        }
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+      } else {
+        List {
+          roomsListView(buildingViewModel.allBuildings)
+        }
+        .listRowInsets(EdgeInsets())
+        .scrollContentBackground(.hidden)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       }
-      .listRowInsets(EdgeInsets())
-      .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(0.1))
     } else {
-      ScrollView {
-        roomsCardView(buildingViewModel.allBuildings)
+      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        ScrollView {
+          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
+            ForEach(placeholderRooms) { room in
+              GenericCardView(
+                path: $path,
+                cardWidth: $cardWidth,
+                room: room,
+                rooms: placeholderRooms,
+                isLoading: true,
+                isFavourite: .constant(false),
+                imageProvider: { roomID in
+                  RoomImage[roomID]
+                })
+            }
+          }
+          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+        }
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .shadow(
+          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
+      } else {
+        ScrollView {
+          roomsCardView(buildingViewModel.allBuildings)
+        }
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .shadow(
+          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
       }
-      .background(Color.gray.opacity(0.1))
-      .shadow(color: theme.label.primary.opacity(0.2), radius: 5)
     }
   }
 
+  private var toolbarButtons: some View {
+    HStack {
+      Button {
+        roomViewModel.getRoomsInOrder()
+      } label: {
+        Image(systemName: "arrow.up.arrow.down")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+
+      Button {
+        if selectedView == ViewOrientation.Card {
+          selectedView = ViewOrientation.List
+        } else {
+          selectedView = ViewOrientation.Card
+        }
+      } label: {
+        Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+    }
+    .padding(RoomLayoutConstants.toolbarIconPadding)
+    .foregroundStyle(theme.label.tertiary)
+  }
 }
 
 // MARK: - PreviewWrapper
@@ -235,8 +385,6 @@ private struct PreviewWrapper: View {
   var body: some View {
     RoomsTabView<EmptyView>(
       path: $path,
-      roomViewModel: PreviewRoomViewModel(),
-      buildingViewModel: PreviewBuildingViewModel(),
       selectedTab: .constant("Rooms"),
       selectedView: $selectedView)
     { _ in
