@@ -14,10 +14,12 @@ import Foundation
 import Location
 import LocationInteractors
 @preconcurrency import MapKit
+import RoomInteractors
+import RoomModels
+import RoomServices
 import SwiftUI
 
 // MARK: - MapViewModel
-
 @MainActor
 public protocol MapViewModel {
   var buildings: [Building] { get }
@@ -67,8 +69,22 @@ public protocol MapViewModel {
   func handleLocationUpdate(_ newLocation: Location) async
   func handleHeadingUpdate(_ newHeading: CLHeading)
   func focusBuildingOnMap()
-  func onSelectBuilding(_ buildingID: String)
+  func onSelectBuilding(_ buildingID: String) async
   func onClearBuildingSelection()
+
+  // Room logics
+  var selectedRooms: [Room] { get }
+  var isLoadingSelectedRoom: Bool { get }
+  var buildingDetailsViewState: BuildingDetailsViewState { get }
+  var buildingDetailsErrorMessage: String? { get }
+}
+
+// MARK: - BuildingDetailsViewState
+
+public enum BuildingDetailsViewState {
+  case loading
+  case loaded
+  case error
 }
 
 // MARK: - SheetPosition
@@ -77,6 +93,7 @@ public enum SheetPosition {
   case hidden
   case short
   case medium
+  case top
 
   // MARK: Public
 
@@ -85,15 +102,47 @@ public enum SheetPosition {
     case .hidden:
       .hidden
     case .short:
-      .relative(0.2)
+      .relative(MapBehaviorConstants.shortSheetFraction)
     case .medium:
-      .relative(0.55)
+      .relative(MapBehaviorConstants.mediumSheetFraction)
+    case .top:
+      .relativeTop(MapBehaviorConstants.topSheetFraction)
     }
   }
 }
 
+// MARK: - MapBehaviorConstants
+
+private enum MapBehaviorConstants {
+  static let campusCenterLatitude = -33.9173
+  static let campusCenterLongitude = 151.2312
+  static let campusRegionDelta = 0.009
+
+  static let defaultCameraHeading = 0.0
+  static let defaultCameraPitch = 0.0
+  static let focusedBuildingCameraDistance: CLLocationDistance = 1000
+
+  static let maximumCameraDistance: CLLocationDistance = 5000
+  static let minimumCameraDistance: CLLocationDistance = 500
+
+  /// User must move this far before directions refresh, avoiding noisy route recalculation.
+  static let minimumDirectionRefreshDistance: CLLocationDistance = 20
+
+  static let minutesPerHour = 60
+  static let secondsPerMinute: TimeInterval = 60
+
+  /// Debounces search input so every keystroke does not re-filter and refocus map content.
+  static let searchDebounceMilliseconds = 200
+
+  static let mediumSheetFraction = 0.55
+  static let shortSheetFraction = 0.2
+  static let topSheetFraction = 0.975
+}
+
 extension CLLocationCoordinate2D {
-  static let campusCenter = CLLocationCoordinate2D(latitude: -33.9173, longitude: 151.2312)
+  static let campusCenter = CLLocationCoordinate2D(
+    latitude: MapBehaviorConstants.campusCenterLatitude,
+    longitude: MapBehaviorConstants.campusCenterLongitude)
 }
 
 extension MKMultiPoint {
@@ -111,7 +160,9 @@ extension MKMultiPoint {
 extension MKCoordinateRegion {
   static let campusRegion = MKCoordinateRegion(
     center: .campusCenter,
-    span: MKCoordinateSpan(latitudeDelta: 0.009, longitudeDelta: 0.009))
+    span: MKCoordinateSpan(
+      latitudeDelta: MapBehaviorConstants.campusRegionDelta,
+      longitudeDelta: MapBehaviorConstants.campusRegionDelta))
 }
 
 extension Building {
@@ -128,9 +179,9 @@ extension Building {
 extension TimeInterval {
   /// More detailed walking time with hours and minutes
   public var detailedWalkingTime: String {
-    let totalMinutes = Int(self / 60)
-    let hours = totalMinutes / 60
-    let minutes = totalMinutes % 60
+    let totalMinutes = Int(self / MapBehaviorConstants.secondsPerMinute)
+    let hours = totalMinutes / MapBehaviorConstants.minutesPerHour
+    let minutes = totalMinutes % MapBehaviorConstants.minutesPerHour
 
     if hours > 0 {
       if minutes > 0 {
@@ -157,17 +208,27 @@ public class LiveMapViewModel: MapViewModel {
   public init(
     buildingInteractor: BuildingInteractor,
     locationInteractor: LocationInteractor,
-    navigationInteractor: NavigationInteractor)
+    navigationInteractor: NavigationInteractor,
+    roomInteractor: RoomInteractor)
   {
     self.buildingInteractor = buildingInteractor
     self.locationInteractor = locationInteractor
     self.navigationInteractor = navigationInteractor
+    self.roomInteractor = roomInteractor
 
     setupLocationUpdates()
     setupHeadingUpdates()
   }
 
   // MARK: Public
+
+  public var selectedRooms: [Room] = []
+
+  public var isLoadingSelectedRoom: Bool = false
+
+  public var buildingDetailsViewState = BuildingDetailsViewState.loaded
+
+  public var buildingDetailsErrorMessage: String?
 
   public var currentRouteErrorMessage: String?
 
@@ -187,7 +248,10 @@ public class LiveMapViewModel: MapViewModel {
   public var buildings = [Building]()
   public var position = MapCameraPosition.region(.campusRegion)
   public var isLoading = false
-  public var mapCameraBounds = MapCameraBounds(centerCoordinateBounds: .campusRegion, minimumDistance: 500, maximumDistance: 5000)
+  public var mapCameraBounds = MapCameraBounds(
+    centerCoordinateBounds: .campusRegion,
+    minimumDistance: MapBehaviorConstants.minimumCameraDistance,
+    maximumDistance: MapBehaviorConstants.maximumCameraDistance)
 
   public var selectedBuildingID: String?
 
@@ -227,7 +291,7 @@ public class LiveMapViewModel: MapViewModel {
     searchDebounceTask?.cancel()
 
     searchDebounceTask = Task {
-      try? await Task.sleep(for: .milliseconds(200))
+      try? await Task.sleep(for: .milliseconds(MapBehaviorConstants.searchDebounceMilliseconds))
 
       guard !Task.isCancelled else { return }
 
@@ -260,6 +324,10 @@ public class LiveMapViewModel: MapViewModel {
 
   public func onClearBuildingSelection() {
     unselectBuilding()
+    selectedRooms = []
+    isLoadingSelectedRoom = false
+    buildingDetailsErrorMessage = nil
+    buildingDetailsViewState = .loaded
     bottomSheetPosition = SheetPosition.hidden.bottomSheetPosition
   }
 
@@ -268,10 +336,31 @@ public class LiveMapViewModel: MapViewModel {
     await getDirectionToSelectedBuilding()
   }
 
-  public func onSelectBuilding(_ buildingID: String) {
-    clearDirection()
+  public func onSelectBuilding(_ buildingID: String) async {
+    currentRoute = nil
     selectBuilding(buildingID)
     bottomSheetPosition = SheetPosition.medium.bottomSheetPosition
+    buildingDetailsViewState = .loading
+    buildingDetailsErrorMessage = nil
+    isLoadingSelectedRoom = true
+    selectedRooms = []
+
+    let result = await roomInteractor.getRoomsFilteredAlphabeticallyByBuildingId(buildingId: buildingID, inAscendingOrder: true)
+
+    guard selectedBuildingID == buildingID else { return }
+
+    isLoadingSelectedRoom = false
+
+    switch result {
+    case .success(let availableRooms):
+      selectedRooms = availableRooms
+      buildingDetailsViewState = .loaded
+
+    case .failure(let error):
+      selectedRooms = []
+      buildingDetailsErrorMessage = error.clientMessage
+      buildingDetailsViewState = .error
+    }
   }
 
   public func handleHeadingUpdate(_ newHeading: CLHeading) {
@@ -290,9 +379,9 @@ public class LiveMapViewModel: MapViewModel {
     position = .camera(
       MapCamera(
         centerCoordinate: building.coordinate,
-        distance: 1000,
-        heading: 0,
-        pitch: 0))
+        distance: MapBehaviorConstants.focusedBuildingCameraDistance,
+        heading: MapBehaviorConstants.defaultCameraHeading,
+        pitch: MapBehaviorConstants.defaultCameraPitch))
   }
 
   public func clearSearch() {
@@ -432,6 +521,8 @@ public class LiveMapViewModel: MapViewModel {
 
   nonisolated let navigationInteractor: NavigationInteractor
 
+  let roomInteractor: RoomInteractor
+
   var selectedBuilding: Building? {
     guard let selectedBuildingID else { return nil }
 
@@ -444,7 +535,7 @@ public class LiveMapViewModel: MapViewModel {
   private var searchTask: Task<Void, Never>?
   private var searchDebounceTask: Task<Void, Never>?
   private var lastDirectionUpdateLocation: CLLocationCoordinate2D?
-  private let minimumDistanceForUpdate: CLLocationDistance = 20.0
+  private let minimumDistanceForUpdate: CLLocationDistance = MapBehaviorConstants.minimumDirectionRefreshDistance
 
 }
 
@@ -461,7 +552,11 @@ public class PreviewMapViewModel: LiveMapViewModel {
         buildingService: PreviewBuildingService(),
         locationService: PreviewLocationService()),
       locationInteractor: LocationInteractor(locationService: PreviewLocationService()),
-      navigationInteractor: PreviewNavigationInteractor())
+      navigationInteractor: PreviewNavigationInteractor(),
+      roomInteractor: RoomInteractor(
+        roomService: PreviewRoomService(),
+        locationService: LiveLocationService(locationManager: LiveLocationManager()),
+        favouriteService: PreviewFavoriteRoomService()))
 
     buildings = [
       Building(

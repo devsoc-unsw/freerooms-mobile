@@ -15,7 +15,9 @@ public struct MapSearchBarList: View {
   public var body: some View {
     List(viewModel.filteredBuildings, id: \.self) { building in
       Button {
-        viewModel.onSelectBuilding(building.id)
+        Task {
+          await viewModel.onSelectBuilding(building.id)
+        }
         viewModel.focusBuildingOnMap()
         viewModel.clearSearch()
         hideKeyboard()
@@ -24,24 +26,24 @@ public struct MapSearchBarList: View {
           Circle()
             .fill(building.availabilityColor)
             .frame(
-              width: 16,
-              height: 16)
+              width: MapLayoutConstants.defaultAnnotationSize,
+              height: MapLayoutConstants.defaultAnnotationSize)
             .overlay {
               Circle()
-                .stroke(Color.white, lineWidth: 3)
+                .stroke(Color.white, lineWidth: MapLayoutConstants.defaultAnnotationBorderWidth)
             }
             .shadow(
-              color: .black.opacity(0.3),
-              radius: 2,
-              x: 0,
-              y: 1)
+              color: .black.opacity(MapLayoutConstants.annotationShadowOpacity),
+              radius: MapLayoutConstants.unselectedAnnotationShadowRadius,
+              x: MapLayoutConstants.sheetShadowXOffset,
+              y: MapLayoutConstants.annotationShadowYOffset)
           Text(building.name)
             .foregroundStyle(.black)
         }
       }
     }
     .contentMargins(.top, 0)
-    .frame(maxHeight: 300)
+    .frame(maxHeight: MapLayoutConstants.searchResultListMaxHeight)
     .clipped()
     .scrollContentBackground(.hidden)
   }

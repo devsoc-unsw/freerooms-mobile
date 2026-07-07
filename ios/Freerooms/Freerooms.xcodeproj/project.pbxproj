@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
+		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
-		546D1A982F7AACB9000667BC /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A972F7AACB9000667BC /* CommonUI */; };
+		546D1A982F7AACB9000667BC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
 		546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA72F7AAD87000667BC /* RoomViews */; };
 /* End PBXBuildFile section */
@@ -68,10 +70,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */,
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
 				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
 				546D1A982F7AACB9000667BC /* CommonUI in Frameworks */,
+				541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,9 +158,10 @@
 			name = Freerooms;
 			packageProductDependencies = (
 				546D1A942F7AACA2000667BC /* VISOR */,
-				546D1A972F7AACB9000667BC /* CommonUI */,
 				546D1AA52F7AAD87000667BC /* RoomViewModels */,
 				546D1AA72F7AAD87000667BC /* RoomViews */,
+				541DCFCA2FD2A5150040EB0F /* Apollo */,
+				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -195,6 +200,8 @@
 				546D1A962F7AACB9000667BC /* XCLocalSwiftPackageReference "../CommonUI" */,
 				546D1A992F7AAD16000667BC /* XCLocalSwiftPackageReference "../Buildings" */,
 				546D1AA42F7AAD87000667BC /* XCLocalSwiftPackageReference "../Rooms" */,
+				541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				541DCFCC2FD2A5420040EB0F /* XCLocalSwiftPackageReference "../DevSocAPI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -563,6 +570,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		541DCFCC2FD2A5420040EB0F /* XCLocalSwiftPackageReference "../DevSocAPI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../DevSocAPI;
+		};
 		546D1A962F7AACB9000667BC /* XCLocalSwiftPackageReference "../CommonUI" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../CommonUI;
@@ -578,6 +589,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
 		546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/avdn-dev/VISOR.git";
@@ -589,14 +608,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		541DCFCA2FD2A5150040EB0F /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+		541DCFCD2FD2A5420040EB0F /* DevSocAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DevSocAPI;
+		};
 		546D1A942F7AACA2000667BC /* VISOR */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */;
 			productName = VISOR;
-		};
-		546D1A972F7AACB9000667BC /* CommonUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CommonUI;
 		};
 		546D1AA52F7AAD87000667BC /* RoomViewModels */ = {
 			isa = XCSwiftPackageProductDependency;

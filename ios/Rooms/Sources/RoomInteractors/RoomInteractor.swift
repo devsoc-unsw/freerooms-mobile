@@ -13,9 +13,10 @@ public class RoomInteractor {
 
   // MARK: Lifecycle
 
-  public init(roomService: RoomService, locationService: LocationService) {
+  public init(roomService: RoomService, locationService: LocationService, favouriteService: FavoriteRoomService) {
     self.roomService = roomService
     self.locationService = locationService
+    self.favouriteService = favouriteService
   }
 
   // MARK: Public
@@ -29,7 +30,10 @@ public class RoomInteractor {
   public func filterRoomsByQueryString(_ rooms: [Room], by searchText: String) -> [Room] {
     guard !searchText.isEmpty else { return rooms }
     let loweredQuery = searchText.lowercased()
-    return rooms.filter { $0.name.lowercased().contains(loweredQuery) }
+    return rooms.filter {
+      $0.name.lowercased().contains(loweredQuery) ||
+        $0.abbreviation.lowercased().contains(loweredQuery)
+    }
   }
 
   public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], FetchRoomError> {
@@ -74,121 +78,12 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      let filtered = rooms.filter {
-        GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection
-      }
-      return .success(filtered)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  public func getRoomsFilteredByDuration(
-    for minDuration: Int,
-    roomBookings: [String: [RoomBooking]])
-    async -> Result<[Room], FetchRoomError>
-  {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      var result = [Room]()
-      for room in rooms {
-        let currentTime = Date()
-
-        // Sort classes by start time, then end time.
-        let classBookings: [RoomBooking] =
-          roomBookings[room.id]
-            ?? []
-            .sorted { $0.start < $1.start }
-            .sorted { $0.end < $1.end }
-
-        // Find the first class that *ends* after the current time
-        // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first {
-          $0.end >= currentTime
-        }
-        if firstClassEndsAfterCurrentTime == nil {
-          // class is free indefinitely meaning it is free the whole day from current time onwards
-          result.append(room)
-          continue
-        }
-
-        /// Check if from current time to the next first class duration satisfy minDuration
-        let start = firstClassEndsAfterCurrentTime!.start
-        if currentTime < start {
-          let duration = start.timeIntervalSince(currentTime) // in seconds
-          let durationInMinutes = Int(duration / 60)
-
-          if durationInMinutes >= minDuration {
-            result.append(room)
-          }
-        }
-      }
-
-      return .success(result)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
-    let buildingIds =
-      [
-        "K-G27",
-        "K-J17",
-        "K-H13",
-        "K-E26",
-        "K-D26",
-        "K-G6",
-        "K-E12",
-        "K-H20",
-        "K-B16",
-        "K-K17",
-        "K-F12",
-        "K-G17",
-        "K-D8",
-        "K-D16",
-        "K-F25",
-        "K-F31",
-        "K-F20",
-        "K-G19",
-        "K-F10",
-        "K-J14",
-        "K-F8",
-        "K-F21",
-        "K-E10",
-        "K-F23",
-        "K-D23",
-        "K-C20",
-        "K-J12",
-        "K-K15",
-        "K-E19",
-        "K-K14",
-        "K-E15",
-        "K-F17",
-        "K-M15",
-        "K-E8",
-        "K-F13",
-        "K-C24",
-        "K-E4",
-        "K-H6",
-        "K-H22",
-        "K-C27",
-        "K-G14",
-        "K-G15",
-        "K-J18",
-      ]
-
     switch await roomService.getRooms() {
     case .success(let rooms):
       var result = [String: [Room]]()
-      for id in buildingIds {
-        let filteredRooms: [Room] = rooms.filter { $0.buildingId == id }
-        result[id] = filteredRooms
+      for room in rooms {
+        result[room.buildingId, default: []].append(room)
       }
       return .success(result)
 
@@ -215,8 +110,52 @@ public class RoomInteractor {
     }
   }
 
+  public func getFilteredRooms(options: FilterRoomOptions) async -> Result<[Room], FetchRoomError> {
+    switch await roomService.getFilterRooms(options: options) {
+    case .success(let rooms):
+      .success(rooms)
+    case .failure(let error):
+      .failure(error)
+    }
+  }
+
+  public func applyClientSideFilters(rooms: [Room], campusLocation: CampusLocation?) -> [Room] {
+    guard let campusLocation else {
+      return rooms
+    }
+
+    return rooms.filter { room in
+      let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
+      switch campusLocation {
+      case .upper:
+        return gridReference.campusSection == .upper
+      case .middle:
+        return gridReference.campusSection == .middle
+      case .lower:
+        return gridReference.campusSection == .lower
+      }
+    }
+  }
+
+  public func toggleFavorite(roomID: Room.ID) {
+    if favouriteService.isFavorite(roomID: roomID) {
+      favouriteService.removeFavorite(roomID: roomID)
+    } else {
+      favouriteService.addFavorite(roomID: roomID)
+    }
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    favouriteService.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    favouriteService.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
   private let locationService: LocationService
+  private let favouriteService: FavoriteRoomService
 }

@@ -2,6 +2,10 @@
 
 --exclude Carthage,Pods,.build
 
+# Exclude generated files
+
+--exclude DevSocAPI/**/*.graphql.swift
+
 # options
 
 --swiftversion 6.0
@@ -87,7 +91,7 @@
 --rules redundantVoidReturnType
 --rules redundantOptionalBinding
 --rules redundantInternal
---rules redundantProperty
+--rules redundantVariable
 --rules unusedArguments
 --rules spaceInsideBrackets
 --rules spaceInsideBraces

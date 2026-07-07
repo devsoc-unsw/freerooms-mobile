@@ -114,63 +114,14 @@ enum RoomInteractorTests {
       // Given
       let expectedRooms = createDifferentRooms()
       let sut = makeRoomSUT(expect: expectedRooms)
-      let buildingIds =
-        [
-          "K-G27",
-          "K-J17",
-          "K-H13",
-          "K-E26",
-          "K-D26",
-          "K-G6",
-          "K-E12",
-          "K-H20",
-          "K-B16",
-          "K-K17",
-          "K-F12",
-          "K-G17",
-          "K-D8",
-          "K-D16",
-          "K-F25",
-          "K-F31",
-          "K-F20",
-          "K-G19",
-          "K-F10",
-          "K-J14",
-          "K-F8",
-          "K-F21",
-          "K-E10",
-          "K-F23",
-          "K-D23",
-          "K-C20",
-          "K-J12",
-          "K-K15",
-          "K-E19",
-          "K-K14",
-          "K-E15",
-          "K-F17",
-          "K-M15",
-          "K-E8",
-          "K-F13",
-          "K-C24",
-          "K-E4",
-          "K-H6",
-          "K-H22",
-          "K-C27",
-          "K-G14",
-          "K-G15",
-          "K-J18",
-        ]
 
       // When
       let result = await sut.getRoomsFilteredByAllBuildingId()
 
       // Then
       var expectResult = [String: [Room]]()
-      for buildingId in buildingIds {
-        let filteredRooms =
-          expectedRooms
-            .filter { $0.buildingId == buildingId }
-        expectResult[buildingId] = filteredRooms
+      for room in expectedRooms {
+        expectResult[room.buildingId, default: []].append(room)
       }
 
       switch result {
@@ -226,169 +177,228 @@ enum RoomInteractorTests {
     }
   }
 
-  struct RoomCampusLocationFiltering {
-    @Test("Returns rooms filtered by lower campus")
-    func returnsRoomsFilteredByLowerCampus() async {
+  struct GetFilteredRooms {
+    @Test("Returns the rooms whose ids match the backend response")
+    func returnsRoomsWhoseIdsMatchBackend() async {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let matchingIds = ["K-G6-105", "K-H20-101"]
+      let sut = makeRoomSUT(
+        allRooms: allRooms,
+        filterResult: .success(matchingIds))
 
       // When
-      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.lower)
+      let result = await sut.getFilteredRooms(options: FilterRoomOptions())
 
       // Then
-      let expectResultCount = 1
-
       switch result {
       case .success(let actualResult):
-        #expect(actualResult.count == expectResultCount)
-        #expect(actualResult.first!.abbreviation == "Block 105")
-
+        #expect(Set(actualResult.map(\.id)) == Set(matchingIds))
       case .failure:
         Issue.record("Expected success, got failure")
       }
     }
 
-    @Test("Returns rooms filtered by middle campus")
-    func returnsRoomsFilteredByMiddleCampus() async {
+    @Test("Returns empty array when backend returns no matching ids")
+    func returnsEmptyWhenBackendReturnsNoIds() async {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(
+        allRooms: allRooms,
+        filterResult: .success([]))
 
       // When
-      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.middle)
+      let result = await sut.getFilteredRooms(options: FilterRoomOptions())
 
       // Then
-      let expectResultCount = 1
-
       switch result {
       case .success(let actualResult):
-        #expect(actualResult.count == expectResultCount)
-        #expect(actualResult.first!.abbreviation == "Ainswth501")
-
+        #expect(actualResult.isEmpty)
       case .failure:
         Issue.record("Expected success, got failure")
       }
     }
 
-    @Test("Returns rooms filtered by upper campus")
-    func returnsRoomsFilteredByUpperCampus() async {
+    @Test("Returns connectivity error when backend fails")
+    func returnsConnectivityErrorWhenBackendFails() async {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(
+        allRooms: allRooms,
+        filterResult: .failure(.connectivity))
 
       // When
-      let result = await sut.getRoomsFilteredByCampusSection(CampusSection.upper)
+      let result = await sut.getFilteredRooms(options: FilterRoomOptions())
 
       // Then
       switch result {
-      case .success(let actualResult):
-        #expect(actualResult.count == 2)
-        #expect(actualResult.first!.abbreviation == "CivEng 101")
-
-      case .failure:
-        Issue.record("Expected success, got failure")
+      case .success:
+        Issue.record("Expected failure, got success")
+      case .failure(let error):
+        #expect(error == .connectivity)
       }
     }
   }
 
-  struct RoomDurationFiltering {
-    @Test("Returns rooms filtered by minimum 30 minutes")
-    func returnsRoomsFilteredBy30MinutesOrMore() async {
+  struct ApplyClientSideFilters {
+    @Test("Returns all rooms unchanged when campusLocation is nil")
+    func returnsAllRoomsWhenCampusLocationIsNil() {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let roomBookings = createRoomBookingsFromStartToEnd(
-        1,
-        from: Date().addingTimeInterval(40 * 60),
-        to: Date().addingTimeInterval(60 * 60))
-      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(expect: allRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: nil)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print("Booking loader result: \(actualResult)")
-
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result == allRooms)
     }
 
-    @Test("Returns rooms filtered by minimum 30 minutes with one room booked during current time")
-    func returnsRoomsFilteredBy30MinutesOrMorDuringCurrentTime() async {
+    @Test("Keeps only lower-campus rooms when CampusLocation.lower is selected")
+    func keepsOnlyLowerCampusRooms() {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let roomBookings = createRoomBookingsFromStartToEnd(
-        1,
-        from: Date(),
-        to: Date().addingTimeInterval(30 * 60))
-      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(expect: allRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 30, roomBookings: roomBookingsMapped)
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: .lower)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms.filter { $0.id != "K-G6-105" })
-        // swiftlint:disable:next no_direct_standard_out_logs
-        print("Booking loader result: \(actualResult)")
-
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result.count == 1)
+      #expect(result.first?.abbreviation == "Block 105")
     }
 
-    @Test("Returns rooms filtered by minimum 1 hour")
-    func returnsRoomsFilteredByOneHourOrMore() async {
+    @Test("Keeps only middle-campus rooms when CampusLocation.middle is selected")
+    func keepsOnlyMiddleCampusRooms() {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let roomBookings = createRoomBookingsFromStartToEnd(
-        1,
-        from: Date().addingTimeInterval(70 * 60),
-        to: Date().addingTimeInterval(90 * 60))
-      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(expect: allRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 60, roomBookings: roomBookingsMapped)
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: .middle)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result.count == 1)
+      #expect(result.first?.abbreviation == "Ainswth501")
     }
 
-    @Test("Returns rooms filtered by minimum 2 hour")
-    func returnsRoomsFilteredByTwoHoursOrMore() async {
+    @Test("Keeps only upper-campus rooms when CampusLocation.upper is selected")
+    func keepsOnlyUpperCampusRooms() {
       // Given
-      let expectedRooms = createDifferentRooms()
-      let roomBookings = createRoomBookingsFromStartToEnd(
-        1,
-        from: Date().addingTimeInterval(130 * 60),
-        to: Date().addingTimeInterval(150 * 60))
-      let roomBookingsMapped: [String: [RoomBooking]] = ["K-G6-105": roomBookings]
-      let sut = makeRoomSUT(expect: expectedRooms)
+      let allRooms = createDifferentRooms()
+      let sut = makeRoomSUT(expect: allRooms)
 
       // When
-      let result = await sut.getRoomsFilteredByDuration(for: 120, roomBookings: roomBookingsMapped)
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: .upper)
 
       // Then
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectedRooms)
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
+      #expect(result.count == 2)
+      #expect(result.allSatisfy { $0.buildingId == "K-H20" })
+    }
+  }
+
+  struct FilterRoomOptionsMapping {
+    @Test("Maps the selected date to an ISO8601 dateTime string with fractional seconds")
+    func mapsSelectedDateToISO8601WithFractionalSeconds() {
+      // Given
+      let date = Date(timeIntervalSince1970: 1_700_000_000)
+      let expectedFormatter = ISO8601DateFormatter()
+      expectedFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: date,
+        selectedRoomTypes: [],
+        selectedDuration: nil,
+        selectedCapacity: nil)
+
+      // Then
+      // The backend rejects ISO timestamps without fractional seconds (HTTP 400),
+      // so this format is required, not cosmetic.
+      #expect(options.dateTime == expectedFormatter.string(from: date))
+      #expect(options.dateTime?.contains(".") == true)
+    }
+
+    @Test("Maps a single selected room type to the corresponding usage code")
+    func mapsSingleRoomTypeToUsage() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [.auditorium],
+        selectedDuration: nil,
+        selectedCapacity: nil)
+
+      // Then
+      #expect(options.usage == RoomType.auditorium.rawValue)
+    }
+
+    @Test("Maps multiple selected room types to nil usage (fallback)")
+    func mapsMultipleRoomTypesToNilUsage() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [.auditorium, .lectureHall],
+        selectedDuration: nil,
+        selectedCapacity: nil)
+
+      // Then
+      #expect(options.usage == nil)
+    }
+
+    @Test("Maps empty selected room types to nil usage")
+    func mapsEmptyRoomTypesToNilUsage() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [],
+        selectedDuration: nil,
+        selectedCapacity: nil)
+
+      // Then
+      #expect(options.usage == nil)
+    }
+
+    @Test("Maps selected duration to its raw int value")
+    func mapsDurationToRawInt() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [],
+        selectedDuration: .oneHour,
+        selectedCapacity: nil)
+
+      // Then
+      #expect(options.duration == Duration.oneHour.rawValue)
+    }
+
+    @Test("Maps selected capacity directly")
+    func mapsCapacityDirectly() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [],
+        selectedDuration: nil,
+        selectedCapacity: 25)
+
+      // Then
+      #expect(options.capacity == 25)
+    }
+
+    @Test("Leaves CampusLocation-related fields unset (filtered client-side)")
+    func leavesLocationUnset() {
+      // When
+      let options = FilterRoomOptions.make(
+        selectedDate: Date(),
+        selectedRoomTypes: [],
+        selectedDuration: nil,
+        selectedCapacity: nil)
+
+      // Then
+      #expect(options.location == nil)
+      #expect(options.buildingId == nil)
+      #expect(options.startTime == nil)
+      #expect(options.endTime == nil)
+      #expect(options.sortedBySpecificSchoolId == false)
     }
   }
 }
@@ -416,9 +426,13 @@ func makeRoomSUT(
   let roomService = LiveRoomService(
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
-    roomRatingLoader: StubRoomRatingLoader())
+    roomRatingLoader: StubRoomRatingLoader(),
+    roomFilterService: StubFilterRoomService())
 
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
@@ -429,8 +443,42 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
   let roomService = LiveRoomService(
     roomLoader: stubLoader,
     roomBookingLoader: roomBookingLoader,
-    roomRatingLoader: StubRoomRatingLoader())
-  return RoomInteractor(roomService: roomService, locationService: locationService)
+    roomRatingLoader: StubRoomRatingLoader(),
+    roomFilterService: StubFilterRoomService())
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
+}
+
+/// SUT for the backend-filtered path: configures both the room loader (full
+/// catalogue) and the filter service (matching ids returned by the API).
+func makeRoomSUT(
+  allRooms: [Room],
+  filterResult: Result<[String], FilterRoomServiceError>)
+  -> RoomInteractor
+{
+  let spyLocationManager = SpyLocationManager()
+  let locationService = LiveLocationService(locationManager: spyLocationManager)
+
+  let stubLoader = StubRoomLoader()
+  stubLoader.fetchReturnValue = .success(allRooms)
+
+  let stubFilterService = StubFilterRoomService()
+  stubFilterService.fetchFilteredRoomsReturnValue = filterResult
+
+  let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
+  let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
+  let roomService = LiveRoomService(
+    roomLoader: stubLoader,
+    roomBookingLoader: roomBookingLoader,
+    roomRatingLoader: StubRoomRatingLoader(),
+    roomFilterService: stubFilterService)
+
+  return RoomInteractor(
+    roomService: roomService,
+    locationService: locationService,
+    favouriteService: PreviewFavoriteRoomService())
 }
 
 func createDifferentRooms() -> [Room] {
