@@ -19,7 +19,7 @@ struct FilterRoomLoaderTests {
 
   init() {
     client = SpyHTTPClient()
-    sut = LiveFilterRoomLoader(
+    sut = LiveFilterRoomService(
       client: client,
       baseURL: URL(string: "https://freerooms.devsoc.app")!)
   }
@@ -112,7 +112,7 @@ struct FilterRoomLoaderTests {
   }
 
   @Test
-  func fetchFilteredRooms_withNilFilters_sendsEmptyQueryValues() async throws {
+  func fetchFilteredRooms_withNilFilters_omitsQueryParameters() async throws {
     client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
       route: "/api/rooms/search",
       json: """
@@ -132,20 +132,36 @@ struct FilterRoomLoaderTests {
 
     let url = try #require(client.getReceivedUrl)
     let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
-    let queryItems = Dictionary(
-      uniqueKeysWithValues: (components.queryItems ?? []).map {
-        ($0.name, $0.value ?? "")
-      })
 
-    #expect(queryItems["datetime"] == "")
-    #expect(queryItems["startTime"] == "")
-    #expect(queryItems["endTime"] == "")
-    #expect(queryItems["buildingId"] == "")
-    #expect(queryItems["capacity"] == "")
-    #expect(queryItems["duration"] == "")
-    #expect(queryItems["usage"] == "")
-    #expect(queryItems["location"] == "")
-    #expect(queryItems["id"] == "false")
+    // The backend returns HTTP 400 when query params are present with empty
+    // values (e.g. `startTime=`), so unset fields must be omitted entirely.
+    #expect((components.queryItems ?? []).isEmpty)
+  }
+
+  @Test
+  func fetchFilteredRooms_omitsEmptyStringFields() async throws {
+    client.getReturnValue = HTTPClientResult.success(makeHTTPResponse(
+      route: "/api/rooms/search",
+      json: """
+        {}
+        """))
+
+    _ = await sut.fetchFilteredRooms(options: FilterRoomOptions(
+      dateTime: "",
+      startTime: "",
+      endTime: "",
+      buildingId: "",
+      capacity: nil,
+      duration: 60,
+      usage: "",
+      location: "",
+      sortedBySpecificSchoolId: false))
+
+    let url = try #require(client.getReceivedUrl)
+    let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: true))
+    let names = (components.queryItems ?? []).map(\.name)
+
+    #expect(names == ["duration"])
   }
 
   @Test
@@ -191,6 +207,6 @@ struct FilterRoomLoaderTests {
   // MARK: Private
 
   private let client: SpyHTTPClient
-  private let sut: LiveFilterRoomLoader
+  private let sut: LiveFilterRoomService
 
 }

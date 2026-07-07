@@ -35,11 +35,11 @@ struct RoomBookingInformationView: View {
         Spacer()
 
         ZStack {
-          RoundedRectangle(cornerRadius: 10)
+          RoundedRectangle(cornerRadius: Self.ratingBadgeCornerRadius)
             .fill(theme.accent.primary)
-            .stroke(.gray.opacity(0.2), lineWidth: 1)
+            .stroke(.gray.opacity(Self.ratingBadgeBorderOpacity), lineWidth: Self.borderWidth)
 
-          HStack(spacing: 5) {
+          HStack(spacing: Self.ratingBadgeContentSpacing) {
             Text("\(currentRoomRating?.overallRating ?? 0, specifier: "%.1f")")
               .foregroundStyle(.white)
               .font(.headline)
@@ -55,23 +55,23 @@ struct RoomBookingInformationView: View {
         .sheet(isPresented: $isShowingSheet) {
           RoomRatingSheet(currentRoomRating: currentRoomRating)
             .presentationDetents([.medium])
-            .presentationCornerRadius(24)
+            .presentationCornerRadius(Self.ratingSheetCornerRadius)
         }
-        .frame(width: 65, height: 35)
+        .frame(width: Self.ratingBadgeWidth, height: Self.ratingBadgeHeight)
 
         Button {
           isFavourite.toggle()
         } label: {
           Image(systemName: "heart")
             .foregroundStyle(theme.accent.primary)
-            .font(.system(size: 22))
+            .font(.system(size: Self.favoriteIconSize))
             .symbolVariant(isFavourite ? .fill : .none)
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.circle)
       }
 
-      VStack(alignment: .leading, spacing: 10) {
+      VStack(alignment: .leading, spacing: Self.statusContentSpacing) {
         HStack {
           Text("\(room.abbreviation)")
             .font(.title3)
@@ -79,27 +79,43 @@ struct RoomBookingInformationView: View {
             .foregroundStyle(.primary)
           Spacer()
           Text("\(room.statusText)")
-            .font(.system(size: 20, weight: .light))
+            .font(.system(size: Self.statusFontSize, weight: .light))
             .foregroundStyle(room.statusTextColour)
-            .padding(.vertical, 4)
-            .padding(.horizontal, 8)
+            .padding(.vertical, Self.statusVerticalPadding)
+            .padding(.horizontal, Self.statusHorizontalPadding)
             .background(
-              RoundedRectangle(cornerRadius: 5)
+              RoundedRectangle(cornerRadius: Self.statusCornerRadius)
                 .fill(room.statusBackgroundColor))
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.vertical, 12)
+      .padding(.vertical, Self.statusSectionVerticalPadding)
     }
   }
 
   // MARK: Private
+
+  private static let borderWidth: CGFloat = 1
+  private static let favoriteIconSize: CGFloat = 22
+  private static let ratingBadgeBorderOpacity = 0.2
+  private static let ratingBadgeContentSpacing: CGFloat = 5
+  private static let ratingBadgeCornerRadius: CGFloat = 10
+  private static let ratingBadgeHeight: CGFloat = 35
+  private static let ratingBadgeWidth: CGFloat = 65
+  private static let ratingSheetCornerRadius: CGFloat = 24
+  private static let statusContentSpacing: CGFloat = 10
+  private static let statusCornerRadius: CGFloat = 5
+  private static let statusFontSize: CGFloat = 20
+  private static let statusHorizontalPadding: CGFloat = 8
+  private static let statusSectionVerticalPadding: CGFloat = 12
+  private static let statusVerticalPadding: CGFloat = 4
 
   @State private var isShowingSheet: Bool = false
 
   @Binding private var isFavourite: Bool
 
   @Environment(Theme.self) private var theme
+
 }
 
 #Preview {

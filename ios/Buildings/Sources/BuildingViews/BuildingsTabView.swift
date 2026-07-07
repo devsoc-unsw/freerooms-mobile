@@ -19,14 +19,12 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   public init(
     path: Binding<NavigationPath>,
-    viewModel: BuildingViewModel,
     selectedView: Binding<ViewOrientation>,
     _ roomsDestinationBuilderView: @escaping (Building) -> BuildingDestination,
     _ roomDestinationBuilderView: @escaping (Room) -> RoomDestination)
   {
     _path = path
     _selectedView = selectedView
-    self.viewModel = viewModel
     self.roomsDestinationBuilderView = roomsDestinationBuilderView
     self.roomDestinationBuilderView = roomDestinationBuilderView
   }
@@ -35,63 +33,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   public var body: some View {
     NavigationStack(path: $path) {
-      buildingsView
-        .refreshable {
-          Task {
-            await viewModel.reloadBuildings()
-          }
-        }
-        .redacted(reason: viewModel.isLoading ? .placeholder : [])
-        .toolbar {
-          // Buttons on the right
-          // Toolbar size and padding constants
-          let toolbarSortIconWidth: CGFloat = 25
-          let toolbarIconHeight: CGFloat = 20
-          let toolbarViewToggleIconWidth: CGFloat = 22
-          let toolbarIconPadding: CGFloat = 5
-          ToolbarItemGroup(placement: .navigationBarTrailing) {
-            HStack {
-              Button {
-                viewModel.getBuildingsInOrder()
-              } label: {
-                Image(systemName: "arrow.up.arrow.down")
-                  .resizable()
-                  .frame(width: toolbarSortIconWidth, height: toolbarIconHeight)
-              }
-
-              Button {
-                if selectedView == ViewOrientation.Card {
-                  selectedView = ViewOrientation.List
-                } else {
-                  selectedView = ViewOrientation.Card
-                }
-              } label: {
-                Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
-                  .resizable()
-                  .frame(width: toolbarViewToggleIconWidth, height: toolbarIconHeight)
-              }
-            }
-            .padding(toolbarIconPadding)
-            .foregroundStyle(theme.label.tertiary)
-          }
-        }
-        .navigationDestination(for: Building.self) { building in
-          roomsDestinationBuilderView(building)
-            .navigationTitle(building.name)
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .navigationDestination(for: Room.self) { room in // Renders the view for displaying a room that has been clicked on
-          roomDestinationBuilderView(room)
-        }
-        .onAppear {
-          if !viewModel.hasLoaded {
-            viewModel.onAppear()
-          }
-        }
-        .navigationTitle("Buildings")
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "K17")
+      mainContent
     }
-    .alert(item: $viewModel.loadBuildingErrorMessage) { error in
+    .alert(item: loadBuildingErrorBinding) { error in
       Alert(
         title: Text(error.title),
         message: Text(error.message),
@@ -105,7 +49,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   // MARK: Internal
 
-  @State var viewModel: BuildingViewModel
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
   @Binding var selectedView: ViewOrientation
@@ -116,26 +59,22 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   @ViewBuilder
   func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
-    let gridHorizontalPadding: CGFloat = 16
-    let sectionLabelLeadingPadding: CGFloat = 10
-    let sectionHeaderTopPadding: CGFloat = 10
     Section {
-      let gridSpacing = 24.0
-      LazyVGrid(columns: columns, spacing: gridSpacing) {
+      LazyVGrid(columns: columns, spacing: BuildingsTabLayout.cardGridSpacing) {
         ForEach(buildings) { building in
           GenericCardView(
             path: $path,
             cardWidth: $cardWidth,
             building: building,
             buildings: buildings,
-            isLoading: viewModel.isLoading,
-            isFavourite: Binding(projectedValue: .constant(false)),
+            isLoading: buildingViewModel.isLoading,
+            isFavourite: .constant(false),
             imageProvider: { roomID in
               BuildingImage[roomID]
             })
         }
       }
-      .padding(.horizontal, gridHorizontalPadding)
+      .padding(.horizontal, BuildingsTabLayout.cardGridHorizontalPadding)
       // .listRowSeparator(.hidden)
       // .listRowBackground(Color.clear)
     } header: {
@@ -143,10 +82,10 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         Text(campus)
           .textCase(.uppercase)
           .foregroundStyle(theme.label.primary)
-          .padding(.leading, sectionLabelLeadingPadding)
+          .padding(.leading, BuildingsTabLayout.sectionLabelLeadingPadding)
         Spacer()
       }
-      .padding(.top, sectionHeaderTopPadding)
+      .padding(.top, BuildingsTabLayout.sectionHeaderTopPadding)
     }
   }
 
@@ -156,18 +95,17 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       EmptyView()
     } else {
       Section {
-        let listRowVerticalPadding: CGFloat = 5
         ForEach(buildings) { building in
           GenericListRowView(
             path: $path,
             rowHeight: $rowHeight,
             building: building,
             buildings: buildings,
-            isLoading: viewModel.isLoading,
+            isLoading: buildingViewModel.isLoading,
             imageProvider: { buildingID in
               BuildingImage[buildingID]
             })
-            .padding(.vertical, listRowVerticalPadding)
+            .padding(.vertical, BuildingsTabLayout.listRowVerticalPadding)
         }
       } header: {
         Text(campus)
@@ -179,6 +117,8 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   // MARK: Private
 
+  @Environment(LiveBuildingViewModel.self) private var buildingViewModel
+
   @Environment(Theme.self) private var theme
 
   private let columns = [
@@ -186,50 +126,136 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     GridItem(.flexible()),
   ]
 
+  private var searchTextBinding: Binding<String> {
+    Binding(
+      get: { buildingViewModel.searchText },
+      set: { buildingViewModel.searchText = $0 })
+  }
+
+  private var loadBuildingErrorBinding: Binding<RoomModels.AlertError?> {
+    Binding(
+      get: { buildingViewModel.loadBuildingErrorMessage },
+      set: { buildingViewModel.loadBuildingErrorMessage = $0 })
+  }
+
+  @ViewBuilder
+  private var mainContent: some View {
+    buildingsView
+      .refreshable {
+        Task {
+          buildingViewModel.reloadBuildings()
+        }
+      }
+      .redacted(reason: buildingViewModel.isLoading ? .placeholder : [])
+      .toolbar {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+          toolbarButtons
+        }
+      }
+      .navigationDestination(for: Building.self) { building in
+        roomsDestinationBuilderView(building)
+          .navigationTitle(building.name)
+          .navigationBarTitleDisplayMode(.inline)
+      }
+      .navigationDestination(for: Room.self) { room in
+        roomDestinationBuilderView(room)
+      }
+      .task {
+        if !buildingViewModel.hasLoaded {
+          buildingViewModel.onAppear()
+        }
+      }
+      .navigationTitle("Buildings")
+      .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "K17")
+  }
+
   @ViewBuilder
   private var buildingsView: some View {
-    let backgroundOpacity: Double = 0.1
-    let cardShadowOpacity: Double = 0.2
-    let cardShadowRadius: CGFloat = 5
     if selectedView == ViewOrientation.List {
       List {
-        buildingsListSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
-        buildingsListSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
-        buildingsListSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
+        buildingsListSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
+        buildingsListSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
+        buildingsListSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
       .background(theme.background.primary)
     } else {
       ScrollView {
-        buildingsCardSegment(for: "Upper campus", from: viewModel.displayedBuildings.upper)
-        buildingsCardSegment(for: "Middle campus", from: viewModel.displayedBuildings.middle)
-        buildingsCardSegment(for: "Lower campus", from: viewModel.displayedBuildings.lower)
+        buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
+        buildingsCardSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
+        buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
       }
       // .padding(.horizontal)
-      .background(theme.background.primary.opacity(backgroundOpacity))
-      .shadow(color: theme.label.primary.opacity(cardShadowOpacity), radius: cardShadowRadius)
+      .background(theme.background.primary.opacity(BuildingsTabLayout.backgroundOpacity))
+      .shadow(
+        color: theme.label.primary.opacity(BuildingsTabLayout.cardShadowOpacity),
+        radius: BuildingsTabLayout.cardShadowRadius)
     }
+  }
+
+  private var toolbarButtons: some View {
+    HStack {
+      Button {
+        buildingViewModel.getBuildingsInOrder()
+      } label: {
+        Image(systemName: "arrow.up.arrow.down")
+          .resizable()
+          .frame(width: BuildingsTabLayout.toolbarSortIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
+      }
+
+      Button {
+        if selectedView == ViewOrientation.Card {
+          selectedView = ViewOrientation.List
+        } else {
+          selectedView = ViewOrientation.Card
+        }
+      } label: {
+        Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
+          .resizable()
+          .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
+      }
+    }
+    .padding(BuildingsTabLayout.toolbarIconPadding)
+    .foregroundStyle(theme.label.tertiary)
   }
 
 }
 
+// MARK: - BuildingsTabLayout
+
+private enum BuildingsTabLayout {
+  static let backgroundOpacity = 0.1
+  static let cardGridHorizontalPadding: CGFloat = 16
+  static let cardGridSpacing: CGFloat = 24
+  static let cardShadowOpacity = 0.2
+  static let cardShadowRadius: CGFloat = 5
+  static let listRowVerticalPadding: CGFloat = 5
+  static let sectionHeaderTopPadding: CGFloat = 10
+  static let sectionLabelLeadingPadding: CGFloat = 10
+  static let toolbarIconHeight: CGFloat = 20
+  static let toolbarIconPadding: CGFloat = 5
+  static let toolbarSortIconWidth: CGFloat = 25
+  static let toolbarViewToggleIconWidth: CGFloat = 22
+}
+
 // MARK: - PreviewWrapper
 
-struct PreviewWrapper: View {
+private struct PreviewWrapper: View {
   @State var path = NavigationPath()
   @State var selectedView = ViewOrientation.List
 
   var body: some View {
+    let viewModel: LiveBuildingViewModel = PreviewBuildingViewModel()
     BuildingsTabView(
       path: $path,
-      viewModel: PreviewBuildingViewModel(),
       selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
     } _: { _ in
       EmptyView() // Rooms destination
     }
+    .environment(viewModel)
     .defaultTheme()
   }
 }

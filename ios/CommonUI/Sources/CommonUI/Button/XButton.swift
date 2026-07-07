@@ -21,10 +21,10 @@ public struct XButton: View {
     Button(action: action) {
       ZStack {
         Circle()
-          .fill(Color.gray.opacity(0.2))
-          .frame(width: 42, height: 42)
+          .fill(Color.gray.opacity(Self.backgroundOpacity))
+          .frame(width: Self.buttonSize, height: Self.buttonSize)
         Image(systemName: "xmark")
-          .font(.system(size: 20, weight: .medium))
+          .font(.system(size: Self.iconSize, weight: .medium))
           .foregroundStyle(theme.black)
       }
     }
@@ -36,5 +36,10 @@ public struct XButton: View {
 
   // MARK: Private
 
+  private static let backgroundOpacity = 0.2
+  private static let buttonSize: CGFloat = 42
+  private static let iconSize: CGFloat = 20
+
   @Environment(Theme.self) private var theme
+
 }

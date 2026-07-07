@@ -16,20 +16,26 @@ struct BuildingAnnotationView: View {
     Circle()
       .fill(building.availabilityColor)
       .frame(
-        width: isSelected ? 24 : 16, // ← Bigger when selected
-        height: isSelected ? 24 : 16)
+        width: isSelected ? MapLayoutConstants.selectedAnnotationSize : MapLayoutConstants.defaultAnnotationSize,
+        height: isSelected ? MapLayoutConstants.selectedAnnotationSize : MapLayoutConstants.defaultAnnotationSize)
       .overlay {
         Circle()
-          .stroke(Color.white, lineWidth: isSelected ? 4 : 3) // ← Thicker border when selected
+          .stroke(
+            Color.white,
+            lineWidth: isSelected
+              ? MapLayoutConstants.selectedAnnotationBorderWidth
+              : MapLayoutConstants.defaultAnnotationBorderWidth)
       }
       .shadow(
-        color: .black.opacity(0.3),
-        radius: isSelected ? 4 : 2, // ← More shadow when selected
-        x: 0,
-        y: 1)
-      .scaleEffect(isSelected ? 1.2 : 1.0) // ← Scale effect for selection
-      .animation(.spring(duration: 0.3), value: isSelected) // ← Smooth animation
+        color: .black.opacity(MapLayoutConstants.annotationShadowOpacity),
+        radius: isSelected
+          ? MapLayoutConstants.selectedAnnotationShadowRadius
+          : MapLayoutConstants.unselectedAnnotationShadowRadius,
+        x: MapLayoutConstants.sheetShadowXOffset,
+        y: MapLayoutConstants.annotationShadowYOffset)
+      .scaleEffect(isSelected ? MapLayoutConstants.annotationScaleWhenSelected : MapLayoutConstants.unselectedAnnotationScale)
+      .animation(.spring(duration: MapLayoutConstants.annotationSelectionAnimationDuration), value: isSelected)
       .contentShape(Rectangle())
-      .frame(width: 44)
+      .frame(width: MapLayoutConstants.annotationHitTargetWidth)
   }
 }

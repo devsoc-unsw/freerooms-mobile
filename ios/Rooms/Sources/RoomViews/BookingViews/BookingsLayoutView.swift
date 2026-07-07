@@ -14,7 +14,7 @@ struct BookingsLayoutView: View {
 
   var hour: Int
 
-  let borderColor = Color.gray.opacity(0.3)
+  let borderColor = Color.gray.opacity(Self.borderOpacity)
 
   var body: some View {
     HStack {
@@ -24,35 +24,35 @@ struct BookingsLayoutView: View {
         .overlay(
           VStack(spacing: 0) {
             Rectangle()
-              .frame(height: 1)
+              .frame(height: Self.gridLineWidth)
             Spacer()
             Rectangle()
-              .frame(height: 1)
+              .frame(height: Self.gridLineWidth)
           }
-          .offset(x: 8)
+          .offset(x: Self.timeLabelGridLineOffset)
           .foregroundStyle(borderColor))
 
       VStack(spacing: 0) {
         Rectangle()
-          .strokeBorder(borderColor, lineWidth: 1)
-          .frame(height: RoomLayoutConstants.slotHeight / 2)
+          .strokeBorder(borderColor, lineWidth: Self.gridLineWidth)
+          .frame(height: Self.halfSlotHeight)
 
         Rectangle()
           .fill(.clear)
-          .frame(height: RoomLayoutConstants.slotHeight / 2)
+          .frame(height: Self.halfSlotHeight)
           .overlay(alignment: .leading) {
             Rectangle()
-              .frame(width: 1)
+              .frame(width: Self.gridLineWidth)
               .foregroundStyle(borderColor)
           }
           .overlay(alignment: .bottom) {
             Rectangle()
-              .frame(height: 1)
+              .frame(height: Self.gridLineWidth)
               .foregroundStyle(borderColor)
           }
           .overlay(alignment: .trailing) {
             Rectangle()
-              .frame(width: 1)
+              .frame(width: Self.gridLineWidth)
               .foregroundStyle(borderColor)
           }
       }
@@ -61,17 +61,26 @@ struct BookingsLayoutView: View {
 
   // MARK: Private
 
+  private static let borderOpacity = 0.3
+  private static let gridLineWidth: CGFloat = 1
+  private static let halfSlotHeight = RoomLayoutConstants.slotHeight / 2
+  private static let midnightHour = 0
+  private static let twelveHourClock = 12
+
+  /// Extends the small time-label grid ticks into the booking grid column.
+  private static let timeLabelGridLineOffset: CGFloat = 8
+
   @Environment(Theme.self) private var theme
 
   private func formatHour(_ hour: Int) -> String {
-    if hour == 0 {
+    if hour == Self.midnightHour {
       "12 AM"
-    } else if hour < 12 {
+    } else if hour < Self.twelveHourClock {
       "\(hour) AM"
-    } else if hour == 12 {
+    } else if hour == Self.twelveHourClock {
       "12 PM"
     } else {
-      "\(hour - 12) PM"
+      "\(hour - Self.twelveHourClock) PM"
     }
   }
 
