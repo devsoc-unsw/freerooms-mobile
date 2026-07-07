@@ -40,37 +40,12 @@ jobs:
         with:
           args: --strict --config .swiftlint.yml
   tests:
-    name: Tests (${{ matrix.name }})
+    name: Tests
     needs: ["build"]
     runs-on: macos-26
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Rooms
-            only_testing: "-only-testing:RoomsTests"
-          - name: Buildings
-            only_testing: "-only-testing:BuildingsTests"
-          - name: Other
-            only_testing: "-only-testing:NetworkingTests -only-testing:PersistenceTests -only-testing:LocationTests -only-testing:TestingSupportTests"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Select simulator
-        id: simulator
-        run: |
-          SIMULATOR_NAME="iPhone 17"
-          SIMULATOR_UDID="$(xcrun simctl list devices available | sed -nE "s/.*${SIMULATOR_NAME} \(([0-9A-F-]{36})\).*/\1/p" | head -n 1)"
-
-          if [ -z "$SIMULATOR_UDID" ]; then
-            DEVICE_TYPE="$(xcrun simctl list devicetypes | sed -nE "s/.*${SIMULATOR_NAME} \((com\.apple\.CoreSimulator\.SimDeviceType\.[^)]+)\).*/\1/p" | head -n 1)"
-            RUNTIME="$(xcrun simctl list runtimes available | sed -nE 's/.* - (com\.apple\.CoreSimulator\.SimRuntime\.iOS-[^ ]+).*/\1/p' | tail -n 1)"
-            SIMULATOR_UDID="$(xcrun simctl create "$SIMULATOR_NAME" "$DEVICE_TYPE" "$RUNTIME")"
-          fi
-
-          xcrun simctl boot "$SIMULATOR_UDID" || true
-          echo "udid=$SIMULATOR_UDID" >> "$GITHUB_OUTPUT"
-          echo "destination=platform=iOS Simulator,id=$SIMULATOR_UDID" >> "$GITHUB_OUTPUT"
       - name: Cache Xcode build data
         uses: irgaly/xcode-cache@v1
         with:
@@ -81,10 +56,8 @@ jobs:
           swiftpm-package-resolved-file: |
             ios/**/Package.resolved
           swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
-      - name: Wait for simulator boot
-        run: xcrun simctl bootstatus "${{ steps.simulator.outputs.udid }}" -b
       - name: Run tests
-        run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination '${{ steps.simulator.outputs.destination }}' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3 ${{ matrix.only_testing }}"
+        run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3"
   build:
     name: Build
     runs-on: macos-26
@@ -106,4 +79,4 @@ jobs:
           swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
 
       - name: Build for testing
-        run: "xcodebuild build-for-testing -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'generic/platform=iOS Simulator' -derivedDataPath DerivedData"
+        run: "xcodebuild build-for-testing -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath DerivedData"
