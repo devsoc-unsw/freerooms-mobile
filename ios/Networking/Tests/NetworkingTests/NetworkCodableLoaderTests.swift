@@ -175,7 +175,7 @@ private final class MockHTTPClient: HTTPClient {
     returnedStatusCode = 200
   }
 
-  func get(from url: URL) async -> HTTPClient.Result {
+  func get(from url: URL) async -> HTTPClientResult {
     networkCallCount += 1
 
     if let returnedStringData {

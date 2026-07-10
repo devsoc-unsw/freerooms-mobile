@@ -7,7 +7,7 @@
 
 import BuildingModels
 
-func createRealBuildings() -> [Building] {
+nonisolated func createRealBuildings() -> [Building] {
   let buildingsData = [
     ("AGSM", "K-G27", -33.91852, 151.235664, []),
     ("Ainsworth Building", "K-J17", -33.918527, 151.23126, []),

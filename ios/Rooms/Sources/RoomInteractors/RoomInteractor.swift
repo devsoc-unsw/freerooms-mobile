@@ -13,9 +13,10 @@ public class RoomInteractor {
 
   // MARK: Lifecycle
 
-  public init(roomService: RoomService, locationService: LocationService) {
+  public init(roomService: RoomService, locationService: LocationService, favouriteService: FavoriteRoomService) {
     self.roomService = roomService
     self.locationService = locationService
+    self.favouriteService = favouriteService
   }
 
   // MARK: Public
@@ -29,7 +30,10 @@ public class RoomInteractor {
   public func filterRoomsByQueryString(_ rooms: [Room], by searchText: String) -> [Room] {
     guard !searchText.isEmpty else { return rooms }
     let loweredQuery = searchText.lowercased()
-    return rooms.filter { $0.name.lowercased().contains(loweredQuery) }
+    return rooms.filter {
+      $0.name.lowercased().contains(loweredQuery) ||
+        $0.abbreviation.lowercased().contains(loweredQuery)
+    }
   }
 
   public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], FetchRoomError> {
@@ -74,67 +78,6 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsFilteredByCampusSection(_ campusSection: CampusSection) async -> Result<[Room], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      let filtered = rooms.filter {
-        GridReference.fromBuildingID(buildingID: $0.buildingId).campusSection == campusSection
-      }
-      return .success(filtered)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  public func getRoomsFilteredByDuration(
-    for minDuration: Int,
-    roomBookings: [String: [RoomBooking]])
-    async -> Result<[Room], FetchRoomError>
-  {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      var result = [Room]()
-      for room in rooms {
-        let currentTime = Date()
-
-        // Sort classes by start time, then end time.
-        let classBookings: [RoomBooking] =
-          roomBookings[room.id]
-            ?? []
-            .sorted { $0.start < $1.start }
-            .sorted { $0.end < $1.end }
-
-        // Find the first class that *ends* after the current time
-        // Current time should be changing every 15 or 30 min now and then
-        let firstClassEndsAfterCurrentTime: RoomBooking? = classBookings.first {
-          $0.end >= currentTime
-        }
-        if firstClassEndsAfterCurrentTime == nil {
-          // class is free indefinitely meaning it is free the whole day from current time onwards
-          result.append(room)
-          continue
-        }
-
-        /// Check if from current time to the next first class duration satisfy minDuration
-        let start = firstClassEndsAfterCurrentTime!.start
-        if currentTime < start {
-          let duration = start.timeIntervalSince(currentTime) // in seconds
-          let durationInMinutes = Int(duration / 60)
-
-          if durationInMinutes >= minDuration {
-            result.append(room)
-          }
-        }
-      }
-
-      return .success(result)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
     switch await roomService.getRooms() {
     case .success(let rooms):
@@ -167,8 +110,52 @@ public class RoomInteractor {
     }
   }
 
+  public func getFilteredRooms(options: FilterRoomOptions) async -> Result<[Room], FetchRoomError> {
+    switch await roomService.getFilterRooms(options: options) {
+    case .success(let rooms):
+      .success(rooms)
+    case .failure(let error):
+      .failure(error)
+    }
+  }
+
+  public func applyClientSideFilters(rooms: [Room], campusLocation: CampusLocation?) -> [Room] {
+    guard let campusLocation else {
+      return rooms
+    }
+
+    return rooms.filter { room in
+      let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
+      switch campusLocation {
+      case .upper:
+        return gridReference.campusSection == .upper
+      case .middle:
+        return gridReference.campusSection == .middle
+      case .lower:
+        return gridReference.campusSection == .lower
+      }
+    }
+  }
+
+  public func toggleFavorite(roomID: Room.ID) {
+    if favouriteService.isFavorite(roomID: roomID) {
+      favouriteService.removeFavorite(roomID: roomID)
+    } else {
+      favouriteService.addFavorite(roomID: roomID)
+    }
+  }
+
+  public func isFavorite(roomID: Room.ID) -> Bool {
+    favouriteService.isFavorite(roomID: roomID)
+  }
+
+  public func getAllFavoriteRoomIds() -> [Room.ID] {
+    favouriteService.getAllFavoriteRoomIds()
+  }
+
   // MARK: Private
 
   private let roomService: RoomService
   private let locationService: LocationService
+  private let favouriteService: FavoriteRoomService
 }

@@ -34,10 +34,10 @@ public struct CachedImage: View {
           .resizable()
       } else {
         Rectangle()
-          .fill(.gray.opacity(0.15))
+          .fill(.gray.opacity(Self.placeholderOpacity))
       }
     }
-    .task {
+    .task(id: name) {
       resolved = await cache.getImage(named: name, in: bundle, size: size)
       if resolved == nil, let fallbackName {
         resolved = await cache.getImage(named: fallbackName, in: fallbackBundle, size: size)
@@ -47,6 +47,8 @@ public struct CachedImage: View {
 
   // MARK: Private
 
+  private static let placeholderOpacity = 0.15
+
   @State private var resolved: UIImage?
 
   private let name: String
@@ -55,4 +57,5 @@ public struct CachedImage: View {
   private let cache: ImageCache
   private let fallbackName: String?
   private let fallbackBundle: Bundle
+
 }

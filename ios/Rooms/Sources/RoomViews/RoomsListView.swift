@@ -17,12 +17,10 @@ public struct RoomsListView: View {
   // MARK: Lifecycle
 
   public init(
-    roomViewModel: RoomViewModel,
     building: Building,
     path: Binding<NavigationPath>,
     imageProvider: @escaping (String) -> CachedImage)
   {
-    self.roomViewModel = roomViewModel
     self.building = building
     _path = path
     self.imageProvider = imageProvider
@@ -35,8 +33,8 @@ public struct RoomsListView: View {
 
     return List {
       imageProvider(building.id)
-        .frame(height: screenHeight / 4)
-        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .frame(height: screenHeight * RoomLayoutConstants.buildingHeroImageHeightFraction)
+        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
         .listRowInsets(EdgeInsets()) // remove default list padding
         .listRowBackground(Color.clear) // optional, to keep background consistent
         .padding(.bottom)
@@ -51,7 +49,7 @@ public struct RoomsListView: View {
           imageProvider: { roomID in
             RoomImage[roomID]
           })
-          .padding(.vertical, 5)
+          .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     }
@@ -67,10 +65,10 @@ public struct RoomsListView: View {
         } label: {
           Image(systemName: "arrow.up.arrow.down")
             .resizable()
-            .frame(width: 25, height: 20)
+            .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
         }
       }
-      .padding(5)
+      .padding(RoomLayoutConstants.toolbarIconPadding)
       .foregroundStyle(theme.label.tertiary)
     }
     .background(Color(UIColor.systemGroupedBackground))
@@ -88,8 +86,8 @@ public struct RoomsListView: View {
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private var roomViewModel: RoomViewModel
   private var building: Building
 
 }
@@ -100,12 +98,13 @@ private struct PreviewWrapper: View {
   @State var path = NavigationPath()
 
   var body: some View {
-    RoomsListView(
-      roomViewModel: PreviewRoomViewModel(),
+    let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+    return RoomsListView(
       building: Building(name: "AGSM", id: "K-B16", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
       path: $path, imageProvider: {
         RoomImage[$0] // This closure captures BuildingImage
       })
+      .environment(viewModel)
       .defaultTheme()
   }
 }

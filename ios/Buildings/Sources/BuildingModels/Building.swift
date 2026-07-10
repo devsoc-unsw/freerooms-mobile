@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
+import DevSocAPI
 import Foundation
 import Location
 
@@ -16,7 +17,7 @@ public typealias CampusBuildings = (upper: [Building], middle: [Building], lower
 
 /// A building on campus with location information and room availability data.
 public nonisolated
-struct Building: Equatable, Identifiable, Hashable, Sendable {
+struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
 
   // MARK: Lifecycle
 
@@ -125,20 +126,47 @@ public enum AvailabilityStatus: String, Sendable {
     }
 
     switch rawValue {
-    case 5...:
+    case Self.availableRoomThreshold...:
       self = .available
-    case 1...4:
+    case Self.crowdedRoomRange:
       self = .crowded
-    case 0:
+    case Self.noAvailableRooms:
       self = .unavailable
     default:
       self = .missing
     }
   }
+
+  // MARK: Private
+
+  private static let availableRoomThreshold = 5
+  private static let crowdedRoomRange = 1...4
+  private static let noAvailableRooms = 0
 }
 
 // MARK: - BuildingFilterOptions
 
 public enum BuildingFilterOptions: Sendable {
   case Alphabetical, Location, CampusSection
+}
+
+// MARK: - Conversion from GraphQL Building
+
+extension Building {
+
+  public init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
+    // Make sure the lat and long are valid
+    guard let lat = Double(graphQLBuilding.lat), let long = Double(graphQLBuilding.long) else {
+      return nil
+    }
+
+    // Create the Building
+    self.init(
+      name: graphQLBuilding.name,
+      id: graphQLBuilding.id,
+      latitude: lat,
+      longitude: long,
+      aliases: [])
+  }
+
 }

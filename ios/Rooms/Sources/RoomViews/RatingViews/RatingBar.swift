@@ -15,11 +15,11 @@ struct RatingBar: View {
   let value: Double
 
   var body: some View {
-    VStack(spacing: 6) {
+    VStack(spacing: Self.contentSpacing) {
       HStack {
         Image(systemName: icon)
           .foregroundStyle(.secondary)
-          .frame(width: 20)
+          .frame(width: Self.iconColumnWidth)
 
         Text(label)
           .font(.subheadline)
@@ -34,25 +34,34 @@ struct RatingBar: View {
 
       GeometryReader { geo in
         ZStack(alignment: .leading) {
-          RoundedRectangle(cornerRadius: 6)
-            .fill(Color.gray.opacity(0.15))
+          RoundedRectangle(cornerRadius: Self.barCornerRadius)
+            .fill(Color.gray.opacity(Self.trackOpacity))
 
-          RoundedRectangle(cornerRadius: 6)
+          RoundedRectangle(cornerRadius: Self.barCornerRadius)
             .fill(
               LinearGradient(
                 colors: [theme.accent.secondary, theme.accent.primary],
                 startPoint: .leading,
                 endPoint: .trailing))
-            .frame(width: geo.size.width * min(value / 5.0, 1.0))
+            .frame(width: geo.size.width * min(value / Self.maximumRatingValue, Self.fullProgress))
         }
       }
-      .frame(height: 10)
+      .frame(height: Self.barHeight)
     }
   }
 
   // MARK: Private
 
+  private static let barCornerRadius: CGFloat = 6
+  private static let barHeight: CGFloat = 10
+  private static let contentSpacing: CGFloat = 6
+  private static let fullProgress = 1.0
+  private static let iconColumnWidth: CGFloat = 20
+  private static let maximumRatingValue = 5.0
+  private static let trackOpacity = 0.15
+
   @Environment(Theme.self) private var theme
+
 }
 
 #Preview {

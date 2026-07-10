@@ -1,6 +1,15 @@
 {
-  "originHash" : "e3a4e0e2698fbe6672e0ded7860ebef15af35732794cfd07f0ee0026070ddaae",
+  "originHash" : "ad523d6cc6f77c990111654ca73bdbbf990262daae08fb41196204a874adf407",
   "pins" : [
+    {
+      "identity" : "apollo-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apollographql/apollo-ios",
+      "state" : {
+        "revision" : "38c202227d0f09508e573dcf22f54885cfb0c5d4",
+        "version" : "2.1.2"
+      }
+    },
     {
       "identity" : "bottomsheet",
       "kind" : "remoteSourceControl",
@@ -24,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/avdn-dev/VISOR.git",
       "state" : {
-        "revision" : "8281ca20b434afdb5302e272677f62a2ab0f6806",
-        "version" : "4.0.0"
+        "revision" : "4ba6dd8d9845c431fca0edeecff2d5efbc105045",
+        "version" : "8.0.1"
       }
     }
   ],
