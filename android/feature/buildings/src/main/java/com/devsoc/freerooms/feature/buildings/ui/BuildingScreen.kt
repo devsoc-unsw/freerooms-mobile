@@ -2,10 +2,10 @@ package com.devsoc.freerooms.feature.buildings.ui
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
+import com.devsoc.freerooms.core.ui.SectionCardItem
+import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
 import com.devsoc.freerooms.feature.buildings.data.CampusSection
@@ -48,11 +50,11 @@ fun BuildingScreen(
                     end = 16.dp,
                     bottom = 16.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
                     Text(
                         text = "Buildings",
+                        modifier = Modifier.padding(bottom = 12.dp),
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         color = Brown,
@@ -60,17 +62,35 @@ fun BuildingScreen(
                 }
 
                 item {
-                    BuildingSearchBox()
+                    BuildingSearchBox(modifier = Modifier.padding(bottom = 12.dp))
                 }
 
-                items(
-                    items = buildingSections,
-                    key = { section -> section.title },
-                ) { section ->
-                    BuildingSectionCard(
-                        title = section.title,
-                        buildings = section.buildings,
-                    )
+                buildingSections.forEachIndexed { sectionIndex, section ->
+                    item(
+                        key = "section-${section.title}",
+                        contentType = "section-header",
+                    ) {
+                        SectionHeader(
+                            title = section.title,
+                            modifier = Modifier.padding(
+                                top = if (sectionIndex == 0) 0.dp else 12.dp,
+                                bottom = 8.dp,
+                            ),
+                        )
+                    }
+
+                    itemsIndexed(
+                        items = section.buildings,
+                        key = { _, building -> building.id },
+                        contentType = { _, _ -> "building" },
+                    ) { index, building ->
+                        SectionCardItem(
+                            isFirst = index == 0,
+                            isLast = index == section.buildings.lastIndex,
+                        ) {
+                            BuildingCard(building = building)
+                        }
+                    }
                 }
             }
         }

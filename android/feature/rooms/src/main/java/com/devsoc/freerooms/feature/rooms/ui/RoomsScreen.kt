@@ -2,10 +2,10 @@ package com.devsoc.freerooms.feature.rooms.ui
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
+import com.devsoc.freerooms.core.ui.SectionCardItem
+import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
 
@@ -45,11 +47,11 @@ fun RoomsScreen(
                     end = 16.dp,
                     bottom = 16.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
                     Text(
                         text = "Rooms",
+                        modifier = Modifier.padding(bottom = 12.dp),
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         color = Brown,
@@ -57,14 +59,27 @@ fun RoomsScreen(
                 }
 
                 item {
-                    RoomSearchBox()
+                    RoomSearchBox(modifier = Modifier.padding(bottom = 12.dp))
                 }
 
-                item{
-                    RoomSectionCard(
+                item {
+                    SectionHeader(
                         title = "All Rooms",
-                        rooms = state.data,
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
+                }
+
+                itemsIndexed(
+                    items = state.data,
+                    key = { _, room -> room.id },
+                    contentType = { _, _ -> "room" },
+                ) { index, room ->
+                    SectionCardItem(
+                        isFirst = index == 0,
+                        isLast = index == state.data.lastIndex,
+                    ) {
+                        RoomCard(room = room)
+                    }
                 }
             }
         }
