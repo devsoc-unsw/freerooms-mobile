@@ -34,6 +34,7 @@ public final class Theme {
     public let primary = Color("LabelPrimary", bundle: .module)
     public let secondary = Color("LabelSecondary", bundle: .module)
     public let tertiary = Color("LabelTertiary", bundle: .module)
+    public let quaternary = Color("LabelQuarternary", bundle: .module)
   }
 
   public struct Background {

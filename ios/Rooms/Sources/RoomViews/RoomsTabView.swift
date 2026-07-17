@@ -71,7 +71,7 @@ public struct RoomsTabView<Destination: View>: View {
               }
             }
             .padding(RoomLayoutConstants.toolbarIconPadding)
-            .foregroundStyle(theme.label.tertiary)
+            .foregroundStyle(theme.accent.primary)
           }
         }
         .navigationDestination(for: Room.self) { room in

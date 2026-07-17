@@ -70,7 +70,7 @@ public struct RoomDetailsView: View {
             $0
               .padding(8)
               .buttonStyle(.borderedProminent)
-              .tint(theme.background.primary.opacity(0.85))
+              .tint(theme.background.primary.opacity(0.8))
               .foregroundStyle(theme.accent.primary)
           })
       }
@@ -88,7 +88,7 @@ public struct RoomDetailsView: View {
           },
           fallback: {
             $0
-              .background(.regularMaterial)
+              .background(theme.background.primary.opacity(0.8))
               .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
           })
       }

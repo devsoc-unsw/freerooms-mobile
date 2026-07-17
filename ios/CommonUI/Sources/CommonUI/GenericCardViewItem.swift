@@ -67,7 +67,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           .padding(.vertical, 2)
           .background(
             RoundedRectangle(cornerRadius: 12)
-              .fill(theme.label.tertiary))
+              .fill(theme.accent.primary))
         } else {
           HStack(spacing: 0) {
             Text("0")
@@ -82,7 +82,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           .padding(.vertical, 2)
           .background(
             RoundedRectangle(cornerRadius: 12)
-              .fill(theme.label.tertiary))
+              .fill(theme.accent.primary))
         }
       }
 

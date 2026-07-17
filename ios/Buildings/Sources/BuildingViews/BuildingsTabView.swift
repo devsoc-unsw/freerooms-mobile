@@ -72,7 +72,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
               }
             }
             .padding(toolbarIconPadding)
-            .foregroundStyle(theme.label.tertiary)
+            .foregroundStyle(theme.accent.primary)
           }
         }
         .navigationDestination(for: Building.self) { building in
