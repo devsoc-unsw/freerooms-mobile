@@ -59,9 +59,8 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
       return await _fetchBuildings_slowpath()
     }
 
-    // Check if we can use the cache
-    // TODO: Allow configuration of this value
-    let oldestAllowedCache = Date() - (60 * 60 * 24)
+    // Check if we can use the cache.
+    let oldestAllowedCache = Date() - Self.cacheFreshnessInterval
     let lastUpdated: Date?
     var buildings: [Building]
     do {
@@ -100,6 +99,12 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   let buildingsCache: (any BuildingsCache)?
 
   // MARK: Private
+
+  /// Buildings are mostly static, so one day keeps launch fast without letting stale metadata linger indefinitely.
+  private static let cacheFreshnessInterval = secondsPerMinute * minutesPerHour * hoursPerDay
+  private static let hoursPerDay: TimeInterval = 24
+  private static let minutesPerHour: TimeInterval = 60
+  private static let secondsPerMinute: TimeInterval = 60
 
   private static let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader")
 
