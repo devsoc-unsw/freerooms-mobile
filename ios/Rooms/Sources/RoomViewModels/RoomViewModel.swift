@@ -143,22 +143,27 @@ public class LiveRoomViewModel: RoomViewModel {
   public var selectedCapacity: Int?
 
   public var hasActiveFilters: Bool {
-    selectedDate != DateDefaults.selectedDate ||
-      !selectedRoomTypes.isEmpty ||
-      selectedDuration != nil ||
-      selectedCampusLocation != nil ||
-      selectedCapacity != nil
+    selectedDate != DateDefaults.selectedDate || !selectedRoomTypes.isEmpty
+      || selectedDuration != nil || selectedCampusLocation != nil
+      || selectedCapacity != nil
   }
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
     var result = [String: [Room]]()
     for (buildingId, rooms) in roomsByBuildingId {
-      let filteredRooms = interactor.applyClientSideFilters(rooms: rooms, campusLocation: selectedCampusLocation)
+      let filteredRooms = interactor.applyClientSideFilters(
+        rooms: rooms,
+        campusLocation: selectedCampusLocation
+      )
 
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
-        inAscendingOrder: roomsInAscendingOrder)
-      let searchedRooms = interactor.filterRoomsByQueryString(sortedRooms, by: searchText)
+        inAscendingOrder: roomsInAscendingOrder
+      )
+      let searchedRooms = interactor.filterRoomsByQueryString(
+        sortedRooms,
+        by: searchText
+      )
 
       if !searchedRooms.isEmpty {
         result[buildingId] = searchedRooms
@@ -189,7 +194,8 @@ public class LiveRoomViewModel: RoomViewModel {
         writingMedia: ["Whiteboard"],
         status: .available,
         endTime: nil,
-        overallRating: 4.0)
+        overallRating: 4.0
+      )
     }
   }
 
@@ -223,14 +229,20 @@ public class LiveRoomViewModel: RoomViewModel {
     isLoading = true
     defer { isLoading = false }
 
-    switch await interactor.getRoomsSortedAlphabetically(inAscendingOrder: roomsInAscendingOrder) {
+    switch await interactor.getRoomsSortedAlphabetically(
+      inAscendingOrder: roomsInAscendingOrder
+    ) {
     case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(rooms: roomsData, inAscendingOrder: roomsInAscendingOrder)
+      rooms = interactor.getRoomsSortedAlphabetically(
+        rooms: roomsData,
+        inAscendingOrder: roomsInAscendingOrder
+      )
       roomsByBuildingId = Dictionary(grouping: roomsData, by: \.buildingId)
       for key in roomsByBuildingId.keys {
         roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
           rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-          inAscendingOrder: roomsInAscendingOrder)
+          inAscendingOrder: roomsInAscendingOrder
+        )
       }
 
     case .failure(let error):
@@ -246,7 +258,8 @@ public class LiveRoomViewModel: RoomViewModel {
     for key in roomsByBuildingId.keys {
       roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
         rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-        inAscendingOrder: roomsInAscendingOrder)
+        inAscendingOrder: roomsInAscendingOrder
+      )
     }
     isLoading = false
   }
@@ -365,14 +378,19 @@ public class LiveRoomViewModel: RoomViewModel {
 
   /// Handles horizontal scroll to change the date for room booking list view.
   public func handleScrollIDChange(oldValue: Int?, newValue: Int?) {
-    guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else { return }
-    dateSelect = baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
+    guard let newValue, let oldValue, abs(newValue - oldValue) == 1 else {
+      return
+    }
+    dateSelect =
+      baseDate + (Double(newValue - RoomBookingConstants.middleIndex) * .day)
   }
 
   /// Handles date picker changes for the room booking list view.
   public func handleDateSelectChange(oldValue _: Date, newValue: Date) {
     let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
-    let expectedDate = baseDate + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
+    let expectedDate =
+      baseDate
+      + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
 
     if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
       baseDate = newValue
@@ -388,19 +406,23 @@ public class LiveRoomViewModel: RoomViewModel {
     interactor.isFavorite(roomID: roomID)
   }
 
-  public func getAllFavoriteRoomIds() -> [Room.ID] {
-    interactor.getAllFavoriteRoomIds()
+  public func getAllFavoriteRooms() -> [Room] {
+    let roomIds = interactor.getAllFavoriteRoomIds()
+    return rooms.filter { roomIds.contains($0.id) }
   }
 
   // MARK: Private
 
   private let interactor: RoomInteractor
 
-  private var currentFilterOptions: FilterRoomOptions { FilterRoomOptions.make(
-    selectedDate: selectedDate,
-    selectedRoomTypes: selectedRoomTypes,
-    selectedDuration: selectedDuration,
-    selectedCapacity: selectedCapacity) }
+  private var currentFilterOptions: FilterRoomOptions {
+    FilterRoomOptions.make(
+      selectedDate: selectedDate,
+      selectedRoomTypes: selectedRoomTypes,
+      selectedDuration: selectedDuration,
+      selectedCapacity: selectedCapacity
+    )
+  }
 }
 
 // MARK: - PreviewRoomViewModel
@@ -412,8 +434,11 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
       interactor: RoomInteractor(
         roomService: PreviewRoomService(),
         locationService: LiveLocationService(
-          locationManager: LiveLocationManager()),
-        favouriteService: PreviewFavoriteRoomService()))
+          locationManager: LiveLocationManager()
+        ),
+        favouriteService: PreviewFavoriteRoomService()
+      )
+    )
 
     currentRoomBookings = [
       RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour,
