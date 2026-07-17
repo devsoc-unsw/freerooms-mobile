@@ -89,7 +89,7 @@ public protocol RoomViewModel: AnyObject {
 
   func isFavorite(roomID: Room.ID) -> Bool
 
-  func getAllFavoriteRoomIds() -> [Room.ID]
+  func getAllFavoriteRooms() -> [Room]
 }
 
 // MARK: - LiveRoomViewModel
