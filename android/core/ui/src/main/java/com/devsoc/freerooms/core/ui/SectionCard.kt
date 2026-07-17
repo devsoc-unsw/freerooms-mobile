@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -52,9 +52,7 @@ fun SectionCardItem(
             .fillMaxWidth()
             .clip(shape)
             .background(Color.White)
-            .drawWithContent {
-                drawContent()
-
+            .drawWithCache {
                 val strokeWidth = 1.dp.toPx()
                 val edge = strokeWidth / 2
                 val radius = 36.dp.toPx()
@@ -63,20 +61,10 @@ fun SectionCardItem(
                 val right = size.width - edge
                 val bottom = size.height - edge
                 val border = Path()
+                val borderStroke = Stroke(strokeWidth)
 
                 when {
-                    isFirst && isLast -> {
-                        drawRoundRect(
-                            color = FR_Orange,
-                            topLeft = Offset(edge, edge),
-                            size = Size(
-                                width = size.width - strokeWidth,
-                                height = size.height - strokeWidth,
-                            ),
-                            cornerRadius = CornerRadius(arcRadius),
-                            style = Stroke(strokeWidth),
-                        )
-                    }
+                    isFirst && isLast -> Unit
                     isFirst -> {
                         border.moveTo(edge, bottom)
                         border.lineTo(edge, radius)
@@ -98,7 +86,6 @@ fun SectionCardItem(
                             radius,
                         )
                         border.lineTo(right, bottom)
-                        drawPath(border, FR_Orange, style = Stroke(strokeWidth))
                     }
                     isLast -> {
                         border.moveTo(edge, edge)
@@ -121,14 +108,31 @@ fun SectionCardItem(
                             size.height - radius,
                         )
                         border.lineTo(right, edge)
-                        drawPath(border, FR_Orange, style = Stroke(strokeWidth))
                     }
                     else -> {
                         border.moveTo(edge, edge)
                         border.lineTo(edge, bottom)
                         border.moveTo(right, edge)
                         border.lineTo(right, bottom)
-                        drawPath(border, FR_Orange, style = Stroke(strokeWidth))
+                    }
+                }
+
+                onDrawWithContent {
+                    drawContent()
+
+                    if (isFirst && isLast) {
+                        drawRoundRect(
+                            color = FR_Orange,
+                            topLeft = Offset(edge, edge),
+                            size = Size(
+                                width = size.width - strokeWidth,
+                                height = size.height - strokeWidth,
+                            ),
+                            cornerRadius = CornerRadius(arcRadius),
+                            style = borderStroke,
+                        )
+                    } else {
+                        drawPath(border, FR_Orange, style = borderStroke)
                     }
                 }
             }

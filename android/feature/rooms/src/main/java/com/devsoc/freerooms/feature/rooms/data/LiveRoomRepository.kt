@@ -1,11 +1,11 @@
 package com.devsoc.freerooms.feature.rooms.data
 
 import android.util.Log
-import com.apollographql.apollo.api.Mutation
 import com.devsoc.freerooms.core.network.GraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.asResponseState
+import com.devsoc.freerooms.feature.rooms.BuildConfig
 import com.devsoc.freerooms.network.GetRoomsQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,18 +16,24 @@ class LiveRoomRepository(private val graphQLClient: GraphQLClient) : RoomReposit
 
     override fun getRooms(): Flow<ResponseState<List<Room>>> {
         return flow {
-            Log.d("LiveRoomRepository", "Fetching Rooms...")
+            if (BuildConfig.DEBUG) {
+                Log.d("LiveRoomRepository", "Fetching Rooms...")
+            }
             when (val result = graphQLClient.query(GetRoomsQuery())) {
                 is NetworkResult.Success -> {
-                    Log.d(
-                        "LiveRoomRepository",
-                        "Successfully fetched ${result.data.rooms.size} rooms"
-                    )
+                    if (BuildConfig.DEBUG) {
+                        Log.d(
+                            "LiveRoomRepository",
+                            "Successfully fetched ${result.data.rooms.size} rooms"
+                        )
+                    }
                     emit(result.data)
                 }
 
                 is NetworkResult.Error -> {
-                    Log.e("LiveRoomRepository", "Error fetching Rooms: ${result.message}")
+                    if (BuildConfig.DEBUG) {
+                        Log.e("LiveRoomRepository", "Error fetching Rooms: ${result.message}")
+                    }
                     throw result.exception ?: Exception(result.message)
                 }
             }

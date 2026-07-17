@@ -13,11 +13,15 @@ import okhttp3.logging.HttpLoggingInterceptor
 class AppContainer {
 
     private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor { message ->
-            Log.d("OkHttp", message)
-        }.apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
+        .apply {
+            if (BuildConfig.DEBUG) {
+                addInterceptor(HttpLoggingInterceptor { message ->
+                    Log.d("OkHttp", message)
+                }.apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                })
+            }
+        }
         .build()
 
     private val apolloClient = ApolloClient.Builder()

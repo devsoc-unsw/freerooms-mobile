@@ -20,6 +20,7 @@ import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
+import com.devsoc.freerooms.feature.buildings.BuildConfig
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
 import com.devsoc.freerooms.feature.buildings.data.CampusSection
@@ -31,12 +32,16 @@ fun BuildingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState) { Log.d("BuildingScreen", "UI State: $uiState") }
+    if (BuildConfig.DEBUG) {
+        LaunchedEffect(uiState) { Log.d("BuildingScreen", "UI State: $uiState") }
+    }
 
     when (val state = uiState) {
         is ResponseState.Loading -> Text("Loading...", modifier = modifier)
         is ResponseState.Error -> {
-            Log.e("BuildingScreen", "Displaying Error: ${state.exception.message}", state.exception)
+            if (BuildConfig.DEBUG) {
+                Log.e("BuildingScreen", "Displaying Error: ${state.exception.message}", state.exception)
+            }
             Text("Error: ${state.exception.message}", modifier = modifier)
         }
         is ResponseState.Success -> {
