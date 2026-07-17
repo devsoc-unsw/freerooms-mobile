@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import BookingViews
 import BuildingModels
 import BuildingViewModels
 import BuildingViews
@@ -63,6 +64,7 @@ struct ContentView: View {
       { room in
         getRoomDetailsView(room: room)
       }
+      BookingsTabView()
     }
     .tint(theme.accent.primary)
   }

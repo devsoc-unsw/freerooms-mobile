@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* BookingViews */; };
 		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
@@ -71,6 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */,
+				2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */,
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
 				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
@@ -163,6 +165,7 @@
 				546D1AA72F7AAD87000667BC /* RoomViews */,
 				541DCFCA2FD2A5150040EB0F /* Apollo */,
 				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
+				2D7043052FF7AD02006BF888 /* BookingViews */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -203,6 +206,7 @@
 				546D1AA42F7AAD87000667BC /* XCLocalSwiftPackageReference "../Rooms" */,
 				541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				541DCFCC2FD2A5420040EB0F /* XCLocalSwiftPackageReference "../DevSocAPI" */,
+				2D7043072FF7AD0C006BF888 /* XCLocalSwiftPackageReference "../Bookings" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 96F9AFCB2D9BCC1200671174 /* Products */;
@@ -571,6 +575,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		2D7043072FF7AD0C006BF888 /* XCLocalSwiftPackageReference "../Bookings" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Bookings;
+		};
 		541DCFCC2FD2A5420040EB0F /* XCLocalSwiftPackageReference "../DevSocAPI" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../DevSocAPI;
@@ -609,6 +617,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2D7043052FF7AD02006BF888 /* BookingViews */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BookingViews;
+		};
 		541DCFCA2FD2A5150040EB0F /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */;

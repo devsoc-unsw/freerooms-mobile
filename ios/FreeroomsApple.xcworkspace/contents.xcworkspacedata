@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Bookings">
+   </FileRef>
+   <FileRef
       location = "group:Freerooms/Freerooms.xcodeproj">
    </FileRef>
    <FileRef
