@@ -118,6 +118,8 @@ public struct RoomsListView: View {
 
 }
 
+// MARK: - InteractivePopGestureEnabler
+
 private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
   final class Controller: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
