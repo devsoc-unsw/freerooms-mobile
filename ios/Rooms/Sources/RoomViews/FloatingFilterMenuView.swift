@@ -124,4 +124,6 @@ struct FloatingFilterMenuView: View {
   FloatingFilterMenuView(
     activeFilterSheet: .constant(nil),
     showingFilterMenu: .constant(false))
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+    .defaultTheme()
 }

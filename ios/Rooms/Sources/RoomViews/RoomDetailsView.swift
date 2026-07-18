@@ -39,6 +39,7 @@ public struct RoomDetailsView: View {
         dismiss()
       }
       .environment(roomViewModel)
+      .environment(theme)
       .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
       .presentationBackground(theme.background.primary)
@@ -124,7 +125,7 @@ public struct RoomDetailsView: View {
 #Preview {
   NavigationStack {
     RoomDetailsView(room: Room.exampleOne)
-      .environment(PreviewRoomViewModel())
+      .environment(PreviewRoomViewModel() as LiveRoomViewModel)
       .defaultTheme()
   }
 }

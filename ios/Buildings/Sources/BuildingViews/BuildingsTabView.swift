@@ -9,6 +9,7 @@ import BuildingModels
 import BuildingViewModels
 import CommonUI
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - BuildingsTabView
@@ -256,6 +257,7 @@ private struct PreviewWrapper: View {
       EmptyView() // Rooms destination
     }
     .environment(viewModel)
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
   }
 }

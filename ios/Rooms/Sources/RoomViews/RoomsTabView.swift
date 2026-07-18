@@ -249,6 +249,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await vm.loadBookingsForFilteredRooms() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.dateDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -259,6 +260,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.roomTypeDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -269,6 +271,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           })
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.durationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -279,6 +282,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.campusLocationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -289,6 +293,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.capacityDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -403,6 +408,8 @@ private struct PreviewWrapper: View {
     { _ in
       EmptyView() // Buildings destination
     }
+    .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
   }
 }
