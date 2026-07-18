@@ -99,7 +99,11 @@ public struct RoomDetailsView: View {
 
   @Environment(\.dismiss) var dismiss
 
-  let detentHeights: Set = [RoomLayoutConstants.sheetSmallDetent, RoomLayoutConstants.sheetMediumDetent, PresentationDetent.large]
+  let detentHeights: Set = [
+    RoomLayoutConstants.sheetSmallDetent,
+    RoomLayoutConstants.sheetMediumDetent,
+    PresentationDetent.large,
+  ]
 
   // MARK: Private
 
