@@ -30,64 +30,51 @@ struct ContentView: View {
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      BuildingsTabView(
-        path: $buildingPath,
-        viewModel: buildingViewModel,
-        selectedView: $selectedBuildingsView)
-      { building in
-        RoomsListView(
-          roomViewModel: roomViewModel,
-          building: building,
-          path: $buildingPath,
-          imageProvider: {
-            BuildingImage[$0]
-          })
-          .task { await roomViewModel.onAppear() }
+      BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
+        RoomsListView(building: building, path: $buildingPath, imageProvider: {
+          BuildingImage[$0]
+        })
+        .task { await roomViewModel.onAppear() }
+        .environment(roomViewModel)
       } _: { room in
-        getRoomDetailsView(room: room)
+        roomDetailsView(for: room)
       }
       MapTabView(
+        path: $mapPath,
         mapViewModel: mapViewModel,
         roomImageProvider: { roomID in
           RoomImage[roomID]
         },
         roomDestinationBuilder: { room in
-          getRoomDetailsView(room: room)
+          roomDetailsView(for: room)
         })
       RoomsTabView(
         path: $roomPath,
-        roomViewModel: roomViewModel,
-        buildingViewModel: buildingViewModel,
         selectedTab: $selectedTab,
         selectedView: $selectedRoomsView)
       { room in
-        getRoomDetailsView(room: room)
+        roomDetailsView(for: room)
       }
     }
+    .environment(roomViewModel)
+    .environment(buildingViewModel)
     .tint(theme.accent.primary)
   }
 
-  func getRoomDetailsView(room: Room) -> some View {
-    RoomDetailsView(
-      room: room,
-      roomViewModel: roomViewModel,
-      isFavourite: Binding(
-        get: {
-          roomViewModel.isFavorite(roomID: room.id)
-        },
-        set: { _ in
-          roomViewModel.toggleFavorite(roomID: room.id)
-        }))
-        .task { await roomViewModel.onAppear() }
-        .task {
-          roomViewModel.clearRoomBookings()
-          await roomViewModel.getRoomBookings(roomId: room.id)
-        }
+  func roomDetailsView(for room: Room) -> some View {
+    RoomDetailsView(room: room)
+      .environment(roomViewModel)
+      .task { await roomViewModel.onAppear() }
+      .task {
+        roomViewModel.clearRoomBookings()
+        await roomViewModel.getRoomBookings(roomId: room.id)
+      }
   }
 
   // MARK: Private
 
   @State private var buildingPath = NavigationPath()
+  @State private var mapPath = NavigationPath()
   @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme

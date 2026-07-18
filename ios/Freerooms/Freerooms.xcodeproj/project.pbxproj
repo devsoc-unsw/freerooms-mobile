@@ -10,7 +10,7 @@
 		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
-		546D1A982F7AACB9000667BC /* CommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A972F7AACB9000667BC /* CommonUI */; };
+		546D1A982F7AACB9000667BC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
 		546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA72F7AAD87000667BC /* RoomViews */; };
 /* End PBXBuildFile section */
@@ -158,7 +158,6 @@
 			name = Freerooms;
 			packageProductDependencies = (
 				546D1A942F7AACA2000667BC /* VISOR */,
-				546D1A972F7AACB9000667BC /* CommonUI */,
 				546D1AA52F7AAD87000667BC /* RoomViewModels */,
 				546D1AA72F7AAD87000667BC /* RoomViews */,
 				541DCFCA2FD2A5150040EB0F /* Apollo */,
@@ -622,10 +621,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */;
 			productName = VISOR;
-		};
-		546D1A972F7AACB9000667BC /* CommonUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CommonUI;
 		};
 		546D1AA52F7AAD87000667BC /* RoomViewModels */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -20,12 +20,14 @@ public struct SheetDirectionDetails: View {
       XButton {
         viewModel.clearDirection()
       }
-      .padding([.leading, .trailing], 10)
+      .padding([.leading, .trailing], Self.closeButtonHorizontalPadding)
     }
     .redacted(reason: viewModel.isLoadingCurrentRoute ? .placeholder : [])
   }
 
   // MARK: Private
+
+  private static let closeButtonHorizontalPadding: CGFloat = 10
 
   @Environment(LiveMapViewModel.self) private var viewModel
 
