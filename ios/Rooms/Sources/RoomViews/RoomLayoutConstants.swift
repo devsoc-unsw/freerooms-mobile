@@ -9,8 +9,7 @@ enum RoomLayoutConstants {
 
   // MARK: - Room Details Sheet
 
-  static let sheetSmallDetent = PresentationDetent.fraction(0.65)
-  static let sheetMediumDetent = PresentationDetent.fraction(0.75)
+  static let sheetMediumDetent = PresentationDetent.fraction(0.78)
   static let imageHeightFraction: CGFloat = 0.4
   static let bookingSectionCornerRadius: CGFloat = 12
   static let dismissDragMinimumDistance: CGFloat = 20

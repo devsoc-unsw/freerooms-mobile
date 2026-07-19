@@ -98,7 +98,6 @@ public struct RoomDetailsView: View {
   // MARK: Internal
 
   let detentHeights: Set<PresentationDetent> = [
-    RoomLayoutConstants.sheetSmallDetent,
     RoomLayoutConstants.sheetMediumDetent,
     .large,
   ]
