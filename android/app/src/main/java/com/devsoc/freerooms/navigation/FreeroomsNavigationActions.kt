@@ -14,9 +14,19 @@ internal class FreeroomsNavigationActions(
         }
     }
 
+    fun navigateToBuildingRooms(buildingId: String) {
+        navController.navigate(FreeroomsRoute.buildingRooms(buildingId))
+    }
+
+    fun navigateBack() {
+        navController.popBackStack()
+    }
+
     private fun navigateToBuildings() {
         navController.navigate(FreeroomsRoute.Buildings) {
-            popUpTo(FreeroomsRoute.Buildings)
+            popUpTo(FreeroomsRoute.Buildings) {
+                inclusive = false
+            }
             launchSingleTop = true
         }
     }

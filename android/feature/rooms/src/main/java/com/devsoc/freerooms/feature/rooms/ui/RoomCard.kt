@@ -18,6 +18,7 @@ import com.devsoc.freerooms.feature.rooms.data.statusText
 internal fun RoomCard(
     room: Room,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     FreeroomsListRow(
         title = room.name,
@@ -25,6 +26,7 @@ internal fun RoomCard(
         subtitleColor = roomStatusColor(room.status),
         overallRating = room.overallRating,
         modifier = modifier,
+        onClick = onClick,
     ) {
         Box(
             modifier = Modifier

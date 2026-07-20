@@ -22,12 +22,14 @@ import com.devsoc.freerooms.feature.buildings.data.Building
 internal fun BuildingCard(
     building: Building,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     FreeroomsListRow(
         title = building.name,
         subtitle = availableRoomsLabel(building.numberOfAvailableRooms),
         overallRating = building.overallRating,
         modifier = modifier,
+        onClick = onClick,
     ) {
         val imageModifier = Modifier.listThumbnail()
         val imageResId = buildingImageResId(building.id)

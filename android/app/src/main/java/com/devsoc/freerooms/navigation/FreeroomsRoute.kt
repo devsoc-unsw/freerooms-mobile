@@ -1,11 +1,17 @@
 package com.devsoc.freerooms.navigation
 
+import android.net.Uri
 import com.devsoc.freerooms.core.ui.FreeroomsPage
 
 internal object FreeroomsRoute {
     const val Buildings = "buildings"
+    const val BuildingRooms = "buildings/{buildingId}"
     const val Rooms = "rooms"
     const val Map = "map"
+
+    fun buildingRooms(buildingId: String): String {
+        return "buildings/${Uri.encode(buildingId)}"
+    }
 }
 
 internal val FreeroomsPage.route: String
@@ -19,6 +25,13 @@ internal fun String?.toFreeroomsPage(): FreeroomsPage {
     return when (this) {
         FreeroomsRoute.Rooms -> FreeroomsPage.Rooms
         FreeroomsRoute.Map -> FreeroomsPage.Map
+        FreeroomsRoute.Buildings,
+        FreeroomsRoute.BuildingRooms,
+        -> FreeroomsPage.Building
         else -> FreeroomsPage.Building
     }
+}
+
+internal fun String?.isBuildingRoomsRoute(): Boolean {
+    return this == FreeroomsRoute.BuildingRooms
 }

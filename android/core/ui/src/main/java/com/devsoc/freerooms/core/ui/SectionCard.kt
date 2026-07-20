@@ -17,7 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-private val SectionShape = RoundedCornerShape(36.dp)
+val SectionShape = RoundedCornerShape(36.dp)
 
 @Composable
 fun SectionHeader(

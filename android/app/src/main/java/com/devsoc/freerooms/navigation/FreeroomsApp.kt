@@ -18,7 +18,12 @@ import com.devsoc.freerooms.core.ui.NoWifiScreen
 @Composable
 internal fun FreeroomsApp(
     hasNetworkConnection: Boolean,
-    buildingContent: @Composable (Modifier) -> Unit,
+    buildingContent: @Composable (Modifier, onBuildingClick: (String) -> Unit) -> Unit,
+    buildingRoomsContent: @Composable (
+        buildingId: String,
+        Modifier,
+        onBack: () -> Unit,
+    ) -> Unit,
     roomsContent: @Composable (Modifier) -> Unit,
     mapContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
@@ -39,26 +44,46 @@ internal fun FreeroomsApp(
     }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val selectedPage = navBackStackEntry?.destination?.route.toFreeroomsPage()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val selectedPage = currentRoute.toFreeroomsPage()
+    val showBottomBar = !currentRoute.isBuildingRoomsRoute()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Gray)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .then(
+                if (showBottomBar) {
+                    Modifier
+                } else {
+                    Modifier.navigationBarsPadding()
+                },
+            ),
     ) {
         FreeroomsNavHost(
             navController = navController,
-            buildingContent = buildingContent,
+            buildingContent = { contentModifier ->
+                buildingContent(contentModifier, navigationActions::navigateToBuildingRooms)
+            },
+            buildingRoomsContent = { buildingId, contentModifier ->
+                buildingRoomsContent(
+                    buildingId,
+                    contentModifier,
+                    navigationActions::navigateBack,
+                )
+            },
             roomsContent = roomsContent,
             mapContent = mapContent,
             modifier = Modifier.weight(1f),
         )
 
-        FreeroomsBottomNavBar(
-            selectedPage = selectedPage,
-            onPageSelected = navigationActions::navigateTo,
-            modifier = Modifier.navigationBarsPadding(),
-        )
+        if (showBottomBar) {
+            FreeroomsBottomNavBar(
+                selectedPage = selectedPage,
+                onPageSelected = navigationActions::navigateTo,
+                modifier = Modifier.navigationBarsPadding(),
+            )
+        }
     }
 }

@@ -17,9 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.FreeroomsTheme
+import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.feature.buildings.ui.BuildingScreen
+import com.devsoc.freerooms.feature.buildings.ui.buildingFullImageResId
 import com.devsoc.freerooms.feature.map.ui.MapScreen
+import com.devsoc.freerooms.feature.rooms.ui.BuildingRoomsScreen
 import com.devsoc.freerooms.feature.rooms.ui.RoomsScreen
 import com.devsoc.freerooms.navigation.FreeroomsApp
 import kotlinx.coroutines.channels.awaitClose
@@ -44,12 +48,35 @@ class MainActivity : ComponentActivity() {
         setContent {
             FreeroomsTheme {
                 val hasNetworkConnection by rememberNetworkConnectionState()
+                val buildingsState by buildingViewModel.uiState.collectAsStateWithLifecycle()
+                val roomsState by roomViewModel.uiState.collectAsStateWithLifecycle()
 
                 FreeroomsApp(
                     hasNetworkConnection = hasNetworkConnection,
-                    buildingContent = { modifier ->
+                    buildingContent = { modifier, onBuildingClick ->
                         BuildingScreen(
                             viewModel = buildingViewModel,
+                            modifier = modifier,
+                            onBuildingClick = { building -> onBuildingClick(building.id) },
+                        )
+                    },
+                    buildingRoomsContent = { buildingId, modifier, onBack ->
+                        val building = (buildingsState as? ResponseState.Success)
+                            ?.data
+                            ?.firstOrNull { building -> building.id == buildingId }
+                        val rooms = (roomsState as? ResponseState.Success)
+                            ?.data
+                            ?.filter { room -> room.buildingId == buildingId }
+                            ?.sortedBy { room -> room.name }
+                            .orEmpty()
+                        val roomsLoading = roomsState is ResponseState.Loading
+
+                        BuildingRoomsScreen(
+                            buildingName = building?.name ?: buildingId,
+                            buildingImageResId = buildingFullImageResId(buildingId),
+                            rooms = rooms,
+                            roomsLoading = roomsLoading,
+                            onBack = onBack,
                             modifier = modifier,
                         )
                     },

@@ -1,7 +1,6 @@
 package com.devsoc.freerooms.core.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,7 +51,7 @@ fun FreeroomsBottomNavBar(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .clickable(enabled = page != selectedPage) {
+                        .freeroomsClickable(enabled = page != selectedPage) {
                             onPageSelected(page)
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,

@@ -38,6 +38,7 @@ private val PlaceholderCampusSections = listOf(
 fun BuildingScreen(
     viewModel: BuildingViewModel,
     modifier: Modifier = Modifier,
+    onBuildingClick: (Building) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -96,7 +97,10 @@ fun BuildingScreen(
                                     isFirst = index == 0,
                                     isLast = index == section.buildings.lastIndex,
                                 ) {
-                                    BuildingCard(building = building)
+                                    BuildingCard(
+                                        building = building,
+                                        onClick = { onBuildingClick(building) },
+                                    )
                                 }
                             }
                         }

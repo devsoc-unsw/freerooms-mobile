@@ -29,11 +29,19 @@ fun FreeroomsListRow(
     modifier: Modifier = Modifier,
     subtitleColor: Color = Brown,
     overallRating: Double? = null,
+    onClick: (() -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (onClick != null) {
+                    Modifier.freeroomsClickable(onClick = onClick)
+                } else {
+                    Modifier
+                },
+            )
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
