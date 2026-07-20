@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONObject
 
 class LiveRoomStatusClient(
     private val okHttpClient: OkHttpClient,
@@ -33,39 +32,6 @@ class LiveRoomStatusClient(
                 Log.e("LiveRoomStatusClient", "Failed to fetch room status", e)
                 NetworkResult.Error(e.message ?: "Unknown error", e)
             }
-        }
-    }
-
-    companion object {
-        fun parseRoomStatus(json: String): RemoteRoomStatus {
-            val root = JSONObject(json)
-            val result = linkedMapOf<String, BuildingRoomStatus>()
-            val buildingIds = root.keys()
-
-            while (buildingIds.hasNext()) {
-                val buildingId = buildingIds.next()
-                val buildingJson = root.getJSONObject(buildingId)
-                val numAvailable = buildingJson.optInt("numAvailable", 0)
-                val roomStatusesJson = buildingJson.optJSONObject("roomStatuses") ?: JSONObject()
-                val roomStatuses = linkedMapOf<String, RoomStatusEntry>()
-                val roomNumbers = roomStatusesJson.keys()
-
-                while (roomNumbers.hasNext()) {
-                    val roomNumber = roomNumbers.next()
-                    val roomJson = roomStatusesJson.getJSONObject(roomNumber)
-                    roomStatuses[roomNumber] = RoomStatusEntry(
-                        status = roomJson.optString("status", ""),
-                        endtime = roomJson.optString("endtime", ""),
-                    )
-                }
-
-                result[buildingId] = BuildingRoomStatus(
-                    numAvailable = numAvailable,
-                    roomStatuses = roomStatuses,
-                )
-            }
-
-            return result
         }
     }
 }

@@ -53,12 +53,3 @@ internal fun BuildingCard(
         }
     }
 }
-
-private fun availableRoomsLabel(count: Int?): String {
-    val available = count ?: 0
-    return if (available == 1) {
-        "1 room available"
-    } else {
-        "$available rooms available"
-    }
-}

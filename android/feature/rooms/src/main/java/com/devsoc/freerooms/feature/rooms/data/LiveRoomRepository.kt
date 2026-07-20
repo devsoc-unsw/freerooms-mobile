@@ -59,8 +59,8 @@ class LiveRoomRepository(
                                 capacity = room.capacity,
                                 buildingId = room.buildingId,
                                 abbr = room.abbr,
-                                status = Room.availabilityFromStatus(roomStatus?.status.orEmpty()),
-                                endTime = Room.parseEndTime(roomStatus?.endtime.orEmpty()),
+                                status = roomAvailabilityFromStatus(roomStatus?.status.orEmpty()),
+                                endTime = parseRoomEndTime(roomStatus?.endtime.orEmpty()),
                             )
                         },
                     )
@@ -74,10 +74,5 @@ class LiveRoomRepository(
                 }
             }
         }.asResponseState()
-    }
-
-    private fun roomNumberFromId(roomId: String): String {
-        val parts = roomId.split("-")
-        return if (parts.size == 3) parts[2] else "?"
     }
 }
