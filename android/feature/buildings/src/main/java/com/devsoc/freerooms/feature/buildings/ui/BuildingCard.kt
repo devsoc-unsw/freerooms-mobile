@@ -3,6 +3,7 @@ package com.devsoc.freerooms.feature.buildings.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Brown
-import com.devsoc.freerooms.core.ui.Light_Orange
+import com.devsoc.freerooms.core.ui.Gray2
 import com.devsoc.freerooms.core.ui.ListThumbnailSpacing
 import com.devsoc.freerooms.core.ui.listThumbnail
 import com.devsoc.freerooms.feature.buildings.R
@@ -48,7 +50,7 @@ internal fun BuildingCard(
             )
         } else {
             Box(
-                modifier = imageModifier.background(Light_Orange),
+                modifier = imageModifier.background(Gray2),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -62,10 +64,28 @@ internal fun BuildingCard(
 
         Spacer(modifier = Modifier.width(ListThumbnailSpacing))
 
-        Text(
-            text = building.name,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Brown,
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = building.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = Brown,
+            )
+            Text(
+                text = availableRoomsLabel(building.numberOfAvailableRooms),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal,
+                color = Brown,
+            )
+        }
+    }
+}
+
+private fun availableRoomsLabel(count: Int?): String {
+    val available = count ?: 0
+    return if (available == 1) {
+        "1 room available"
+    } else {
+        "$available rooms available"
     }
 }

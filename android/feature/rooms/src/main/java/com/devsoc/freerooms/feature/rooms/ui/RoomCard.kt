@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Brown
-import com.devsoc.freerooms.core.ui.Light_Orange
+import com.devsoc.freerooms.core.ui.Gray2
 import com.devsoc.freerooms.core.ui.ListThumbnailSpacing
 import com.devsoc.freerooms.core.ui.listThumbnail
 import com.devsoc.freerooms.feature.rooms.data.Room
@@ -37,7 +37,7 @@ internal fun RoomCard(
         Box(
             modifier = Modifier
                 .listThumbnail()
-                .background(Light_Orange),
+                .background(Gray2),
         ) {
             val imageResId = roomImageResId(room.id)
             if (imageResId != null) {

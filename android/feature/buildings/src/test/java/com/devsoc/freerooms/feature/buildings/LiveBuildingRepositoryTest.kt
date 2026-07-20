@@ -3,6 +3,9 @@ package com.devsoc.freerooms.feature.buildings
 import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.devsoc.freerooms.core.network.LiveGraphQLClient
+import com.devsoc.freerooms.core.network.NetworkResult
+import com.devsoc.freerooms.core.network.RemoteRoomStatus
+import com.devsoc.freerooms.core.network.RoomStatusClient
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.feature.buildings.data.LiveBuildingRepository
 import io.mockk.every
@@ -22,6 +25,12 @@ class LiveBuildingRepositoryTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var repository: LiveBuildingRepository
 
+    private val roomStatusClient = object : RoomStatusClient {
+        override suspend fun fetchRoomStatus(): NetworkResult<RemoteRoomStatus> {
+            return NetworkResult.Success(emptyMap())
+        }
+    }
+
     @Before
     fun setUp() {
         mockkStatic(Log::class)
@@ -35,7 +44,7 @@ class LiveBuildingRepositoryTest {
             .build()
 
         val liveGraphQLClient = LiveGraphQLClient(apolloClient)
-        repository = LiveBuildingRepository(liveGraphQLClient)
+        repository = LiveBuildingRepository(liveGraphQLClient, roomStatusClient)
     }
 
     @After
