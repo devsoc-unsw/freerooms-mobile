@@ -10,7 +10,6 @@ data class Room(
     val floor: String?,
     val capacity: Int,
     val buildingId: String,
-    val abbr: String
-) {
-
-}
+    val abbr: String,
+    val overallRating: Double? = null,
+)
