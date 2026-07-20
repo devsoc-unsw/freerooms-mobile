@@ -3,6 +3,7 @@ package com.devsoc.freerooms
 import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.network.okHttpClient
+import com.devsoc.freerooms.core.network.LiveBuildingRatingClient
 import com.devsoc.freerooms.core.network.LiveGraphQLClient
 import com.devsoc.freerooms.core.network.LiveRoomStatusClient
 import com.devsoc.freerooms.core.network.NetworkConstants
@@ -32,7 +33,12 @@ class AppContainer {
 
     private val graphQLClient = LiveGraphQLClient(apolloClient)
     private val roomStatusClient = LiveRoomStatusClient(okHttpClient)
+    private val buildingRatingClient = LiveBuildingRatingClient(okHttpClient)
 
-    val buildingRepository = LiveBuildingRepository(graphQLClient, roomStatusClient)
+    val buildingRepository = LiveBuildingRepository(
+        graphQLClient,
+        roomStatusClient,
+        buildingRatingClient,
+    )
     val roomRepository = LiveRoomRepository(graphQLClient)
 }

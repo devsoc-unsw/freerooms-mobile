@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 val ListThumbnailWidth = 64.dp
 val ListThumbnailSpacing = 12.dp
 val SectionContentHorizontalPadding = 20.dp
+val SectionContentEndPadding = 8.dp
 val ListRowDividerInset =
     SectionContentHorizontalPadding + ListThumbnailWidth + ListThumbnailSpacing
 

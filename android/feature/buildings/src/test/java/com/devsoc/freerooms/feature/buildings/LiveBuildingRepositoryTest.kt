@@ -2,6 +2,7 @@ package com.devsoc.freerooms.feature.buildings
 
 import android.util.Log
 import com.apollographql.apollo.ApolloClient
+import com.devsoc.freerooms.core.network.BuildingRatingClient
 import com.devsoc.freerooms.core.network.LiveGraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
 import com.devsoc.freerooms.core.network.RemoteRoomStatus
@@ -31,6 +32,12 @@ class LiveBuildingRepositoryTest {
         }
     }
 
+    private val buildingRatingClient = object : BuildingRatingClient {
+        override suspend fun fetch(buildingId: String): NetworkResult<Double> {
+            return NetworkResult.Success(4.5)
+        }
+    }
+
     @Before
     fun setUp() {
         mockkStatic(Log::class)
@@ -44,7 +51,11 @@ class LiveBuildingRepositoryTest {
             .build()
 
         val liveGraphQLClient = LiveGraphQLClient(apolloClient)
-        repository = LiveBuildingRepository(liveGraphQLClient, roomStatusClient)
+        repository = LiveBuildingRepository(
+            liveGraphQLClient,
+            roomStatusClient,
+            buildingRatingClient,
+        )
     }
 
     @After

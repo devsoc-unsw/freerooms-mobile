@@ -59,7 +59,7 @@ fun SectionCardItem(
         Box(
             modifier = Modifier.padding(
                 start = SectionContentHorizontalPadding,
-                end = SectionContentHorizontalPadding,
+                end = SectionContentEndPadding,
                 top = if (isFirst) 8.dp else 0.dp,
                 bottom = if (isLast) 8.dp else 0.dp,
             ),

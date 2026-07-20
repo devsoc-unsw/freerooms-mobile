@@ -6,6 +6,7 @@ data class Building(
     val lat: Double,
     val long: Double,
     val numberOfAvailableRooms: Int? = null,
+    val overallRating: Double? = null,
 ) {
     val gridReference: GridReference
         get() = GridReference.fromBuildingId(id)
