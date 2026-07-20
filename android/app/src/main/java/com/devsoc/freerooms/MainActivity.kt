@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                             ?.firstOrNull { room -> room.id == roomId }
 
                         RoomDetailsScreen(
-                            roomName = room?.name ?: roomId,
+                            room = room,
                             roomImageResId = roomFullImageResId(roomId),
                             onBack = onBack,
                             modifier = modifier,
