@@ -23,8 +23,14 @@ internal fun FreeroomsApp(
         buildingId: String,
         Modifier,
         onBack: () -> Unit,
+        onRoomClick: (String) -> Unit,
     ) -> Unit,
-    roomsContent: @Composable (Modifier) -> Unit,
+    roomsContent: @Composable (Modifier, onRoomClick: (String) -> Unit) -> Unit,
+    roomDetailsContent: @Composable (
+        roomId: String,
+        Modifier,
+        onBack: () -> Unit,
+    ) -> Unit,
     mapContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -46,13 +52,20 @@ internal fun FreeroomsApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedPage = currentRoute.toFreeroomsPage()
-    val showBottomBar = !currentRoute.isBuildingRoomsRoute()
+    val showBottomBar = !currentRoute.hidesBottomBar()
+    val isRoomDetails = currentRoute.isRoomDetailsRoute()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Gray)
-            .statusBarsPadding()
+            .then(
+                if (isRoomDetails) {
+                    Modifier
+                } else {
+                    Modifier.statusBarsPadding()
+                },
+            )
             .then(
                 if (showBottomBar) {
                     Modifier
@@ -71,9 +84,19 @@ internal fun FreeroomsApp(
                     buildingId,
                     contentModifier,
                     navigationActions::navigateBack,
+                    navigationActions::navigateToRoomDetails,
                 )
             },
-            roomsContent = roomsContent,
+            roomsContent = { contentModifier ->
+                roomsContent(contentModifier, navigationActions::navigateToRoomDetails)
+            },
+            roomDetailsContent = { roomId, contentModifier ->
+                roomDetailsContent(
+                    roomId,
+                    contentModifier,
+                    navigationActions::navigateBack,
+                )
+            },
             mapContent = mapContent,
             modifier = Modifier.weight(1f),
         )

@@ -24,12 +24,14 @@ import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
 import com.devsoc.freerooms.feature.rooms.BuildConfig
+import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
 
 @Composable
 fun RoomsScreen(
     viewModel: RoomViewModel,
     modifier: Modifier = Modifier,
+    onRoomClick: (Room) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -77,7 +79,10 @@ fun RoomsScreen(
                                 isFirst = index == 0,
                                 isLast = index == state.data.lastIndex,
                             ) {
-                                RoomCard(room = room)
+                                RoomCard(
+                                    room = room,
+                                    onClick = { onRoomClick(room) },
+                                )
                             }
                         }
                     }

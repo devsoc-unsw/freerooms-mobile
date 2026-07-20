@@ -51,7 +51,7 @@ fun BuildingRoomsScreen(
     roomsLoading: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onRoomClick: ((Room) -> Unit)? = null,
+    onRoomClick: (Room) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -113,9 +113,7 @@ fun BuildingRoomsScreen(
                                     ) {
                                         RoomCard(
                                             room = room,
-                                            onClick = onRoomClick?.let { click ->
-                                                { click(room) }
-                                            },
+                                            onClick = { onRoomClick(room) },
                                         )
                                     }
                                 }

@@ -15,6 +15,7 @@ internal fun FreeroomsNavHost(
     buildingContent: @Composable (Modifier) -> Unit,
     buildingRoomsContent: @Composable (buildingId: String, Modifier) -> Unit,
     roomsContent: @Composable (Modifier) -> Unit,
+    roomDetailsContent: @Composable (roomId: String, Modifier) -> Unit,
     mapContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -41,6 +42,18 @@ internal fun FreeroomsNavHost(
 
         composable(FreeroomsRoute.Rooms) {
             roomsContent(Modifier.fillMaxSize())
+        }
+
+        composable(
+            route = FreeroomsRoute.RoomDetails,
+            arguments = listOf(
+                navArgument("roomId") {
+                    type = NavType.StringType
+                },
+            ),
+        ) { entry ->
+            val roomId = entry.arguments?.getString("roomId").orEmpty()
+            roomDetailsContent(roomId, Modifier.fillMaxSize())
         }
 
         composable(FreeroomsRoute.Map) {

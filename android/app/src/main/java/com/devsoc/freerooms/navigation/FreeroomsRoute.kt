@@ -7,10 +7,15 @@ internal object FreeroomsRoute {
     const val Buildings = "buildings"
     const val BuildingRooms = "buildings/{buildingId}"
     const val Rooms = "rooms"
+    const val RoomDetails = "rooms/{roomId}"
     const val Map = "map"
 
     fun buildingRooms(buildingId: String): String {
         return "buildings/${Uri.encode(buildingId)}"
+    }
+
+    fun roomDetails(roomId: String): String {
+        return "rooms/${Uri.encode(roomId)}"
     }
 }
 
@@ -23,7 +28,9 @@ internal val FreeroomsPage.route: String
 
 internal fun String?.toFreeroomsPage(): FreeroomsPage {
     return when (this) {
-        FreeroomsRoute.Rooms -> FreeroomsPage.Rooms
+        FreeroomsRoute.Rooms,
+        FreeroomsRoute.RoomDetails,
+        -> FreeroomsPage.Rooms
         FreeroomsRoute.Map -> FreeroomsPage.Map
         FreeroomsRoute.Buildings,
         FreeroomsRoute.BuildingRooms,
@@ -32,6 +39,10 @@ internal fun String?.toFreeroomsPage(): FreeroomsPage {
     }
 }
 
-internal fun String?.isBuildingRoomsRoute(): Boolean {
-    return this == FreeroomsRoute.BuildingRooms
+internal fun String?.hidesBottomBar(): Boolean {
+    return this == FreeroomsRoute.BuildingRooms || this == FreeroomsRoute.RoomDetails
+}
+
+internal fun String?.isRoomDetailsRoute(): Boolean {
+    return this == FreeroomsRoute.RoomDetails
 }

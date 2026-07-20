@@ -18,6 +18,10 @@ internal class FreeroomsNavigationActions(
         navController.navigate(FreeroomsRoute.buildingRooms(buildingId))
     }
 
+    fun navigateToRoomDetails(roomId: String) {
+        navController.navigate(FreeroomsRoute.roomDetails(roomId))
+    }
+
     fun navigateBack() {
         navController.popBackStack()
     }

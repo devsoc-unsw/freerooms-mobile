@@ -24,7 +24,9 @@ import com.devsoc.freerooms.feature.buildings.ui.BuildingScreen
 import com.devsoc.freerooms.feature.buildings.ui.buildingFullImageResId
 import com.devsoc.freerooms.feature.map.ui.MapScreen
 import com.devsoc.freerooms.feature.rooms.ui.BuildingRoomsScreen
+import com.devsoc.freerooms.feature.rooms.ui.RoomDetailsScreen
 import com.devsoc.freerooms.feature.rooms.ui.RoomsScreen
+import com.devsoc.freerooms.feature.rooms.ui.roomFullImageResId
 import com.devsoc.freerooms.navigation.FreeroomsApp
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                             onBuildingClick = { building -> onBuildingClick(building.id) },
                         )
                     },
-                    buildingRoomsContent = { buildingId, modifier, onBack ->
+                    buildingRoomsContent = { buildingId, modifier, onBack, onRoomClick ->
                         val building = (buildingsState as? ResponseState.Success)
                             ?.data
                             ?.firstOrNull { building -> building.id == buildingId }
@@ -77,12 +79,26 @@ class MainActivity : ComponentActivity() {
                             rooms = rooms,
                             roomsLoading = roomsLoading,
                             onBack = onBack,
+                            onRoomClick = { room -> onRoomClick(room.id) },
                             modifier = modifier,
                         )
                     },
-                    roomsContent = { modifier ->
+                    roomsContent = { modifier, onRoomClick ->
                         RoomsScreen(
                             viewModel = roomViewModel,
+                            modifier = modifier,
+                            onRoomClick = { room -> onRoomClick(room.id) },
+                        )
+                    },
+                    roomDetailsContent = { roomId, modifier, onBack ->
+                        val room = (roomsState as? ResponseState.Success)
+                            ?.data
+                            ?.firstOrNull { room -> room.id == roomId }
+
+                        RoomDetailsScreen(
+                            roomName = room?.name ?: roomId,
+                            roomImageResId = roomFullImageResId(roomId),
+                            onBack = onBack,
                             modifier = modifier,
                         )
                     },
