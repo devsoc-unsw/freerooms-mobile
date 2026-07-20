@@ -1,7 +1,10 @@
 package com.devsoc.freerooms.core.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,14 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
+
+private val SectionShape = RoundedCornerShape(36.dp)
 
 @Composable
 fun SectionHeader(
@@ -34,115 +33,43 @@ fun SectionHeader(
 }
 
 @Composable
+fun SectionCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(SectionShape)
+            .background(Color.White)
+            .border(1.dp, FR_Orange, SectionShape),
+        content = content,
+    )
+}
+
+@Composable
 fun SectionCardItem(
+    showDivider: Boolean,
     isFirst: Boolean,
     isLast: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val shape = RoundedCornerShape(
-        topStart = if (isFirst) 36.dp else 0.dp,
-        topEnd = if (isFirst) 36.dp else 0.dp,
-        bottomStart = if (isLast) 36.dp else 0.dp,
-        bottomEnd = if (isLast) 36.dp else 0.dp,
-    )
+    Column(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = if (isFirst) 8.dp else 0.dp,
+                bottom = if (isLast) 8.dp else 0.dp,
+            ),
+        ) {
+            content()
+        }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(Color.White)
-            .drawWithCache {
-                val strokeWidth = 1.dp.toPx()
-                val edge = strokeWidth / 2
-                val radius = 36.dp.toPx()
-                val arcRadius = radius - edge
-                val arcControl = arcRadius * 0.5522848f
-                val right = size.width - edge
-                val bottom = size.height - edge
-                val border = Path()
-                val borderStroke = Stroke(strokeWidth)
-
-                when {
-                    isFirst && isLast -> Unit
-                    isFirst -> {
-                        border.moveTo(edge, bottom)
-                        border.lineTo(edge, radius)
-                        border.cubicTo(
-                            edge,
-                            radius - arcControl,
-                            radius - arcControl,
-                            edge,
-                            radius,
-                            edge,
-                        )
-                        border.lineTo(size.width - radius, edge)
-                        border.cubicTo(
-                            size.width - radius + arcControl,
-                            edge,
-                            right,
-                            radius - arcControl,
-                            right,
-                            radius,
-                        )
-                        border.lineTo(right, bottom)
-                    }
-                    isLast -> {
-                        border.moveTo(edge, edge)
-                        border.lineTo(edge, size.height - radius)
-                        border.cubicTo(
-                            edge,
-                            size.height - radius + arcControl,
-                            radius - arcControl,
-                            bottom,
-                            radius,
-                            bottom,
-                        )
-                        border.lineTo(size.width - radius, bottom)
-                        border.cubicTo(
-                            size.width - radius + arcControl,
-                            bottom,
-                            right,
-                            size.height - radius + arcControl,
-                            right,
-                            size.height - radius,
-                        )
-                        border.lineTo(right, edge)
-                    }
-                    else -> {
-                        border.moveTo(edge, edge)
-                        border.lineTo(edge, bottom)
-                        border.moveTo(right, edge)
-                        border.lineTo(right, bottom)
-                    }
-                }
-
-                onDrawWithContent {
-                    drawContent()
-
-                    if (isFirst && isLast) {
-                        drawRoundRect(
-                            color = FR_Orange,
-                            topLeft = Offset(edge, edge),
-                            size = Size(
-                                width = size.width - strokeWidth,
-                                height = size.height - strokeWidth,
-                            ),
-                            cornerRadius = CornerRadius(arcRadius),
-                            style = borderStroke,
-                        )
-                    } else {
-                        drawPath(border, FR_Orange, style = borderStroke)
-                    }
-                }
-            }
-            .padding(horizontal = 16.dp),
-    ) {
-        content()
-
-        if (!isLast) {
+        if (showDivider) {
             HorizontalDivider(
-                modifier = Modifier.padding(start = 60.dp),
+                modifier = Modifier.padding(start = 80.dp),
                 thickness = 1.dp,
                 color = Gray,
             )

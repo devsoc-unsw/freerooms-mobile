@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,10 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
+import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.feature.rooms.BuildConfig
-import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
 
 @Composable
@@ -72,18 +71,17 @@ fun RoomsScreen(
                         title = "All Rooms",
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
-                }
 
-                itemsIndexed(
-                    items = state.data,
-                    key = { _, room -> room.id },
-                    contentType = { _, _ -> "room" },
-                ) { index, room ->
-                    SectionCardItem(
-                        isFirst = index == 0,
-                        isLast = index == state.data.lastIndex,
-                    ) {
-                        RoomCard(room = room)
+                    SectionCard {
+                        state.data.forEachIndexed { index, room ->
+                            SectionCardItem(
+                                showDivider = index != state.data.lastIndex,
+                                isFirst = index == 0,
+                                isLast = index == state.data.lastIndex,
+                            ) {
+                                RoomCard(room = room)
+                            }
+                        }
                     }
                 }
             }

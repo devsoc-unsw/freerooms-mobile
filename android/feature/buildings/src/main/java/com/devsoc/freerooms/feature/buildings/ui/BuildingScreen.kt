@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
+import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.feature.buildings.BuildConfig
@@ -71,29 +71,30 @@ fun BuildingScreen(
                 }
 
                 buildingSections.forEachIndexed { sectionIndex, section ->
+                    if (section.buildings.isEmpty()) return@forEachIndexed
+
                     item(
                         key = "section-${section.title}",
-                        contentType = "section-header",
+                        contentType = "section",
                     ) {
                         SectionHeader(
                             title = section.title,
                             modifier = Modifier.padding(
-                                top = if (sectionIndex == 0) 0.dp else 12.dp,
-                                bottom = 8.dp,
+                                top = if (sectionIndex == 0) 0.dp else 20.dp,
+                                bottom = 10.dp,
                             ),
                         )
-                    }
 
-                    itemsIndexed(
-                        items = section.buildings,
-                        key = { _, building -> building.id },
-                        contentType = { _, _ -> "building" },
-                    ) { index, building ->
-                        SectionCardItem(
-                            isFirst = index == 0,
-                            isLast = index == section.buildings.lastIndex,
-                        ) {
-                            BuildingCard(building = building)
+                        SectionCard {
+                            section.buildings.forEachIndexed { index, building ->
+                                SectionCardItem(
+                                    showDivider = index != section.buildings.lastIndex,
+                                    isFirst = index == 0,
+                                    isLast = index == section.buildings.lastIndex,
+                                ) {
+                                    BuildingCard(building = building)
+                                }
+                            }
                         }
                     }
                 }
