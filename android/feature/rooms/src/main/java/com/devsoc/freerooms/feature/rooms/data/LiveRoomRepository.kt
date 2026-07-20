@@ -3,6 +3,7 @@ package com.devsoc.freerooms.feature.rooms.data
 import android.util.Log
 import com.devsoc.freerooms.core.network.GraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
+import com.devsoc.freerooms.core.network.RoomStatusClient
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.asResponseState
 import com.devsoc.freerooms.feature.rooms.BuildConfig
@@ -10,10 +11,10 @@ import com.devsoc.freerooms.network.GetRoomsQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class LiveRoomRepository(private val graphQLClient: GraphQLClient) : RoomRepository {
-//    private var allRooms: List<Room> = emptyList<Room>();
-//    private val cachedRooms: MutableMap<String,List<Room>> = mutableMapOf<String,List<Room>>();
-
+class LiveRoomRepository(
+    private val graphQLClient: GraphQLClient,
+    private val roomStatusClient: RoomStatusClient,
+) : RoomRepository {
     override fun getRooms(): Flow<ResponseState<List<Room>>> {
         return flow {
             if (BuildConfig.DEBUG) {
@@ -24,10 +25,45 @@ class LiveRoomRepository(private val graphQLClient: GraphQLClient) : RoomReposit
                     if (BuildConfig.DEBUG) {
                         Log.d(
                             "LiveRoomRepository",
-                            "Successfully fetched ${result.data.rooms.size} rooms"
+                            "Successfully fetched ${result.data.rooms.size} rooms",
                         )
                     }
-                    emit(result.data)
+
+                    val statuses = when (val statusResult = roomStatusClient.fetchRoomStatus()) {
+                        is NetworkResult.Success -> statusResult.data
+                        is NetworkResult.Error -> {
+                            if (BuildConfig.DEBUG) {
+                                Log.e(
+                                    "LiveRoomRepository",
+                                    "Error fetching room status: ${statusResult.message}",
+                                )
+                            }
+                            emptyMap()
+                        }
+                    }
+
+                    emit(
+                        result.data.rooms.map { room ->
+                            val roomStatus = statuses[room.buildingId]
+                                ?.roomStatuses
+                                ?.get(roomNumberFromId(room.id))
+
+                            Room(
+                                id = room.id,
+                                seating = room.seating,
+                                school = room.school,
+                                name = room.name,
+                                long = room.long,
+                                lat = room.lat,
+                                floor = room.floor,
+                                capacity = room.capacity,
+                                buildingId = room.buildingId,
+                                abbr = room.abbr,
+                                status = Room.availabilityFromStatus(roomStatus?.status.orEmpty()),
+                                endTime = Room.parseEndTime(roomStatus?.endtime.orEmpty()),
+                            )
+                        },
+                    )
                 }
 
                 is NetworkResult.Error -> {
@@ -37,42 +73,11 @@ class LiveRoomRepository(private val graphQLClient: GraphQLClient) : RoomReposit
                     throw result.exception ?: Exception(result.message)
                 }
             }
-        }.asResponseState { data ->
-            data.rooms.map {
-                Room(
-                    id = it.id,
-                    seating = it.seating,
-                    school = it.school,
-                    name = it.name,
-                    long = it.long,
-                    lat = it.lat,
-                    floor = it.floor,
-                    capacity = it.capacity,
-                    buildingId = it.buildingId,
-                    abbr = it.abbr
-                )
-            }
-        }
+        }.asResponseState()
     }
 
-//    init {
-//        allRooms = cacheRooms().toList();
-//
-//        for (room in allRooms) {
-//            if (cachedRooms.containsKey(room.buildingId)) {
-//                cachedRooms[room.buildingId]?.plus(room)?.let { cachedRooms.put(room.buildingId, it) };
-//            } else {
-//                cachedRooms[room.buildingId] = listOf(room);
-//            }
-//
-//        };
-//    }
-//
-//    override fun getRooms(): List<Room> {
-//        return allRooms;
-//    }
-//
-//    override fun getRooms(buildingName: String): List<Room> {
-//        return cachedRooms[buildingName]?:emptyList<Room>();
-//    }
+    private fun roomNumberFromId(roomId: String): String {
+        val parts = roomId.split("-")
+        return if (parts.size == 3) parts[2] else "?"
+    }
 }

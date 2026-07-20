@@ -40,5 +40,5 @@ class AppContainer {
         roomStatusClient,
         buildingRatingClient,
     )
-    val roomRepository = LiveRoomRepository(graphQLClient)
+    val roomRepository = LiveRoomRepository(graphQLClient, roomStatusClient)
 }
