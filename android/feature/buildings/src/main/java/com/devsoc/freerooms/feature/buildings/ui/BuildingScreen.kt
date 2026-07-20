@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,16 +15,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devsoc.freerooms.core.ui.BuildingListRowSkeleton
 import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
+import com.devsoc.freerooms.core.ui.SectionSkeleton
 import com.devsoc.freerooms.feature.buildings.BuildConfig
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
 import com.devsoc.freerooms.feature.buildings.data.CampusSection
+
+private val PlaceholderCampusSections = listOf(
+    "Upper Campus",
+    "Middle Campus",
+    "Lower Campus",
+)
 
 @Composable
 fun BuildingScreen(
@@ -37,7 +46,24 @@ fun BuildingScreen(
     }
 
     when (val state = uiState) {
-        is ResponseState.Loading -> Text("Loading...", modifier = modifier)
+        is ResponseState.Loading -> {
+            BuildingListScaffold(modifier = modifier) {
+                PlaceholderCampusSections.forEachIndexed { sectionIndex, title ->
+                    item(
+                        key = "placeholder-$title",
+                        contentType = "section-skeleton",
+                    ) {
+                        SectionSkeleton(
+                            title = title,
+                            rowCount = 5,
+                            topPadding = if (sectionIndex == 0) 0.dp else 20.dp,
+                        ) {
+                            BuildingListRowSkeleton()
+                        }
+                    }
+                }
+            }
+        }
         is ResponseState.Error -> {
             if (BuildConfig.DEBUG) {
                 Log.e("BuildingScreen", "Displaying Error: ${state.exception.message}", state.exception)
@@ -47,29 +73,7 @@ fun BuildingScreen(
         is ResponseState.Success -> {
             val buildingSections = state.data.toBuildingSections()
 
-            LazyColumn(
-                modifier = modifier.background(Gray),
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                ),
-            ) {
-                item {
-                    Text(
-                        text = "Buildings",
-                        modifier = Modifier.padding(bottom = 12.dp),
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Brown,
-                    )
-                }
-
-                item {
-                    BuildingSearchBox(modifier = Modifier.padding(bottom = 12.dp))
-                }
-
+            BuildingListScaffold(modifier = modifier) {
                 buildingSections.forEachIndexed { sectionIndex, section ->
                     if (section.buildings.isEmpty()) return@forEachIndexed
 
@@ -100,6 +104,38 @@ fun BuildingScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BuildingListScaffold(
+    modifier: Modifier = Modifier,
+    sections: LazyListScope.() -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier.background(Gray),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp,
+        ),
+    ) {
+        item {
+            Text(
+                text = "Buildings",
+                modifier = Modifier.padding(bottom = 12.dp),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = Brown,
+            )
+        }
+
+        item {
+            BuildingSearchBox(modifier = Modifier.padding(bottom = 12.dp))
+        }
+
+        sections()
     }
 }
 
