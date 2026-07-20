@@ -58,8 +58,8 @@ fun SectionCardItem(
     Column(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier.padding(
-                start = 20.dp,
-                end = 20.dp,
+                start = SectionContentHorizontalPadding,
+                end = SectionContentHorizontalPadding,
                 top = if (isFirst) 8.dp else 0.dp,
                 bottom = if (isLast) 8.dp else 0.dp,
             ),
@@ -69,7 +69,7 @@ fun SectionCardItem(
 
         if (showDivider) {
             HorizontalDivider(
-                modifier = Modifier.padding(start = 80.dp),
+                modifier = Modifier.padding(start = ListRowDividerInset),
                 thickness = 1.dp,
                 color = Gray,
             )
