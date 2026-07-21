@@ -16,11 +16,11 @@ struct RoomLabel: View {
     HStack(spacing: 2) {
       Text("\(leftLabel):")
         .font(.callout)
-        .foregroundStyle(theme.label.quaternary)
+        .foregroundStyle(theme.label.tertiary)
       Text("\(rightLabel)")
         .bold()
         .font(.headline)
-        .foregroundStyle(theme.label.tertiary)
+        .foregroundStyle(theme.label.quaternary)
     }
   }
 
