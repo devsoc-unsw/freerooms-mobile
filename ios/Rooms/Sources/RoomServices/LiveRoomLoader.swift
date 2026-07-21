@@ -9,6 +9,8 @@ import Foundation
 import Persistence
 import RoomModels
 import VISOR
+import Apollo
+import DevSocAPI
 
 // MARK: - RoomLoaderError
 
@@ -22,10 +24,35 @@ public enum RoomLoaderError: Error {
 
 // MARK: - RoomLoader
 
+// FIXME: Make this nonisolated
+
 @Stubbable
 public protocol RoomLoader {
   func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
   func fetch() async -> Result<[Room], RoomLoaderError>
+}
+
+// MARK: - LiveGraphQLRoomLoader
+
+nonisolated
+public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
+  
+  public init(
+    client: ApolloClient)
+  {
+    self.client = client
+  }
+  
+  public let client: ApolloClient
+  
+  public func fetch() async -> Result<[Room], RoomLoaderError> {
+    fatalError()
+  }
+  
+  public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
+    fatalError()
+  }
+  
 }
 
 // MARK: - LiveRoomLoader
