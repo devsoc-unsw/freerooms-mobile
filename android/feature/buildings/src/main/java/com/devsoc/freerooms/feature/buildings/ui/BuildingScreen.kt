@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,18 +15,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devsoc.freerooms.core.ui.BrowseUiPreferences
 import com.devsoc.freerooms.core.ui.BuildingListRowSkeleton
-import com.devsoc.freerooms.core.ui.Brown
+import com.devsoc.freerooms.core.ui.FreeroomsBrowseHeader
+import com.devsoc.freerooms.core.ui.FreeroomsGridRows
 import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import com.devsoc.freerooms.core.ui.Gray
+import com.devsoc.freerooms.core.ui.ListViewMode
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
+import com.devsoc.freerooms.core.ui.rememberBrowseUiPreferences
 import com.devsoc.freerooms.feature.buildings.BuildConfig
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
@@ -47,7 +49,27 @@ fun BuildingScreen(
     onBuildingClick: (Building) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val browsePreferences = rememberBrowseUiPreferences()
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var viewMode by remember {
+        mutableStateOf(browsePreferences.getViewMode(BrowseUiPreferences.Buildings))
+    }
+    var ascending by remember {
+        mutableStateOf(browsePreferences.isAscending(BrowseUiPreferences.Buildings))
+    }
+    val onSortClick = {
+        val next = !ascending
+        ascending = next
+        browsePreferences.setAscending(BrowseUiPreferences.Buildings, next)
+    }
+    val onViewModeClick = {
+        val next = when (viewMode) {
+            ListViewMode.LIST -> ListViewMode.GRID
+            ListViewMode.GRID -> ListViewMode.LIST
+        }
+        viewMode = next
+        browsePreferences.setViewMode(BrowseUiPreferences.Buildings, next)
+    }
 
     if (BuildConfig.DEBUG) {
         LaunchedEffect(uiState) { Log.d("BuildingScreen", "UI State: $uiState") }
@@ -58,6 +80,9 @@ fun BuildingScreen(
             BuildingListScaffold(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = modifier,
             ) {
                 PlaceholderCampusSections.forEachIndexed { sectionIndex, title ->
@@ -83,20 +108,25 @@ fun BuildingScreen(
             Text("Error: ${state.exception.message}", modifier = modifier)
         }
         is ResponseState.Success -> {
-            val buildingSections = remember(state.data, searchQuery) {
-                state.data.filterBySearchQuery(searchQuery).toBuildingSections()
+            val buildingSections = remember(state.data, searchQuery, ascending) {
+                state.data
+                    .filterBySearchQuery(searchQuery)
+                    .toBuildingSections(ascending = ascending)
             }
 
             BuildingListScaffold(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = modifier,
             ) {
                 buildingSections.forEachIndexed { sectionIndex, section ->
                     if (section.buildings.isEmpty()) return@forEachIndexed
 
                     item(
-                        key = "section-${section.title}",
+                        key = "section-${section.title}-$viewMode",
                         contentType = "section",
                     ) {
                         SectionHeader(
@@ -107,14 +137,26 @@ fun BuildingScreen(
                             ),
                         )
 
-                        SectionCard {
-                            section.buildings.forEachIndexed { index, building ->
-                                SectionCardItem(
-                                    showDivider = index != section.buildings.lastIndex,
-                                    isFirst = index == 0,
-                                    isLast = index == section.buildings.lastIndex,
-                                ) {
-                                    BuildingCard(
+                        when (viewMode) {
+                            ListViewMode.LIST -> {
+                                SectionCard {
+                                    section.buildings.forEachIndexed { index, building ->
+                                        SectionCardItem(
+                                            showDivider = index != section.buildings.lastIndex,
+                                            isFirst = index == 0,
+                                            isLast = index == section.buildings.lastIndex,
+                                        ) {
+                                            BuildingCard(
+                                                building = building,
+                                                onClick = { onBuildingClick(building) },
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            ListViewMode.GRID -> {
+                                FreeroomsGridRows(items = section.buildings) { building ->
+                                    BuildingGridCard(
                                         building = building,
                                         onClick = { onBuildingClick(building) },
                                     )
@@ -132,6 +174,9 @@ fun BuildingScreen(
 private fun BuildingListScaffold(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    viewMode: ListViewMode,
+    onSortClick: () -> Unit,
+    onViewModeClick: () -> Unit,
     modifier: Modifier = Modifier,
     sections: LazyListScope.() -> Unit,
 ) {
@@ -145,12 +190,12 @@ private fun BuildingListScaffold(
         ),
     ) {
         item {
-            Text(
-                text = "Buildings",
+            FreeroomsBrowseHeader(
+                title = "Buildings",
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = Modifier.padding(bottom = 12.dp),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = Brown,
             )
         }
 
@@ -171,10 +216,15 @@ private data class BuildingSection(
     val buildings: List<Building>,
 )
 
-private fun List<Building>.toBuildingSections(): List<BuildingSection> {
+private fun List<Building>.toBuildingSections(ascending: Boolean): List<BuildingSection> {
     fun buildingsIn(section: CampusSection): List<Building> {
+        val comparator = if (ascending) {
+            compareBy(Building::name)
+        } else {
+            compareByDescending(Building::name)
+        }
         return filter { building -> building.campusSection == section }
-            .sortedBy { building -> building.name }
+            .sortedWith(comparator)
     }
 
     return listOf(

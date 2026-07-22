@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,18 +15,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.devsoc.freerooms.core.ui.Brown
+import com.devsoc.freerooms.core.ui.BrowseUiPreferences
+import com.devsoc.freerooms.core.ui.FreeroomsBrowseHeader
+import com.devsoc.freerooms.core.ui.FreeroomsGridRows
 import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import com.devsoc.freerooms.core.ui.Gray
+import com.devsoc.freerooms.core.ui.ListViewMode
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.RoomListRowSkeleton
 import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
+import com.devsoc.freerooms.core.ui.rememberBrowseUiPreferences
 import com.devsoc.freerooms.feature.rooms.BuildConfig
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
@@ -40,7 +42,27 @@ fun RoomsScreen(
     onRoomClick: (Room) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val browsePreferences = rememberBrowseUiPreferences()
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var viewMode by remember {
+        mutableStateOf(browsePreferences.getViewMode(BrowseUiPreferences.Rooms))
+    }
+    var ascending by remember {
+        mutableStateOf(browsePreferences.isAscending(BrowseUiPreferences.Rooms))
+    }
+    val onSortClick = {
+        val next = !ascending
+        ascending = next
+        browsePreferences.setAscending(BrowseUiPreferences.Rooms, next)
+    }
+    val onViewModeClick = {
+        val next = when (viewMode) {
+            ListViewMode.LIST -> ListViewMode.GRID
+            ListViewMode.GRID -> ListViewMode.LIST
+        }
+        viewMode = next
+        browsePreferences.setViewMode(BrowseUiPreferences.Rooms, next)
+    }
 
     if (BuildConfig.DEBUG) {
         LaunchedEffect(uiState) { Log.d("RoomScreen", "UI State: $uiState") }
@@ -51,6 +73,9 @@ fun RoomsScreen(
             RoomsListScaffold(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = modifier,
             ) {
                 item(
@@ -73,17 +98,26 @@ fun RoomsScreen(
             Text("Error: ${state.exception.message}", modifier = modifier)
         }
         is ResponseState.Success -> {
-            val filteredRooms = remember(state.data, searchQuery) {
-                state.data.filterBySearchQuery(searchQuery)
+            val filteredRooms = remember(state.data, searchQuery, ascending) {
+                val filtered = state.data.filterBySearchQuery(searchQuery)
+                val comparator = if (ascending) {
+                    compareBy(Room::name)
+                } else {
+                    compareByDescending(Room::name)
+                }
+                filtered.sortedWith(comparator)
             }
 
             RoomsListScaffold(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = modifier,
             ) {
                 item(
-                    key = "all-rooms",
+                    key = "all-rooms-$viewMode",
                     contentType = "section",
                 ) {
                     SectionHeader(
@@ -91,14 +125,26 @@ fun RoomsScreen(
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
 
-                    SectionCard {
-                        filteredRooms.forEachIndexed { index, room ->
-                            SectionCardItem(
-                                showDivider = index != filteredRooms.lastIndex,
-                                isFirst = index == 0,
-                                isLast = index == filteredRooms.lastIndex,
-                            ) {
-                                RoomCard(
+                    when (viewMode) {
+                        ListViewMode.LIST -> {
+                            SectionCard {
+                                filteredRooms.forEachIndexed { index, room ->
+                                    SectionCardItem(
+                                        showDivider = index != filteredRooms.lastIndex,
+                                        isFirst = index == 0,
+                                        isLast = index == filteredRooms.lastIndex,
+                                    ) {
+                                        RoomCard(
+                                            room = room,
+                                            onClick = { onRoomClick(room) },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        ListViewMode.GRID -> {
+                            FreeroomsGridRows(items = filteredRooms) { room ->
+                                RoomGridCard(
                                     room = room,
                                     onClick = { onRoomClick(room) },
                                 )
@@ -115,6 +161,9 @@ fun RoomsScreen(
 private fun RoomsListScaffold(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    viewMode: ListViewMode,
+    onSortClick: () -> Unit,
+    onViewModeClick: () -> Unit,
     modifier: Modifier = Modifier,
     sections: LazyListScope.() -> Unit,
 ) {
@@ -128,12 +177,12 @@ private fun RoomsListScaffold(
         ),
     ) {
         item {
-            Text(
-                text = "Rooms",
+            FreeroomsBrowseHeader(
+                title = "Rooms",
+                viewMode = viewMode,
+                onSortClick = onSortClick,
+                onViewModeClick = onViewModeClick,
                 modifier = Modifier.padding(bottom = 12.dp),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = Brown,
             )
         }
 
