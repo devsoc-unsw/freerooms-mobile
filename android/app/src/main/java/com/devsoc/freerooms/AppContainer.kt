@@ -9,8 +9,10 @@ import com.devsoc.freerooms.core.network.LiveRoomBookingsClient
 import com.devsoc.freerooms.core.network.LiveRoomRatingClient
 import com.devsoc.freerooms.core.network.LiveRoomStatusClient
 import com.devsoc.freerooms.core.network.NetworkConstants
+import com.devsoc.freerooms.core.network.TextListAdapter
 import com.devsoc.freerooms.feature.buildings.data.LiveBuildingRepository
 import com.devsoc.freerooms.feature.rooms.data.LiveRoomRepository
+import com.devsoc.freerooms.network.type._Text
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -31,6 +33,7 @@ class AppContainer {
     private val apolloClient = ApolloClient.Builder()
         .serverUrl(NetworkConstants.SERVER_URL)
         .okHttpClient(okHttpClient)
+        .addCustomScalarAdapter(_Text.type, TextListAdapter)
         .build()
 
     private val graphQLClient = LiveGraphQLClient(apolloClient)

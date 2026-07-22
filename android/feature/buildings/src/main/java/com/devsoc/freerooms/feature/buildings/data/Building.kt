@@ -5,6 +5,7 @@ data class Building(
     val name: String,
     val lat: Double,
     val long: Double,
+    val aliases: List<String> = emptyList(),
     val numberOfAvailableRooms: Int? = null,
     val overallRating: Double? = null,
 ) {

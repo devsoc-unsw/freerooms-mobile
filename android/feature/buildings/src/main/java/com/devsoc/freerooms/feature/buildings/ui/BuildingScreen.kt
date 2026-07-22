@@ -11,12 +11,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.BuildingListRowSkeleton
 import com.devsoc.freerooms.core.ui.Brown
+import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.SectionCard
@@ -27,6 +32,7 @@ import com.devsoc.freerooms.feature.buildings.BuildConfig
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
 import com.devsoc.freerooms.feature.buildings.data.CampusSection
+import com.devsoc.freerooms.feature.buildings.data.filterBySearchQuery
 
 private val PlaceholderCampusSections = listOf(
     "Upper Campus",
@@ -41,6 +47,7 @@ fun BuildingScreen(
     onBuildingClick: (Building) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     if (BuildConfig.DEBUG) {
         LaunchedEffect(uiState) { Log.d("BuildingScreen", "UI State: $uiState") }
@@ -48,7 +55,11 @@ fun BuildingScreen(
 
     when (val state = uiState) {
         is ResponseState.Loading -> {
-            BuildingListScaffold(modifier = modifier) {
+            BuildingListScaffold(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                modifier = modifier,
+            ) {
                 PlaceholderCampusSections.forEachIndexed { sectionIndex, title ->
                     item(
                         key = "placeholder-$title",
@@ -72,9 +83,15 @@ fun BuildingScreen(
             Text("Error: ${state.exception.message}", modifier = modifier)
         }
         is ResponseState.Success -> {
-            val buildingSections = state.data.toBuildingSections()
+            val buildingSections = remember(state.data, searchQuery) {
+                state.data.filterBySearchQuery(searchQuery).toBuildingSections()
+            }
 
-            BuildingListScaffold(modifier = modifier) {
+            BuildingListScaffold(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                modifier = modifier,
+            ) {
                 buildingSections.forEachIndexed { sectionIndex, section ->
                     if (section.buildings.isEmpty()) return@forEachIndexed
 
@@ -113,6 +130,8 @@ fun BuildingScreen(
 
 @Composable
 private fun BuildingListScaffold(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     sections: LazyListScope.() -> Unit,
 ) {
@@ -136,7 +155,11 @@ private fun BuildingListScaffold(
         }
 
         item {
-            BuildingSearchBox(modifier = Modifier.padding(bottom = 12.dp))
+            FreeroomsSearchBox(
+                query = searchQuery,
+                onQueryChange = onSearchQueryChange,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
         }
 
         sections()

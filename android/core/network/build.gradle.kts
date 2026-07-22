@@ -30,6 +30,7 @@ apollo {
         }
         packageName.set("com.devsoc.freerooms.network")
         mapScalar("_varchar", "kotlin.String")
+        mapScalar("_text", "kotlin.collections.List<kotlin.String>")
         mapScalar("float8", "kotlin.Double")
         mapScalar("timestamptz", "kotlin.String")
         mapScalar("bookingtypeenum", "kotlin.String")

@@ -11,11 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.Brown
+import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.RoomListRowSkeleton
@@ -26,6 +31,7 @@ import com.devsoc.freerooms.core.ui.SectionSkeleton
 import com.devsoc.freerooms.feature.rooms.BuildConfig
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
+import com.devsoc.freerooms.feature.rooms.data.filterBySearchQuery
 
 @Composable
 fun RoomsScreen(
@@ -34,6 +40,7 @@ fun RoomsScreen(
     onRoomClick: (Room) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     if (BuildConfig.DEBUG) {
         LaunchedEffect(uiState) { Log.d("RoomScreen", "UI State: $uiState") }
@@ -41,7 +48,11 @@ fun RoomsScreen(
 
     when (val state = uiState) {
         is ResponseState.Loading -> {
-            RoomsListScaffold(modifier = modifier) {
+            RoomsListScaffold(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                modifier = modifier,
+            ) {
                 item(
                     key = "placeholder-all-rooms",
                     contentType = "section-skeleton",
@@ -62,7 +73,15 @@ fun RoomsScreen(
             Text("Error: ${state.exception.message}", modifier = modifier)
         }
         is ResponseState.Success -> {
-            RoomsListScaffold(modifier = modifier) {
+            val filteredRooms = remember(state.data, searchQuery) {
+                state.data.filterBySearchQuery(searchQuery)
+            }
+
+            RoomsListScaffold(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                modifier = modifier,
+            ) {
                 item(
                     key = "all-rooms",
                     contentType = "section",
@@ -73,11 +92,11 @@ fun RoomsScreen(
                     )
 
                     SectionCard {
-                        state.data.forEachIndexed { index, room ->
+                        filteredRooms.forEachIndexed { index, room ->
                             SectionCardItem(
-                                showDivider = index != state.data.lastIndex,
+                                showDivider = index != filteredRooms.lastIndex,
                                 isFirst = index == 0,
-                                isLast = index == state.data.lastIndex,
+                                isLast = index == filteredRooms.lastIndex,
                             ) {
                                 RoomCard(
                                     room = room,
@@ -94,6 +113,8 @@ fun RoomsScreen(
 
 @Composable
 private fun RoomsListScaffold(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     sections: LazyListScope.() -> Unit,
 ) {
@@ -117,7 +138,11 @@ private fun RoomsListScaffold(
         }
 
         item {
-            RoomSearchBox(modifier = Modifier.padding(bottom = 12.dp))
+            FreeroomsSearchBox(
+                query = searchQuery,
+                onQueryChange = onSearchQueryChange,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
         }
 
         sections()

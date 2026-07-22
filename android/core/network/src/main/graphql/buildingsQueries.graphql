@@ -4,5 +4,6 @@ query GetBuildings {
         lat
         long
         name
+        aliases
     }
 }

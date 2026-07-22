@@ -53,6 +53,7 @@ class LiveBuildingRepository(
                             name = building.name,
                             lat = building.lat,
                             long = building.long,
+                            aliases = building.aliases,
                             numberOfAvailableRooms = statuses[building.id]?.numAvailable,
                         )
                     }
