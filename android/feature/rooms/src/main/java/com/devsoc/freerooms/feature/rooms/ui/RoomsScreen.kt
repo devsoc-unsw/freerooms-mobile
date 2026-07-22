@@ -19,17 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.BrowseUiPreferences
 import com.devsoc.freerooms.core.ui.FreeroomsBrowseHeader
-import com.devsoc.freerooms.core.ui.FreeroomsGridRows
 import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import androidx.compose.material3.MaterialTheme
 import com.devsoc.freerooms.core.ui.ListViewMode
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.RoomListRowSkeleton
-import com.devsoc.freerooms.core.ui.SectionCard
-import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
+import com.devsoc.freerooms.core.ui.freeroomsGridItems
 import com.devsoc.freerooms.core.ui.rememberBrowseUiPreferences
+import com.devsoc.freerooms.core.ui.sectionCardItems
 import com.devsoc.freerooms.feature.rooms.BuildConfig
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomViewModel
@@ -117,38 +116,36 @@ fun RoomsScreen(
                 modifier = modifier,
             ) {
                 item(
-                    key = "all-rooms-$viewMode",
-                    contentType = "section",
+                    key = "all-rooms-header",
+                    contentType = "section-header",
                 ) {
                     SectionHeader(
                         title = "All Rooms",
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
+                }
 
-                    when (viewMode) {
-                        ListViewMode.LIST -> {
-                            SectionCard {
-                                filteredRooms.forEachIndexed { index, room ->
-                                    SectionCardItem(
-                                        showDivider = index != filteredRooms.lastIndex,
-                                        isFirst = index == 0,
-                                        isLast = index == filteredRooms.lastIndex,
-                                    ) {
-                                        RoomCard(
-                                            room = room,
-                                            onClick = { onRoomClick(room) },
-                                        )
-                                    }
-                                }
-                            }
+                when (viewMode) {
+                    ListViewMode.LIST -> {
+                        sectionCardItems(
+                            items = filteredRooms,
+                            key = Room::id,
+                        ) { room ->
+                            RoomCard(
+                                room = room,
+                                onClick = { onRoomClick(room) },
+                            )
                         }
-                        ListViewMode.GRID -> {
-                            FreeroomsGridRows(items = filteredRooms) { room ->
-                                RoomGridCard(
-                                    room = room,
-                                    onClick = { onRoomClick(room) },
-                                )
-                            }
+                    }
+                    ListViewMode.GRID -> {
+                        freeroomsGridItems(
+                            items = filteredRooms,
+                            key = Room::id,
+                        ) { room ->
+                            RoomGridCard(
+                                room = room,
+                                onClick = { onRoomClick(room) },
+                            )
                         }
                     }
                 }

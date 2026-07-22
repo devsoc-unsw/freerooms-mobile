@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -13,10 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.RoomListRowSkeleton
-import com.devsoc.freerooms.core.ui.SectionCard
-import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
+import com.devsoc.freerooms.core.ui.sectionCardItems
 import com.devsoc.freerooms.feature.rooms.data.Room
 
 @Composable
@@ -41,60 +41,53 @@ fun BuildingRoomsScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
             item(key = "building-image") {
                 BuildingHeroImage(
                     buildingName = buildingName,
                     buildingImageResId = buildingImageResId,
-                    modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
-            item(key = "rooms-section") {
-                Column(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        top = 16.dp,
-                        end = 16.dp,
-                    ),
-                ) {
-                    if (roomsLoading && rooms.isEmpty()) {
-                        SectionSkeleton(
-                            title = "Rooms",
-                            rowCount = 6,
-                        ) {
-                            RoomListRowSkeleton()
-                        }
-                    } else {
-                        SectionHeader(
-                            title = "Rooms",
-                            modifier = Modifier.padding(bottom = 10.dp),
-                        )
+            if (roomsLoading && rooms.isEmpty()) {
+                item(key = "rooms-skeleton") {
+                    SectionSkeleton(
+                        title = "Rooms",
+                        rowCount = 6,
+                        topPadding = 16.dp,
+                    ) {
+                        RoomListRowSkeleton()
+                    }
+                }
+            } else {
+                item(key = "rooms-header") {
+                    SectionHeader(
+                        title = "Rooms",
+                        modifier = Modifier.padding(top = 16.dp, bottom = 10.dp),
+                    )
+                }
 
-                        SectionCard {
-                            if (rooms.isEmpty()) {
-                                Text(
-                                    text = "No rooms found",
-                                    modifier = Modifier.padding(20.dp),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                )
-                            } else {
-                                rooms.forEachIndexed { index, room ->
-                                    SectionCardItem(
-                                        showDivider = index != rooms.lastIndex,
-                                        isFirst = index == 0,
-                                        isLast = index == rooms.lastIndex,
-                                    ) {
-                                        RoomCard(
-                                            room = room,
-                                            onClick = { onRoomClick(room) },
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                if (rooms.isEmpty()) {
+                    item(key = "rooms-empty") {
+                        Text(
+                            text = "No rooms found",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                } else {
+                    sectionCardItems(
+                        items = rooms,
+                        key = Room::id,
+                    ) { room ->
+                        RoomCard(
+                            room = room,
+                            onClick = { onRoomClick(room) },
+                        )
                     }
                 }
             }

@@ -20,16 +20,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devsoc.freerooms.core.ui.BrowseUiPreferences
 import com.devsoc.freerooms.core.ui.BuildingListRowSkeleton
 import com.devsoc.freerooms.core.ui.FreeroomsBrowseHeader
-import com.devsoc.freerooms.core.ui.FreeroomsGridRows
 import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
 import androidx.compose.material3.MaterialTheme
 import com.devsoc.freerooms.core.ui.ListViewMode
 import com.devsoc.freerooms.core.ui.ResponseState
-import com.devsoc.freerooms.core.ui.SectionCard
-import com.devsoc.freerooms.core.ui.SectionCardItem
 import com.devsoc.freerooms.core.ui.SectionHeader
 import com.devsoc.freerooms.core.ui.SectionSkeleton
+import com.devsoc.freerooms.core.ui.freeroomsGridItems
 import com.devsoc.freerooms.core.ui.rememberBrowseUiPreferences
+import com.devsoc.freerooms.core.ui.sectionCardItems
 import com.devsoc.freerooms.feature.buildings.BuildConfig
 import com.devsoc.freerooms.feature.buildings.data.Building
 import com.devsoc.freerooms.feature.buildings.data.BuildingViewModel
@@ -126,8 +125,8 @@ fun BuildingScreen(
                     if (section.buildings.isEmpty()) return@forEachIndexed
 
                     item(
-                        key = "section-${section.title}-$viewMode",
-                        contentType = "section",
+                        key = "section-header-${section.title}",
+                        contentType = "section-header",
                     ) {
                         SectionHeader(
                             title = section.title,
@@ -136,31 +135,29 @@ fun BuildingScreen(
                                 bottom = 10.dp,
                             ),
                         )
+                    }
 
-                        when (viewMode) {
-                            ListViewMode.LIST -> {
-                                SectionCard {
-                                    section.buildings.forEachIndexed { index, building ->
-                                        SectionCardItem(
-                                            showDivider = index != section.buildings.lastIndex,
-                                            isFirst = index == 0,
-                                            isLast = index == section.buildings.lastIndex,
-                                        ) {
-                                            BuildingCard(
-                                                building = building,
-                                                onClick = { onBuildingClick(building) },
-                                            )
-                                        }
-                                    }
-                                }
+                    when (viewMode) {
+                        ListViewMode.LIST -> {
+                            sectionCardItems(
+                                items = section.buildings,
+                                key = Building::id,
+                            ) { building ->
+                                BuildingCard(
+                                    building = building,
+                                    onClick = { onBuildingClick(building) },
+                                )
                             }
-                            ListViewMode.GRID -> {
-                                FreeroomsGridRows(items = section.buildings) { building ->
-                                    BuildingGridCard(
-                                        building = building,
-                                        onClick = { onBuildingClick(building) },
-                                    )
-                                }
+                        }
+                        ListViewMode.GRID -> {
+                            freeroomsGridItems(
+                                items = section.buildings,
+                                key = Building::id,
+                            ) { building ->
+                                BuildingGridCard(
+                                    building = building,
+                                    onClick = { onBuildingClick(building) },
+                                )
                             }
                         }
                     }

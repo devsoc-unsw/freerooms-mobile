@@ -8,8 +8,8 @@ internal class FreeroomsNavigationActions(
 ) {
     fun navigateTo(page: FreeroomsPage) {
         when (page) {
-            FreeroomsPage.Building -> navigateToBuildings()
-            FreeroomsPage.Rooms -> navigateToRooms()
+            FreeroomsPage.Building -> navigateToTab(FreeroomsRoute.Buildings)
+            FreeroomsPage.Rooms -> navigateToTab(FreeroomsRoute.Rooms)
             FreeroomsPage.Map -> navigateToMap()
         }
     }
@@ -26,19 +26,13 @@ internal class FreeroomsNavigationActions(
         navController.popBackStack()
     }
 
-    private fun navigateToBuildings() {
-        navController.navigate(FreeroomsRoute.Buildings) {
+    private fun navigateToTab(route: String) {
+        navController.navigate(route) {
             popUpTo(FreeroomsRoute.Buildings) {
-                inclusive = false
+                saveState = true
             }
             launchSingleTop = true
-        }
-    }
-
-    private fun navigateToRooms() {
-        navController.navigate(FreeroomsRoute.Rooms) {
-            popUpTo(FreeroomsRoute.Buildings)
-            launchSingleTop = true
+            restoreState = true
         }
     }
 
