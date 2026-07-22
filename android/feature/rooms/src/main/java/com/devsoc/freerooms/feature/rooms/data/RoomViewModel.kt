@@ -22,10 +22,25 @@ class RoomViewModel(private val repository: RoomRepository) : ViewModel() {
     private val bookingsByRoomId =
         ConcurrentHashMap<String, StateFlow<ResponseState<List<RoomBooking>>>>()
 
+    private val ratingsByRoomId =
+        ConcurrentHashMap<String, StateFlow<ResponseState<RoomRating>>>()
+
     fun bookingsFor(roomId: String): StateFlow<ResponseState<List<RoomBooking>>> {
         return bookingsByRoomId.getOrPut(roomId) {
             repository
                 .getBookings(roomId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = ResponseState.Loading,
+                )
+        }
+    }
+
+    fun ratingFor(roomId: String): StateFlow<ResponseState<RoomRating>> {
+        return ratingsByRoomId.getOrPut(roomId) {
+            repository
+                .getRating(roomId)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),

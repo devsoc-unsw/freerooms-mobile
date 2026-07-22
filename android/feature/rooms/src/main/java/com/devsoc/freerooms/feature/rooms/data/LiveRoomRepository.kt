@@ -4,6 +4,7 @@ import android.util.Log
 import com.devsoc.freerooms.core.network.GraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
 import com.devsoc.freerooms.core.network.RoomBookingsClient
+import com.devsoc.freerooms.core.network.RoomRatingClient
 import com.devsoc.freerooms.core.network.RoomStatusClient
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.asResponseState
@@ -16,6 +17,7 @@ class LiveRoomRepository(
     private val graphQLClient: GraphQLClient,
     private val roomStatusClient: RoomStatusClient,
     private val roomBookingsClient: RoomBookingsClient,
+    private val roomRatingClient: RoomRatingClient,
 ) : RoomRepository {
     override fun getRooms(): Flow<ResponseState<List<Room>>> {
         return flow {
@@ -102,6 +104,37 @@ class LiveRoomRepository(
                         Log.e(
                             "LiveRoomRepository",
                             "Error fetching bookings: ${result.message}",
+                        )
+                    }
+                    throw result.exception ?: Exception(result.message)
+                }
+            }
+        }.asResponseState()
+    }
+
+    override fun getRating(roomId: String): Flow<ResponseState<RoomRating>> {
+        return flow {
+            if (BuildConfig.DEBUG) {
+                Log.d("LiveRoomRepository", "Fetching rating for $roomId...")
+            }
+            when (val result = roomRatingClient.fetchRoomRating(roomId)) {
+                is NetworkResult.Success -> {
+                    emit(
+                        RoomRating(
+                            roomId = result.data.roomId,
+                            overallRating = result.data.overallRating,
+                            cleanliness = result.data.averageRating.cleanliness,
+                            location = result.data.averageRating.location,
+                            quietness = result.data.averageRating.quietness,
+                        ),
+                    )
+                }
+
+                is NetworkResult.Error -> {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(
+                            "LiveRoomRepository",
+                            "Error fetching rating: ${result.message}",
                         )
                     }
                     throw result.exception ?: Exception(result.message)

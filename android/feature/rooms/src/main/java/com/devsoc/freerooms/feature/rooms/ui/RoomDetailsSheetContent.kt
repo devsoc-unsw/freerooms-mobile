@@ -34,6 +34,9 @@ import kotlinx.coroutines.launch
 internal fun RoomDetailsSheetContent(
     room: Room?,
     bookings: List<RoomBooking>,
+    overallRating: Double?,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
     sheetState: SheetState,
     modifier: Modifier = Modifier,
 ) {
@@ -93,6 +96,9 @@ internal fun RoomDetailsSheetContent(
 
             RoomDetailsSheetHeader(
                 room = room,
+                overallRating = overallRating,
+                isFavorite = isFavorite,
+                onToggleFavorite = onToggleFavorite,
                 modifier = Modifier.padding(top = 16.dp),
             )
         }

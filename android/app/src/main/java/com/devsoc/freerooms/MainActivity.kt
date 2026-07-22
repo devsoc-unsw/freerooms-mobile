@@ -100,10 +100,17 @@ class MainActivity : ComponentActivity() {
                         val bookings = (bookingsState as? ResponseState.Success)
                             ?.data
                             .orEmpty()
+                        val ratingState by roomViewModel
+                            .ratingFor(roomId)
+                            .collectAsStateWithLifecycle()
+                        val overallRating = (ratingState as? ResponseState.Success)
+                            ?.data
+                            ?.overallRating
 
                         RoomDetailsScreen(
                             room = room,
                             bookings = bookings,
+                            overallRating = overallRating,
                             roomImageResId = roomFullImageResId(roomId),
                             onBack = onBack,
                             modifier = modifier,
