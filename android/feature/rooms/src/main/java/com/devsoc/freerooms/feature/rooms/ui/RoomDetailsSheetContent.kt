@@ -26,12 +26,14 @@ import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Gray3
 import com.devsoc.freerooms.core.ui.freeroomsClickable
 import com.devsoc.freerooms.feature.rooms.data.Room
+import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RoomDetailsSheetContent(
     room: Room?,
+    bookings: List<RoomBooking>,
     sheetState: SheetState,
     modifier: Modifier = Modifier,
 ) {
@@ -96,6 +98,7 @@ internal fun RoomDetailsSheetContent(
         }
 
         RoomBookingsTimeline(
+            bookings = bookings,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),

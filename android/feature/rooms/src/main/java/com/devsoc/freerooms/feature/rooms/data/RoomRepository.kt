@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface RoomRepository {
     fun getRooms(): Flow<ResponseState<List<Room>>>
+    fun getBookings(roomId: String): Flow<ResponseState<List<RoomBooking>>>
 }

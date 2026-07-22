@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.feature.rooms.data.Room
+import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 
 private val SheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
 
@@ -27,6 +28,7 @@ private val SheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
 @Composable
 fun RoomDetailsScreen(
     room: Room?,
+    bookings: List<RoomBooking>,
     @DrawableRes roomImageResId: Int?,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -56,6 +58,7 @@ fun RoomDetailsScreen(
             sheetContent = {
                 RoomDetailsSheetContent(
                     room = room,
+                    bookings = bookings,
                     sheetState = scaffoldState.bottomSheetState,
                 )
             },

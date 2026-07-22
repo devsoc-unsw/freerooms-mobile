@@ -94,9 +94,16 @@ class MainActivity : ComponentActivity() {
                         val room = (roomsState as? ResponseState.Success)
                             ?.data
                             ?.firstOrNull { room -> room.id == roomId }
+                        val bookingsState by roomViewModel
+                            .bookingsFor(roomId)
+                            .collectAsStateWithLifecycle()
+                        val bookings = (bookingsState as? ResponseState.Success)
+                            ?.data
+                            .orEmpty()
 
                         RoomDetailsScreen(
                             room = room,
+                            bookings = bookings,
                             roomImageResId = roomFullImageResId(roomId),
                             onBack = onBack,
                             modifier = modifier,

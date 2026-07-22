@@ -3,6 +3,7 @@ package com.devsoc.freerooms.feature.rooms.data
 import android.util.Log
 import com.devsoc.freerooms.core.network.GraphQLClient
 import com.devsoc.freerooms.core.network.NetworkResult
+import com.devsoc.freerooms.core.network.RoomBookingsClient
 import com.devsoc.freerooms.core.network.RoomStatusClient
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.asResponseState
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 class LiveRoomRepository(
     private val graphQLClient: GraphQLClient,
     private val roomStatusClient: RoomStatusClient,
+    private val roomBookingsClient: RoomBookingsClient,
 ) : RoomRepository {
     override fun getRooms(): Flow<ResponseState<List<Room>>> {
         return flow {
@@ -69,6 +71,38 @@ class LiveRoomRepository(
                 is NetworkResult.Error -> {
                     if (BuildConfig.DEBUG) {
                         Log.e("LiveRoomRepository", "Error fetching Rooms: ${result.message}")
+                    }
+                    throw result.exception ?: Exception(result.message)
+                }
+            }
+        }.asResponseState()
+    }
+
+    override fun getBookings(roomId: String): Flow<ResponseState<List<RoomBooking>>> {
+        return flow {
+            if (BuildConfig.DEBUG) {
+                Log.d("LiveRoomRepository", "Fetching bookings for $roomId...")
+            }
+            when (val result = roomBookingsClient.fetchRoomBookings(roomId)) {
+                is NetworkResult.Success -> {
+                    val bookings = result.data.bookings.mapNotNull { booking ->
+                        val start = parseRoomEndTime(booking.start) ?: return@mapNotNull null
+                        val end = parseRoomEndTime(booking.end) ?: return@mapNotNull null
+                        RoomBooking(
+                            name = booking.name,
+                            start = start,
+                            end = end,
+                        )
+                    }
+                    emit(bookings)
+                }
+
+                is NetworkResult.Error -> {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(
+                            "LiveRoomRepository",
+                            "Error fetching bookings: ${result.message}",
+                        )
                     }
                     throw result.exception ?: Exception(result.message)
                 }
