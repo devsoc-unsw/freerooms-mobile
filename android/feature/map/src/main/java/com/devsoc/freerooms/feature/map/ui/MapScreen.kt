@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.devsoc.freerooms.core.ui.Gray
+import androidx.compose.material3.MaterialTheme
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -40,7 +40,7 @@ fun MapScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),

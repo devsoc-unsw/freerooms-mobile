@@ -16,10 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.FR_Orange
 import java.util.Locale
 
 internal val RatingBadgeHeight = 36.dp
@@ -30,11 +28,12 @@ internal fun RoomRatingBadge(
     overallRating: Double,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MaterialTheme.colorScheme
     Row(
         modifier = modifier
             .height(RatingBadgeHeight)
             .clip(RatingBadgeShape)
-            .background(FR_Orange)
+            .background(colors.primary)
             .padding(start = 10.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -43,13 +42,13 @@ internal fun RoomRatingBadge(
             text = String.format(Locale.US, "%.1f", overallRating),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = colors.onPrimary,
         )
         Icon(
             imageVector = Icons.Filled.Star,
             contentDescription = null,
             modifier = Modifier.size(16.dp),
-            tint = Color.White,
+            tint = colors.onPrimary,
         )
     }
 }

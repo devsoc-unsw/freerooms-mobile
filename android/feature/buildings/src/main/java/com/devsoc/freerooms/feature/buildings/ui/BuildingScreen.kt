@@ -22,7 +22,7 @@ import com.devsoc.freerooms.core.ui.BuildingListRowSkeleton
 import com.devsoc.freerooms.core.ui.FreeroomsBrowseHeader
 import com.devsoc.freerooms.core.ui.FreeroomsGridRows
 import com.devsoc.freerooms.core.ui.FreeroomsSearchBox
-import com.devsoc.freerooms.core.ui.Gray
+import androidx.compose.material3.MaterialTheme
 import com.devsoc.freerooms.core.ui.ListViewMode
 import com.devsoc.freerooms.core.ui.ResponseState
 import com.devsoc.freerooms.core.ui.SectionCard
@@ -181,7 +181,7 @@ private fun BuildingListScaffold(
     sections: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier.background(Gray),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(
             start = 16.dp,
             top = 16.dp,

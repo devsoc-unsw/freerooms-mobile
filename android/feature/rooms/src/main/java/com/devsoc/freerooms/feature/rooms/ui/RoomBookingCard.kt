@@ -10,11 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.FR_Orange
 
 private val BookingCardShape = RoundedCornerShape(8.dp)
 
@@ -24,17 +22,18 @@ internal fun RoomBookingCard(
     who: String,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MaterialTheme.colorScheme
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(BookingCardShape)
-            .background(FR_Orange)
+            .background(colors.primary)
             .padding(horizontal = 10.dp, vertical = 8.dp),
     ) {
         Text(
             text = timeRange,
             style = MaterialTheme.typography.labelMedium,
-            color = Color.White,
+            color = colors.onPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -42,7 +41,7 @@ internal fun RoomBookingCard(
             text = who,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White,
+            color = colors.onPrimary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )

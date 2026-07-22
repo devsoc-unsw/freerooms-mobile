@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 import java.time.LocalDate
 import java.time.ZoneId
@@ -28,9 +29,10 @@ internal fun RoomBookingsDayPage(
     modifier: Modifier = Modifier,
     zoneId: ZoneId = ZoneId.systemDefault(),
 ) {
-    val placements = remember(bookings, date, zoneId) {
+    val use12HourClock = LocalAppUiSettings.current.use12HourClock
+    val placements = remember(bookings, date, zoneId, use12HourClock) {
         bookings
-            .mapNotNull { booking -> booking.toTimelinePlacement(date, zoneId) }
+            .mapNotNull { booking -> booking.toTimelinePlacement(date, zoneId, use12HourClock) }
             .sortedBy { placement -> placement.startMinute }
     }
 

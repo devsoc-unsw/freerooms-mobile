@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devsoc.freerooms.core.ui.FreeroomsBottomNavBar
-import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.NoWifiScreen
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 internal fun FreeroomsApp(
@@ -58,7 +58,7 @@ internal fun FreeroomsApp(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray)
+            .background(MaterialTheme.colorScheme.background)
             .then(
                 if (isRoomDetails) {
                     Modifier

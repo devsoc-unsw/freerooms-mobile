@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 val SectionShape = RoundedCornerShape(36.dp)
@@ -28,7 +27,7 @@ fun SectionHeader(
         text = title,
         modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.titleMedium,
-        color = Brown,
+        color = MaterialTheme.colorScheme.onBackground,
     )
 }
 
@@ -41,8 +40,8 @@ fun SectionCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(SectionShape)
-            .background(Color.White)
-            .border(1.dp, FR_Orange, SectionShape),
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.primary, SectionShape),
         content = content,
     )
 }
@@ -71,7 +70,7 @@ fun SectionCardItem(
             HorizontalDivider(
                 modifier = Modifier.padding(start = ListRowDividerInset),
                 thickness = 1.dp,
-                color = Gray,
+                color = MaterialTheme.colorScheme.surfaceVariant,
             )
         }
     }

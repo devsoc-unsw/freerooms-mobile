@@ -16,14 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Brown
-import java.util.Locale
+import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 
 @Composable
 internal fun RoomBookingsHourGrid(
     lineColor: Color,
     modifier: Modifier = Modifier,
 ) {
+    val use12HourClock = LocalAppUiSettings.current.use12HourClock
+    val labelColor = MaterialTheme.colorScheme.onBackground
+
     Column(modifier = modifier.fillMaxWidth()) {
         TimelineHours.forEach { hour ->
             Box(
@@ -43,13 +45,13 @@ internal fun RoomBookingsHourGrid(
                 )
 
                 Text(
-                    text = String.format(Locale.US, "%02d:00", hour),
+                    text = formatHourLabel(hour, use12HourClock),
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .width(TimeColumnWidth)
                         .padding(end = 8.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Brown,
+                    color = labelColor,
                 )
 
                 Box(

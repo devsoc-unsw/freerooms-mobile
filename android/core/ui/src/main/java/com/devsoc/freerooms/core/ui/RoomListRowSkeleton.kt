@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ fun RoomListRowSkeleton(
     modifier: Modifier = Modifier,
 ) {
     val alpha = rememberSkeletonPulseAlpha()
+    val skeletonColor = MaterialTheme.colorScheme.surfaceVariant
 
     Row(
         modifier = modifier
@@ -26,7 +28,7 @@ fun RoomListRowSkeleton(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SkeletonBlock(
-            color = Gray2,
+            color = skeletonColor,
             alpha = alpha,
             modifier = Modifier.listThumbnail(),
         )
@@ -39,7 +41,7 @@ fun RoomListRowSkeleton(
                 .padding(end = 16.dp),
         ) {
             SkeletonBlock(
-                color = Gray2,
+                color = skeletonColor,
                 alpha = alpha,
                 modifier = Modifier
                     .fillMaxWidth(0.72f)
@@ -47,7 +49,7 @@ fun RoomListRowSkeleton(
             )
             Spacer(modifier = Modifier.height(8.dp))
             SkeletonBlock(
-                color = Gray2,
+                color = skeletonColor,
                 alpha = alpha,
                 modifier = Modifier
                     .fillMaxWidth(0.48f)
@@ -58,7 +60,7 @@ fun RoomListRowSkeleton(
         Spacer(modifier = Modifier.width(8.dp))
 
         SkeletonBlock(
-            color = Gray2,
+            color = skeletonColor,
             alpha = alpha,
             modifier = Modifier.size(18.dp),
         )

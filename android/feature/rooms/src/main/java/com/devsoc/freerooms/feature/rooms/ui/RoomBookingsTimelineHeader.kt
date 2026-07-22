@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.devsoc.freerooms.core.ui.Brown
 import com.devsoc.freerooms.core.ui.freeroomsClickable
 import java.time.LocalDate
 
@@ -18,6 +17,7 @@ internal fun RoomBookingsTimelineHeader(
     onDateClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val titleColor = MaterialTheme.colorScheme.onBackground
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -27,13 +27,13 @@ internal fun RoomBookingsTimelineHeader(
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = Brown,
+            color = titleColor,
         )
         Text(
             text = selectedDate.format(BookingsDateFormatter),
             modifier = Modifier.freeroomsClickable(onClick = onDateClick),
             style = MaterialTheme.typography.bodyMedium,
-            color = Brown,
+            color = titleColor,
         )
     }
 }

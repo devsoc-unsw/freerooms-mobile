@@ -19,11 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Gray
+import androidx.compose.material3.MaterialTheme
 import com.devsoc.freerooms.feature.rooms.data.FavoriteRoomsStore
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.RoomBooking
@@ -58,13 +57,13 @@ fun RoomDetailsScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetPeekHeight = sheetPeekHeight,
             sheetShape = SheetShape,
-            sheetContainerColor = Color.White,
+            sheetContainerColor = MaterialTheme.colorScheme.surface,
             sheetDragHandle = null,
             sheetSwipeEnabled = false,
             sheetContent = {
@@ -80,7 +79,7 @@ fun RoomDetailsScreen(
                     sheetState = scaffoldState.bottomSheetState,
                 )
             },
-            containerColor = Gray,
+            containerColor = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize(),
         ) {
             RoomDetailsHeroImage(

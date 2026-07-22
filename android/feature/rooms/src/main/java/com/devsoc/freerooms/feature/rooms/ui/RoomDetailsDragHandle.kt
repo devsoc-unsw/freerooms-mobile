@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Gray3
 import com.devsoc.freerooms.core.ui.freeroomsClickable
 
 @Composable
@@ -32,7 +32,7 @@ internal fun RoomDetailsDragHandle(
                 .width(32.dp)
                 .height(4.dp)
                 .clip(RoundedCornerShape(50))
-                .background(Gray3),
+                .background(MaterialTheme.colorScheme.onSurfaceVariant),
         )
     }
 }

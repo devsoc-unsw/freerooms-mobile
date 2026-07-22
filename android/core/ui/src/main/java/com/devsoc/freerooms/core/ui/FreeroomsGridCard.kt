@@ -36,15 +36,22 @@ fun FreeroomsGridCard(
     subtitle: String?,
     overallRating: Double?,
     modifier: Modifier = Modifier,
-    subtitleColor: Color = Brown,
+    subtitleColor: Color = Color.Unspecified,
     onClick: (() -> Unit)? = null,
     image: @Composable () -> Unit,
 ) {
+    val colors = MaterialTheme.colorScheme
+    val resolvedSubtitleColor = if (subtitleColor == Color.Unspecified) {
+        colors.onSurfaceVariant
+    } else {
+        subtitleColor
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(GridCardShape)
-            .background(Color.White)
+            .background(colors.surface)
             .then(
                 if (onClick != null) {
                     Modifier.freeroomsClickable(onClick = onClick)
@@ -58,7 +65,7 @@ fun FreeroomsGridCard(
                 .fillMaxWidth()
                 .aspectRatio(16f / 11f)
                 .clip(GridImageShape)
-                .background(Gray2),
+                .background(colors.surfaceVariant),
         ) {
             image()
         }
@@ -76,7 +83,7 @@ fun FreeroomsGridCard(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Brown,
+                    color = colors.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -85,7 +92,7 @@ fun FreeroomsGridCard(
                     modifier = Modifier
                         .padding(start = 6.dp)
                         .clip(RatingBadgeShape)
-                        .background(FR_Orange)
+                        .background(colors.primary)
                         .padding(horizontal = 6.dp, vertical = 3.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -93,7 +100,7 @@ fun FreeroomsGridCard(
                         text = String.format(Locale.US, "%.1f", overallRating ?: 0.0),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
+                        color = colors.onPrimary,
                     )
                     Icon(
                         imageVector = Icons.Filled.Star,
@@ -101,7 +108,7 @@ fun FreeroomsGridCard(
                         modifier = Modifier
                             .padding(start = 2.dp)
                             .size(12.dp),
-                        tint = Color.White,
+                        tint = colors.onPrimary,
                     )
                 }
             }
@@ -111,7 +118,7 @@ fun FreeroomsGridCard(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = subtitleColor,
+                    color = resolvedSubtitleColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

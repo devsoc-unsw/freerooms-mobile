@@ -8,13 +8,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.FR_Orange
-import com.devsoc.freerooms.core.ui.Gray2
 import com.devsoc.freerooms.core.ui.freeroomsClickable
 
 @Composable
@@ -23,11 +22,12 @@ internal fun RoomFavoriteButton(
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .size(RatingBadgeHeight)
             .clip(CircleShape)
-            .background(Gray2)
+            .background(colors.surfaceVariant)
             .freeroomsClickable(onClick = onToggleFavorite),
         contentAlignment = Alignment.Center,
     ) {
@@ -43,7 +43,7 @@ internal fun RoomFavoriteButton(
                 "Add as favourite"
             },
             modifier = Modifier.size(18.dp),
-            tint = FR_Orange,
+            tint = colors.primary,
         )
     }
 }

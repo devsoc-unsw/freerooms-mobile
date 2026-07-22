@@ -17,14 +17,14 @@ fun NoWifiScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = "No Wifi",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Brown,
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }

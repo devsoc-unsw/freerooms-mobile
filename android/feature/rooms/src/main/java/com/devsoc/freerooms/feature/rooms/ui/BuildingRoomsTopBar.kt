@@ -20,9 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Brown
-import com.devsoc.freerooms.core.ui.FR_Orange
-import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.freeroomsClickable
 
 @Composable
@@ -31,10 +28,11 @@ internal fun BuildingRoomsTopBar(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Gray)
+            .background(colors.background)
             .height(56.dp)
             .padding(horizontal = 4.dp),
     ) {
@@ -49,13 +47,13 @@ internal fun BuildingRoomsTopBar(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
                 modifier = Modifier.size(20.dp),
-                tint = FR_Orange,
+                tint = colors.primary,
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = "Buildings",
                 style = MaterialTheme.typography.bodyLarge,
-                color = FR_Orange,
+                color = colors.primary,
             )
         }
 
@@ -66,7 +64,7 @@ internal fun BuildingRoomsTopBar(
                 .padding(horizontal = 120.dp),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Brown,
+            color = colors.onBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

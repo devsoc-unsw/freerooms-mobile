@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -32,11 +31,11 @@ fun FreeroomsBottomNavBar(
         modifier = modifier
             .fillMaxWidth()
             .height(96.dp)
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         HorizontalDivider(
             thickness = 1.dp,
-            color = Gray,
+            color = MaterialTheme.colorScheme.surfaceVariant,
         )
 
         Row(
@@ -46,7 +45,11 @@ fun FreeroomsBottomNavBar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FreeroomsPage.entries.forEach { page ->
-                val itemColor = if (page == selectedPage) FR_Orange else Gray3
+                val itemColor = if (page == selectedPage) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
 
                 Column(
                     modifier = Modifier

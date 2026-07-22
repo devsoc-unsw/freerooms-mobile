@@ -23,17 +23,19 @@ fun FreeroomsSearchBox(
     modifier: Modifier = Modifier,
     placeholder: String = "Search",
 ) {
+    val colors = MaterialTheme.colorScheme
+
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Gray2, RoundedCornerShape(12.dp))
+            .background(colors.surfaceVariant, RoundedCornerShape(12.dp))
             .padding(horizontal = 16.dp),
         singleLine = true,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = Brown),
-        cursorBrush = SolidColor(FR_Orange),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface),
+        cursorBrush = SolidColor(colors.primary),
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -43,7 +45,7 @@ fun FreeroomsSearchBox(
                     Text(
                         text = placeholder,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Gray3,
+                        color = colors.onSurfaceVariant,
                     )
                 }
 

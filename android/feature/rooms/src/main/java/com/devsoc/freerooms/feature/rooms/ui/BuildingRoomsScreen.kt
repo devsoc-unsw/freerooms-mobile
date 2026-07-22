@@ -12,8 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Brown
-import com.devsoc.freerooms.core.ui.Gray
 import com.devsoc.freerooms.core.ui.RoomListRowSkeleton
 import com.devsoc.freerooms.core.ui.SectionCard
 import com.devsoc.freerooms.core.ui.SectionCardItem
@@ -34,7 +32,7 @@ fun BuildingRoomsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         BuildingRoomsTopBar(
             buildingName = buildingName,
@@ -80,7 +78,7 @@ fun BuildingRoomsScreen(
                                     text = "No rooms found",
                                     modifier = Modifier.padding(20.dp),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Brown,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                 )
                             } else {
                                 rooms.forEachIndexed { index, room ->

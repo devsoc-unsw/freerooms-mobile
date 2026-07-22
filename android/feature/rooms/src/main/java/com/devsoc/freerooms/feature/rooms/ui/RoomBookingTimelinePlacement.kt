@@ -14,6 +14,7 @@ internal data class TimelinePlacement(
 internal fun RoomBooking.toTimelinePlacement(
     date: LocalDate,
     zoneId: ZoneId,
+    use12HourClock: Boolean = false,
 ): TimelinePlacement? {
     val dayStart = date.atStartOfDay(zoneId)
     val dayEnd = date.plusDays(1).atStartOfDay(zoneId)
@@ -37,8 +38,8 @@ internal fun RoomBooking.toTimelinePlacement(
 
     return TimelinePlacement(
         name = name,
-        timeRange = "${bookingStart.toLocalTime().format(BookingsTimeFormatter)}-" +
-            bookingEnd.toLocalTime().format(BookingsTimeFormatter),
+        timeRange = "${formatBookingTime(bookingStart.toLocalTime(), use12HourClock)}-" +
+            formatBookingTime(bookingEnd.toLocalTime(), use12HourClock),
         startMinute = clippedStart,
         endMinute = clippedEnd,
     )

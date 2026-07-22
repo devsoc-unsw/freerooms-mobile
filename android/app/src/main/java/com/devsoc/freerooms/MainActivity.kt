@@ -11,15 +11,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devsoc.freerooms.core.ui.AppUiSettings
 import com.devsoc.freerooms.core.ui.FreeroomsTheme
+import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 import com.devsoc.freerooms.core.ui.ResponseState
+import com.devsoc.freerooms.core.ui.rememberAppUiPreferences
 import com.devsoc.freerooms.feature.buildings.ui.BuildingScreen
 import com.devsoc.freerooms.feature.buildings.ui.buildingFullImageResId
 import com.devsoc.freerooms.feature.map.ui.MapScreen
@@ -48,7 +54,25 @@ class MainActivity : ComponentActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         enableEdgeToEdge()
         setContent {
-            FreeroomsTheme {
+            val appUiPreferences = rememberAppUiPreferences()
+            var darkMode by remember { mutableStateOf(appUiPreferences.isDarkMode()) }
+            var use12HourClock by remember { mutableStateOf(appUiPreferences.use12HourClock()) }
+
+            FreeroomsTheme(darkTheme = darkMode) {
+                CompositionLocalProvider(
+                    LocalAppUiSettings provides AppUiSettings(
+                        darkMode = darkMode,
+                        use12HourClock = use12HourClock,
+                        setDarkMode = { enabled ->
+                            darkMode = enabled
+                            appUiPreferences.setDarkMode(enabled)
+                        },
+                        setUse12HourClock = { enabled ->
+                            use12HourClock = enabled
+                            appUiPreferences.setUse12HourClock(enabled)
+                        },
+                    ),
+                ) {
                 val hasNetworkConnection by rememberNetworkConnectionState()
                 val buildingsState by buildingViewModel.uiState.collectAsStateWithLifecycle()
                 val roomsState by roomViewModel.uiState.collectAsStateWithLifecycle()
@@ -123,6 +147,7 @@ class MainActivity : ComponentActivity() {
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
+                }
             }
         }
     }

@@ -4,12 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.devsoc.freerooms.core.ui.FreeroomsListRow
-import com.devsoc.freerooms.core.ui.Gray2
+import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 import com.devsoc.freerooms.core.ui.listThumbnail
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.statusText
@@ -22,7 +23,7 @@ internal fun RoomCard(
 ) {
     FreeroomsListRow(
         title = room.name,
-        subtitle = room.statusText,
+        subtitle = room.statusText(LocalAppUiSettings.current.use12HourClock),
         subtitleColor = roomStatusColor(room.status),
         overallRating = room.overallRating,
         modifier = modifier,
@@ -31,7 +32,7 @@ internal fun RoomCard(
         Box(
             modifier = Modifier
                 .listThumbnail()
-                .background(Gray2),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             val imageResId = roomImageResId(room.id)
             if (imageResId != null) {

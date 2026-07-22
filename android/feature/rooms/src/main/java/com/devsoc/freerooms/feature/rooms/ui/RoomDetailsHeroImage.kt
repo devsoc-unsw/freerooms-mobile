@@ -6,11 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.devsoc.freerooms.core.ui.Gray2
 
 @Composable
 internal fun RoomDetailsHeroImage(
@@ -31,7 +31,7 @@ internal fun RoomDetailsHeroImage(
         )
     } else {
         Box(
-            modifier = imageModifier.background(Gray2),
+            modifier = imageModifier.background(MaterialTheme.colorScheme.surfaceVariant),
         )
     }
 }

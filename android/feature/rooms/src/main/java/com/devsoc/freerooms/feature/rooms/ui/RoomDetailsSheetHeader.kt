@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.Brown
+import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 import com.devsoc.freerooms.feature.rooms.data.Room
 import com.devsoc.freerooms.feature.rooms.data.statusText
 
@@ -25,6 +25,7 @@ internal fun RoomDetailsSheetHeader(
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val use12HourClock = LocalAppUiSettings.current.use12HourClock
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -40,7 +41,7 @@ internal fun RoomDetailsSheetHeader(
                     .padding(end = 12.dp),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Brown,
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             Row(
@@ -64,14 +65,14 @@ internal fun RoomDetailsSheetHeader(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = Brown,
+                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
 
             if (room != null) {
                 Text(
-                    text = room.statusText,
+                    text = room.statusText(use12HourClock),
                     style = MaterialTheme.typography.bodyMedium,
                     color = roomStatusColor(room.status),
                     maxLines = 1,

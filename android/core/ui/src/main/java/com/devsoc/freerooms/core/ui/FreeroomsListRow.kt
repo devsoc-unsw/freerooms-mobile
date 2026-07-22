@@ -27,11 +27,18 @@ fun FreeroomsListRow(
     title: String,
     subtitle: String?,
     modifier: Modifier = Modifier,
-    subtitleColor: Color = Brown,
+    subtitleColor: Color = Color.Unspecified,
     overallRating: Double? = null,
     onClick: (() -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
+    val colors = MaterialTheme.colorScheme
+    val resolvedSubtitleColor = if (subtitleColor == Color.Unspecified) {
+        colors.onSurfaceVariant
+    } else {
+        subtitleColor
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -58,7 +65,7 @@ fun FreeroomsListRow(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = Brown,
+                color = colors.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -67,7 +74,7 @@ fun FreeroomsListRow(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal,
-                    color = subtitleColor,
+                    color = resolvedSubtitleColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -78,7 +85,7 @@ fun FreeroomsListRow(
             Text(
                 text = String.format(Locale.US, "%.1f", rating),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Brown,
+                color = colors.onBackground,
             )
             Icon(
                 imageVector = Icons.Filled.Star,
@@ -86,7 +93,7 @@ fun FreeroomsListRow(
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .size(18.dp),
-                tint = Gold,
+                tint = colors.secondary,
             )
         }
 
@@ -96,7 +103,7 @@ fun FreeroomsListRow(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             modifier = Modifier.size(24.dp),
-            tint = Gray3,
+            tint = colors.onSurfaceVariant,
         )
     }
 }

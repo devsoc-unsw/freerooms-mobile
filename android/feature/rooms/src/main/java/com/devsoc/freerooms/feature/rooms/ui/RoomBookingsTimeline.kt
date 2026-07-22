@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,8 +16,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.devsoc.freerooms.core.ui.FR_Orange
-import com.devsoc.freerooms.core.ui.Gray3
 import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -39,7 +38,8 @@ internal fun RoomBookingsTimeline(
     )
     val scope = rememberCoroutineScope()
     var showDatePicker by remember { mutableStateOf(false) }
-    val lineColor = Gray3
+    val colors = MaterialTheme.colorScheme
+    val lineColor = colors.onSurfaceVariant
     val selectedDate = remember(pagerState.currentPage, initialDate) {
         initialDate.plusDays((pagerState.currentPage - DayPagerCenterPage).toLong())
     }
@@ -60,7 +60,7 @@ internal fun RoomBookingsTimeline(
 
     Column(
         modifier = modifier
-            .border(1.dp, FR_Orange, BookingsBoxShape)
+            .border(1.dp, colors.primary, BookingsBoxShape)
             .padding(12.dp),
     ) {
         RoomBookingsTimelineHeader(
