@@ -51,6 +51,7 @@ public struct SheetBuildingDetails: View {
   // MARK: Private
 
   @Environment(LiveMapViewModel.self) private var viewModel
+  @Environment(Theme.self) private var theme
 
   @State private var path = NavigationPath()
   @State private var rowHeight: CGFloat?
@@ -98,7 +99,7 @@ public struct SheetBuildingDetails: View {
         .frame(maxWidth: .infinity, maxHeight: SheetBuildingDetailsMetrics.directionsButtonMaxHeight)
         .font(.footnote)
         .padding()
-        .background(Theme.light.accent.primary)
+        .background(theme.accent.primary)
         .foregroundStyle(.white)
         .cornerRadius(SheetBuildingDetailsMetrics.directionsButtonCornerRadius)
     }

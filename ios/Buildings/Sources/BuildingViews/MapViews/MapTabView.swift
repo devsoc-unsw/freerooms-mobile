@@ -144,7 +144,7 @@ public struct MapTabView<RoomDestination: View>: View {
           }
       }
       .customBackground(
-        Color(uiColor: .systemBackground)
+        theme.background.secondary
           .cornerRadius(MapLayoutConstants.sheetCornerRadius)
           .shadow(
             color: .black.opacity(MapLayoutConstants.sheetShadowOpacity),
@@ -180,6 +180,9 @@ public struct MapTabView<RoomDestination: View>: View {
   let roomImageProvider: (String) -> CachedImage
   let roomDestinationBuilder: (Room) -> RoomDestination
 
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
 }
 
 // MARK: - PreviewWrapper
@@ -197,6 +200,7 @@ private struct PreviewWrapper: View {
       roomDestinationBuilder: { _ in
         EmptyView()
       })
+      .defaultTheme()
   }
 }
 
