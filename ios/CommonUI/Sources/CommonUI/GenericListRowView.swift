@@ -64,7 +64,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     .disabled(isLoading)
     .listRowBackground(
       UnevenRoundedRectangle(cornerRadii: cornerRadii)
-        .fill(.background)
+        .fill(theme.background.secondary)
         .strokeBorder(LinearGradient(
           colors: [
             theme.accent.primary.opacity(rowGradientOpacity(at: index)),

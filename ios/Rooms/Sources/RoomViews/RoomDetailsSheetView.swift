@@ -91,6 +91,7 @@ public struct RoomDetailsSheetView: View {
           .stroke(Color.gray.secondary, lineWidth: Self.bookingSectionBorderWidth))
     }
     .padding()
+    .background(theme.background.secondary)
     .task {
       await roomViewModel.fetchRoomRating(roomID: room.id)
     }
