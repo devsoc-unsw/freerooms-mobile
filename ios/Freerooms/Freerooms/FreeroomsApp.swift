@@ -36,7 +36,7 @@ struct FreeroomsApp: App {
     // UI setup
     Theme.registerFont(named: .ttCommonsPro)
     setFontOnToolbars(.ttCommonsPro)
-    UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.light.accent.primary)
+    UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.default.accent.primary)
 
     // Shared infrastructure
     let locationService = FreeroomsApp.makeLocationService()
@@ -79,8 +79,7 @@ struct FreeroomsApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
-        .preferredColorScheme(.light)
-        .environment(theme)
+        .environment(Theme.default)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
         .environment(\.buildingViewModel, buildingViewModel)
         .environment(\.mapViewModel, mapViewModel)
@@ -182,7 +181,6 @@ struct FreeroomsApp: App {
   @State private var buildingViewModel: LiveBuildingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
-  @State private var theme = Theme.light
 
   // MARK: - Factories
 

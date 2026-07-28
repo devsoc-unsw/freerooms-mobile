@@ -68,7 +68,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           .padding(.vertical, GenericCardViewItemLayout.badgeVerticalPadding)
           .background(
             RoundedRectangle(cornerRadius: GenericCardViewItemLayout.ratingBadgeCornerRadius)
-              .fill(theme.label.tertiary))
+              .fill(theme.accent.primary))
         } else {
           HStack(spacing: 0) {
             Text("0")
@@ -83,7 +83,7 @@ public struct GenericCardViewItem<T: Equatable & Hashable & Identifiable & HasNa
           .padding(.vertical, GenericCardViewItemLayout.badgeVerticalPadding)
           .background(
             RoundedRectangle(cornerRadius: GenericCardViewItemLayout.ratingBadgeCornerRadius)
-              .fill(theme.label.tertiary))
+              .fill(theme.accent.primary))
         }
       }
 
