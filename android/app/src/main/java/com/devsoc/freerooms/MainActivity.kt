@@ -163,28 +163,28 @@ private fun rememberNetworkConnectionState(): State<Boolean> {
     return remember(connectivityManager) {
         connectivityManager.networkConnectionFlow()
     }.collectAsState(
-        initial = connectivityManager.hasValidatedInternetConnection(),
+        initial = connectivityManager.hasInternetConnection(),
     )
 }
 
 private fun ConnectivityManager.networkConnectionFlow(): Flow<Boolean> {
     return callbackFlow {
-        trySend(hasValidatedInternetConnection())
+        trySend(hasInternetConnection())
 
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                trySend(hasValidatedInternetConnection())
+                trySend(hasInternetConnection())
             }
 
             override fun onLost(network: Network) {
-                trySend(hasValidatedInternetConnection())
+                trySend(hasInternetConnection())
             }
 
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities,
             ) {
-                trySend(hasValidatedInternetConnection())
+                trySend(hasInternetConnection())
             }
         }
 
@@ -196,10 +196,9 @@ private fun ConnectivityManager.networkConnectionFlow(): Flow<Boolean> {
     }.distinctUntilChanged()
 }
 
-private fun ConnectivityManager.hasValidatedInternetConnection(): Boolean {
+private fun ConnectivityManager.hasInternetConnection(): Boolean {
     val capabilities = activeNetwork?.let(::getNetworkCapabilities)
 
     return capabilities != null &&
-        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
