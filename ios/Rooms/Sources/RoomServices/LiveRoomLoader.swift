@@ -74,6 +74,8 @@ public final class LiveRoomLoader: RoomLoader {
     if !hasSavedData {
       switch await JSONRoomLoader.fetch() {
       case .success(var rooms):
+        _ = swiftDataRoomLoader.seed(rooms)
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedRoomsData)
         await combineLiveAndSavedData(&rooms)
         return .success(rooms)
 
@@ -94,6 +96,8 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Private
 
+  private static let liveStatusTimeoutNanoseconds: UInt64 = 2_000_000_000
+
   private let JSONRoomLoader: JSONRoomLoader
   private let roomStatusLoader: RoomStatusLoader
   private let swiftDataRoomLoader: SwiftDataRoomLoader
@@ -105,7 +109,7 @@ public final class LiveRoomLoader: RoomLoader {
   private func combineLiveAndSavedData(_ rooms: inout [Room]) async {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
+    if case .success(let roomStatusResponse) = await fetchRoomStatusWithTimeout() {
       for i in rooms.indices {
         let roomStatus = roomStatusResponse[rooms[i].buildingId]?.roomStatuses[rooms[i].roomNumber] ?? RoomStatus(
           status: "",
@@ -124,6 +128,25 @@ public final class LiveRoomLoader: RoomLoader {
 
         rooms[i].endTime = formatter.date(from: roomStatus.endtime)
       }
+    }
+  }
+
+  private func fetchRoomStatusWithTimeout() async -> Swift.Result<RemoteRoomStatus, RoomStatusLoaderError> {
+    let roomStatusLoader = roomStatusLoader
+
+    return await withTaskGroup(of: Swift.Result<RemoteRoomStatus, RoomStatusLoaderError>.self) { group in
+      group.addTask {
+        await roomStatusLoader.fetchRoomStatus()
+      }
+
+      group.addTask {
+        try? await Task.sleep(nanoseconds: Self.liveStatusTimeoutNanoseconds)
+        return .failure(.connectivity)
+      }
+
+      let result = await group.next() ?? .failure(.connectivity)
+      group.cancelAll()
+      return result
     }
   }
 }
