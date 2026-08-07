@@ -10,7 +10,7 @@ internal class FreeroomsNavigationActions(
         when (page) {
             FreeroomsPage.Building -> navigateToTab(FreeroomsRoute.Buildings)
             FreeroomsPage.Rooms -> navigateToTab(FreeroomsRoute.Rooms)
-            FreeroomsPage.Map -> navigateToMap()
+            FreeroomsPage.Map -> navigateToTab(FreeroomsRoute.Map)
         }
     }
 
@@ -33,16 +33,6 @@ internal class FreeroomsNavigationActions(
             }
             launchSingleTop = true
             restoreState = true
-        }
-    }
-
-    private fun navigateToMap() {
-        if (navController.currentDestination?.route == FreeroomsRoute.Map) {
-            return
-        }
-
-        navController.navigate(FreeroomsRoute.Map) {
-            launchSingleTop = true
         }
     }
 }

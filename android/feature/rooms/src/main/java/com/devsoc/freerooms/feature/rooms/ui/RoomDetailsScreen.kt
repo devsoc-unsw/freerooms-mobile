@@ -45,7 +45,7 @@ fun RoomDetailsScreen(
         mutableStateOf(room?.id?.let(favoriteStore::isFavorite) == true)
     }
     val configuration = LocalConfiguration.current
-    val sheetPeekHeight = (configuration.screenHeightDp * 0.65f).dp
+    val sheetPeekHeight = (configuration.screenHeightDp * 0.62f).dp
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.PartiallyExpanded,
@@ -82,28 +82,30 @@ fun RoomDetailsScreen(
             containerColor = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize(),
         ) {
-            RoomDetailsHeroImage(
-                roomName = displayName,
-                roomImageResId = roomImageResId,
-            )
-        }
+            Box(modifier = Modifier.fillMaxSize()) {
+                RoomDetailsHeroImage(
+                    roomName = displayName,
+                    roomImageResId = roomImageResId,
+                )
 
-        RoomDetailsBackButton(
-            onBack = onBack,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .statusBarsPadding()
-                .padding(start = 16.dp, top = 8.dp),
-        )
+                RoomDetailsBackButton(
+                    onBack = onBack,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .statusBarsPadding()
+                        .padding(start = 16.dp, top = 8.dp),
+                )
 
-        if (room != null) {
-            RoomDetailsCapacityChip(
-                capacity = room.capacity,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .statusBarsPadding()
-                    .padding(end = 16.dp, top = 8.dp),
-            )
+                if (room != null) {
+                    RoomDetailsCapacityChip(
+                        capacity = room.capacity,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .statusBarsPadding()
+                            .padding(end = 16.dp, top = 8.dp),
+                    )
+                }
+            }
         }
     }
 }
