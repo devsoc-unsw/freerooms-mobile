@@ -64,13 +64,8 @@ public final class Theme {
   public let white = Color("White", bundle: .module)
   public let black = Color("Black", bundle: .module)
   public let list = ListColors()
-  
+
   public var preferredColorScheme: ColorScheme?
-  
-  /// Toggles the color scheme from the current scheme.
-  public func toggleColorScheme(from currentScheme: ColorScheme) {
-    preferredColorScheme = currentScheme == .light ? .dark : .light
-  }
 
   /// DO NOT CALL IN PREVIEWS
   public static func registerFont(named name: String) {
@@ -87,6 +82,12 @@ public final class Theme {
       fatalError("Could not set font.")
     }
   }
+
+  /// Toggles the color scheme from the current scheme.
+  public func toggleColorScheme(from currentScheme: ColorScheme) {
+    preferredColorScheme = currentScheme == .light ? .dark : .light
+  }
+
 }
 
 extension String {
