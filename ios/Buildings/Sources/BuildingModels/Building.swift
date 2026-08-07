@@ -126,16 +126,22 @@ public enum AvailabilityStatus: String, Sendable {
     }
 
     switch rawValue {
-    case 5...:
+    case Self.availableRoomThreshold...:
       self = .available
-    case 1...4:
+    case Self.crowdedRoomRange:
       self = .crowded
-    case 0:
+    case Self.noAvailableRooms:
       self = .unavailable
     default:
       self = .missing
     }
   }
+
+  // MARK: Private
+
+  private static let availableRoomThreshold = 5
+  private static let crowdedRoomRange = 1...4
+  private static let noAvailableRooms = 0
 }
 
 // MARK: - BuildingFilterOptions

@@ -19,35 +19,50 @@ struct CompassUserAnnotation: View {
     ZStack {
       // Pulsing outer ring
       Circle()
-        .stroke(.blue.opacity(0.3), lineWidth: 2)
-        .frame(width: isPulsing ? 40 : 20, height: isPulsing ? 40 : 20)
-        .opacity(isPulsing ? 0 : 1)
+        .stroke(.blue.opacity(Self.pulseRingOpacity), lineWidth: Self.strokeWidth)
+        .frame(
+          width: isPulsing ? Self.expandedPulseSize : Self.collapsedPulseSize,
+          height: isPulsing ? Self.expandedPulseSize : Self.collapsedPulseSize)
+        .opacity(isPulsing ? Self.hiddenOpacity : Self.visibleOpacity)
 
       // Main user circle
       Circle()
         .fill(.blue)
-        .frame(width: 16, height: 16)
+        .frame(width: Self.userDotSize, height: Self.userDotSize)
         .overlay(
           Circle()
-            .stroke(.white, lineWidth: 2))
+            .stroke(.white, lineWidth: Self.strokeWidth))
 
       // Heading indicator (arrow/cone)
       DirectionalArrow()
         .fill(.blue)
-        .frame(width: 8, height: 12)
-        .offset(y: -14)
+        .frame(width: Self.arrowWidth, height: Self.arrowHeight)
+        .offset(y: Self.arrowYOffset)
         .rotationEffect(.degrees(headingValue))
         .rotationEffect(.degrees(-viewModel.mapHeading))
-        .shadow(color: .white, radius: 1)
+        .shadow(color: .white, radius: Self.arrowShadowRadius)
     }
     .onAppear {
-      withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
+      withAnimation(.easeInOut(duration: Self.pulseAnimationDuration).repeatForever()) {
         isPulsing = true
       }
     }
   }
 
   // MARK: Private
+
+  private static let arrowHeight: CGFloat = 12
+  private static let arrowShadowRadius: CGFloat = 1
+  private static let arrowWidth: CGFloat = 8
+  private static let arrowYOffset: CGFloat = -14
+  private static let collapsedPulseSize: CGFloat = 20
+  private static let expandedPulseSize: CGFloat = 40
+  private static let hiddenOpacity = 0.0
+  private static let pulseAnimationDuration = 1.5
+  private static let pulseRingOpacity = 0.3
+  private static let strokeWidth: CGFloat = 2
+  private static let userDotSize: CGFloat = 16
+  private static let visibleOpacity = 1.0
 
   @Environment(LiveMapViewModel.self) private var viewModel
 
@@ -62,19 +77,29 @@ struct CompassUserAnnotation: View {
 // MARK: - DirectionalArrow
 
 struct DirectionalArrow: Shape {
+
+  // MARK: Internal
+
   func path(in rect: CGRect) -> Path {
     var path = Path()
 
     // Create arrow pointing up
     path.move(to: CGPoint(x: rect.midX, y: rect.minY)) // Tip
-    path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY * 0.7)) // Left wing
-    path.addLine(to: CGPoint(x: rect.midX * 0.8, y: rect.maxY * 0.7)) // Left inner
-    path.addLine(to: CGPoint(x: rect.midX * 0.8, y: rect.maxY)) // Left shaft
-    path.addLine(to: CGPoint(x: rect.midX * 1.2, y: rect.maxY)) // Right shaft
-    path.addLine(to: CGPoint(x: rect.midX * 1.2, y: rect.maxY * 0.7)) // Right inner
-    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY * 0.7)) // Right wing
+    path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY * Self.wingYRatio)) // Left wing
+    path.addLine(to: CGPoint(x: rect.midX * Self.innerXRatio, y: rect.maxY * Self.wingYRatio)) // Left inner
+    path.addLine(to: CGPoint(x: rect.midX * Self.innerXRatio, y: rect.maxY)) // Left shaft
+    path.addLine(to: CGPoint(x: rect.midX * Self.outerXRatio, y: rect.maxY)) // Right shaft
+    path.addLine(to: CGPoint(x: rect.midX * Self.outerXRatio, y: rect.maxY * Self.wingYRatio)) // Right inner
+    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY * Self.wingYRatio)) // Right wing
     path.closeSubpath()
 
     return path
   }
+
+  // MARK: Private
+
+  /// Shape ratios keep the heading arrow proportional regardless of rendered frame size.
+  private static let innerXRatio = 0.8
+  private static let outerXRatio = 1.2
+  private static let wingYRatio = 0.7
 }

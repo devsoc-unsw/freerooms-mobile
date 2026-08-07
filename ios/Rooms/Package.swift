@@ -38,8 +38,7 @@ let package = Package(
       dependencies: [
         "RoomInteractors",
         "RoomModels",
-        .product(name: "BuildingModels", package: "buildings"),
-        .product(name: "CommonUI", package: "CommonUI"),
+        .product(name: "BuildingModels", package: "Buildings"),
       ],
       swiftSettings: .defaultSettings),
     .target(

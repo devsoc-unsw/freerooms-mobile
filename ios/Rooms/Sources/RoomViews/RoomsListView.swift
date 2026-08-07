@@ -17,12 +17,10 @@ public struct RoomsListView: View {
   // MARK: Lifecycle
 
   public init(
-    roomViewModel: RoomViewModel,
     building: Building,
     path: Binding<NavigationPath>,
     imageProvider: @escaping (String) -> CachedImage)
   {
-    self.roomViewModel = roomViewModel
     self.building = building
     _path = path
     self.imageProvider = imageProvider
@@ -35,8 +33,8 @@ public struct RoomsListView: View {
 
     return List {
       imageProvider(building.id)
-        .frame(height: screenHeight / 4)
-        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .frame(height: screenHeight * RoomLayoutConstants.buildingHeroImageHeightFraction)
+        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
         .listRowInsets(EdgeInsets()) // remove default list padding
         .listRowBackground(Color.clear) // optional, to keep background consistent
         .padding(.bottom)
@@ -51,7 +49,7 @@ public struct RoomsListView: View {
           imageProvider: { roomID in
             RoomImage[roomID]
           })
-          .padding(.vertical, 5)
+          .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
     }
@@ -60,20 +58,45 @@ public struct RoomsListView: View {
         await roomViewModel.reloadRooms()
       }
     }
+    .background(InteractivePopGestureEnabler())
+    .navigationBarBackButtonHidden(true)
     .toolbar {
-      HStack {
-        Button {
-          roomViewModel.getRoomsInOrder()
-        } label: {
-          Image(systemName: "arrow.up.arrow.down")
-            .resizable()
-            .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      ToolbarItem(placement: .topBarLeading) {
+        Button("Back", systemImage: "chevron.left") {
+          dismiss()
         }
+        .padding(.vertical, 4)
+        .font(.title2)
+        .buttonBorderShape(.circle)
+        .liquidGlass(
+          glass: {
+            $0
+          },
+          fallback: {
+            $0
+              .padding(8)
+              .buttonStyle(.borderedProminent)
+              .tint(theme.background.primary.opacity(0.8))
+              .foregroundStyle(theme.accent.primary)
+          })
       }
-      .padding(RoomLayoutConstants.toolbarIconPadding)
-      .foregroundStyle(theme.label.tertiary)
+
+      ToolbarItem(placement: .topBarTrailing) {
+        HStack {
+          Button {
+            roomViewModel.getRoomsInOrder()
+          } label: {
+            Image(systemName: "arrow.up.arrow.down")
+              .resizable()
+              .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+          }
+        }
+        .padding(RoomLayoutConstants.toolbarIconPadding)
+        .foregroundStyle(theme.accent.primary)
+      }
     }
-    .background(Color(UIColor.systemGroupedBackground))
+    .scrollContentBackground(.hidden)
+    .background(theme.background.primary)
   }
 
   // MARK: Internal
@@ -87,11 +110,30 @@ public struct RoomsListView: View {
 
   // MARK: Private
 
+  @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private var roomViewModel: RoomViewModel
   private var building: Building
 
+}
+
+// MARK: - InteractivePopGestureEnabler
+
+private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
+  final class Controller: UIViewController {
+    override func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated)
+      navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+      navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+  }
+
+  func makeUIViewController(context _: Context) -> Controller {
+    Controller()
+  }
+
+  func updateUIViewController(_: Controller, context _: Context) { }
 }
 
 // MARK: - PreviewWrapper
@@ -100,12 +142,13 @@ private struct PreviewWrapper: View {
   @State var path = NavigationPath()
 
   var body: some View {
-    RoomsListView(
-      roomViewModel: PreviewRoomViewModel(),
+    let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
+    return RoomsListView(
       building: Building(name: "AGSM", id: "K-B16", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
       path: $path, imageProvider: {
         RoomImage[$0] // This closure captures BuildingImage
       })
+      .environment(viewModel)
       .defaultTheme()
   }
 }

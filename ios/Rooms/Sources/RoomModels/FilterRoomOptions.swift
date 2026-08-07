@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - FilterRoomOptions
+
 public struct FilterRoomOptions: Equatable, Sendable {
 
   // MARK: Lifecycle
@@ -45,4 +47,43 @@ public struct FilterRoomOptions: Equatable, Sendable {
   public let location: String?
   public let sortedBySpecificSchoolId: Bool
 
+}
+
+extension FilterRoomOptions {
+
+  // MARK: Public
+
+  /// Maps the ViewModel-facing filter fields onto the backend DTO.
+  ///
+  /// `selectedRoomTypes` is collapsed onto the single-valued `usage` field:
+  /// - 1 selected: sends that type's raw code (e.g. `"AUD"`).
+  /// - 0 or >1 selected: sends `nil` (the backend ignores it; multi-select
+  ///   would need either backend support or a client-side post-filter).
+  /// `CampusLocation` is intentionally NOT mapped here; it's a client-side
+  /// post-filter applied via `RoomInteractor.applyClientSideFilters(...)`.
+  public static func make(
+    selectedDate: Date,
+    selectedRoomTypes: Set<RoomType>,
+    selectedDuration: Duration?,
+    selectedCapacity: Int?)
+    -> FilterRoomOptions
+  {
+    let usage = selectedRoomTypes.count == 1 ? selectedRoomTypes.first?.rawValue : nil
+
+    return FilterRoomOptions(
+      dateTime: iso8601Formatter.string(from: selectedDate),
+      capacity: selectedCapacity,
+      duration: selectedDuration?.rawValue,
+      usage: usage)
+  }
+
+  // MARK: Private
+
+  /// Backend requires fractional seconds (e.g. `2026-05-21T06:47:00.000Z`);
+  /// without them the API responds with HTTP 400.
+  private static let iso8601Formatter: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return formatter
+  }()
 }

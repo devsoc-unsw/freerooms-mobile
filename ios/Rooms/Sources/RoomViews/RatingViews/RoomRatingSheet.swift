@@ -14,15 +14,15 @@ struct RoomRatingSheet: View {
   let currentRoomRating: RoomRating?
 
   var body: some View {
-    VStack(spacing: 24) {
-      VStack(spacing: 8) {
+    VStack(spacing: Self.sectionSpacing) {
+      VStack(spacing: Self.headerSpacing) {
         Text("Room Rating")
           .font(.title2)
           .bold()
 
-        HStack(spacing: 4) {
+        HStack(spacing: Self.headerIconSpacing) {
           Text("\(currentRoomRating?.overallRating ?? 0, specifier: "%.1f")")
-            .font(.system(size: 48, weight: .bold, design: .rounded))
+            .font(.system(size: Self.overallRatingFontSize, weight: .bold, design: .rounded))
 
           Image(systemName: "star.fill")
             .font(.title)
@@ -33,7 +33,7 @@ struct RoomRatingSheet: View {
 
       Divider()
 
-      VStack(spacing: 16) {
+      VStack(spacing: Self.breakdownSpacing) {
         Text("Rating Breakdown")
           .font(.headline)
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,12 +56,20 @@ struct RoomRatingSheet: View {
 
       Spacer()
     }
-    .padding(24)
+    .padding(Self.sheetPadding)
   }
 
   // MARK: Private
 
+  private static let breakdownSpacing: CGFloat = 16
+  private static let headerIconSpacing: CGFloat = 4
+  private static let headerSpacing: CGFloat = 8
+  private static let overallRatingFontSize: CGFloat = 48
+  private static let sectionSpacing: CGFloat = 24
+  private static let sheetPadding: CGFloat = 24
+
   @Environment(Theme.self) private var theme
+
 }
 
 #Preview {

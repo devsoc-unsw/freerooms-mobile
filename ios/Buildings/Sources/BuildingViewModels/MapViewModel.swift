@@ -102,17 +102,47 @@ public enum SheetPosition {
     case .hidden:
       .hidden
     case .short:
-      .relative(0.2)
+      .relative(MapBehaviorConstants.shortSheetFraction)
     case .medium:
-      .relative(0.55)
+      .relative(MapBehaviorConstants.mediumSheetFraction)
     case .top:
-      .relativeTop(0.975)
+      .relativeTop(MapBehaviorConstants.topSheetFraction)
     }
   }
 }
 
+// MARK: - MapBehaviorConstants
+
+private enum MapBehaviorConstants {
+  static let campusCenterLatitude = -33.9173
+  static let campusCenterLongitude = 151.2312
+  static let campusRegionDelta = 0.009
+
+  static let defaultCameraHeading = 0.0
+  static let defaultCameraPitch = 0.0
+  static let focusedBuildingCameraDistance: CLLocationDistance = 1000
+
+  static let maximumCameraDistance: CLLocationDistance = 5000
+  static let minimumCameraDistance: CLLocationDistance = 500
+
+  /// User must move this far before directions refresh, avoiding noisy route recalculation.
+  static let minimumDirectionRefreshDistance: CLLocationDistance = 20
+
+  static let minutesPerHour = 60
+  static let secondsPerMinute: TimeInterval = 60
+
+  /// Debounces search input so every keystroke does not re-filter and refocus map content.
+  static let searchDebounceMilliseconds = 200
+
+  static let mediumSheetFraction = 0.55
+  static let shortSheetFraction = 0.2
+  static let topSheetFraction = 0.975
+}
+
 extension CLLocationCoordinate2D {
-  static let campusCenter = CLLocationCoordinate2D(latitude: -33.9173, longitude: 151.2312)
+  static let campusCenter = CLLocationCoordinate2D(
+    latitude: MapBehaviorConstants.campusCenterLatitude,
+    longitude: MapBehaviorConstants.campusCenterLongitude)
 }
 
 extension MKMultiPoint {
@@ -130,7 +160,9 @@ extension MKMultiPoint {
 extension MKCoordinateRegion {
   static let campusRegion = MKCoordinateRegion(
     center: .campusCenter,
-    span: MKCoordinateSpan(latitudeDelta: 0.009, longitudeDelta: 0.009))
+    span: MKCoordinateSpan(
+      latitudeDelta: MapBehaviorConstants.campusRegionDelta,
+      longitudeDelta: MapBehaviorConstants.campusRegionDelta))
 }
 
 extension Building {
@@ -147,9 +179,9 @@ extension Building {
 extension TimeInterval {
   /// More detailed walking time with hours and minutes
   public var detailedWalkingTime: String {
-    let totalMinutes = Int(self / 60)
-    let hours = totalMinutes / 60
-    let minutes = totalMinutes % 60
+    let totalMinutes = Int(self / MapBehaviorConstants.secondsPerMinute)
+    let hours = totalMinutes / MapBehaviorConstants.minutesPerHour
+    let minutes = totalMinutes % MapBehaviorConstants.minutesPerHour
 
     if hours > 0 {
       if minutes > 0 {
@@ -216,7 +248,10 @@ public class LiveMapViewModel: MapViewModel {
   public var buildings = [Building]()
   public var position = MapCameraPosition.region(.campusRegion)
   public var isLoading = false
-  public var mapCameraBounds = MapCameraBounds(centerCoordinateBounds: .campusRegion, minimumDistance: 500, maximumDistance: 5000)
+  public var mapCameraBounds = MapCameraBounds(
+    centerCoordinateBounds: .campusRegion,
+    minimumDistance: MapBehaviorConstants.minimumCameraDistance,
+    maximumDistance: MapBehaviorConstants.maximumCameraDistance)
 
   public var selectedBuildingID: String?
 
@@ -256,7 +291,7 @@ public class LiveMapViewModel: MapViewModel {
     searchDebounceTask?.cancel()
 
     searchDebounceTask = Task {
-      try? await Task.sleep(for: .milliseconds(200))
+      try? await Task.sleep(for: .milliseconds(MapBehaviorConstants.searchDebounceMilliseconds))
 
       guard !Task.isCancelled else { return }
 
@@ -344,9 +379,9 @@ public class LiveMapViewModel: MapViewModel {
     position = .camera(
       MapCamera(
         centerCoordinate: building.coordinate,
-        distance: 1000,
-        heading: 0,
-        pitch: 0))
+        distance: MapBehaviorConstants.focusedBuildingCameraDistance,
+        heading: MapBehaviorConstants.defaultCameraHeading,
+        pitch: MapBehaviorConstants.defaultCameraPitch))
   }
 
   public func clearSearch() {
@@ -500,7 +535,7 @@ public class LiveMapViewModel: MapViewModel {
   private var searchTask: Task<Void, Never>?
   private var searchDebounceTask: Task<Void, Never>?
   private var lastDirectionUpdateLocation: CLLocationCoordinate2D?
-  private let minimumDistanceForUpdate: CLLocationDistance = 20.0
+  private let minimumDistanceForUpdate: CLLocationDistance = MapBehaviorConstants.minimumDirectionRefreshDistance
 
 }
 

@@ -18,8 +18,8 @@ struct MapSearchBar: View {
         Image(systemName: "magnifyingglass")
         TextField("Search", text: $searchtxt)
           .focused($isSearchFocused)
-          .padding(.horizontal, 10)
-          .padding(.vertical, 8)
+          .padding(.horizontal, Self.textFieldHorizontalPadding)
+          .padding(.vertical, Self.textFieldVerticalPadding)
       }
       .padding(.horizontal)
       .background(Color(.secondarySystemBackground))
@@ -39,7 +39,11 @@ struct MapSearchBar: View {
 
   // MARK: Private
 
+  private static let textFieldHorizontalPadding: CGFloat = 10
+  private static let textFieldVerticalPadding: CGFloat = 8
+
   @FocusState private var isSearchFocused: Bool
+
 }
 
 #Preview {

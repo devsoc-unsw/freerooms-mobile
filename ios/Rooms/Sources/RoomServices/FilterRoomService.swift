@@ -10,19 +10,19 @@ import Networking
 import RoomModels
 import VISOR
 
-// MARK: - FilterRoomLoaderError
+// MARK: - FilterRoomServiceError
 
-public enum FilterRoomLoaderError: Error, Equatable {
+public enum FilterRoomServiceError: Error, Equatable {
   case connectivity
   case invalidData
   case invalidURL
 }
 
-// MARK: - FilterRoomLoader
+// MARK: - FilterRoomService
 
 @Spyable
 @Stubbable
-public protocol FilterRoomLoader {
+public protocol FilterRoomService {
 
   /// Fetches rooms that match the provided filter conditions.
   ///
@@ -41,15 +41,15 @@ public protocol FilterRoomLoader {
   ///   - SortedBySpecificSchoolId: A flag used to filter by a specific school (non-CATS)
   ///
   /// - Returns: A result containing either the filtered rooms or a
-  ///   `FilterRoomLoaderError` if the request fails.
+  ///   `FilterRoomServiceError` if the request fails.
   func fetchFilteredRooms(options: FilterRoomOptions)
-    async -> Result<[String], FilterRoomLoaderError>
+    async -> Result<[String], FilterRoomServiceError>
 }
 
-// MARK: - LiveFilterRoomLoader
+// MARK: - LiveFilterRoomService
 
 /// Provides the current filtered room
-public final class LiveFilterRoomLoader: FilterRoomLoader {
+public final class LiveFilterRoomService: FilterRoomService {
 
   // MARK: Lifecycle
 
@@ -62,7 +62,7 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
   // MARK: Public
 
   public func fetchFilteredRooms(options: FilterRoomOptions)
-    async -> Result<[String], FilterRoomLoaderError>
+    async -> Result<[String], FilterRoomServiceError>
   {
     // Construct the search URL with query parameters based on the provided filter conditions
     guard
@@ -91,9 +91,13 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
   private let baseURL: URL
   private let endpointPath: String
 
-  /// Helper method to construct the search URL with query parameters
+  /// Helper method to construct the search URL with query parameters.
+  ///
+  /// Nil and empty-string fields are intentionally omitted from the query
+  /// string. The backend returns HTTP 400 when it receives a parameter with
+  /// an empty value (e.g. `startTime=`), so we only include fields the user
+  /// actually selected. `sortedBySpecificSchoolId` is sent only when `true`.
   private func makeSearchRoomsURL(options: FilterRoomOptions) -> URL? {
-    // Construct the base endpoint URL and append query parameters for filtering rooms
     guard
       let baseEndpointURL = URL(string: endpointPath, relativeTo: baseURL),
       var components = URLComponents(url: baseEndpointURL, resolvingAgainstBaseURL: true)
@@ -101,20 +105,25 @@ public final class LiveFilterRoomLoader: FilterRoomLoader {
       return nil
     }
 
-    // Add query items for each filter parameter, using empty strings for nil values and converting boolean to "true"/"false"
-    components.queryItems = [
-      URLQueryItem(name: "datetime", value: options.dateTime ?? ""),
-      URLQueryItem(name: "startTime", value: options.startTime ?? ""),
-      URLQueryItem(name: "endTime", value: options.endTime ?? ""),
-      URLQueryItem(name: "buildingId", value: options.buildingId ?? ""),
-      URLQueryItem(name: "capacity", value: options.capacity.map(String.init) ?? ""),
-      URLQueryItem(name: "duration", value: options.duration.map(String.init) ?? ""),
-      URLQueryItem(name: "usage", value: options.usage ?? ""),
-      URLQueryItem(name: "location", value: options.location ?? ""),
-      URLQueryItem(name: "id", value: options.sortedBySpecificSchoolId ? "true" : "false"),
+    let candidates: [(String, String?)] = [
+      ("datetime", options.dateTime),
+      ("startTime", options.startTime),
+      ("endTime", options.endTime),
+      ("buildingId", options.buildingId),
+      ("capacity", options.capacity.map(String.init)),
+      ("duration", options.duration.map(String.init)),
+      ("usage", options.usage),
+      ("location", options.location),
+      ("id", options.sortedBySpecificSchoolId ? "true" : nil),
     ]
 
-    // Return the fully constructed URL with query parameters
+    let items = candidates.compactMap { name, value -> URLQueryItem? in
+      guard let value, !value.isEmpty else { return nil }
+      return URLQueryItem(name: name, value: value)
+    }
+
+    components.queryItems = items.isEmpty ? nil : items
+
     return components.url
   }
 

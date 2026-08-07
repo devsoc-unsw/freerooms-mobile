@@ -16,10 +16,8 @@ public struct RoomDetailsView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, roomViewModel: RoomViewModel, isFavourite: Binding<Bool>) {
+  public init(room: Room) {
     self.room = room
-    self.roomViewModel = roomViewModel
-    _isFavourite = isFavourite
   }
 
   // MARK: Public
@@ -34,14 +32,17 @@ public struct RoomDetailsView: View {
 
       Spacer()
     }
+    .background(theme.background.primary)
     .sheet(isPresented: $showDetails) {
-      RoomDetailsSheetView(room: room, roomViewModel: roomViewModel, isFavourite: $isFavourite) {
+      RoomDetailsSheetView(room: room, isFavourite: favouriteBinding) {
         showDetails = false
         dismiss()
       }
+      .environment(roomViewModel)
+      .environment(theme)
       .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
-      .presentationBackground(theme.background)
+      .presentationBackground(theme.background.primary)
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
     }
@@ -62,13 +63,14 @@ public struct RoomDetailsView: View {
         .font(.title2)
         .buttonBorderShape(.circle)
         .liquidGlass(
-          if: {
+          glass: {
             $0
           },
-          else: {
+          fallback: {
             $0
+              .padding(8)
               .buttonStyle(.borderedProminent)
-              .tint(.white)
+              .tint(theme.background.primary.opacity(0.8))
               .foregroundStyle(theme.accent.primary)
           })
       }
@@ -81,13 +83,13 @@ public struct RoomDetailsView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .liquidGlass(
-          if: {
+          glass: {
             $0
           },
-          else: {
+          fallback: {
             $0
-              .background(Color.white)
-              .cornerRadius(12)
+              .background(theme.background.primary.opacity(0.8))
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
           })
       }
     }
@@ -95,29 +97,34 @@ public struct RoomDetailsView: View {
 
   // MARK: Internal
 
-  @Environment(\.dismiss) var dismiss
-
-  let detentHeights: Set = [RoomLayoutConstants.sheetSmallDetent, RoomLayoutConstants.sheetMediumDetent, PresentationDetent.large]
+  let detentHeights: Set<PresentationDetent> = [
+    RoomLayoutConstants.sheetMediumDetent,
+    .large,
+  ]
 
   // MARK: Private
 
+  @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  @State private var detent = PresentationDetent.fraction(0.75)
+  @State private var detent = RoomLayoutConstants.sheetMediumDetent
   @State private var showDetails = true
-
-  @Binding private var isFavourite: Bool
 
   private let screenHeight = UIScreen.main.bounds.height
   private let room: Room
-  private var roomViewModel: RoomViewModel
+
+  private var favouriteBinding: Binding<Bool> {
+    Binding(
+      get: { roomViewModel.isFavorite(roomID: room.id) },
+      set: { _ in roomViewModel.toggleFavorite(roomID: room.id) })
+  }
 }
 
 #Preview {
-  @Previewable @State var isFavourite = false
-
   NavigationStack {
-    RoomDetailsView(room: Room.exampleOne, roomViewModel: PreviewRoomViewModel(), isFavourite: $isFavourite)
+    RoomDetailsView(room: Room.exampleOne)
+      .environment(PreviewRoomViewModel() as LiveRoomViewModel)
       .defaultTheme()
   }
 }
@@ -125,14 +132,14 @@ public struct RoomDetailsView: View {
 extension View {
   @ViewBuilder
   func liquidGlass(
-    if transform1: (Self) -> some View,
-    else transform2: (Self) -> some View)
+    glass: (Self) -> some View,
+    fallback: (Self) -> some View)
     -> some View
   {
     if #available(iOS 26.0, *) {
-      transform1(self)
+      glass(self)
     } else {
-      transform2(self)
+      fallback(self)
     }
   }
 }
