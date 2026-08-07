@@ -201,11 +201,11 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       Button {
         isDarkMode.toggle()
       } label: {
-        Image(systemName: "moon.fill")
+        Image(systemName: isDarkMode ? "moon.fill" : "moon")
           .resizable()
           .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
       }
-      
+
       Button {
         buildingViewModel.getBuildingsInOrder()
       } label: {

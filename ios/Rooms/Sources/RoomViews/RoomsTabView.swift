@@ -373,11 +373,11 @@ public struct RoomsTabView<Destination: View>: View {
       Button {
         isDarkMode.toggle()
       } label: {
-        Image(systemName: "moon.fill")
+        Image(systemName: isDarkMode ? "moon.fill" : "moon")
           .resizable()
           .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }
-      
+
       Button {
         roomViewModel.getRoomsInOrder()
       } label: {
