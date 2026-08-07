@@ -54,7 +54,6 @@ struct RoomBookingInformationView: View {
         }
         .sheet(isPresented: $isShowingSheet) {
           RoomRatingSheet(currentRoomRating: currentRoomRating)
-            .environment(theme)
             .presentationDetents([.medium])
             .presentationCornerRadius(Self.ratingSheetCornerRadius)
         }

@@ -58,45 +58,20 @@ public struct RoomsListView: View {
         await roomViewModel.reloadRooms()
       }
     }
-    .background(InteractivePopGestureEnabler())
-    .navigationBarBackButtonHidden(true)
     .toolbar {
-      ToolbarItem(placement: .topBarLeading) {
-        Button("Back", systemImage: "chevron.left") {
-          dismiss()
+      HStack {
+        Button {
+          roomViewModel.getRoomsInOrder()
+        } label: {
+          Image(systemName: "arrow.up.arrow.down")
+            .resizable()
+            .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
         }
-        .padding(.vertical, 4)
-        .font(.title2)
-        .buttonBorderShape(.circle)
-        .liquidGlass(
-          glass: {
-            $0
-          },
-          fallback: {
-            $0
-              .padding(8)
-              .buttonStyle(.borderedProminent)
-              .tint(theme.background.primary.opacity(0.8))
-              .foregroundStyle(theme.accent.primary)
-          })
       }
-
-      ToolbarItem(placement: .topBarTrailing) {
-        HStack {
-          Button {
-            roomViewModel.getRoomsInOrder()
-          } label: {
-            Image(systemName: "arrow.up.arrow.down")
-              .resizable()
-              .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-          }
-        }
-        .padding(RoomLayoutConstants.toolbarIconPadding)
-        .foregroundStyle(theme.accent.primary)
-      }
+      .padding(RoomLayoutConstants.toolbarIconPadding)
+      .foregroundStyle(theme.label.tertiary)
     }
-    .scrollContentBackground(.hidden)
-    .background(theme.background.primary)
+    .background(Color(UIColor.systemGroupedBackground))
   }
 
   // MARK: Internal
@@ -110,30 +85,11 @@ public struct RoomsListView: View {
 
   // MARK: Private
 
-  @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   private var building: Building
 
-}
-
-// MARK: - InteractivePopGestureEnabler
-
-private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
-  final class Controller: UIViewController {
-    override func viewDidAppear(_ animated: Bool) {
-      super.viewDidAppear(animated)
-      navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-      navigationController?.interactivePopGestureRecognizer?.delegate = nil
-    }
-  }
-
-  func makeUIViewController(context _: Context) -> Controller {
-    Controller()
-  }
-
-  func updateUIViewController(_: Controller, context _: Context) { }
 }
 
 // MARK: - PreviewWrapper

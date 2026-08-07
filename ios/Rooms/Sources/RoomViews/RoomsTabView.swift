@@ -188,19 +188,6 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
-      .overlay {
-        if showingFilterMenu, !roomViewModel.isLoading {
-          Color.black
-            .opacity(RoomLayoutConstants.filterMenuScrimOpacity)
-            .ignoresSafeArea()
-            .transition(.opacity)
-            .onTapGesture {
-              withAnimation(.spring(duration: RoomLayoutConstants.filterMenuAnimationDuration)) {
-                showingFilterMenu = false
-              }
-            }
-        }
-      }
       .overlay(alignment: .bottomTrailing) {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
@@ -249,7 +236,6 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await vm.loadBookingsForFilteredRooms() }
           }
           .environment(roomViewModel)
-          .environment(theme)
           .presentationDetents([FilterSheetLayout.dateDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -260,7 +246,6 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .environment(theme)
           .presentationDetents([FilterSheetLayout.roomTypeDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -271,7 +256,6 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           })
           .environment(roomViewModel)
-          .environment(theme)
           .presentationDetents([FilterSheetLayout.durationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -282,7 +266,6 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .environment(theme)
           .presentationDetents([FilterSheetLayout.campusLocationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -293,7 +276,6 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
-          .environment(theme)
           .presentationDetents([FilterSheetLayout.capacityDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -322,14 +304,14 @@ public struct RoomsTabView<Destination: View>: View {
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(theme.background.primary)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       } else {
         List {
           roomsListView(buildingViewModel.allBuildings)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(theme.background.primary)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       }
     } else {
       if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
@@ -359,7 +341,7 @@ public struct RoomsTabView<Destination: View>: View {
         ScrollView {
           roomsCardView(buildingViewModel.allBuildings)
         }
-        .background(theme.background.primary)
+        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
         .shadow(
           color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
           radius: RoomLayoutConstants.cardShadowRadius)
@@ -390,7 +372,7 @@ public struct RoomsTabView<Destination: View>: View {
       }
     }
     .padding(RoomLayoutConstants.toolbarIconPadding)
-    .foregroundStyle(theme.accent.primary)
+    .foregroundStyle(theme.label.tertiary)
   }
 }
 

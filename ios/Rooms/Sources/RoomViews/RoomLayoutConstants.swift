@@ -9,7 +9,8 @@ enum RoomLayoutConstants {
 
   // MARK: - Room Details Sheet
 
-  static let sheetMediumDetent = PresentationDetent.fraction(0.78)
+  static let sheetSmallDetent = PresentationDetent.fraction(0.65)
+  static let sheetMediumDetent = PresentationDetent.fraction(0.75)
   static let imageHeightFraction: CGFloat = 0.4
   static let bookingSectionCornerRadius: CGFloat = 12
   static let dismissDragMinimumDistance: CGFloat = 20
@@ -38,9 +39,7 @@ enum RoomLayoutConstants {
   static let cardShadowOpacity = 0.2
   static let cardShadowRadius: CGFloat = 5
   static let contentHorizontalPadding: CGFloat = 16
-  static let filterMenuAnimationDuration = 0.25
   static let filterMenuBottomPadding: CGFloat = 8
-  static let filterMenuScrimOpacity = 0.42
   static let filterMenuTrailingPadding: CGFloat = 16
   static let listRowVerticalPadding: CGFloat = 5
   static let sectionHeaderLeadingPadding: CGFloat = 10

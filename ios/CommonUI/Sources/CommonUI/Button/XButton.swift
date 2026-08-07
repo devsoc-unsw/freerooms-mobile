@@ -4,7 +4,6 @@
 //
 //  Created by Dicko Evaldo on 10/10/2025.
 //
-
 import SwiftUI
 
 public struct XButton: View {
@@ -25,7 +24,7 @@ public struct XButton: View {
           .frame(width: Self.buttonSize, height: Self.buttonSize)
         Image(systemName: "xmark")
           .font(.system(size: Self.iconSize, weight: .medium))
-          .foregroundStyle(theme.black)
+          .foregroundStyle(Color.black)
       }
     }
   }
@@ -39,7 +38,4 @@ public struct XButton: View {
   private static let backgroundOpacity = 0.2
   private static let buttonSize: CGFloat = 42
   private static let iconSize: CGFloat = 20
-
-  @Environment(Theme.self) private var theme
-
 }

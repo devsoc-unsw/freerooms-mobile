@@ -9,7 +9,6 @@ import BuildingModels
 import BuildingViewModels
 import CommonUI
 import RoomModels
-import RoomViewModels
 import SwiftUI
 
 // MARK: - BuildingsTabView
@@ -180,7 +179,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(theme.background.primary)
+      .background(Color.gray.opacity(BuildingsTabLayout.backgroundOpacity))
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
@@ -188,7 +187,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
       }
       // .padding(.horizontal)
-      .background(theme.background.primary.opacity(BuildingsTabLayout.backgroundOpacity))
+      .background(Color.gray.opacity(BuildingsTabLayout.backgroundOpacity))
       .shadow(
         color: theme.label.primary.opacity(BuildingsTabLayout.cardShadowOpacity),
         radius: BuildingsTabLayout.cardShadowRadius)
@@ -218,7 +217,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
     }
     .padding(BuildingsTabLayout.toolbarIconPadding)
-    .foregroundStyle(theme.accent.primary)
+    .foregroundStyle(theme.label.tertiary)
   }
 
 }
@@ -257,7 +256,6 @@ private struct PreviewWrapper: View {
       EmptyView() // Rooms destination
     }
     .environment(viewModel)
-    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
   }
 }

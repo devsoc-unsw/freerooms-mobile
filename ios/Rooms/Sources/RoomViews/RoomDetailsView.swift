@@ -32,17 +32,15 @@ public struct RoomDetailsView: View {
 
       Spacer()
     }
-    .background(theme.background.primary)
     .sheet(isPresented: $showDetails) {
       RoomDetailsSheetView(room: room, isFavourite: favouriteBinding) {
         showDetails = false
         dismiss()
       }
       .environment(roomViewModel)
-      .environment(theme)
       .presentationDetents(detentHeights, selection: $detent)
       .presentationBackgroundInteraction(.enabled)
-      .presentationBackground(theme.background.primary)
+      .presentationBackground(theme.background)
       .presentationCornerRadius(30)
       .interactiveDismissDisabled()
     }
@@ -63,14 +61,13 @@ public struct RoomDetailsView: View {
         .font(.title2)
         .buttonBorderShape(.circle)
         .liquidGlass(
-          glass: {
+          if: {
             $0
           },
-          fallback: {
+          else: {
             $0
-              .padding(8)
               .buttonStyle(.borderedProminent)
-              .tint(theme.background.primary.opacity(0.8))
+              .tint(.white)
               .foregroundStyle(theme.accent.primary)
           })
       }
@@ -83,13 +80,13 @@ public struct RoomDetailsView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .liquidGlass(
-          glass: {
+          if: {
             $0
           },
-          fallback: {
+          else: {
             $0
-              .background(theme.background.primary.opacity(0.8))
-              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+              .background(Color.white)
+              .cornerRadius(12)
           })
       }
     }
@@ -98,6 +95,7 @@ public struct RoomDetailsView: View {
   // MARK: Internal
 
   let detentHeights: Set<PresentationDetent> = [
+    RoomLayoutConstants.sheetSmallDetent,
     RoomLayoutConstants.sheetMediumDetent,
     .large,
   ]
@@ -124,7 +122,7 @@ public struct RoomDetailsView: View {
 #Preview {
   NavigationStack {
     RoomDetailsView(room: Room.exampleOne)
-      .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+      .environment(PreviewRoomViewModel())
       .defaultTheme()
   }
 }
@@ -132,14 +130,14 @@ public struct RoomDetailsView: View {
 extension View {
   @ViewBuilder
   func liquidGlass(
-    glass: (Self) -> some View,
-    fallback: (Self) -> some View)
+    if transform1: (Self) -> some View,
+    else transform2: (Self) -> some View)
     -> some View
   {
     if #available(iOS 26.0, *) {
-      glass(self)
+      transform1(self)
     } else {
-      fallback(self)
+      transform2(self)
     }
   }
 }

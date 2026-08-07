@@ -6,7 +6,6 @@
 //
 import BuildingModels
 import BuildingViewModels
-import CommonUI
 import SwiftUI
 
 public struct MapSearchBarList: View {
@@ -39,7 +38,7 @@ public struct MapSearchBarList: View {
               x: MapLayoutConstants.sheetShadowXOffset,
               y: MapLayoutConstants.annotationShadowYOffset)
           Text(building.name)
-            .foregroundStyle(theme.black)
+            .foregroundStyle(.black)
         }
       }
     }
@@ -52,5 +51,4 @@ public struct MapSearchBarList: View {
   // MARK: Private
 
   @Environment(LiveMapViewModel.self) private var viewModel
-  @Environment(Theme.self) private var theme
 }

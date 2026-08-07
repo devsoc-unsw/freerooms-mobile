@@ -63,7 +63,7 @@ public struct GenericCardView<
         Spacer()
       }
       .frame(width: cardWidth, height: GenericCardViewLayout.cardHeight)
-      .background(theme.background.secondary)
+      .background(.white)
       .clipShape(RoundedRectangle(cornerRadius: GenericCardViewLayout.cornerRadius))
       .padding(0)
       .buttonStyle(.plain)
@@ -98,10 +98,6 @@ public struct GenericCardView<
   var index: Int {
     items.firstIndex(of: item)!
   }
-
-  // MARK: Private
-
-  @Environment(Theme.self) private var theme
 
 }
 
