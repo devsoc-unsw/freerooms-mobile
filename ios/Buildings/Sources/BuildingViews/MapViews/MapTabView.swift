@@ -120,6 +120,7 @@ public struct MapTabView<RoomDestination: View>: View {
           .animation(
             .easeInOut(duration: MapLayoutConstants.searchOverlayAnimationDuration),
             value: mapViewModel.bottomSheetPosition)
+          .toolbar(.hidden, for: .navigationBar)
       }
       .bottomSheet(
         bottomSheetPosition: $mapViewModel.bottomSheetPosition,
