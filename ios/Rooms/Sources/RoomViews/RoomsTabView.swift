@@ -51,6 +51,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
+  @AppStorage("isDarkMode") var isDarkMode = false
 
   func roomsCardView(
     _ buildings: [Building])
@@ -369,6 +370,14 @@ public struct RoomsTabView<Destination: View>: View {
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        isDarkMode.toggle()
+      } label: {
+        Image(systemName: "moon.fill")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+      
       Button {
         roomViewModel.getRoomsInOrder()
       } label: {
