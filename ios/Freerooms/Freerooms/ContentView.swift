@@ -27,7 +27,6 @@ struct ContentView: View {
   @State var selectedTab = "Buildings"
   @State var selectedRoomsView = ViewOrientation.List
   @State var selectedBuildingsView = ViewOrientation.List
-  @AppStorage("isDarkMode") var isDarkMode = false
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -60,7 +59,7 @@ struct ContentView: View {
     .environment(roomViewModel)
     .environment(buildingViewModel)
     .tint(theme.accent.primary)
-    .preferredColorScheme(isDarkMode ? .dark : .light)
+    .preferredColorScheme(theme.preferredColorScheme)
   }
 
   func roomDetailsView(for room: Room) -> some View {

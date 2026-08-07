@@ -51,7 +51,6 @@ public struct RoomsTabView<Destination: View>: View {
   @State var searchText = ""
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-  @AppStorage("isDarkMode") var isDarkMode = false
 
   func roomsCardView(
     _ buildings: [Building])
@@ -140,6 +139,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
@@ -371,9 +371,9 @@ public struct RoomsTabView<Destination: View>: View {
   private var toolbarButtons: some View {
     HStack {
       Button {
-        isDarkMode.toggle()
+        theme.toggleColorScheme(from: colorScheme)
       } label: {
-        Image(systemName: isDarkMode ? "moon.fill" : "moon")
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
           .resizable()
           .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }

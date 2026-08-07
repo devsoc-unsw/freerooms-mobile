@@ -54,7 +54,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var rowHeight: CGFloat?
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
-  @AppStorage("isDarkMode") var isDarkMode = false
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
   let roomDestinationBuilderView: (Room) -> RoomDestination
@@ -122,6 +121,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
 
   private let columns = [
     GridItem(.flexible()),
@@ -199,9 +199,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   private var toolbarButtons: some View {
     HStack {
       Button {
-        isDarkMode.toggle()
+        theme.toggleColorScheme(from: colorScheme)
       } label: {
-        Image(systemName: isDarkMode ? "moon.fill" : "moon")
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
           .resizable()
           .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
       }
