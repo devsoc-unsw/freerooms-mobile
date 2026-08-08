@@ -39,12 +39,18 @@ struct FloatingFilterMenuView: View {
           .font(.system(size: Self.toggleIconSize, weight: .semibold))
           .foregroundStyle(theme.accent.primary)
           .frame(width: Self.toggleButtonSize, height: Self.toggleButtonSize)
-          .background(.regularMaterial)
-          .clipShape(Circle())
-          .shadow(
-            color: .black.opacity(Self.toggleShadowOpacity),
-            radius: Self.toggleShadowRadius,
-            y: Self.toggleShadowYOffset)
+          .background {
+            Circle()
+              .fill(theme.background.secondary)
+              .overlay {
+                Circle()
+                  .stroke(theme.accent.primary.opacity(Self.toggleBorderOpacity), lineWidth: Self.toggleBorderWidth)
+              }
+              .shadow(
+                color: .black.opacity(Self.toggleShadowOpacity),
+                radius: Self.toggleShadowRadius,
+                y: Self.toggleShadowYOffset)
+          }
       }
       .accessibilityLabel(showingFilterMenu ? "Close filters" : "Open filters")
       .accessibilityHint("Shows filter options near the tab bar")
@@ -56,19 +62,28 @@ struct FloatingFilterMenuView: View {
 
   private static let menuSpacing: CGFloat = 10
   private static let actionHorizontalPadding: CGFloat = 12
+  private static let actionBorderOpacity = 0.28
+  private static let actionBorderWidth: CGFloat = 1
   private static let actionVerticalPadding: CGFloat = 10
-  private static let actionShadowOpacity = 0.12
-  private static let actionShadowRadius: CGFloat = 6
-  private static let actionShadowYOffset: CGFloat = 2
+  private static let actionShadowOpacity = 0.32
+  private static let actionShadowRadius: CGFloat = 12
+  private static let actionShadowYOffset: CGFloat = 4
   private static let animationDuration = 0.25
+  private static let destructiveBorderOpacity = 0.36
+  private static let toggleBorderOpacity = 0.24
+  private static let toggleBorderWidth: CGFloat = 1
   private static let toggleButtonSize: CGFloat = 56
   private static let toggleIconSize: CGFloat = 20
-  private static let toggleShadowOpacity = 0.15
-  private static let toggleShadowRadius: CGFloat = 8
-  private static let toggleShadowYOffset: CGFloat = 3
+  private static let toggleShadowOpacity = 0.34
+  private static let toggleShadowRadius: CGFloat = 14
+  private static let toggleShadowYOffset: CGFloat = 5
 
   @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
+
+  private var actionBorderColor: Color {
+    theme.accent.primary.opacity(Self.actionBorderOpacity)
+  }
 
   private func filterMenuAction(
     _ title: String,
@@ -82,15 +97,23 @@ struct FloatingFilterMenuView: View {
     } label: {
       Label(title, systemImage: systemImage)
         .font(.subheadline.weight(.semibold))
-        .foregroundStyle(role == .destructive ? theme.list.red : theme.label.primary)
+        .foregroundStyle(role == .destructive ? theme.list.red : theme.accent.primary)
         .padding(.horizontal, Self.actionHorizontalPadding)
         .padding(.vertical, Self.actionVerticalPadding)
-        .background(.regularMaterial)
-        .clipShape(Capsule())
-        .shadow(
-          color: .black.opacity(Self.actionShadowOpacity),
-          radius: Self.actionShadowRadius,
-          y: Self.actionShadowYOffset)
+        .background {
+          Capsule()
+            .fill(theme.background.secondary)
+            .overlay {
+              Capsule()
+                .stroke(
+                  role == .destructive ? theme.list.red.opacity(Self.destructiveBorderOpacity) : actionBorderColor,
+                  lineWidth: Self.actionBorderWidth)
+            }
+            .shadow(
+              color: .black.opacity(Self.actionShadowOpacity),
+              radius: Self.actionShadowRadius,
+              y: Self.actionShadowYOffset)
+        }
     }
     .buttonStyle(.plain)
   }
@@ -101,4 +124,6 @@ struct FloatingFilterMenuView: View {
   FloatingFilterMenuView(
     activeFilterSheet: .constant(nil),
     showingFilterMenu: .constant(false))
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+    .defaultTheme()
 }
