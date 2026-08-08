@@ -121,6 +121,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
 
   private let columns = [
     GridItem(.flexible()),
@@ -197,6 +198,14 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        theme.toggleColorScheme(from: colorScheme)
+      } label: {
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
+          .resizable()
+          .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
+      }
+
       Button {
         buildingViewModel.getBuildingsInOrder()
       } label: {

@@ -61,6 +61,7 @@ struct ContentView: View {
     .environment(roomViewModel)
     .environment(buildingViewModel)
     .tint(theme.accent.primary)
+    .preferredColorScheme(theme.preferredColorScheme)
   }
 
   func roomDetailsView(for room: Room) -> some View {
