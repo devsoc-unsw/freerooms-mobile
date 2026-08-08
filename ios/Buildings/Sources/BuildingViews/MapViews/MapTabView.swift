@@ -79,6 +79,7 @@ public struct MapTabView<RoomDestination: View>: View {
             }
           }
         }
+        .toolbar(.hidden, for: .navigationBar)
         .onChange(of: mapViewModel.selectedBuildingID) { _, _ in }
         .onMapCameraChange { context in
           mapViewModel.updateMapHeading(context.camera.heading)
