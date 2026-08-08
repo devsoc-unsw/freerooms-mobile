@@ -139,6 +139,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
@@ -369,6 +370,14 @@ public struct RoomsTabView<Destination: View>: View {
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        theme.toggleColorScheme(from: colorScheme)
+      } label: {
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+
       Button {
         roomViewModel.getRoomsInOrder()
       } label: {
