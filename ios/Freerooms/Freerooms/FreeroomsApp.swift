@@ -6,6 +6,9 @@
 //
 
 import Apollo
+import BookingInteractors
+import BookingServices
+import BookingViewModels
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -59,6 +62,7 @@ struct FreeroomsApp: App {
 
     _buildingViewModel = State(initialValue: LiveBuildingViewModel(interactor: buildingInteractor))
     _roomViewModel = State(initialValue: LiveRoomViewModel(interactor: roomInteractor))
+    _bookingViewModel = State(initialValue: FreeroomsApp.makeBookingViewModel())
     _mapViewModel = State(initialValue: FreeroomsApp.makeMapViewModel(
       buildingInteractor: buildingInteractor,
       roomInteractor: roomInteractor,
@@ -87,6 +91,7 @@ struct FreeroomsApp: App {
         .environment(buildingViewModel)
         .environment(mapViewModel)
         .environment(roomViewModel)
+        .environment(bookingViewModel)
     }
   }
 
@@ -179,6 +184,7 @@ struct FreeroomsApp: App {
   private static let httpResourceTimeout: TimeInterval = 5
 
   @State private var buildingViewModel: LiveBuildingViewModel
+  @State private var bookingViewModel: LiveBookingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
 
@@ -186,6 +192,14 @@ struct FreeroomsApp: App {
 
   private static func makeLocationService() -> LiveLocationService {
     LiveLocationService(locationManager: LiveLocationManager())
+  }
+
+  private static func makeBookingViewModel() -> LiveBookingViewModel {
+    let store = ApolloStore(cache: InMemoryNormalizedCache())
+    let client = DevSoc.createLiveApolloClient(using: store)
+    let loader = LiveGraphQLWeeklyBookingLoader(client: client)
+    let service = LiveBookingService(loader: loader)
+    return LiveBookingViewModel(interactor: BookingInteractor(service: service))
   }
 
   private static func makeHTTPClient() -> URLSessionHTTPClient {

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* BookingViews */; };
+		2D7043062FF7AD02006BF888 /* Bookings in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* Bookings */; };
 		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
@@ -72,7 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */,
-				2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */,
+				2D7043062FF7AD02006BF888 /* Bookings in Frameworks */,
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
 				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
@@ -164,7 +164,7 @@
 				546D1AA72F7AAD87000667BC /* RoomViews */,
 				541DCFCA2FD2A5150040EB0F /* Apollo */,
 				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
-				2D7043052FF7AD02006BF888 /* BookingViews */,
+				2D7043052FF7AD02006BF888 /* Bookings */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -618,9 +618,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2D7043052FF7AD02006BF888 /* BookingViews */ = {
+		2D7043052FF7AD02006BF888 /* Bookings */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BookingViews;
+			productName = Bookings;
 		};
 		541DCFCA2FD2A5150040EB0F /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
