@@ -13,26 +13,27 @@ import SwiftUI
 
 // MARK: - GenericListRowView
 
-public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasName & HasRating, ImageContent: View>: View {
+public struct GenericListRowView<T: Equatable & Identifiable & Hashable, ImageContent: View, RowContent: View>: View {
 
   // MARK: Lifecycle
 
   public init(
-    path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
     item: T,
     items: [T],
     isLoading: Bool,
-    onSelect: ((T) -> Void)? = nil,
-    imageProvider: @escaping (T.ID) -> ImageContent)
+    onSelect: @escaping (T) -> Void,
+    @ViewBuilder imageProvider: @escaping (T.ID) -> ImageContent,
+    @ViewBuilder content: @escaping (T) -> RowContent)
   {
-    _path = path
+    _path = .constant(NavigationPath())
     _rowHeight = rowHeight
     self.item = item
     self.items = items
     self.isLoading = isLoading
     self.onSelect = onSelect
     self.imageProvider = imageProvider
+    self.content = content
   }
 
   // MARK: Public
@@ -54,9 +55,12 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
           .clipShape(RoundedRectangle(cornerRadius: GenericListRowViewLayout.imageCornerRadius))
           .padding(.trailing)
 
-        GenericItemDataRow<T>(
-          rowHeight: $rowHeight,
-          item: item)
+        content(item)
+          .background {
+            GeometryReader { geometry in
+              Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+            }
+          }
       }
       .frame(height: (rowHeight ?? 0) + GenericListRowViewLayout.rowHeightExtraPadding)
       .foregroundStyle(theme.label.secondary)
@@ -91,6 +95,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   let isLoading: Bool
   let onSelect: ((T) -> Void)?
   let imageProvider: (T.ID) -> ImageContent
+  let content: (T) -> RowContent
 
   var cornerRadii: RectangleCornerRadii {
     RectangleCornerRadii(
@@ -101,7 +106,7 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
   }
 
   var index: Int {
-    items.firstIndex(of: item)!
+    items.firstIndex(of: item) ?? 0
   }
 
   // MARK: Private
@@ -113,6 +118,29 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable & HasNam
     1 - Double(items.count - gradientIndex) / Double(items.count * 2)
   }
 
+}
+
+extension GenericListRowView where T: HasName & HasRating, RowContent == GenericItemDataRow<T> {
+  public init(
+    path: Binding<NavigationPath>,
+    rowHeight: Binding<CGFloat?>,
+    item: T,
+    items: [T],
+    isLoading: Bool,
+    onSelect: ((T) -> Void)? = nil,
+    @ViewBuilder imageProvider: @escaping (T.ID) -> ImageContent)
+  {
+    _path = path
+    _rowHeight = rowHeight
+    self.item = item
+    self.items = items
+    self.isLoading = isLoading
+    self.onSelect = onSelect
+    self.imageProvider = imageProvider
+    content = { item in
+      GenericItemDataRow(rowHeight: rowHeight, item: item)
+    }
+  }
 }
 
 // MARK: - GenericListRowViewLayout
@@ -129,7 +157,7 @@ private enum GenericListRowViewLayout {
 }
 
 /// Convenience extensions
-extension GenericListRowView where T == Building, ImageContent == CachedImage {
+extension GenericListRowView where T == Building, ImageContent == CachedImage, RowContent == GenericItemDataRow<Building> {
   public init(
     path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
@@ -146,10 +174,13 @@ extension GenericListRowView where T == Building, ImageContent == CachedImage {
     self.isLoading = isLoading
     self.onSelect = onSelect
     self.imageProvider = imageProvider
+    content = { item in
+      GenericItemDataRow(rowHeight: rowHeight, item: item)
+    }
   }
 }
 
-extension GenericListRowView where T == Room, ImageContent == CachedImage {
+extension GenericListRowView where T == Room, ImageContent == CachedImage, RowContent == GenericItemDataRow<Room> {
   public init(
     path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
@@ -166,6 +197,9 @@ extension GenericListRowView where T == Room, ImageContent == CachedImage {
     self.isLoading = isLoading
     self.onSelect = onSelect
     self.imageProvider = imageProvider
+    content = { item in
+      GenericItemDataRow(rowHeight: rowHeight, item: item)
+    }
   }
 }
 
