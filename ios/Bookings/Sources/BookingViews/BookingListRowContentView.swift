@@ -93,7 +93,7 @@ struct BookingListRowContentView: View {
                 Image(systemName: "building.2")
                   .frame(width: BookingViewLayout.rowIconImageWidth)
 
-                Text("Building - \(BookingFormatting.locationDescription(for: booking).0)")
+                Text("Building - \(BookingFormatting.locationDescription(for: booking).1)")
                   .lineLimit(1)
                   .truncationMode(.tail)
               }
