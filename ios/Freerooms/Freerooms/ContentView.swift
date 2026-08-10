@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import BookingViewModels
 import BookingViews
 import BuildingModels
 import BuildingViewModels
@@ -87,6 +88,10 @@ extension LiveBuildingViewModel {
   static let preview = PreviewBuildingViewModel()
 }
 
+extension LiveBookingViewModel {
+  static let preview = PreviewBookingViewModel()
+}
+
 extension LiveRoomViewModel {
   static let preview = PreviewRoomViewModel()
 }
@@ -105,6 +110,7 @@ extension EnvironmentValues {
 #Preview {
   ContentView()
     .defaultTheme()
+    .environment(PreviewBookingViewModel() as LiveBookingViewModel)
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
     .environment(
       \.mapViewModel,

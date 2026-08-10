@@ -2,102 +2,87 @@
 //  GenericListRowView.swift
 //  CommonUI
 //
-//  Created by Yanlin Li  on 23/8/2025.
+//  Created by Yanlin Li on 23/8/2025.
 //
 
 import BuildingModels
-import Combine
 import RoomModels
 import RoomViewModels
 import SwiftUI
 
 // MARK: - GenericListRowView
 
-public struct GenericListRowView<T: Equatable & Identifiable & Hashable, ImageContent: View, RowContent: View>: View {
+/// Shared grouped-list row chrome with injectable image and content views.
+///
+/// The visual container owns sizing, joined borders, selection, and loading behavior. Feature modules
+/// provide the content so CommonUI does not need to know about every app model.
+public struct GenericListRowView<
+  Item: Equatable & Identifiable & Hashable,
+  ImageContent: View,
+  RowContent: View
+>: View {
 
   // MARK: Lifecycle
 
+  /// Creates a feature-defined row using the common Rooms and Buildings list appearance.
   public init(
     rowHeight: Binding<CGFloat?>,
-    item: T,
-    items: [T],
+    item: Item,
+    items: [Item],
     isLoading: Bool,
-    onSelect: @escaping (T) -> Void,
-    @ViewBuilder imageProvider: @escaping (T.ID) -> ImageContent,
-    @ViewBuilder content: @escaping (T) -> RowContent)
+    onSelect: ((Item) -> Void)? = nil,
+    imageProvider: @escaping (Item.ID) -> ImageContent,
+    @ViewBuilder content: @escaping (Item) -> RowContent)
   {
-    _path = .constant(NavigationPath())
     _rowHeight = rowHeight
     self.item = item
     self.items = items
     self.isLoading = isLoading
     self.onSelect = onSelect
     self.imageProvider = imageProvider
-    self.content = content
+    rowContent = content
   }
 
   // MARK: Public
 
   public var body: some View {
-    Button {
+    Group {
       if let onSelect {
-        onSelect(item)
+        Button {
+          onSelect(item)
+        } label: {
+          rowLabel
+        }
+        .disabled(isLoading)
       } else {
-        path.append(item)
+        rowLabel
+          .redacted(reason: isLoading ? .placeholder : [])
       }
-    } label: {
-      HStack(spacing: 0) {
-        imageProvider(item.id)
-          .aspectRatio(contentMode: .fill)
-          .frame(
-            width: (rowHeight ?? 0) + GenericListRowViewLayout.imageWidthExtraPadding,
-            height: GenericListRowViewLayout.imageHeight)
-          .clipShape(RoundedRectangle(cornerRadius: GenericListRowViewLayout.imageCornerRadius))
-          .padding(.trailing)
-
-        content(item)
-          .background {
-            GeometryReader { geometry in
-              Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
-            }
-          }
-      }
-      .frame(height: (rowHeight ?? 0) + GenericListRowViewLayout.rowHeightExtraPadding)
-      .foregroundStyle(theme.label.secondary)
     }
-    .disabled(isLoading)
-    .listRowBackground(
-      UnevenRoundedRectangle(cornerRadii: cornerRadii)
-        .fill(theme.background.secondary)
-        .strokeBorder(LinearGradient(
-          colors: [
-            theme.accent.primary.opacity(rowGradientOpacity(at: index)),
-            theme.accent.primary.opacity(rowGradientOpacity(at: index + 1)),
-          ],
-          startPoint: .top,
-          endPoint: .bottom))
-        .padding(.top, item == items.first ? 0 : GenericListRowViewLayout.joinedRowOverlap)
-        .padding(
-          .bottom,
-          item == items.last ? 0 : GenericListRowViewLayout.joinedRowOverlap))
+    .listRowBackground(rowBackground)
     .onPreferenceChange(HeightPreferenceKey.self) {
       rowHeight = $0
     }
   }
 
-  // MARK: Internal
+  // MARK: Private
 
-  @Binding var path: NavigationPath
-  @Binding var rowHeight: CGFloat?
+  @Binding private var rowHeight: CGFloat?
 
-  let item: T
-  let items: [T]
-  let isLoading: Bool
-  let onSelect: ((T) -> Void)?
-  let imageProvider: (T.ID) -> ImageContent
-  let content: (T) -> RowContent
+  @Environment(Theme.self) private var theme
 
-  var cornerRadii: RectangleCornerRadii {
+  private let item: Item
+  private let items: [Item]
+  private let isLoading: Bool
+  private let onSelect: ((Item) -> Void)?
+  private let imageProvider: (Item.ID) -> ImageContent
+  private let rowContent: (Item) -> RowContent
+
+  private var index: Int {
+    items.firstIndex(of: item) ?? items.startIndex
+  }
+
+  private var cornerRadii: RectangleCornerRadii {
     RectangleCornerRadii(
       topLeading: item == items.first ? GenericListRowViewLayout.containerCornerRadius : 0,
       bottomLeading: item == items.last ? GenericListRowViewLayout.containerCornerRadius : 0,
@@ -105,41 +90,106 @@ public struct GenericListRowView<T: Equatable & Identifiable & Hashable, ImageCo
       topTrailing: item == items.first ? GenericListRowViewLayout.containerCornerRadius : 0)
   }
 
-  var index: Int {
-    items.firstIndex(of: item) ?? 0
+  private var rowBackground: some View {
+    UnevenRoundedRectangle(cornerRadii: cornerRadii)
+      .fill(theme.background.secondary)
+      .strokeBorder(LinearGradient(
+        colors: [
+          theme.accent.primary.opacity(rowGradientOpacity(at: index)),
+          theme.accent.primary.opacity(rowGradientOpacity(at: index + 1)),
+        ],
+        startPoint: .top,
+        endPoint: .bottom))
+      .padding(.top, item == items.first ? 0 : GenericListRowViewLayout.joinedRowOverlap)
+      .padding(.bottom, item == items.last ? 0 : GenericListRowViewLayout.joinedRowOverlap)
   }
 
-  // MARK: Private
+  private var rowLabel: some View {
+    HStack(spacing: 0) {
+      imageProvider(item.id)
+        .aspectRatio(contentMode: .fill)
+        .frame(
+          width: (rowHeight ?? 0) + GenericListRowViewLayout.imageWidthExtraPadding,
+          height: GenericListRowViewLayout.imageHeight)
+        .clipShape(RoundedRectangle(cornerRadius: GenericListRowViewLayout.imageCornerRadius))
+        .padding(.trailing)
 
-  @Environment(Theme.self) private var theme
+      rowContent(item)
+        .fixedSize(horizontal: false, vertical: true)
+        .background {
+          GeometryReader { geometry in
+            Color.clear.preference(
+              key: HeightPreferenceKey.self,
+              value: geometry.size.height)
+          }
+        }
+    }
+    .frame(height: (rowHeight ?? 0) + GenericListRowViewLayout.rowHeightExtraPadding)
+    .foregroundStyle(theme.label.secondary)
+  }
 
   /// Gradually fades the border down the stacked list so adjacent rows read as one grouped card.
   private func rowGradientOpacity(at gradientIndex: Int) -> Double {
-    1 - Double(items.count - gradientIndex) / Double(items.count * 2)
+    let itemCount = max(items.count, 1)
+    return 1 - Double(itemCount - gradientIndex) / Double(itemCount * 2)
   }
-
 }
 
-extension GenericListRowView where T: HasName & HasRating, RowContent == GenericItemDataRow<T> {
+// MARK: - Building convenience
+
+extension GenericListRowView where
+  Item == Building,
+  ImageContent == CachedImage,
+  RowContent == GenericItemDataRow<Building>
+{
   public init(
     path: Binding<NavigationPath>,
     rowHeight: Binding<CGFloat?>,
-    item: T,
-    items: [T],
+    building: Building,
+    buildings: [Building],
     isLoading: Bool,
-    onSelect: ((T) -> Void)? = nil,
-    @ViewBuilder imageProvider: @escaping (T.ID) -> ImageContent)
+    onSelect: ((Building) -> Void)? = nil,
+    imageProvider: @escaping (Building.ID) -> CachedImage)
   {
-    _path = path
-    _rowHeight = rowHeight
-    self.item = item
-    self.items = items
-    self.isLoading = isLoading
-    self.onSelect = onSelect
-    self.imageProvider = imageProvider
-    content = { item in
-      GenericItemDataRow(rowHeight: rowHeight, item: item)
-    }
+    self.init(
+      rowHeight: rowHeight,
+      item: building,
+      items: buildings,
+      isLoading: isLoading,
+      onSelect: onSelect ?? { path.wrappedValue.append($0) },
+      imageProvider: imageProvider,
+      content: { building in
+        GenericItemDataRow(rowHeight: rowHeight, item: building)
+      })
+  }
+}
+
+// MARK: - Room convenience
+
+extension GenericListRowView where
+  Item == Room,
+  ImageContent == CachedImage,
+  RowContent == GenericItemDataRow<Room>
+{
+  public init(
+    path: Binding<NavigationPath>,
+    rowHeight: Binding<CGFloat?>,
+    room: Room,
+    rooms: [Room],
+    isLoading: Bool,
+    onSelect: ((Room) -> Void)? = nil,
+    imageProvider: @escaping (Room.ID) -> CachedImage)
+  {
+    self.init(
+      rowHeight: rowHeight,
+      item: room,
+      items: rooms,
+      isLoading: isLoading,
+      onSelect: onSelect ?? { path.wrappedValue.append($0) },
+      imageProvider: imageProvider,
+      content: { room in
+        GenericItemDataRow(rowHeight: rowHeight, item: room)
+      })
   }
 }
 
@@ -156,56 +206,9 @@ private enum GenericListRowViewLayout {
   static let rowHeightExtraPadding: CGFloat = 15
 }
 
-/// Convenience extensions
-extension GenericListRowView where T == Building, ImageContent == CachedImage, RowContent == GenericItemDataRow<Building> {
-  public init(
-    path: Binding<NavigationPath>,
-    rowHeight: Binding<CGFloat?>,
-    building: Building,
-    buildings: [Building],
-    isLoading: Bool,
-    onSelect: ((Building) -> Void)? = nil,
-    imageProvider: @escaping (Building.ID) -> CachedImage)
-  {
-    _path = path
-    _rowHeight = rowHeight
-    item = building
-    items = buildings
-    self.isLoading = isLoading
-    self.onSelect = onSelect
-    self.imageProvider = imageProvider
-    content = { item in
-      GenericItemDataRow(rowHeight: rowHeight, item: item)
-    }
-  }
-}
-
-extension GenericListRowView where T == Room, ImageContent == CachedImage, RowContent == GenericItemDataRow<Room> {
-  public init(
-    path: Binding<NavigationPath>,
-    rowHeight: Binding<CGFloat?>,
-    room: Room,
-    rooms: [Room],
-    isLoading: Bool,
-    onSelect: ((Room) -> Void)? = nil,
-    imageProvider: @escaping (Room.ID) -> CachedImage)
-  {
-    _path = path
-    _rowHeight = rowHeight
-    item = room
-    items = rooms
-    self.isLoading = isLoading
-    self.onSelect = onSelect
-    self.imageProvider = imageProvider
-    content = { item in
-      GenericItemDataRow(rowHeight: rowHeight, item: item)
-    }
-  }
-}
-
 // MARK: - PreviewWrapper
 
-struct PreviewWrapper: View {
+private struct PreviewWrapper: View {
 
   // MARK: Internal
 
@@ -231,7 +234,6 @@ struct PreviewWrapper: View {
 
   @State private var path = NavigationPath()
   @State private var rowHeight: CGFloat?
-
 }
 
 #Preview {

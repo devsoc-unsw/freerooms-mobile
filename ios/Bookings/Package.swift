@@ -1,19 +1,19 @@
 // swift-tools-version: 6.2
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
   name: "Bookings",
-  platforms: [
-    .iOS(.v17),
-  ],
+  platforms: [.iOS(.v17)],
   products: [
     .library(
       name: "Bookings",
       targets: [
-        "BookingModels", "BookingServices", "BookingInteractors",
-        "BookingViewModels", "BookingViews",
+        "BookingModels",
+        "BookingServices",
+        "BookingInteractors",
+        "BookingViewModels",
+        "BookingViews",
       ]),
     .library(name: "BookingModels", targets: ["BookingModels"]),
     .library(name: "BookingServices", targets: ["BookingServices"]),
