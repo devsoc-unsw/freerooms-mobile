@@ -9,6 +9,7 @@ import BuildingModels
 import BuildingViewModels
 import CommonUI
 import RoomModels
+import RoomViewModels
 import SwiftUI
 
 // MARK: - BuildingsTabView
@@ -120,6 +121,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
 
   private let columns = [
     GridItem(.flexible()),
@@ -179,7 +181,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
-      .background(Color.gray.opacity(BuildingsTabLayout.backgroundOpacity))
+      .background(theme.background.primary)
     } else {
       ScrollView {
         buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
@@ -187,7 +189,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
       }
       // .padding(.horizontal)
-      .background(Color.gray.opacity(BuildingsTabLayout.backgroundOpacity))
+      .background(theme.background.primary.opacity(BuildingsTabLayout.backgroundOpacity))
       .shadow(
         color: theme.label.primary.opacity(BuildingsTabLayout.cardShadowOpacity),
         radius: BuildingsTabLayout.cardShadowRadius)
@@ -196,6 +198,14 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        theme.toggleColorScheme(from: colorScheme)
+      } label: {
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
+          .resizable()
+          .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
+      }
+
       Button {
         buildingViewModel.getBuildingsInOrder()
       } label: {
@@ -217,7 +227,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
     }
     .padding(BuildingsTabLayout.toolbarIconPadding)
-    .foregroundStyle(theme.label.tertiary)
+    .foregroundStyle(theme.accent.primary)
   }
 
 }
@@ -256,6 +266,7 @@ private struct PreviewWrapper: View {
       EmptyView() // Rooms destination
     }
     .environment(viewModel)
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
   }
 }
