@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.devsoc.freerooms.core.network"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
@@ -47,6 +47,7 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     "api"(libs.okhttp)
     "api"(libs.okhttp.logging)
+    "api"(libs.apollo.normalized.cache)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

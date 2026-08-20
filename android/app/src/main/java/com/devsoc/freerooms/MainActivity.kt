@@ -49,6 +49,10 @@ class MainActivity : ComponentActivity() {
         MainApplication.RoomViewModelFactory
     }
 
+    private val mapViewModel by viewModels<com.devsoc.freerooms.feature.map.data.MapViewModel> {
+        MainApplication.MapViewModelFactory
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
@@ -140,9 +144,11 @@ class MainActivity : ComponentActivity() {
                             modifier = modifier,
                         )
                     },
-                    mapContent = { modifier ->
+                    mapContent = { modifier, onBuildingClick ->
                         MapScreen(
+                            viewModel = mapViewModel,
                             modifier = modifier,
+                            onBuildingClick = { building -> onBuildingClick(building.id) },
                         )
                     },
                     modifier = Modifier.fillMaxSize(),

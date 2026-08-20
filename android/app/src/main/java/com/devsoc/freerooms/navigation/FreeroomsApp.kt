@@ -31,7 +31,7 @@ internal fun FreeroomsApp(
         Modifier,
         onBack: () -> Unit,
     ) -> Unit,
-    mapContent: @Composable (Modifier) -> Unit,
+    mapContent: @Composable (Modifier, onBuildingClick: (String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()

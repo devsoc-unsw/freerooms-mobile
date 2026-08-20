@@ -11,6 +11,7 @@ val Gold = Color(0xFFFFA600)
 val Red = Color(0xFFFF3B30)
 val Brown = Color(0xFF632410)
 val White = Color(0xFFFFFFFF)
+val Lime = Color(0xFF34c759)
 
 val DarkGray = Color(0xFF1C1C1E)
 val DarkGray2 = Color(0xFF3A3A3C)

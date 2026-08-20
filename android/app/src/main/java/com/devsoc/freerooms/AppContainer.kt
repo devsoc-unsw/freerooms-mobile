@@ -13,6 +13,8 @@ import com.devsoc.freerooms.core.network.TextListAdapter
 import com.devsoc.freerooms.feature.buildings.data.LiveBuildingRepository
 import com.devsoc.freerooms.feature.rooms.data.LiveRoomRepository
 import com.devsoc.freerooms.network.type._Text
+import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
+import com.apollographql.apollo.cache.normalized.normalizedCache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -30,10 +32,12 @@ class AppContainer {
         }
         .build()
 
+    val cacheFactory = MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
     private val apolloClient = ApolloClient.Builder()
         .serverUrl(NetworkConstants.SERVER_URL)
         .okHttpClient(okHttpClient)
         .addCustomScalarAdapter(_Text.type, TextListAdapter)
+        .normalizedCache(cacheFactory)
         .build()
 
     private val graphQLClient = LiveGraphQLClient(apolloClient)

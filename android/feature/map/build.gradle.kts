@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.devsoc.freerooms.feature.map"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
@@ -25,6 +25,8 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":feature:buildings"))
+    implementation(libs.androidx.compose.ui.text)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -33,6 +35,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.ui.graphics)
     implementation(libs.maps.compose)
     testImplementation(libs.junit)
 }

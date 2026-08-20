@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.devsoc.freerooms.feature.rooms"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
