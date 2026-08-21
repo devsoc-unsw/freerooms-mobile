@@ -63,7 +63,19 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
   }
   
   public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
-    fatalError()
+    // Currently no caching is performed
+    let query = BuildingRoomsQuery(buildingId: buildingId)
+    do {
+      let result = try await client.fetch(query: query)
+      guard let data = result.data else {
+        return .failure(.noDataAvailable)
+      }
+      // Convert the rooms
+      let rooms = data.rooms.compactMap(Room.init(from:))
+      return .success(rooms)
+    } catch {
+      return .failure(.connectivity)
+    }
   }
   
 }

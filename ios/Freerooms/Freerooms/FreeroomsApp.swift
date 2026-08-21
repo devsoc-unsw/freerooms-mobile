@@ -249,12 +249,13 @@ struct FreeroomsApp: App {
     -> RoomInteractor
   {
     do {
-      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
+//      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
       let favouriteService = try SwiftDataFavoriteRoomService(context: sharedContainer.mainContext)
-      let roomLoader = LiveRoomLoader(
-        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
-        roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
+//      let roomLoader = LiveRoomLoader(
+//        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
+//        roomStatusLoader: roomStatusLoader,
+//        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
+      let roomLoader = LiveGraphQLRoomLoader(client: DevSoc.createLiveApolloClient(using: ApolloStore()))
       return RoomInteractor(
         roomService: LiveRoomService(
           roomLoader: roomLoader,

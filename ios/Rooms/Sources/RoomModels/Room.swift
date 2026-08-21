@@ -350,4 +350,5 @@ import Playgrounds
 #Playground {
   let client = DevSoc.createLiveApolloClient(using: ApolloStore())
   let result = try await client.fetch(query: AllRoomsQuery())
+  extendLifetime(result)
 }
