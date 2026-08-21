@@ -25,7 +25,7 @@ public enum RoomLoaderError: Error {
 
 // MARK: - RoomLoader
 
-// FIXME: Make this nonisolated
+
 
 @Stubbable
 public protocol RoomLoader {
@@ -39,12 +39,15 @@ nonisolated
 public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
   
   public init(
-    client: ApolloClient)
+    client: ApolloClient,
+    roomStatusLoader: (any RoomStatusLoader)?)
   {
     self.client = client
+    self.roomStatusLoader = roomStatusLoader
   }
   
   public let client: ApolloClient
+  public let roomStatusLoader: (any RoomStatusLoader)?
   
   public func fetch() async -> Result<[Room], RoomLoaderError> {
     // Currently no caching is performed
@@ -55,7 +58,8 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
         return .failure(.noDataAvailable)
       }
       // Convert the rooms
-      let rooms = data.rooms.compactMap(Room.init(from:))
+      var rooms = data.rooms.compactMap(Room.init(from:))
+      await _combineRoomStatuses(into: &rooms)
       return .success(rooms)
     } catch {
       return .failure(.connectivity)
@@ -71,11 +75,38 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
         return .failure(.noDataAvailable)
       }
       // Convert the rooms
-      let rooms = data.rooms.compactMap(Room.init(from:))
+      var rooms = data.rooms.compactMap(Room.init(from:))
+      await _combineRoomStatuses(into: &rooms)
       return .success(rooms)
     } catch {
       return .failure(.connectivity)
     }
+  }
+  
+  private func _combineRoomStatuses(into rooms: inout [Room]) async {
+    guard let roomStatusLoader else { return }
+    
+    guard case .success(let roomStatuses) = await roomStatusLoader.fetchRoomStatus() else {
+      return
+    }
+    
+    struct RoomKey: Hashable {
+      let buildingId: String
+      let roomId: String
+    }
+    let collected = [RoomKey: RoomStatus](uniqueKeysWithValues: roomStatuses.flatMap { (buildingId, buildingRoomStatus) in
+      return buildingRoomStatus.roomStatuses.map { roomId, roomStatus in
+        return (RoomKey(buildingId: buildingId, roomId: roomId), roomStatus)
+      }
+    })
+    
+    let dateFormatStyle = Date.ISO8601FormatStyle()
+    for i in rooms.indices {
+      guard let roomStatus = collected[RoomKey(buildingId: rooms[i].buildingId, roomId: rooms[i].roomNumber)] else { continue }
+      rooms[i].status   = roomStatus.availability
+      rooms[i].endTime  = try? dateFormatStyle.parse(roomStatus.endtime)
+    }
+    
   }
   
 }
@@ -202,4 +233,12 @@ public final class LiveRoomLoader: RoomLoader {
       return result
     }
   }
+}
+
+// MARK: - Extensions
+
+extension MutableCollection {
+  
+  
+  
 }

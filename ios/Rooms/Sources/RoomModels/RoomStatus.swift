@@ -10,13 +10,22 @@ import Foundation
 // MARK: - RoomStatus
 
 /// Represents the status of an individual room
-public struct RoomStatus: Codable, Equatable, Sendable {
+public nonisolated struct RoomStatus: Codable, Equatable, Sendable {
   public let status: String
   public let endtime: String
 
   public init(status: String, endtime: String) {
     self.status = status
     self.endtime = endtime
+  }
+  
+  public var availability: RoomAvailability {
+    switch status {
+    case "free": .available
+    case "soon": .availableSoon
+    case "busy": .unavailable
+    default: .unknown
+    }
   }
 }
 

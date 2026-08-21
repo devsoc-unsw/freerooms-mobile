@@ -8,7 +8,7 @@
 // MARK: - GridReference
 
 /// Represents the campus grid location of a building based on its ID.
-public struct GridReference {
+public nonisolated struct GridReference {
   public let campusCode: String
   public let sectionCode: String
   public let sectionNumber: Int

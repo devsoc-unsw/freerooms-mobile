@@ -255,7 +255,9 @@ struct FreeroomsApp: App {
 //        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
 //        roomStatusLoader: roomStatusLoader,
 //        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
-      let roomLoader = LiveGraphQLRoomLoader(client: DevSoc.createLiveApolloClient(using: ApolloStore()))
+      let roomLoader = LiveGraphQLRoomLoader(
+        client: DevSoc.createLiveApolloClient(using: ApolloStore()),
+        roomStatusLoader: roomStatusLoader)
       return RoomInteractor(
         roomService: LiveRoomService(
           roomLoader: roomLoader,

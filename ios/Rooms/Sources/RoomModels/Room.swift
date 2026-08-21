@@ -19,11 +19,15 @@ public enum RoomAvailability: String, Codable {
   case availableSoon
   case unavailable
   case unknown
+  
+  init(from status: RoomStatus) {
+    self = status.availability
+  }
 }
 
 // MARK: - Room
 
-public struct Room: Equatable, Identifiable, Hashable {
+public nonisolated struct Room: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
@@ -69,39 +73,6 @@ public struct Room: Equatable, Identifiable, Hashable {
     self.status = status
     self.endTime = endTime
     self.overallRating = overallRating
-  }
-
-  // MARK: GraphQL Conversion
-
-  /// Create a new ``Room`` from a GraphQL query result
-  public init?(from graphQLRoom: DevSocAPI.AllRoomsQuery.Data.Room) {
-    guard
-      let lat = Double(graphQLRoom.lat),
-      let long = Double(graphQLRoom.long)
-    else {
-      return nil
-    }
-
-    self.init(
-      abbreviation: graphQLRoom.abbr,
-      accessibility: graphQLRoom.accessibility,
-      audioVisual: graphQLRoom.audiovisual,
-      buildingId: graphQLRoom.buildingId,
-      capacity: graphQLRoom.capacity,
-      floor: graphQLRoom.floor,
-      id: graphQLRoom.id,
-      infoTechnology: graphQLRoom.infotechnology,
-      latitude: lat,
-      longitude: long,
-      microphone: graphQLRoom.microphone,
-      name: graphQLRoom.name,
-      school: graphQLRoom.school,
-      seating: graphQLRoom.seating,
-      usage: graphQLRoom.usage,
-      service: graphQLRoom.service,
-      writingMedia: graphQLRoom.writingMedia,
-      endTime: nil,
-      overallRating: nil)
   }
 
   // MARK: Public
