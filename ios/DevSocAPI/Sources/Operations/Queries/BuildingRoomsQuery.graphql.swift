@@ -4,14 +4,20 @@
 @_exported import ApolloAPI
 @_spi(Execution) @_spi(Unsafe) import ApolloAPI
 
-nonisolated public struct AllRoomQuery: GraphQLQuery {
-  public static let operationName: String = "AllRoom"
+nonisolated public struct BuildingRoomsQuery: GraphQLQuery {
+  public static let operationName: String = "BuildingRooms"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query AllRoom { rooms { __typename abbr accessibility audiovisual buildingId capacity floor id infotechnology lat long microphone name school seating service usage writingMedia } }"#
+      #"query BuildingRooms($buildingId: String! = "K-G27") { rooms(where: { buildingId: { _eq: $buildingId } }) { __typename abbr accessibility audiovisual capacity floor id infotechnology lat long microphone name school seating service usage writingMedia buildingId } }"#
     ))
 
-  public init() {}
+  public var buildingId: String
+
+  public init(buildingId: String = "K-G27") {
+    self.buildingId = buildingId
+  }
+
+  @_spi(Unsafe) public var __variables: Variables? { ["buildingId": buildingId] }
 
   nonisolated public struct Data: DevSocAPI.SelectionSet {
     @_spi(Unsafe) public let __data: DataDict
@@ -19,10 +25,10 @@ nonisolated public struct AllRoomQuery: GraphQLQuery {
 
     @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { DevSocAPI.Objects.Query_root }
     @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-      .field("rooms", [Room].self),
+      .field("rooms", [Room].self, arguments: ["where": ["buildingId": ["_eq": .variable("buildingId")]]]),
     ] }
     @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-      AllRoomQuery.Data.self
+      BuildingRoomsQuery.Data.self
     ] }
 
     /// An array relationship
@@ -41,7 +47,6 @@ nonisolated public struct AllRoomQuery: GraphQLQuery {
         .field("abbr", String.self),
         .field("accessibility", [DevSocAPI._Text].self),
         .field("audiovisual", [DevSocAPI._Text].self),
-        .field("buildingId", String.self),
         .field("capacity", Int.self),
         .field("floor", DevSocAPI.Floortypeenum?.self),
         .field("id", String.self),
@@ -55,15 +60,15 @@ nonisolated public struct AllRoomQuery: GraphQLQuery {
         .field("service", [DevSocAPI._Text].self),
         .field("usage", String.self),
         .field("writingMedia", [DevSocAPI._Text].self),
+        .field("buildingId", String.self),
       ] }
       @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-        AllRoomQuery.Data.Room.self
+        BuildingRoomsQuery.Data.Room.self
       ] }
 
       public var abbr: String { __data["abbr"] }
       public var accessibility: [DevSocAPI._Text] { __data["accessibility"] }
       public var audiovisual: [DevSocAPI._Text] { __data["audiovisual"] }
-      public var buildingId: String { __data["buildingId"] }
       public var capacity: Int { __data["capacity"] }
       public var floor: DevSocAPI.Floortypeenum? { __data["floor"] }
       public var id: String { __data["id"] }
@@ -77,6 +82,7 @@ nonisolated public struct AllRoomQuery: GraphQLQuery {
       public var service: [DevSocAPI._Text] { __data["service"] }
       public var usage: String { __data["usage"] }
       public var writingMedia: [DevSocAPI._Text] { __data["writingMedia"] }
+      public var buildingId: String { __data["buildingId"] }
     }
   }
 }

@@ -198,7 +198,7 @@ nonisolated extension _AsyncSequenceOfOne: Apollo.AsyncChunkSequence where Eleme
 
 // MARK: - _GraphQLQueryMetatypeWrapper
 
-/// Needed because metatypes are not Sendable
+/// Needed because metatypes are not Hashable for some reason, even though their runtime representation is just a pointer.
 nonisolated private struct _GraphQLQueryMetatypeWrapper: Hashable {
   let value: any GraphQLQuery.Type
 

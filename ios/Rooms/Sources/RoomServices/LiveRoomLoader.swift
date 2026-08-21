@@ -11,6 +11,7 @@ import RoomModels
 import VISOR
 import Apollo
 import DevSocAPI
+import Networking
 
 // MARK: - RoomLoaderError
 
@@ -46,7 +47,19 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
   public let client: ApolloClient
   
   public func fetch() async -> Result<[Room], RoomLoaderError> {
-    fatalError()
+    // Currently no caching is performed
+    let query = AllRoomsQuery()
+    do {
+      let result = try await client.fetch(query: query)
+      guard let data = result.data else {
+        return .failure(.noDataAvailable)
+      }
+      // Convert the rooms
+      let rooms = data.rooms.compactMap(Room.init(from:))
+      return .success(rooms)
+    } catch {
+      return .failure(.connectivity)
+    }
   }
   
   public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
@@ -57,6 +70,7 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
 
 // MARK: - LiveRoomLoader
 
+@available(*, deprecated, message: "Use LiveGraphQLRoomLoader instead")
 public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle

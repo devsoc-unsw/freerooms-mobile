@@ -1,9 +1,8 @@
-query AllRooms {
-  rooms {
+query BuildingRooms($buildingId: String! = "K-G27") {
+  rooms(where: { buildingId: { _eq: $buildingId } }) {
     abbr
     accessibility
     audiovisual
-    buildingId
     capacity
     floor
     id
@@ -17,5 +16,6 @@ query AllRooms {
     service
     usage
     writingMedia
+    buildingId
   }
 }
