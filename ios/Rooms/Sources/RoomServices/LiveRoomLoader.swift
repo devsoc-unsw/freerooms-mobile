@@ -35,8 +35,7 @@ public protocol RoomLoader {
 
 // MARK: - LiveGraphQLRoomLoader
 
-nonisolated
-public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
+public final actor LiveGraphQLRoomLoader: RoomLoader {
   
   public init(
     client: ApolloClient,
@@ -49,6 +48,8 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
   public let client: ApolloClient
   public let roomStatusLoader: (any RoomStatusLoader)?
   
+  private var lastFetchedRooms: [Room]?
+  
   public func fetch() async -> Result<[Room], RoomLoaderError> {
     // Currently no caching is performed
     let query = AllRoomsQuery()
@@ -60,6 +61,7 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
       // Convert the rooms
       var rooms = data.rooms.compactMap(Room.init(from:))
       await _combineRoomStatuses(into: &rooms)
+      lastFetchedRooms = rooms
       return .success(rooms)
     } catch {
       return .failure(.connectivity)
@@ -67,19 +69,16 @@ public final class LiveGraphQLRoomLoader: RoomLoader, Sendable {
   }
   
   public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
-    // Currently no caching is performed
-    let query = BuildingRoomsQuery(buildingId: buildingId)
     do {
-      let result = try await client.fetch(query: query)
-      guard let data = result.data else {
-        return .failure(.noDataAvailable)
+      let rooms: [Room]
+      if let lastFetchedRooms {
+        rooms = lastFetchedRooms
+      } else {
+        let fetchResult = await fetch()
+        guard case .success(let r) = fetchResult else { return fetchResult }
+        rooms = r
       }
-      // Convert the rooms
-      var rooms = data.rooms.compactMap(Room.init(from:))
-      await _combineRoomStatuses(into: &rooms)
-      return .success(rooms)
-    } catch {
-      return .failure(.connectivity)
+      return .success(rooms.filter { $0.buildingId == buildingId })
     }
   }
   
