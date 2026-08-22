@@ -5,13 +5,13 @@
 //  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
+import Apollo
+import DevSocAPI
 import Foundation
+import Networking
 import Persistence
 import RoomModels
 import VISOR
-import Apollo
-import DevSocAPI
-import Networking
 
 // MARK: - RoomLoaderError
 
@@ -25,8 +25,6 @@ public enum RoomLoaderError: Error {
 
 // MARK: - RoomLoader
 
-
-
 @Stubbable
 public protocol RoomLoader {
   func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
@@ -36,7 +34,9 @@ public protocol RoomLoader {
 // MARK: - LiveGraphQLRoomLoader
 
 public final actor LiveGraphQLRoomLoader: RoomLoader {
-  
+
+  // MARK: Lifecycle
+
   public init(
     client: ApolloClient,
     roomStatusLoader: (any RoomStatusLoader)?)
@@ -44,12 +44,12 @@ public final actor LiveGraphQLRoomLoader: RoomLoader {
     self.client = client
     self.roomStatusLoader = roomStatusLoader
   }
-  
+
+  // MARK: Public
+
   public let client: ApolloClient
   public let roomStatusLoader: (any RoomStatusLoader)?
-  
-  private var lastFetchedRooms: [Room]?
-  
+
   public func fetch() async -> Result<[Room], RoomLoaderError> {
     // Currently no caching is performed
     let query = AllRoomsQuery()
@@ -61,53 +61,56 @@ public final actor LiveGraphQLRoomLoader: RoomLoader {
       // Convert the rooms
       var rooms = data.rooms.compactMap(Room.init(from:))
       await _combineRoomStatuses(into: &rooms)
-      lastFetchedRooms = rooms
       return .success(rooms)
     } catch {
       return .failure(.connectivity)
     }
   }
-  
+
   public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
+    let query = BuildingRoomsQuery(buildingId: buildingId)
     do {
-      let rooms: [Room]
-      if let lastFetchedRooms {
-        rooms = lastFetchedRooms
-      } else {
-        let fetchResult = await fetch()
-        guard case .success(let r) = fetchResult else { return fetchResult }
-        rooms = r
+      let result = try await client.fetch(query: query)
+      guard let data = result.data else {
+        return .failure(.noDataAvailable)
       }
-      return .success(rooms.filter { $0.buildingId == buildingId })
+      // Convert the rooms
+      var rooms = data.rooms.compactMap(Room.init(from:))
+      await _combineRoomStatuses(into: &rooms)
+      return .success(rooms)
+    } catch {
+      return .failure(.connectivity)
     }
   }
-  
+
+  // MARK: Private
+
   private func _combineRoomStatuses(into rooms: inout [Room]) async {
     guard let roomStatusLoader else { return }
-    
+
     guard case .success(let roomStatuses) = await roomStatusLoader.fetchRoomStatus() else {
       return
     }
-    
+
+    // Tuples are not Hashable yet, even if members are Hashable
     struct RoomKey: Hashable {
       let buildingId: String
       let roomId: String
     }
-    let collected = [RoomKey: RoomStatus](uniqueKeysWithValues: roomStatuses.flatMap { (buildingId, buildingRoomStatus) in
-      return buildingRoomStatus.roomStatuses.map { roomId, roomStatus in
-        return (RoomKey(buildingId: buildingId, roomId: roomId), roomStatus)
+    let collected = [RoomKey: RoomStatus](uniqueKeysWithValues: roomStatuses.flatMap { buildingId, buildingRoomStatus in
+      buildingRoomStatus.roomStatuses.map { roomId, roomStatus in
+        (RoomKey(buildingId: buildingId, roomId: roomId), roomStatus)
       }
     })
-    
+
     let dateFormatStyle = Date.ISO8601FormatStyle()
     for i in rooms.indices {
       guard let roomStatus = collected[RoomKey(buildingId: rooms[i].buildingId, roomId: rooms[i].roomNumber)] else { continue }
-      rooms[i].status   = roomStatus.availability
-      rooms[i].endTime  = try? dateFormatStyle.parse(roomStatus.endtime)
+      rooms[i].status = roomStatus.availability
+      rooms[i].endTime = try? dateFormatStyle.parse(roomStatus.endtime)
     }
-    
   }
-  
+
 }
 
 // MARK: - LiveRoomLoader
@@ -236,8 +239,4 @@ public final class LiveRoomLoader: RoomLoader {
 
 // MARK: - Extensions
 
-extension MutableCollection {
-  
-  
-  
-}
+extension MutableCollection { }

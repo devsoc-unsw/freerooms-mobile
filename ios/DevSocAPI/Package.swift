@@ -23,8 +23,6 @@ let package = Package(
       dependencies: [
         .product(name: "ApolloAPI", package: "apollo-ios"),
       ],
-      path: "./Sources"
-    ),
+      path: "./Sources"),
   ],
-  swiftLanguageModes: [.v6, .v5]
-)
+  swiftLanguageModes: [.v6, .v5])

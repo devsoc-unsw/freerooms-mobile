@@ -8,12 +8,12 @@ nonisolated public struct BuildingRoomsQuery: GraphQLQuery {
   public static let operationName: String = "BuildingRooms"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query BuildingRooms($buildingId: String! = "K-G27") { rooms(where: { buildingId: { _eq: $buildingId } }) { __typename abbr accessibility audiovisual capacity floor id infotechnology lat long microphone name school seating service usage writingMedia buildingId } }"#
+      #"query BuildingRooms($buildingId: String!) { rooms(where: { buildingId: { _eq: $buildingId } }) { __typename abbr accessibility audiovisual capacity floor id infotechnology lat long microphone name school seating service usage writingMedia buildingId } }"#
     ))
 
   public var buildingId: String
 
-  public init(buildingId: String = "K-G27") {
+  public init(buildingId: String) {
     self.buildingId = buildingId
   }
 

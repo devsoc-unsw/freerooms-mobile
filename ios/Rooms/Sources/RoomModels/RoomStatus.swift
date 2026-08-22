@@ -18,7 +18,7 @@ public nonisolated struct RoomStatus: Codable, Equatable, Sendable {
     self.status = status
     self.endtime = endtime
   }
-  
+
   public var availability: RoomAvailability {
     switch status {
     case "free": .available

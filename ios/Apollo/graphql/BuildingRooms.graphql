@@ -1,4 +1,4 @@
-query BuildingRooms($buildingId: String! = "K-G27") {
+query BuildingRooms($buildingId: String!) {
   rooms(where: { buildingId: { _eq: $buildingId } }) {
     abbr
     accessibility

@@ -19,8 +19,8 @@ public enum RoomAvailability: String, Codable {
   case availableSoon
   case unavailable
   case unknown
-  
-  init(from status: RoomStatus) {
+
+  public init(from status: RoomStatus) {
     self = status.availability
   }
 }
@@ -252,7 +252,7 @@ public nonisolated struct Room: Equatable, Identifiable, Hashable, Sendable {
 
 }
 
-// MARK: - GraphQL Conversion
+// MARK: - GraphQLRoomProtocol
 
 public protocol GraphQLRoomProtocol {
   var abbr: String { get }
@@ -275,7 +275,7 @@ public protocol GraphQLRoomProtocol {
 }
 
 extension Room {
-  
+
   public init?(from graphQLRoom: some GraphQLRoomProtocol) {
     guard
       let lat = Double(graphQLRoom.lat),
@@ -305,11 +305,16 @@ extension Room {
       endTime: nil,
       overallRating: nil)
   }
-  
+
 }
 
-extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol {}
-extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol {}
+// MARK: - DevSocAPI.AllRoomsQuery.Data.Room + GraphQLRoomProtocol
+
+extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+
+// MARK: - DevSocAPI.BuildingRoomsQuery.Data.Room + GraphQLRoomProtocol
+
+extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - Testing
 
