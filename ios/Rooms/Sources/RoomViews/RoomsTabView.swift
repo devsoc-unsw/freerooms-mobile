@@ -139,6 +139,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
@@ -148,6 +149,17 @@ public struct RoomsTabView<Destination: View>: View {
   ]
 
   private let roomDestinationBuilderView: (Room) -> Destination
+
+  private var roomSectionBuildings: [Building] {
+    let buildings = buildingViewModel.allBuildings
+    if !buildings.isEmpty {
+      return buildings
+    }
+
+    return roomViewModel.roomsByBuildingId.keys
+      .sorted()
+      .map { Self.placeholderBuilding(id: $0, name: $0) }
+  }
 
   private var searchTextBinding: Binding<String> {
     Binding(
@@ -304,7 +316,7 @@ public struct RoomsTabView<Destination: View>: View {
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
-      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+      if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
         List {
           ForEach(placeholderRooms) { room in
@@ -325,14 +337,14 @@ public struct RoomsTabView<Destination: View>: View {
         .background(theme.background.primary)
       } else {
         List {
-          roomsListView(buildingViewModel.allBuildings)
+          roomsListView(roomSectionBuildings)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
         .background(theme.background.primary)
       }
     } else {
-      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+      if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
         ScrollView {
           LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
@@ -357,7 +369,7 @@ public struct RoomsTabView<Destination: View>: View {
           radius: RoomLayoutConstants.cardShadowRadius)
       } else {
         ScrollView {
-          roomsCardView(buildingViewModel.allBuildings)
+          roomsCardView(roomSectionBuildings)
         }
         .background(theme.background.primary)
         .shadow(
@@ -369,6 +381,14 @@ public struct RoomsTabView<Destination: View>: View {
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        theme.toggleColorScheme(from: colorScheme)
+      } label: {
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+
       Button {
         roomViewModel.getRoomsInOrder()
       } label: {
@@ -391,6 +411,16 @@ public struct RoomsTabView<Destination: View>: View {
     }
     .padding(RoomLayoutConstants.toolbarIconPadding)
     .foregroundStyle(theme.accent.primary)
+  }
+
+  private static func placeholderBuilding(id: String, name: String) -> Building {
+    Building(
+      name: name,
+      id: id,
+      latitude: 0,
+      longitude: 0,
+      aliases: [],
+      numberOfAvailableRooms: 0)
   }
 }
 

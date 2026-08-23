@@ -53,7 +53,7 @@ public final class Theme {
     public let yellowBackground = Color("YellowBackground", bundle: .module)
   }
 
-  /// Colors resolve dynamically from the asset catalog based on the system appearance.
+  /// Colors resolve dynamically from the asset catalog based on the app's active appearance.
   public static let `default` = Theme()
 
   public let accent = Accent()
@@ -64,6 +64,8 @@ public final class Theme {
   public let white = Color("White", bundle: .module)
   public let black = Color("Black", bundle: .module)
   public let list = ListColors()
+
+  public var preferredColorScheme: ColorScheme?
 
   /// DO NOT CALL IN PREVIEWS
   public static func registerFont(named name: String) {
@@ -80,6 +82,12 @@ public final class Theme {
       fatalError("Could not set font.")
     }
   }
+
+  /// Toggles the color scheme from the current scheme.
+  public func toggleColorScheme(from currentScheme: ColorScheme) {
+    preferredColorScheme = currentScheme == .light ? .dark : .light
+  }
+
 }
 
 extension String {

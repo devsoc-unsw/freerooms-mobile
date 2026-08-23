@@ -1,0 +1,23 @@
+query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) {
+  bookings(
+    where: {
+      _and: [
+        { start: { _lt: $weekEnd } }
+        { end: { _gt: $weekStart } }
+      ]
+    }
+    order_by: [{ start: asc }]
+  ) {
+    name
+    roomId
+    start
+    end
+    room {
+      name
+      building {
+        id
+        name
+      }
+    }
+  }
+}
