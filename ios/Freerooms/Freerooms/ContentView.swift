@@ -25,11 +25,12 @@ struct ContentView: View {
   @Environment(\.buildingViewModel) var buildingViewModel
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
-  @State var tabController = TabController(initialTab: .buildings)
+  @Environment(TabController.self) var tabController
   @State var selectedRoomsView = ViewOrientation.List
   @State var selectedBuildingsView = ViewOrientation.List
 
   var body: some View {
+    @Bindable var tabController = tabController
     TabView(selection: $tabController.currentTab) {
       BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
         RoomsListView(building: building, path: $buildingPath, imageProvider: {
@@ -62,7 +63,6 @@ struct ContentView: View {
     .environment(buildingViewModel)
     .tint(theme.accent.primary)
     .preferredColorScheme(theme.preferredColorScheme)
-    .onAppear(perform: tabController.setAsCurrent)
   }
 
   func roomDetailsView(for room: Room) -> some View {

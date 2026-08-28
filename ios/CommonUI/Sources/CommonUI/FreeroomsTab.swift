@@ -7,7 +7,7 @@
 
 import AppIntents
 
-public nonisolated enum FreeroomsTab: String {
+public nonisolated enum FreeroomsTab: String, CaseIterable {
   case buildings = "Buildings"
   case map = "Map"
   case rooms = "Rooms"
@@ -33,10 +33,6 @@ public final class TabController {
   
   public init(initialTab: FreeroomsTab = .buildings) {
     self.currentTab = initialTab
-  }
-  
-  public func setAsCurrent() {
-    AppDependencyManager.shared.add(dependency: self)
   }
   
 }

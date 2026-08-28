@@ -24,6 +24,7 @@ import RoomServices
 import RoomViewModels
 import SwiftData
 import SwiftUI
+import AppIntents
 
 // MARK: - FreeroomsApp
 
@@ -87,6 +88,7 @@ struct FreeroomsApp: App {
         .environment(buildingViewModel)
         .environment(mapViewModel)
         .environment(roomViewModel)
+        .environment(tabController)
     }
   }
 
@@ -181,6 +183,7 @@ struct FreeroomsApp: App {
   @State private var buildingViewModel: LiveBuildingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
+  @State private var tabController: TabController = makeTabController()
 
   // MARK: - Factories
 
@@ -320,4 +323,16 @@ struct FreeroomsApp: App {
       buildingRatingLoader: buildingRatingLoader,
       buildingsCache: buildingsCache)
   }
+  
+  // MARK: - Tab Controller
+  
+  private static func makeTabController() -> TabController {
+    let controller = TabController()
+    
+    let dependencyManager = AppDependencyManager.shared
+    dependencyManager.add(dependency: controller)
+    
+    return controller
+  }
+  
 }
