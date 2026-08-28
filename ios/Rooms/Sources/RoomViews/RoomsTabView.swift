@@ -40,7 +40,7 @@ public struct RoomsTabView<Destination: View>: View {
     .tabItem {
       Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
     }
-    .tag("Rooms")
+    .tag(FreeroomsTab.rooms)
   }
 
   // MARK: Internal

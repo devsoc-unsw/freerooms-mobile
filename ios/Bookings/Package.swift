@@ -11,9 +11,15 @@ let package = Package(
   products: [
     .library(name: "BookingViews", targets: ["BookingViews"]),
   ],
+  dependencies: [
+    .package(name: "CommonUI", path: "../CommonUI"),
+  ],
   targets: [
     .target(
       name: "BookingViews",
+      dependencies: [
+        .product(name: "CommonUI", package: "CommonUI"),
+      ],
       swiftSettings: .defaultSettings),
 //        .testTarget(
 //            name: "BookingsTests",

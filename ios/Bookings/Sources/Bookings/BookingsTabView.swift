@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CommonUI
 
 public struct BookingsTabView: View {
   public init() { }
@@ -15,6 +16,6 @@ public struct BookingsTabView: View {
       .tabItem {
         Label("Bookings", systemImage: "book.pages")
       }
-      .tag("Bookings")
+      .tag(FreeroomsTab.bookings)
   }
 }
