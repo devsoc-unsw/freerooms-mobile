@@ -2,11 +2,15 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import CompilerPluginSupport
 
 let package = Package(
   name: "FreeroomsIntents",
   platforms: [
+    .macOS(.v14),
     .iOS(.v17),
+    .macCatalyst(.v17),
+    .visionOS(.v1),
   ],
   products: [
     // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -17,6 +21,7 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "CommonUI", path: "../CommonUI"),
+    .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,11 +29,19 @@ let package = Package(
     .target(
       name: "FreeroomsIntents",
       dependencies: [
+        .target(name: "FreeroomsIntentsMacros"),
         .product(name: "CommonUI", package: "CommonUI"),
       ],
       swiftSettings: swiftSettings
     ),
-    
+    .macro(
+      name: "FreeroomsIntentsMacros",
+      dependencies: [
+        .product(name: "SwiftSyntax", package: "swift-syntax"),
+        .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+      ],
+      swiftSettings: swiftSettings
+    ),
   ],
   swiftLanguageModes: [.v6]
 )
