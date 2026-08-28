@@ -26,3 +26,17 @@ nonisolated extension FreeroomsTab: AppEnum {
   ]
   
 }
+
+@Observable @MainActor
+public final class TabController {
+  public var currentTab: FreeroomsTab
+  
+  public init(initialTab: FreeroomsTab = .buildings) {
+    self.currentTab = initialTab
+  }
+  
+  public func setAsCurrent() {
+    AppDependencyManager.shared.add(dependency: self)
+  }
+  
+}

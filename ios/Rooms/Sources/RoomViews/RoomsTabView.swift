@@ -21,7 +21,7 @@ public struct RoomsTabView<Destination: View>: View {
   /// init some viewModel to depend on
   public init(
     path: Binding<NavigationPath>,
-    selectedTab: Binding<String>,
+    selectedTab: Binding<FreeroomsTab>,
     selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
@@ -38,14 +38,14 @@ public struct RoomsTabView<Destination: View>: View {
       mainContent
     }
     .tabItem {
-      Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
+      Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
     }
     .tag(FreeroomsTab.rooms)
   }
 
   // MARK: Internal
 
-  @Binding var selectedTab: String
+  @Binding var selectedTab: FreeroomsTab
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
   @State var searchText = ""
@@ -433,7 +433,7 @@ private struct PreviewWrapper: View {
   var body: some View {
     RoomsTabView<EmptyView>(
       path: $path,
-      selectedTab: .constant("Rooms"),
+      selectedTab: .constant(.rooms),
       selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
