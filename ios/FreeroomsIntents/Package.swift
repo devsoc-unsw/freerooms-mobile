@@ -55,4 +55,5 @@ let swiftSettings: [SwiftSetting] = [
   .enableUpcomingFeature("MemberImportVisibility"),
   .enableUpcomingFeature("InferIsolatedConformances"),
   .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
 ]

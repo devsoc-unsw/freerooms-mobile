@@ -26,7 +26,7 @@ public struct OpenTabIntentMacro: DeclarationMacro {
     }
 
     // Construct the new type name
-    let intentTypeName = "OpenTabIntent\(tabName.capitalized)"
+    let intentTypeName = "\(tabName.capitalized)"
 
     let typeDecl: DeclSyntax = """
       public struct \(raw: intentTypeName): AppIntent {

@@ -17,10 +17,10 @@ struct OpenTabWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: EmptyTimelineProvider()) { _ in
       VStack {
-        Button("Buildings", intent: TabIntents.OpenTabIntentBuildings())
-        Button("Map", intent: TabIntents.OpenTabIntentMap())
-        Button("Rooms", intent: TabIntents.OpenTabIntentRooms())
-        Button("Bookings", intent: TabIntents.OpenTabIntentBookings())
+        Button("Buildings", intent: TabIntents.Buildings())
+        Button("Map", intent: TabIntents.Map())
+        Button("Rooms", intent: TabIntents.Rooms())
+        Button("Bookings", intent: TabIntents.Bookings())
       }
     }
     .configurationDisplayName("Open Tab")
