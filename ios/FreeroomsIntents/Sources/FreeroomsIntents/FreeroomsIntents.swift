@@ -3,4 +3,4 @@
 
 import AppIntents
 
-public struct FreeroomsIntentsPackage: AppIntentsPackage {}
+public struct FreeroomsIntentsPackage: AppIntentsPackage { }

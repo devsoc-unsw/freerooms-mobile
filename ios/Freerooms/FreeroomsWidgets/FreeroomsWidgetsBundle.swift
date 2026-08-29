@@ -5,10 +5,10 @@
 //  Created by Matthew Yuen on 28/8/2026.
 //
 
-import WidgetKit
-import SwiftUI
 import AppIntents
 import FreeroomsIntents
+import SwiftUI
+import WidgetKit
 
 @main
 struct FreeroomsWidgetsBundle: WidgetBundle {

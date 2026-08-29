@@ -7,6 +7,8 @@
 
 import AppIntents
 
+// MARK: - FreeroomsTab
+
 public nonisolated enum FreeroomsTab: String, CaseIterable {
   case buildings = "Buildings"
   case map = "Map"
@@ -14,25 +16,34 @@ public nonisolated enum FreeroomsTab: String, CaseIterable {
   case bookings = "Bookings"
 }
 
+// MARK: AppEnum
+
 nonisolated extension FreeroomsTab: AppEnum {
-  
+
   static public let typeDisplayRepresentation: TypeDisplayRepresentation = "Freerooms Tab"
-  
-  static public let caseDisplayRepresentations: [FreeroomsTab : DisplayRepresentation] = [
+
+  static public let caseDisplayRepresentations: [FreeroomsTab: DisplayRepresentation] = [
     .buildings: DisplayRepresentation(title: "Buildings"),
     .map: DisplayRepresentation(title: "Map"),
     .rooms: DisplayRepresentation(title: "Rooms"),
     .bookings: DisplayRepresentation(title: "Bookings"),
   ]
-  
+
 }
+
+// MARK: - TabController
 
 @Observable @MainActor
 public final class TabController {
-  public var currentTab: FreeroomsTab
-  
+
+  // MARK: Lifecycle
+
   public init(initialTab: FreeroomsTab = .buildings) {
-    self.currentTab = initialTab
+    currentTab = initialTab
   }
-  
+
+  // MARK: Public
+
+  public var currentTab: FreeroomsTab
+
 }

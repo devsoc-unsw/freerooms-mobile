@@ -1,8 +1,8 @@
 // swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-import PackageDescription
 import CompilerPluginSupport
+import PackageDescription
 
 let package = Package(
   name: "FreeroomsIntents",
@@ -16,8 +16,7 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "FreeroomsIntents",
-      targets: ["FreeroomsIntents"]
-    ),
+      targets: ["FreeroomsIntents"]),
   ],
   dependencies: [
     .package(name: "CommonUI", path: "../CommonUI"),
@@ -32,24 +31,25 @@ let package = Package(
         .target(name: "FreeroomsIntentsMacros"),
         .product(name: "CommonUI", package: "CommonUI"),
       ],
-      swiftSettings: swiftSettings
-    ),
+      swiftSettings: swiftSettings),
     .macro(
       name: "FreeroomsIntentsMacros",
       dependencies: [
         .product(name: "SwiftSyntax", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+        .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+        .product(name: "SwiftParser", package: "swift-syntax"),
+        .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
       ],
-      swiftSettings: swiftSettings
-    ),
+      swiftSettings: swiftSettings),
   ],
-  swiftLanguageModes: [.v6]
-)
+  swiftLanguageModes: [.v6])
 
 // MARK: - Swift Settings
 
 let swiftSettings: [SwiftSetting] = [
   .defaultIsolation(nil),
+  .strictMemorySafety(),
   .enableUpcomingFeature("ExistentialAny"),
   .enableUpcomingFeature("InternalImportsByDefault"),
   .enableUpcomingFeature("MemberImportVisibility"),

@@ -6,6 +6,7 @@
 //
 
 import Apollo
+import AppIntents
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -24,7 +25,6 @@ import RoomServices
 import RoomViewModels
 import SwiftData
 import SwiftUI
-import AppIntents
 
 // MARK: - FreeroomsApp
 
@@ -323,16 +323,16 @@ struct FreeroomsApp: App {
       buildingRatingLoader: buildingRatingLoader,
       buildingsCache: buildingsCache)
   }
-  
+
   // MARK: - Tab Controller
-  
+
   private static func makeTabController() -> TabController {
     let controller = TabController()
-    
+
     let dependencyManager = AppDependencyManager.shared
     dependencyManager.add(dependency: controller)
-    
+
     return controller
   }
-  
+
 }

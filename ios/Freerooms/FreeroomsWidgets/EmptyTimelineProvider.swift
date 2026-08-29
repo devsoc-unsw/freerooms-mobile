@@ -9,21 +9,21 @@ import Foundation
 import WidgetKit
 
 struct EmptyTimelineProvider: TimelineProvider {
-  
+
   struct Entry: TimelineEntry {
     var date: Date = Date()
   }
-  
-  func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
+
+  func getSnapshot(in _: Context, completion: @escaping (Entry) -> Void) {
     completion(Entry())
   }
-  
-  func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+
+  func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
     completion(Timeline(entries: [Entry()], policy: .never))
   }
-  
-  func placeholder(in context: Context) -> Entry {
+
+  func placeholder(in _: Context) -> Entry {
     Entry()
   }
-  
+
 }

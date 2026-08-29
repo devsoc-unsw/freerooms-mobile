@@ -5,8 +5,8 @@
 //  Created by Gabriella Lianti on 3/7/2026.
 //
 
-import SwiftUI
 import CommonUI
+import SwiftUI
 
 public struct BookingsTabView: View {
   public init() { }
