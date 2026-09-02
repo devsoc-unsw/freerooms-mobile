@@ -63,12 +63,17 @@ struct OpenTabWidget: Widget {
           }
         case .systemMedium:
           Button(intent: intent) {
-            Label(title, systemImage: imageSystemName)
-              .font(.title2)
-              .bold()
-              .foregroundStyle(theme.accent.primary)
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
+            HStack(spacing: 8.0) {
+              Image(systemName: imageSystemName)
+              Text(title)
+              Spacer(minLength: 0)
+            }
+            .font(.title3)
+            .bold()
+            .foregroundStyle(theme.accent.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
           }
+          
         default:
           preconditionFailure("\(#function): Unexpected widget family")
         }
