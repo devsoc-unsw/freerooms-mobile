@@ -9,7 +9,7 @@ import AppIntents
 import CommonUI
 
 @freestanding(declaration, names: arbitrary)
-internal macro createOpenTabIntent(for tab: FreeroomsTab) = #externalMacro(
+macro createOpenTabIntent(for tab: FreeroomsTab) = #externalMacro(
   module: "FreeroomsIntentsMacros",
   type: "OpenTabIntentMacro")
 

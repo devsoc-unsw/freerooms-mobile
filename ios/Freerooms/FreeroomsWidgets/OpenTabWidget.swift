@@ -12,6 +12,9 @@ import SwiftUI
 import WidgetKit
 
 struct OpenTabWidget: Widget {
+
+  // MARK: Internal
+
   let kind = "OpenTabWidget"
 
   var body: some WidgetConfiguration {
@@ -22,11 +25,13 @@ struct OpenTabWidget: Widget {
     .description("Convenient way to open a tab")
     .supportedFamilies([.systemSmall, .systemMedium])
   }
-  
+
+  // MARK: Private
+
   private struct View: SwiftUI.View {
-    private let theme = Theme.default
-    @Environment(\.widgetFamily) private var family
-    
+
+    // MARK: Internal
+
     var body: some SwiftUI.View {
       Grid {
         GridRow {
@@ -43,13 +48,20 @@ struct OpenTabWidget: Widget {
         Color.clear
       }
     }
-    
+
+    // MARK: Private
+
+    @Environment(\.widgetFamily) private var family
+
+    private let theme = Theme.default
+
     @ViewBuilder
     private func buildButton(
       _ title: LocalizedStringResource,
       for intent: some AppIntent,
-      imageSystemName: String
-    ) -> some SwiftUI.View {
+      imageSystemName: String)
+      -> some SwiftUI.View
+    {
       Group {
         switch family {
         case .systemSmall:
@@ -61,6 +73,7 @@ struct OpenTabWidget: Widget {
               .padding(2.0)
               .frame(maxWidth: .infinity, maxHeight: .infinity) // nasty hack :(
           }
+
         case .systemMedium:
           Button(intent: intent) {
             HStack(spacing: 8.0) {
@@ -73,7 +86,7 @@ struct OpenTabWidget: Widget {
             .foregroundStyle(theme.accent.primary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
           }
-          
+
         default:
           preconditionFailure("\(#function): Unexpected widget family")
         }
@@ -81,7 +94,7 @@ struct OpenTabWidget: Widget {
       .buttonStyle(.bordered)
       .tint(theme.accent.secondary)
     }
-    
+
   }
 
 }
