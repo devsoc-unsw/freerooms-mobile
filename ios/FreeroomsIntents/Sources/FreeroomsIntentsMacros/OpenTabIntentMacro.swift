@@ -22,7 +22,7 @@ public struct OpenTabIntentMacro: DeclarationMacro {
       let argument = node.arguments.first,
       let tabName = argument.expression.as(MemberAccessExprSyntax.self)?.declName.baseName.text
     else {
-      preconditionFailure("\(#function): Missing or unexpected argument for openTab")
+      throw MacroExpansionErrorMessage("A literal expression is required for the tab")
     }
 
     // Construct the new type name
