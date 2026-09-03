@@ -19,28 +19,40 @@ struct OpenTabWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: EmptyTimelineProvider()) { _ in
-      View()
+      _View()
     }
     .configurationDisplayName("Open Tab")
     .description("Convenient way to open a tab")
-    .supportedFamilies([.systemSmall, .systemMedium])
+    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
   }
 
   // MARK: Private
 
-  private struct View: SwiftUI.View {
+  private struct _View: SwiftUI.View {
 
     // MARK: Internal
 
     var body: some SwiftUI.View {
       Grid {
-        GridRow {
-          buildButton("Buildings", for: TabIntents.Buildings(), imageSystemName: "building")
-          buildButton("Map", for: TabIntents.Map(), imageSystemName: "map")
-        }
-        GridRow {
-          buildButton("Rooms", for: TabIntents.Rooms(), imageSystemName: "door.left.hand.open")
-          buildButton("Bookings", for: TabIntents.Bookings(), imageSystemName: "book.closed")
+        switch family {
+        case .systemSmall, .systemMedium:
+          GridRow {
+            buildingCell
+            mapCell
+          }
+          GridRow {
+            roomsCell
+            bookingsCell
+          }
+
+        case .systemLarge:
+          GridRow { buildingCell }
+          GridRow { mapCell }
+          GridRow { roomsCell }
+          GridRow { bookingsCell }
+
+        default:
+          preconditionFailure("\(#function): Unexpected widget family")
         }
       }
       .buttonBorderShape(.roundedRectangle)
@@ -56,11 +68,31 @@ struct OpenTabWidget: Widget {
     private let theme = Theme.default
 
     @ViewBuilder
+    private var buildingCell: some View {
+      buildButton("Buildings", for: TabIntents.Buildings(), imageSystemName: "building")
+    }
+
+    @ViewBuilder
+    private var mapCell: some View {
+      buildButton("Map", for: TabIntents.Map(), imageSystemName: "map")
+    }
+
+    @ViewBuilder
+    private var roomsCell: some View {
+      buildButton("Rooms", for: TabIntents.Rooms(), imageSystemName: "door.left.hand.open")
+    }
+
+    @ViewBuilder
+    private var bookingsCell: some View {
+      buildButton("Bookings", for: TabIntents.Bookings(), imageSystemName: "book.closed")
+    }
+
+    @ViewBuilder
     private func buildButton(
       _ title: LocalizedStringResource,
       for intent: some AppIntent,
       imageSystemName: String)
-      -> some SwiftUI.View
+      -> some View
     {
       Group {
         switch family {
@@ -74,14 +106,14 @@ struct OpenTabWidget: Widget {
               .frame(maxWidth: .infinity, maxHeight: .infinity) // nasty hack :(
           }
 
-        case .systemMedium:
+        case .systemMedium, .systemLarge:
           Button(intent: intent) {
             HStack(spacing: 8.0) {
               Image(systemName: imageSystemName)
               Text(title)
               Spacer(minLength: 0)
             }
-            .font(.title3)
+            .font(family == .systemLarge ? .title2 : .title3)
             .bold()
             .foregroundStyle(theme.accent.primary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -106,6 +138,12 @@ struct OpenTabWidget: Widget {
 }
 
 #Preview("System Medium", as: .systemMedium) {
+  OpenTabWidget()
+} timeline: {
+  EmptyTimelineProvider.Entry()
+}
+
+#Preview("System Large", as: .systemLarge) {
   OpenTabWidget()
 } timeline: {
   EmptyTimelineProvider.Entry()
