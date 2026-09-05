@@ -170,7 +170,7 @@ extension FileBackedCodable: BuildingsCache where T == [Building] {
     let buildingsCacheURL = cachesDirectory.appending(path: "buildingsCache.json")
 //    logger.debug("Create buildings cache at: \(buildingsCacheURL.path)")
 
-    return FileBackedCodable(fileURL: buildingsCacheURL)
+    return FileBackedCodable(fileURL: buildingsCacheURL, name: "BuildingCacheCoordinator")
   }
 
   public var lastUpdated: Date? {

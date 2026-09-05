@@ -5,7 +5,6 @@
 //  Created by Matthew Yuen on 19/6/2026.
 //
 
-#if canImport(Darwin)
 import Foundation
 import Networking
 import Testing
@@ -179,5 +178,3 @@ nonisolated struct FileBackedCodableTests {
   }
 
 }
-
-#endif // canImport(Darwin)

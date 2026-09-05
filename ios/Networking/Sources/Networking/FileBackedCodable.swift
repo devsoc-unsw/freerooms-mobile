@@ -1,5 +1,6 @@
 internal import Dispatch
 public import Foundation
+import OSLog
 
 #if canImport(UIKit)
 /// Lifecycle management is required on iOS, or the app may be killed in the background
@@ -13,8 +14,18 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Lifecycle
 
+  /// Creates a new object managing a file
+  ///
+  /// - Parameters:
+  ///   - fileURL: The `URL` to manage
+  ///   - name: A name to given the object. Will be used in log messages.
+  ///   - encoder: The encoder to use
+  ///   - decoder: The decoder to use
+  ///   - notificationCenter: The `NotificationCenter` to listen for app lifecycle notifications on iOS.
+  ///   - fileManager: The `FileManager` to use
   public init(
     fileURL: URL,
+    name: StaticString,
     encoder: JSONEncoder = JSONEncoder(), // could make use any TopLevelEncoder and any TopLevelDecoder instead
     decoder: JSONDecoder = JSONDecoder(),
     notificationCenter: NotificationCenter = .default, // needed to listen for background notifications on iOS
@@ -31,6 +42,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       operationQueue: operationQueue)
 
     // init
+    self.name = name
     self.serialQueue = serialQueue
     self.operationQueue = operationQueue
     self.notificationCenter = notificationCenter
@@ -40,6 +52,10 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     _presenter = presenter
     _isPresenterRegistered = true
     _coordinatorOperationQueue = operationQueue
+
+    logger = Logger(
+      subsystem: "com.devsoc.FreeRooms.Networking",
+      category: "FileBackedCodable (\(name))")
 
     // Presenter parent
     _presenter.parent = self
@@ -52,6 +68,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Register presenter
     // The flag is already set for it to be registered
     NSFileCoordinator.addFilePresenter(presenter)
+    logger.trace("\(name): Presenter registered for url \(fileURL)")
   }
 
   deinit {
@@ -65,6 +82,8 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Public
 
+  /// The name of the object, to be used to differentiate instances
+  public let name: StaticString
   public let encoder: JSONEncoder
   public let decoder: JSONDecoder
 
@@ -94,11 +113,16 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     }
   }
 
+  /// Get the current value
+  ///
+  /// If the value has been updated elsewhere, the updated value will be fetched from the file system.
+  /// Otherwise, the cached value will be used instead.
   public func getValue() async throws -> T? {
     // Check if the file exists, or if the cache is stale.
     // The cache is stale if the file was deleted, created or modified
     let isStale: Bool
     let url = currentFileURL
+    // We get the current version of the file to check if we need to load it
     let currentFileVersion = NSFileVersion.currentVersionOfItem(at: url)
     switch _fileVersionState {
     case .updated(let fileVersion):
@@ -110,16 +134,23 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       isStale = true
     }
 
+    let name = name
+
     // If the cache isn't stale, return the cached value
+    // Prefer to use the cache, as file system access is expensive
     if !isStale {
+      logger.trace("\(name): Returning cached value")
       return _cachedValue
     }
+
+    logger.trace("\(name): Cached value is stale, loading from file")
 
     // Otherwise read the file
     return try await _getValue_getFromFile(url: url)
   }
 
   public func setValue(_ newValue: T?) async throws {
+    let name = name
     let url = currentFileURL
     let intent: NSFileAccessIntent
     let isDeleting: Bool
@@ -130,6 +161,8 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       intent = .writingIntent(with: url, options: .forDeleting)
       isDeleting = true
     }
+
+    logger.trace("\(name): Updating file")
 
     // Write the new version of the data
     nonisolated(unsafe) let fileManager = fileManager
@@ -154,6 +187,8 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       return newFileVersion
     }
 
+    logger.trace("\(name): Updated file successfully, updating cache")
+
     // Update the object cache
     _cachedValue = newValue
     if let newFileVersion {
@@ -164,6 +199,8 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   }
 
   // MARK: Private
+
+  private let logger: Logger
 
   /// While the presenter is non-Sendable,
   /// registering and unregistering the presenter is thread-safe.
@@ -190,9 +227,11 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   /// Whether the presenter is currently registerd or not
   private var _isPresenterRegistered: Bool
 
+  /// Fetch the data from the file system, and attempt to decode it
   private func _getValue_getFromFile(url: URL) async throws -> T? {
     /// The `FileManager` class is generally thread safe, but the `delegate` property is not
     nonisolated(unsafe) let fileManager = fileManager
+    let name = name
 
     // Preform the coordinated read
     let intent = NSFileAccessIntent.readingIntent(with: url)
@@ -215,6 +254,8 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       }
       return (data, .updated(newFileVersion))
     }
+
+    logger.trace("\(name): Fetched data from \(url)")
 
     guard let data = result.data, result.fileVersionState != .deleted else {
       return nil
@@ -259,12 +300,16 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
   private func _registerPresenter() {
     guard !_isPresenterRegistered else { return }
+    let name = name
+    logger.trace("\(name): Registering file presenter")
     NSFileCoordinator.addFilePresenter(_presenter)
     _isPresenterRegistered = true
   }
 
   private func _unregisterPresenter() {
     guard _isPresenterRegistered else { return }
+    let name = name
+    logger.trace("\(name): Unregistering file presenter")
     NSFileCoordinator.removeFilePresenter(_presenter)
     _isPresenterRegistered = false
   }
