@@ -8,7 +8,7 @@
 // MARK: - CampusSection
 
 /// Represents the vertical campus section based on building numbers.
-public enum CampusSection: Int {
+public nonisolated enum CampusSection: Int {
   case lower, middle, upper
 
   // MARK: Lifecycle

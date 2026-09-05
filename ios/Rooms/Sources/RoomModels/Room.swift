@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 26/6/2025.
 //
 
+import DevSocAPI
 import Foundation
 
 // MARK: - Room
@@ -18,11 +19,15 @@ public enum RoomAvailability: String, Codable {
   case availableSoon
   case unavailable
   case unknown
+
+  public init(from status: RoomStatus) {
+    self = status.availability
+  }
 }
 
 // MARK: - Room
 
-public struct Room: Equatable, Identifiable, Hashable {
+public nonisolated struct Room: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
@@ -245,4 +250,81 @@ public struct Room: Equatable, Identifiable, Hashable {
     return "Available till end of day"
   }
 
+}
+
+// MARK: - GraphQLRoomProtocol
+
+public protocol GraphQLRoomProtocol {
+  var abbr: String { get }
+  var accessibility: [String] { get }
+  var audiovisual: [String] { get }
+  var buildingId: String { get }
+  var capacity: Int { get }
+  var floor: String? { get }
+  var id: String { get }
+  var infotechnology: [String] { get }
+  var lat: String { get }
+  var long: String { get }
+  var microphone: [String] { get }
+  var name: String { get }
+  var school: String { get }
+  var seating: String? { get }
+  var usage: String { get }
+  var service: [String] { get }
+  var writingMedia: [String] { get }
+}
+
+extension Room {
+
+  public init?(from graphQLRoom: some GraphQLRoomProtocol) {
+    guard
+      let lat = Double(graphQLRoom.lat),
+      let long = Double(graphQLRoom.long)
+    else {
+      return nil
+    }
+
+    self.init(
+      abbreviation: graphQLRoom.abbr,
+      accessibility: graphQLRoom.accessibility,
+      audioVisual: graphQLRoom.audiovisual,
+      buildingId: graphQLRoom.buildingId,
+      capacity: graphQLRoom.capacity,
+      floor: graphQLRoom.floor,
+      id: graphQLRoom.id,
+      infoTechnology: graphQLRoom.infotechnology,
+      latitude: lat,
+      longitude: long,
+      microphone: graphQLRoom.microphone,
+      name: graphQLRoom.name,
+      school: graphQLRoom.school,
+      seating: graphQLRoom.seating,
+      usage: graphQLRoom.usage,
+      service: graphQLRoom.service,
+      writingMedia: graphQLRoom.writingMedia,
+      endTime: nil,
+      overallRating: nil)
+  }
+
+}
+
+// MARK: - DevSocAPI.AllRoomsQuery.Data.Room + GraphQLRoomProtocol
+
+extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+
+// MARK: - DevSocAPI.BuildingRoomsQuery.Data.Room + GraphQLRoomProtocol
+
+extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+
+// MARK: - Testing
+
+import Apollo
+import ApolloAPI
+import Networking
+import Playgrounds
+
+#Playground {
+  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
+  let result = try await client.fetch(query: AllRoomsQuery())
+  extendLifetime(result)
 }
