@@ -9,6 +9,8 @@ import Foundation
 import Networking
 import Testing
 
+// MARK: - FileBackedCodableTests
+
 @Suite
 nonisolated struct FileBackedCodableTests {
 
@@ -177,4 +179,10 @@ nonisolated struct FileBackedCodableTests {
     }
   }
 
+}
+
+extension FileBackedCodable {
+  init(fileURL: URL) {
+    self.init(fileURL: fileURL, name: "")
+  }
 }
