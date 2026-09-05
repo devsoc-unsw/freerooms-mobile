@@ -6,7 +6,6 @@ public import Foundation
 import UIKit
 #endif
 
-@available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 6.0, visionOS 1.0, *)
 public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Lifecycle
@@ -19,7 +18,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     fileManager: FileManager = .default)
   {
     // Shared object and presenter queue
-    let serialQueue = DispatchQueue(label: "FileBackedCodable", qos: .userInitiated)
+    let serialQueue = DispatchSerialQueue(label: "FileBackedCodable", qos: .userInitiated)
     let operationQueue = OperationQueue()
     operationQueue.underlyingQueue = serialQueue
 
@@ -29,7 +28,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
       operationQueue: operationQueue)
 
     // init
-    serialExecutor = _DispatchQueueSerialExecutor(wrapping: serialQueue)
+    self.serialQueue = serialQueue
     self.operationQueue = operationQueue
     self.notificationCenter = notificationCenter
     self.encoder = encoder
@@ -73,7 +72,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   public let fileManager: FileManager
 
   public nonisolated var unownedExecutor: UnownedSerialExecutor {
-    serialExecutor.asUnownedSerialExecutor()
+    serialQueue.asUnownedSerialExecutor()
   }
 
   public var currentFileURL: URL {
@@ -165,7 +164,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   nonisolated(unsafe)
   private let _presenter: _Presenter
 
-  private nonisolated let serialExecutor: _DispatchQueueSerialExecutor
+  private nonisolated let serialQueue: DispatchSerialQueue
   private nonisolated let operationQueue: OperationQueue
 
   /// The `OperationQueue` for the coordinator to use
@@ -220,7 +219,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Return the found data
     return newValue
   }
-
+  
   private func _withCoordinatedAccess<R>(
     returning _: R.Type = R.self,
     for intent: NSFileAccessIntent,
