@@ -5,6 +5,7 @@
 //  Created by Gabriella Lianti on 3/7/2026.
 //
 
+import CommonUI
 import SwiftUI
 
 public struct BookingsTabView: View {
@@ -15,6 +16,6 @@ public struct BookingsTabView: View {
       .tabItem {
         Label("Bookings", systemImage: "book.pages")
       }
-      .tag("Bookings")
+      .tag(FreeroomsTab.bookings)
   }
 }

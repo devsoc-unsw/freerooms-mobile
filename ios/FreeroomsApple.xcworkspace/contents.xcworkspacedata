@@ -29,6 +29,9 @@
       location = "group:Rooms">
    </FileRef>
    <FileRef
+      location = "group:FreeroomsIntents">
+   </FileRef>
+   <FileRef
       location = "group:TestingSupport">
    </FileRef>
    <FileRef
