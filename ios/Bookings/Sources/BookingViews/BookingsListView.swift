@@ -40,7 +40,6 @@ struct BookingsListView: View {
                   .padding(.horizontal, BookingViewLayout.bookingListRowContentHorizontalPadding)
               })
               .listRowInsets(EdgeInsets())
-              .listRowSeparator(.hidden)
           }
           .padding(.vertical, BookingViewLayout.bookingsListSectionVerticalPadding)
         } header: {
