@@ -9,6 +9,7 @@ import Apollo
 import BookingInteractors
 import BookingServices
 import BookingViewModels
+import AppIntents
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -93,6 +94,91 @@ struct FreeroomsApp: App {
         .environment(mapViewModel)
         .environment(roomViewModel)
         .environment(bookingViewModel)
+        .environment(tabController)
+    }
+  }
+
+  static func makeLiveBuildingViewModel() -> LiveBuildingViewModel {
+    let locationService = makeLocationService()
+    let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
+
+    let buildingLoader = makeBuildingLoader(
+      apolloClient: makeApolloClient(),
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
+
+    let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+    let interactor = BuildingInteractor(buildingService: buildingService, locationService: locationService)
+
+    return LiveBuildingViewModel(interactor: interactor)
+  }
+
+  static func makeLiveMapViewModel() -> LiveMapViewModel {
+    let locationService = makeLocationService()
+    let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
+
+    let buildingLoader = makeBuildingLoader(
+      apolloClient: makeApolloClient(),
+      roomStatusLoader: roomStatusLoader,
+      buildingRatingLoader: buildingRatingLoader)
+
+    let buildingService = LiveBuildingService(buildingLoader: buildingLoader)
+    let buildingInteractor = BuildingInteractor(
+      buildingService: buildingService,
+      locationService: locationService)
+    let locationInteractor = LocationInteractor(locationService: locationService)
+    let navigationService = LiveNavigationService()
+    let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
+    let roomInteractor = makeRoomInteractor(
+      locationService: locationService,
+      roomStatusLoader: roomStatusLoader,
+      remoteBookingLoader: remoteBookingLoader,
+      roomRatingLoader: roomRatingLoader,
+      roomFilterLoader: roomFilterLoader)
+
+    return LiveMapViewModel(
+      buildingInteractor: buildingInteractor,
+      locationInteractor: locationInteractor,
+      navigationInteractor: navigationInteractor,
+      roomInteractor: roomInteractor)
+  }
+
+  static func makeLiveRoomViewModel() -> LiveRoomViewModel {
+    let locationManager = LiveLocationManager()
+    let locationService = LiveLocationService(locationManager: locationManager)
+
+    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+
+    do {
+      // TODO: ignore unused warning, swiftDataStore is not implemented
+      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+
+      let (roomStatusLoader, _, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
+
+      let roomLoader = LiveRoomLoader(
+        JSONRoomLoader: JSONRoomLoader,
+        roomStatusLoader: roomStatusLoader,
+        swiftDataRoomLoader: swiftDataRoomLoader)
+
+      let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
+
+      let roomService = LiveRoomService(
+        roomLoader: roomLoader,
+        roomBookingLoader: roomBookingLoader,
+        roomRatingLoader: roomRatingLoader,
+        roomFilterService: roomFilterLoader)
+
+      let favouriteService = try SwiftDataFavoriteRoomService(context: FreeroomsApp.sharedContainer.mainContext)
+
+      let interactor = RoomInteractor(
+        roomService: roomService,
+        locationService: locationService,
+        favouriteService: favouriteService)
+
+      return LiveRoomViewModel(interactor: interactor)
+    } catch {
+      fatalError("Failed to create LiveBuildingViewModel: \(error)")
     }
   }
 
@@ -106,6 +192,7 @@ struct FreeroomsApp: App {
   @State private var bookingViewModel: LiveBookingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
+  @State private var tabController: TabController = makeTabController()
 
   // MARK: - Factories
 
@@ -251,4 +338,15 @@ struct FreeroomsApp: App {
 
     return DevSoc.createLiveApolloClient(using: ApolloStore(cache: cache))
   }
+  // MARK: - Tab Controller
+
+  private static func makeTabController() -> TabController {
+    let controller = TabController()
+
+    let dependencyManager = AppDependencyManager.shared
+    dependencyManager.add(dependency: controller)
+
+    return controller
+  }
+
 }
