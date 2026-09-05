@@ -6,10 +6,10 @@
 //
 
 import Apollo
+import AppIntents
 import BookingInteractors
 import BookingServices
 import BookingViewModels
-import AppIntents
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -338,6 +338,7 @@ struct FreeroomsApp: App {
 
     return DevSoc.createLiveApolloClient(using: ApolloStore(cache: cache))
   }
+
   // MARK: - Tab Controller
 
   private static func makeTabController() -> TabController {
