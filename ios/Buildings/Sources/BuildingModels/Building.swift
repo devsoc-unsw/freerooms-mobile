@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
+import AppIntents
 import DevSocAPI
 import Foundation
 import Location

@@ -147,19 +147,18 @@ struct FreeroomsApp: App {
     let locationManager = LiveLocationManager()
     let locationService = LiveLocationService(locationManager: locationManager)
 
-    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+//    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
 
     do {
       // TODO: ignore unused warning, swiftDataStore is not implemented
-      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
-      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+//      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+//      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
 
       let (roomStatusLoader, _, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
 
-      let roomLoader = LiveRoomLoader(
-        JSONRoomLoader: JSONRoomLoader,
-        roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: swiftDataRoomLoader)
+      let roomLoader = LiveGraphQLRoomLoader(
+        client: makeApolloClient(),
+        roomStatusLoader: roomStatusLoader)
 
       let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
 
