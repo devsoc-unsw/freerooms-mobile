@@ -6,11 +6,13 @@ public import Foundation
 import UIKit
 #endif
 
+// MARK: - FileBackedCodable
+
 /// A type that manages access to a file storing `Codable` data
 public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Lifecycle
-  
+
   public init(
     fileURL: URL,
     encoder: JSONEncoder = JSONEncoder(), // could make use any TopLevelEncoder and any TopLevelDecoder instead
@@ -72,7 +74,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   public let notificationCenter: NotificationCenter
 
   public let fileManager: FileManager
-  
+
   public nonisolated var unownedExecutor: UnownedSerialExecutor {
     // Part of the `Actor` protocol, allows the replacement of the actor's default executor
     serialQueue.asUnownedSerialExecutor()
@@ -81,7 +83,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   public var currentFileURL: URL {
     _presenter._presentedItemURL
   }
-  
+
   /// Allows the current saved version of the file to be checked
   public var cachedFileVersion: NSFileVersion? {
     switch _fileVersionState {
@@ -167,7 +169,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   /// registering and unregistering the presenter is thread-safe.
   nonisolated(unsafe)
   private let _presenter: _Presenter
-  
+
   /// The serial queue is used instead of the `actor`'s default executor,
   /// as we want to have an `OperationQueue` to pass to `NSFileCoordinator.coordinate`
   private nonisolated let serialQueue: DispatchSerialQueue
@@ -227,7 +229,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Return the found data
     return newValue
   }
-  
+
   private func _withCoordinatedAccess<R>(
     returning _: R.Type = R.self,
     for intent: NSFileAccessIntent,
