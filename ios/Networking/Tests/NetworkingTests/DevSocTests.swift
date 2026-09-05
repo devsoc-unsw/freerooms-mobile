@@ -14,7 +14,7 @@ struct DevSocTests {
 
   @Test
   func `Can get url for cache`() throws {
-    let url = try DevSoc.onDiskCacheLocation
+    let _ = try DevSoc.onDiskCacheLocation
   }
 
 }

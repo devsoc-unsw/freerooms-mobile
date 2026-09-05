@@ -7,6 +7,9 @@
 
 import Apollo
 import AppIntents
+import BookingInteractors
+import BookingServices
+import BookingViewModels
 import BuildingInteractors
 import BuildingModels
 import BuildingServices
@@ -41,14 +44,14 @@ struct FreeroomsApp: App {
 
     // Shared infrastructure
     let locationService = FreeroomsApp.makeLocationService()
-    let httpClient = FreeroomsApp.makeHTTPClient()
-    let (stagingURL, productionURL) = FreeroomsApp.makeBaseURLs()
+    let apolloClient = FreeroomsApp.makeApolloClient()
     let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = FreeroomsApp
       .makeRemoteLoaders()
 
     // Shared interactors
     let buildingInteractor = FreeroomsApp.makeBuildingInteractor(
       locationService: locationService,
+      apolloClient: apolloClient,
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader)
     let roomInteractor = FreeroomsApp.makeRoomInteractor(
@@ -57,9 +60,11 @@ struct FreeroomsApp: App {
       remoteBookingLoader: remoteBookingLoader,
       roomRatingLoader: roomRatingLoader,
       roomFilterLoader: roomFilterLoader)
+    let bookingInteractor = FreeroomsApp.makeBookingInteractor(apolloClient: apolloClient)
 
     _buildingViewModel = State(initialValue: LiveBuildingViewModel(interactor: buildingInteractor))
     _roomViewModel = State(initialValue: LiveRoomViewModel(interactor: roomInteractor))
+    _bookingViewModel = State(initialValue: LiveBookingViewModel(interactor: bookingInteractor))
     _mapViewModel = State(initialValue: FreeroomsApp.makeMapViewModel(
       buildingInteractor: buildingInteractor,
       roomInteractor: roomInteractor,
@@ -88,6 +93,7 @@ struct FreeroomsApp: App {
         .environment(buildingViewModel)
         .environment(mapViewModel)
         .environment(roomViewModel)
+        .environment(bookingViewModel)
         .environment(tabController)
     }
   }
@@ -97,6 +103,7 @@ struct FreeroomsApp: App {
     let (roomStatusLoader, buildingRatingLoader, _, _, _) = makeRemoteLoaders()
 
     let buildingLoader = makeBuildingLoader(
+      apolloClient: makeApolloClient(),
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader)
 
@@ -111,6 +118,7 @@ struct FreeroomsApp: App {
     let (roomStatusLoader, buildingRatingLoader, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
 
     let buildingLoader = makeBuildingLoader(
+      apolloClient: makeApolloClient(),
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader)
 
@@ -181,6 +189,7 @@ struct FreeroomsApp: App {
   private static let httpResourceTimeout: TimeInterval = 5
 
   @State private var buildingViewModel: LiveBuildingViewModel
+  @State private var bookingViewModel: LiveBookingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel
   @State private var tabController: TabController = makeTabController()
@@ -218,7 +227,7 @@ struct FreeroomsApp: App {
       roomFilterService: LiveFilterRoomService)
   {
     let httpClient = makeHTTPClient()
-    let (stagingURL, productionURL) = makeBaseURLs()
+    let (_, productionURL) = makeBaseURLs()
 
     let roomStatusLoader = LiveRoomStatusLoader(client: httpClient, baseURL: productionURL)
     let buildingRatingLoader = RemoteBuildingRatingLoader(client: httpClient, baseURL: productionURL)
@@ -231,11 +240,13 @@ struct FreeroomsApp: App {
 
   private static func makeBuildingInteractor(
     locationService: LiveLocationService,
+    apolloClient: ApolloClient,
     roomStatusLoader: LiveRoomStatusLoader,
     buildingRatingLoader: RemoteBuildingRatingLoader)
     -> BuildingInteractor
   {
     let buildingLoader = makeBuildingLoader(
+      apolloClient: apolloClient,
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader)
     return BuildingInteractor(
@@ -274,6 +285,12 @@ struct FreeroomsApp: App {
     }
   }
 
+  private static func makeBookingInteractor(apolloClient: ApolloClient) -> BookingInteractor {
+    BookingInteractor(
+      service: LiveBookingService(
+        loader: LiveGraphQLWeeklyBookingLoader(client: apolloClient)))
+  }
+
   private static func makeMapViewModel(
     buildingInteractor: BuildingInteractor,
     roomInteractor: RoomInteractor,
@@ -290,28 +307,11 @@ struct FreeroomsApp: App {
   }
 
   private static func makeBuildingLoader(
+    apolloClient: ApolloClient,
     roomStatusLoader: some RoomStatusLoader,
     buildingRatingLoader: some BuildingRatingLoader)
     -> some BuildingLoader
   {
-    // TODO: Use .well_known url when available
-
-    // Use the on-disk cache
-    logger.trace("Attempting to access or create on-disk cache")
-    let cache: any NormalizedCache
-    do {
-      let onDiskCacheLocation = try DevSoc.onDiskCacheLocation
-      let onDiskCache = try DevSoc.createOnDiskCache(at: onDiskCacheLocation)
-      cache = onDiskCache
-      logger.trace("Using on-disk cache: \(onDiskCacheLocation)")
-    } catch {
-      logger.warning("Failed to access on-disk cache: \(error), falling back to in-memory cache")
-      cache = InMemoryNormalizedCache()
-    }
-
-    let store = ApolloStore(cache: cache)
-    let client = DevSoc.createLiveApolloClient(using: store)
-
     let buildingsCache: (any BuildingsCache)?
     do {
       buildingsCache = try FileBackedCodable.sharedBuildingsCache.get()
@@ -321,10 +321,25 @@ struct FreeroomsApp: App {
     }
 
     return LiveGraphQLBuildingLoader(
-      client: client,
+      client: apolloClient,
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader,
       buildingsCache: buildingsCache)
+  }
+
+  private static func makeApolloClient() -> ApolloClient {
+    logger.trace("Attempting to access or create on-disk Apollo cache")
+    let cache: any NormalizedCache
+    do {
+      let onDiskCacheLocation = try DevSoc.onDiskCacheLocation
+      cache = try DevSoc.createOnDiskCache(at: onDiskCacheLocation)
+      logger.trace("Using on-disk Apollo cache: \(onDiskCacheLocation)")
+    } catch {
+      logger.warning("Failed to access on-disk Apollo cache: \(error), falling back to in-memory cache")
+      cache = InMemoryNormalizedCache()
+    }
+
+    return DevSoc.createLiveApolloClient(using: ApolloStore(cache: cache))
   }
 
   // MARK: - Tab Controller

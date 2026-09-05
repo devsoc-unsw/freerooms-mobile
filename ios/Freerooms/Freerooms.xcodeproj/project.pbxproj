@@ -133,7 +133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */,
-				2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */,
+				2D7043062FF7AD02006BF888 /* Bookings in Frameworks */,
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
 				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
@@ -822,9 +822,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2D7043052FF7AD02006BF888 /* BookingViews */ = {
+		2D7043052FF7AD02006BF888 /* Bookings */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BookingViews;
+			productName = Bookings;
 		};
 		5417827530418382005BCD5E /* FreeroomsIntents */ = {
 			isa = XCSwiftPackageProductDependency;
