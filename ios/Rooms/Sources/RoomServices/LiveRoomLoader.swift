@@ -236,7 +236,3 @@ public final class LiveRoomLoader: RoomLoader {
     }
   }
 }
-
-// MARK: - Extensions
-
-extension MutableCollection { }
