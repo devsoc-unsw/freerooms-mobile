@@ -252,12 +252,15 @@ struct FreeroomsApp: App {
     -> RoomInteractor
   {
     do {
-      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
+//      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: sharedContainer.mainContext)
       let favouriteService = try SwiftDataFavoriteRoomService(context: sharedContainer.mainContext)
-      let roomLoader = LiveRoomLoader(
-        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
-        roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
+//      let roomLoader = LiveRoomLoader(
+//        JSONRoomLoader: LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>()),
+//        roomStatusLoader: roomStatusLoader,
+//        swiftDataRoomLoader: LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore))
+      let roomLoader = LiveGraphQLRoomLoader(
+        client: DevSoc.createLiveApolloClient(using: ApolloStore()),
+        roomStatusLoader: roomStatusLoader)
       return RoomInteractor(
         roomService: LiveRoomService(
           roomLoader: roomLoader,
@@ -311,7 +314,7 @@ struct FreeroomsApp: App {
 
     let buildingsCache: (any BuildingsCache)?
     do {
-      buildingsCache = try OnDiskBuildingsCache.shared.get()
+      buildingsCache = try FileBackedCodable.sharedBuildingsCache.get()
     } catch {
       logger.warning("Failed to access buildings cache: \(error), disabling caching for buildings")
       buildingsCache = nil
