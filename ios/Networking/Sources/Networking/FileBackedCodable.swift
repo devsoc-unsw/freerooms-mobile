@@ -1,20 +1,21 @@
-#if canImport(Darwin)
 internal import Dispatch
 public import Foundation
 
 #if canImport(UIKit)
+/// Lifecycle management is required on iOS, or the app may be killed in the background
 import UIKit
 #endif
 
+/// A type that manages access to a file storing `Codable` data
 public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Lifecycle
-
+  
   public init(
     fileURL: URL,
-    encoder: JSONEncoder = JSONEncoder(),
+    encoder: JSONEncoder = JSONEncoder(), // could make use any TopLevelEncoder and any TopLevelDecoder instead
     decoder: JSONDecoder = JSONDecoder(),
-    notificationCenter: NotificationCenter = .default,
+    notificationCenter: NotificationCenter = .default, // needed to listen for background notifications on iOS
     fileManager: FileManager = .default)
   {
     // Shared object and presenter queue
@@ -47,6 +48,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     #endif
 
     // Register presenter
+    // The flag is already set for it to be registered
     NSFileCoordinator.addFilePresenter(presenter)
   }
 
@@ -70,15 +72,17 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   public let notificationCenter: NotificationCenter
 
   public let fileManager: FileManager
-
+  
   public nonisolated var unownedExecutor: UnownedSerialExecutor {
+    // Part of the `Actor` protocol, allows the replacement of the actor's default executor
     serialQueue.asUnownedSerialExecutor()
   }
 
   public var currentFileURL: URL {
     _presenter._presentedItemURL
   }
-
+  
+  /// Allows the current saved version of the file to be checked
   public var cachedFileVersion: NSFileVersion? {
     switch _fileVersionState {
     case .updated(let version):
@@ -163,7 +167,9 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   /// registering and unregistering the presenter is thread-safe.
   nonisolated(unsafe)
   private let _presenter: _Presenter
-
+  
+  /// The serial queue is used instead of the `actor`'s default executor,
+  /// as we want to have an `OperationQueue` to pass to `NSFileCoordinator.coordinate`
   private nonisolated let serialQueue: DispatchSerialQueue
   private nonisolated let operationQueue: OperationQueue
 
@@ -183,6 +189,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   private var _isPresenterRegistered: Bool
 
   private func _getValue_getFromFile(url: URL) async throws -> T? {
+    /// The `FileManager` class is generally thread safe, but the `delegate` property is not
     nonisolated(unsafe) let fileManager = fileManager
 
     // Preform the coordinated read
@@ -194,10 +201,11 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
         return (nil, .deleted)
       }
 
-      // Perform the read
+      // Perform the read with coordinated access
       let data = try Data(contentsOf: intent.url)
 
       // Get the new file version for caching
+      // This allows us to know when the file has been updated
       let newFileVersion = NSFileVersion.currentVersionOfItem(at: intent.url)
       guard let newFileVersion else {
         preconditionFailure(
@@ -297,7 +305,6 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
 }
 
-@available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 6.0, visionOS 1.0, *)
 extension FileBackedCodable {
 
   enum FileVersionState: Equatable {
@@ -340,5 +347,3 @@ extension FileBackedCodable {
   }
 
 }
-
-#endif // canImport(Darwin)
