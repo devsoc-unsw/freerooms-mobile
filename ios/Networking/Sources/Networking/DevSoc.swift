@@ -15,7 +15,7 @@ import OSLog
 
 /// A `namespace` for DevSoc
 ///
-/// This `namespace` has members relating to the DevSoc **GraphQL** API.
+/// This `namespace` has members relating to the DevSoc **GraphQL** and **backend** API.
 nonisolated public /* namespace */ enum DevSoc {
 
   /// The **production** GraphQL endpoint
@@ -23,7 +23,26 @@ nonisolated public /* namespace */ enum DevSoc {
   /// ```swift
   /// URL(string: "https://graphql.devsoc.app/v1/graphql")
   /// ```
-  public static let defaultLiveUrl = URL(string: "https://graphql.devsoc.app/v1/graphql")!
+  public static let defaultLiveGraphQLURL = URL(string: "https://graphql.devsoc.app/v1/graphql")!
+  
+  /// The **production** backend endpoint
+  ///
+  /// ```swift
+  /// URL(string: "https://freerooms.devsoc.app")
+  /// ```
+  public static let defaultBackendURL = URL(string: "https://freerooms.devsoc.app")!
+  
+  /// The **staging** backend endpoint
+  ///
+  /// ```swift
+  /// URL(string: "https://freeroomsstaging.devsoc.app")
+  /// ```
+  public static let stagingBackendURL = URL(string: "https://freeroomsstaging.devsoc.app")!
+  
+  /// The frequency that the scraper runs
+  ///
+  /// Currently the scraper runs every **30 minutes**.
+  public static let scraperFrequency: TimeInterval = 60 * 60 * 30 // 30 minutes
 
   /// Creates a live DevSoc `ApolloClient` for GraphQL requests.
   ///
@@ -43,7 +62,7 @@ nonisolated public /* namespace */ enum DevSoc {
   /// - Returns:
   ///   The `ApolloClient` to make GraphQL requests to.
   public static func createLiveApolloClient(
-    for url: URL = DevSoc.defaultLiveUrl,
+    for url: URL = DevSoc.defaultLiveGraphQLURL,
     using store: ApolloStore,
     urlSession: any ApolloURLSession = URLSession.shared)
     -> ApolloClient

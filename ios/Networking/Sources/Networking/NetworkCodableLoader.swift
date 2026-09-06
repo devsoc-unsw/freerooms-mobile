@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - CodableLoader
 
-public protocol CodableLoader: Sendable {
+public protocol CodableLoader {
   associatedtype Generic: Codable
 
   func fetch() async -> Swift.Result<Generic, Swift.Error>
@@ -23,7 +23,7 @@ public enum StatusCode: Int {
 
 // MARK: - NetworkCodableLoader
 
-public final class NetworkCodableLoader<T: Codable>: CodableLoader {
+public nonisolated final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   // MARK: Lifecycle
 
@@ -45,7 +45,7 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
   public func fetch() async -> Result {
     switch await client.get(from: url) {
     case .success((let data, let response)):
-      await map(data, from: response)
+      await Self.map(data, from: response)
     case .failure:
       .failure(Error.connectivity)
     }
@@ -57,7 +57,7 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
   private let url: URL
 
   @concurrent
-  private func map(_ data: Data, from response: HTTPURLResponse) async -> Result {
+  private static func map(_ data: Data, from response: HTTPURLResponse) async -> Result {
     guard
       response.statusCode == StatusCode.ok.rawValue, let decodedData = try? JSONDecoder().decode(
         T.self,
