@@ -37,6 +37,9 @@ public struct RoomsTabView<Destination: View>: View {
     NavigationStack(path: $path) {
       mainContent
     }
+    .onDisappear {
+      roomViewModel.searchText = String()
+    }
     .tabItem {
       Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
     }
