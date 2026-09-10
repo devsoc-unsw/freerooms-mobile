@@ -6,11 +6,14 @@
 //
 
 import AppIntents
+import BuildingViews
 import BuildingModels
 import BuildingServices
 import FreeroomsIntents
 import Networking
 import WidgetKit
+import SwiftUI
+import CommonUI
 
 // MARK: - BuildingTimelineProvider
 
@@ -29,7 +32,7 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
     let value: Value
 
     enum Value {
-      case building(Building)
+      case building(Building, image: Image?)
       case missingBuilding
       case failed(any Error)
     }
@@ -76,6 +79,7 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
 
 extension BuildingTimelineProvider.Entry {
   static var placeholder: Self {
+    
     // Use a random placeholder building
     let previewBuilding = Building(
       name: "Morven Brown Building",
@@ -85,7 +89,7 @@ extension BuildingTimelineProvider.Entry {
       aliases: [],
       numberOfAvailableRooms: 15)
 
-    return Self(value: .building(previewBuilding))
+    return .building(previewBuilding)
   }
 
   static var missingBuilding: Self {
@@ -97,7 +101,13 @@ extension BuildingTimelineProvider.Entry {
   }
 
   static func building(_ building: Building) -> Self {
-    Self(value: .building(building))
+    
+    // We try to load the image from the cache
+    let buildingsImageBundle = Bundle.buildingsViews
+    // Can call the sync version, doesn't matter where it is executing
+    let uiImage = ImageCache.shared.image(named: building.id, in: buildingsImageBundle)
+    
+    return Self(value: .building(building, image: uiImage.map(Image.init(uiImage:))))
   }
 
 }
@@ -114,7 +124,6 @@ extension Timeline<BuildingTimelineProvider.Entry> {
   static func building(_ building: Building) -> Self {
     // We currently only reload the timeline after the scraper runs
     let reloadPolicy = TimelineReloadPolicy.after(.now + DevSoc.scraperFrequency)
-
-    return Self(entries: [.building(building)], policy: .never)
+    return Self(entries: [.building(building)], policy: reloadPolicy)
   }
 }

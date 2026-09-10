@@ -14,5 +14,6 @@ import WidgetKit
 struct FreeroomsWidgetsBundle: WidgetBundle {
   var body: some Widget {
     OpenTabWidget()
+    BuildingWidget()
   }
 }
