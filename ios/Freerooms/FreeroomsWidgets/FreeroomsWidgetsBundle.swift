@@ -10,6 +10,8 @@ import FreeroomsIntents
 import SwiftUI
 import WidgetKit
 
+// MARK: - FreeroomsWidgetsBundle
+
 @main
 struct FreeroomsWidgetsBundle: WidgetBundle {
   var body: some Widget {
@@ -17,6 +19,8 @@ struct FreeroomsWidgetsBundle: WidgetBundle {
     BuildingWidget()
   }
 }
+
+// MARK: - FreeroomsWidgetsBundleIntentsPackage
 
 struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage {
   static var includedPackages: [any AppIntentsPackage.Type] {

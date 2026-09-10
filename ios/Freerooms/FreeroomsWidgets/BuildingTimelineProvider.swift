@@ -6,14 +6,17 @@
 //
 
 import AppIntents
-import BuildingViews
 import BuildingModels
 import BuildingServices
+import BuildingViews
+import CommonUI
 import FreeroomsIntents
 import Networking
-import WidgetKit
 import SwiftUI
-import CommonUI
+import WidgetKit
+
+/// How long we should wait on an error to refresh building info
+let errorRetryInterval: TimeInterval = 5 * 60
 
 // MARK: - BuildingTimelineProvider
 
@@ -79,7 +82,6 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
 
 extension BuildingTimelineProvider.Entry {
   static var placeholder: Self {
-    
     // Use a random placeholder building
     let previewBuilding = Building(
       name: "Morven Brown Building",
@@ -101,13 +103,8 @@ extension BuildingTimelineProvider.Entry {
   }
 
   static func building(_ building: Building) -> Self {
-    
-    // We try to load the image from the cache
-    let buildingsImageBundle = Bundle.buildingsViews
-    // Can call the sync version, doesn't matter where it is executing
-    let uiImage = ImageCache.shared.image(named: building.id, in: buildingsImageBundle)
-    
-    return Self(value: .building(building, image: uiImage.map(Image.init(uiImage:))))
+    let image = Image(building.id, bundle: .buildingsViews)
+    return Self(value: .building(building, image: image))
   }
 
 }
@@ -118,7 +115,7 @@ extension Timeline<BuildingTimelineProvider.Entry> {
   }
 
   static func failed(_ error: any Error) -> Self {
-    Self(entries: [.failed(error)], policy: .never)
+    Self(entries: [.failed(error)], policy: .after(.now + errorRetryInterval))
   }
 
   static func building(_ building: Building) -> Self {

@@ -22,7 +22,7 @@ struct OpenTabWidget: Widget {
       _View()
     }
     .configurationDisplayName("Open Tab")
-    .description("Convenient way to open a tab")
+    .description("Opens a tab in the Freerooms app")
     .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
   }
 

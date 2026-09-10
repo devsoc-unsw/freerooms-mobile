@@ -5,16 +5,15 @@
 //  Created by Matthew Yuen on 10/9/2026.
 //
 
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 extension WidgetConfiguration {
   func polyfillPromptsForUserConfiguration() -> some WidgetConfiguration {
     if #available(iOS 18.0, *) {
-      return self.promptsForUserConfiguration()
+      return promptsForUserConfiguration()
     } else {
       return self
     }
   }
 }
-

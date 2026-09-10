@@ -1,11 +1,12 @@
 //
 //  BuildingConfigurationIntent.swift
-//  FreeroomsIntents
+//  Freerooms
 //
 //  Created by Matthew Yuen on 7/9/2026.
 //
 
 import AppIntents
+import FreeroomsIntents
 import WidgetKit
 
 public struct BuildingConfigurationIntent: WidgetConfigurationIntent {
