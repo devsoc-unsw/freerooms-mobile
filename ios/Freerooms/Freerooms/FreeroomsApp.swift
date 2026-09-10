@@ -348,3 +348,9 @@ struct FreeroomsApp: App {
   }
 
 }
+
+struct FreeroomsAppIntentsPackage: AppIntentsPackage {
+  static var includedPackages: [any AppIntentsPackage.Type] {
+    [FreeroomsAppIntentsPackage.self]
+  }
+}

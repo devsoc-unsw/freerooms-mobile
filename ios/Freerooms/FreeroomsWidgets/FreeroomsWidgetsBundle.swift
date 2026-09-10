@@ -17,3 +17,9 @@ struct FreeroomsWidgetsBundle: WidgetBundle {
     BuildingWidget()
   }
 }
+
+struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage {
+  static var includedPackages: [any AppIntentsPackage.Type] {
+    [FreeroomsIntentsPackage.self]
+  }
+}
