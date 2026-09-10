@@ -10,12 +10,13 @@ import BuildingViews
 import CommonUI
 import SwiftUI
 import WidgetKit
+import FreeroomsIntents
 
 struct BuildingWidget: Widget {
 
   // MARK: Internal
 
-  static let kind: String = "BuildingWidget"
+  static let kind: String = "com.devsoc.Freerooms.Widgets.Building"
 
   var body: some WidgetConfiguration {
     AppIntentConfiguration(
