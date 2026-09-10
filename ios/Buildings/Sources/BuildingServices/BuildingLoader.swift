@@ -9,10 +9,10 @@ import Apollo
 import BuildingModels
 import DevSocAPI
 import Foundation
+import Networking
 import OSLog
 import RoomServices
 import VISOR
-import Networking
 
 // MARK: - BuildingLoaderError
 
@@ -30,7 +30,7 @@ public protocol BuildingLoader {
 }
 
 extension BuildingLoader {
-  
+
   public func fetch(id: String) async -> Result<Building, BuildingLoaderError> {
     do throws(BuildingLoaderError) {
       let buildings = try await fetch().get()
@@ -42,7 +42,7 @@ extension BuildingLoader {
       return .failure(error)
     }
   }
-  
+
 }
 
 // MARK: - LiveGraphQLBuildingLoader
@@ -64,30 +64,31 @@ nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendab
   }
 
   // MARK: Public
-  
+
   /// The default building loader
   ///
   /// This singleton is intended to be used in app extensions, like intent and widget extensions.
   public static let `default`: LiveGraphQLBuildingLoader = {
     let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader (default)")
-    
+
     let backendURL = DevSoc.defaultBackendURL
     let session = URLSession(configuration: .default)
     let httpClient = URLSessionHTTPClient(session: session)
     let apolloStore = ApolloStore()
-    
+
     logger.trace("Creating default LiveGraphQLBuildingLoader")
 
     let buildingsCache: (any BuildingsCache)?
     do {
-      #warning("This will create a new building cache in the extension directory. When adopting app groups, move the cache there instead.")
+      #warning(
+        "This will create a new building cache in the extension directory. When adopting app groups, move the cache there instead.")
       buildingsCache = try FileBackedCodable.sharedBuildingsCache.get()
       logger.trace("Will use buildings cache.")
     } catch {
       logger.error("Failed to load buildings cache: \(error), will not use cache.")
       buildingsCache = nil
     }
-    
+
     return LiveGraphQLBuildingLoader(
       client: DevSoc.createLiveApolloClient(using: apolloStore),
       roomStatusLoader: LiveRoomStatusLoader(

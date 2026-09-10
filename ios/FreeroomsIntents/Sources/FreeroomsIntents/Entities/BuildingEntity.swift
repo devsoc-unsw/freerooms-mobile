@@ -80,7 +80,7 @@ extension BuildingEntity {
     // MARK: Lifecycle
 
     public init() {
-      self.buildingLoader = LiveGraphQLBuildingLoader.default
+      buildingLoader = LiveGraphQLBuildingLoader.default
     }
 
     // MARK: Public
