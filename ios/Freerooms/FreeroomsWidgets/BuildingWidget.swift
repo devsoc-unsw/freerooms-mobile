@@ -17,6 +17,8 @@ struct BuildingWidget: Widget {
   var body: some WidgetConfiguration {
     AppIntentConfiguration(kind: Self.kind, provider: BuildingTimelineProvider(), content: _View.init(entry:))
       .contentMarginsDisabled()
+      .supportedFamilies([.systemMedium, .systemLarge])
+      .polyfillPromptsForUserConfiguration()
   }
   
   private struct _View: View {
@@ -25,6 +27,11 @@ struct BuildingWidget: Widget {
     
     @Environment(\.widgetContentMargins) private var contentMargins
     @Environment(\.widgetFamily) private var family
+    
+    private var building: Building! {
+      guard case .building(let building, _) = entry.value else { return nil }
+      return building
+    }
     
     init(entry: BuildingTimelineProvider.Entry) {
       self.entry = entry
@@ -46,13 +53,45 @@ struct BuildingWidget: Widget {
     
     @ViewBuilder
     private func makeView(for building: Building, image: Image?) -> some View {
-      (image ?? Image(systemName: "building"))
-        .resizable()
-        .scaledToFill()
+      // https://stackoverflow.com/questions/73707062/how-to-scale-an-image-to-fill-the-parent-view-without-affecting-the-layout-in-sw
+      Color.clear
+        .overlay {
+          (image ?? Image(systemName: "building"))
+            .resizable()
+            .scaledToFill()
+        }
+        .clipped()
+        .overlay(alignment: .bottom) {
+          VStack(alignment: .leading) {
+            Text(building.name)
+              .font(.title3)
+              .bold()
+            if let availableRooms = building.numberOfAvailableRooms {
+              Text("\(availableRooms) rooms available")
+            } else {
+              Text("Unknown rooms available")
+            }
+          }
+          .padding(4.0)
+          .frame(maxWidth: .infinity)
+          .background {
+            ContainerRelativeShape()
+              .foregroundStyle(.white)
+          }
+          .padding(contentMargins)
+        }
     }
     
   }
   
+}
+
+#Preview("System Medium", as: .systemMedium) {
+  BuildingWidget()
+} timeline: {
+  BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
+  BuildingTimelineProvider.Entry.missingBuilding
+  BuildingTimelineProvider.Entry.placeholder
 }
 
 #Preview("System Large", as: .systemLarge) {
