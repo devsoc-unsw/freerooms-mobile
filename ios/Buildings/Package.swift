@@ -72,14 +72,6 @@ let package = Package(
       name: "BuildingModels",
       dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
       swiftSettings: .defaultSettings),
-    .target(
-      name: "BuildingEntities",
-      dependencies: [
-        .target(name: "BuildingModels"),
-        .target(name: "BuildingServices"),
-        .product(name: "Networking", package: "Networking"),
-      ],
-      swiftSettings: .defaultSettings),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [

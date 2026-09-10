@@ -206,10 +206,10 @@ struct FreeroomsApp: App {
     configuration.waitsForConnectivity = false
     return URLSessionHTTPClient(session: URLSession(configuration: configuration))
   }
-  
+
   @available(*, deprecated, message: "Use constants defined in Networking.DevSoc instead")
   private static func makeBaseURLs() -> (staging: URL, production: URL) {
-    return (DevSoc.stagingBackendURL, DevSoc.defaultBackendURL)
+    (DevSoc.stagingBackendURL, DevSoc.defaultBackendURL)
   }
 
   private static func makeRemoteLoaders()

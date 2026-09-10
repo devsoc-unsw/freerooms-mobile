@@ -22,6 +22,8 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "CommonUI", path: "../CommonUI"),
+    .package(name: "Buildings", path: "../Buildings"),
+    .package(name: "Networking", path: "../Networking"),
     .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0"),
   ],
   targets: [
@@ -31,7 +33,9 @@ let package = Package(
       name: "FreeroomsIntents",
       dependencies: [
         .target(name: "FreeroomsIntentsMacros"),
+        .product(name: "Networking", package: "Networking"),
         .product(name: "CommonUI", package: "CommonUI"),
+        .product(name: "Buildings", package: "Buildings"),
       ],
       swiftSettings: swiftSettings),
     .macro(

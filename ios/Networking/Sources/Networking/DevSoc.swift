@@ -24,21 +24,21 @@ nonisolated public /* namespace */ enum DevSoc {
   /// URL(string: "https://graphql.devsoc.app/v1/graphql")
   /// ```
   public static let defaultLiveGraphQLURL = URL(string: "https://graphql.devsoc.app/v1/graphql")!
-  
+
   /// The **production** backend endpoint
   ///
   /// ```swift
   /// URL(string: "https://freerooms.devsoc.app")
   /// ```
   public static let defaultBackendURL = URL(string: "https://freerooms.devsoc.app")!
-  
+
   /// The **staging** backend endpoint
   ///
   /// ```swift
   /// URL(string: "https://freeroomsstaging.devsoc.app")
   /// ```
   public static let stagingBackendURL = URL(string: "https://freeroomsstaging.devsoc.app")!
-  
+
   /// The frequency that the scraper runs
   ///
   /// Currently the scraper runs every **30 minutes**.
