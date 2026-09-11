@@ -10,35 +10,13 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+// MARK: - RoomFilterModifier
+
 struct RoomFilterModifier: ViewModifier {
 
+  // MARK: Internal
+
   @Binding var activeFilterSheet: RoomFilterSheet?
-
-  @Environment(LiveRoomViewModel.self) private var roomViewModel
-
-  private var selectedDateBinding: Binding<Date> {
-    Binding(
-      get: { roomViewModel.selectedDate },
-      set: { roomViewModel.selectedDate = $0 })
-  }
-
-  private var selectedRoomTypesBinding: Binding<Set<RoomType>> {
-    Binding(
-      get: { roomViewModel.selectedRoomTypes },
-      set: { roomViewModel.selectedRoomTypes = $0 })
-  }
-
-  private var selectedCampusLocationBinding: Binding<CampusLocation?> {
-    Binding(
-      get: { roomViewModel.selectedCampusLocation },
-      set: { roomViewModel.selectedCampusLocation = $0 })
-  }
-
-  private var selectedCapacityBinding: Binding<Int?> {
-    Binding(
-      get: { roomViewModel.selectedCapacity },
-      set: { roomViewModel.selectedCapacity = $0 })
-  }
 
   func body(content: Content) -> some View {
     content
@@ -124,6 +102,35 @@ struct RoomFilterModifier: ViewModifier {
         }
       }
   }
+
+  // MARK: Private
+
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+
+  private var selectedDateBinding: Binding<Date> {
+    Binding(
+      get: { roomViewModel.selectedDate },
+      set: { roomViewModel.selectedDate = $0 })
+  }
+
+  private var selectedRoomTypesBinding: Binding<Set<RoomType>> {
+    Binding(
+      get: { roomViewModel.selectedRoomTypes },
+      set: { roomViewModel.selectedRoomTypes = $0 })
+  }
+
+  private var selectedCampusLocationBinding: Binding<CampusLocation?> {
+    Binding(
+      get: { roomViewModel.selectedCampusLocation },
+      set: { roomViewModel.selectedCampusLocation = $0 })
+  }
+
+  private var selectedCapacityBinding: Binding<Int?> {
+    Binding(
+      get: { roomViewModel.selectedCapacity },
+      set: { roomViewModel.selectedCapacity = $0 })
+  }
+
 }
 
 extension View {

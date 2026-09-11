@@ -19,8 +19,8 @@ public struct RoomsListView: View {
   public init(
     building: Building,
     path: Binding<NavigationPath>,
-    imageProvider: @escaping (String) -> CachedImage
-  ) {
+    imageProvider: @escaping (String) -> CachedImage)
+  {
     self.building = building
     _path = path
     self.imageProvider = imageProvider
@@ -35,13 +35,10 @@ public struct RoomsListView: View {
       imageProvider(building.id)
         .frame(
           height: screenHeight
-            * RoomLayoutConstants.buildingHeroImageHeightFraction
-        )
+            * RoomLayoutConstants.buildingHeroImageHeightFraction)
         .clipShape(
           RoundedRectangle(
-            cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius
-          )
-        )
+            cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
         .listRowInsets(EdgeInsets()) // remove default list padding
         .listRowBackground(Color.clear) // optional, to keep background consistent
         .padding(.bottom)
@@ -50,8 +47,7 @@ public struct RoomsListView: View {
         rooms: rooms,
         isLoading: roomViewModel.isLoading,
         path: $path,
-        rowHeight: $rowHeight
-      )
+        rowHeight: $rowHeight)
     }
     .refreshable {
       await roomViewModel.reloadRooms()
@@ -76,8 +72,7 @@ public struct RoomsListView: View {
               .buttonStyle(.borderedProminent)
               .tint(theme.background.primary.opacity(0.8))
               .foregroundStyle(theme.accent.primary)
-          }
-        )
+          })
       }
 
       ToolbarItem(placement: .topBarTrailing) {
@@ -89,8 +84,7 @@ public struct RoomsListView: View {
               .resizable()
               .frame(
                 width: RoomLayoutConstants.toolbarSortIconWidth,
-                height: RoomLayoutConstants.toolbarIconHeight
-              )
+                height: RoomLayoutConstants.toolbarIconHeight)
           }
         }
         .padding(RoomLayoutConstants.toolbarIconPadding)
@@ -135,7 +129,7 @@ private struct InteractivePopGestureEnabler: UIViewControllerRepresentable {
     Controller()
   }
 
-  func updateUIViewController(_: Controller, context _: Context) {}
+  func updateUIViewController(_: Controller, context _: Context) { }
 }
 
 // MARK: - PreviewWrapper
@@ -152,15 +146,13 @@ private struct PreviewWrapper: View {
         latitude: 0,
         longitude: 0,
         aliases: [],
-        numberOfAvailableRooms: 1
-      ),
+        numberOfAvailableRooms: 1),
       path: $path,
       imageProvider: {
-        RoomImage[$0]  // This closure captures BuildingImage
-      }
-    )
-    .environment(viewModel)
-    .defaultTheme()
+        RoomImage[$0] // This closure captures BuildingImage
+      })
+      .environment(viewModel)
+      .defaultTheme()
   }
 }
 

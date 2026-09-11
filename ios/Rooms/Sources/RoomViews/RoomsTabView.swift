@@ -23,8 +23,8 @@ public struct RoomsTabView<Destination: View>: View {
     path: Binding<NavigationPath>,
     selectedTab: Binding<FreeroomsTab>,
     selectedView: Binding<ViewOrientation>,
-    _ roomDestinationBuilderView: @escaping (Room) -> Destination
-  ) {
+    _ roomDestinationBuilderView: @escaping (Room) -> Destination)
+  {
     _path = path
     _selectedTab = selectedTab
     _selectedView = selectedView
@@ -41,8 +41,8 @@ public struct RoomsTabView<Destination: View>: View {
       Label(
         "Rooms",
         systemImage: selectedTab == .rooms
-          ? "door.left.hand.open" : "door.left.hand.closed"
-      )
+          ? "door.left.hand.open"
+          : "door.left.hand.closed")
     }
     .tag(FreeroomsTab.rooms)
   }
@@ -57,8 +57,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State var rowHeight: CGFloat?
 
   func roomsCardView(
-    _ buildings: [Building]
-  )
+    _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
@@ -72,8 +71,7 @@ public struct RoomsTabView<Destination: View>: View {
             rooms: rooms,
             isLoading: roomViewModel.isLoading,
             path: $path,
-            cardWidth: $cardWidth
-          )
+            cardWidth: $cardWidth)
         } header: {
           HStack {
             Text(building.name)
@@ -81,8 +79,7 @@ public struct RoomsTabView<Destination: View>: View {
               .foregroundStyle(theme.label.primary)
               .padding(
                 .leading,
-                RoomLayoutConstants.sectionHeaderLeadingPadding
-              )
+                RoomLayoutConstants.sectionHeaderLeadingPadding)
             Spacer()
           }
           .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
@@ -93,8 +90,7 @@ public struct RoomsTabView<Destination: View>: View {
   }
 
   func roomsListView(
-    _ buildings: [Building]
-  )
+    _ buildings: [Building])
     -> some View
   {
     ForEach(buildings) { building in
@@ -106,8 +102,7 @@ public struct RoomsTabView<Destination: View>: View {
             rooms: rooms,
             isLoading: roomViewModel.isLoading,
             path: $path,
-            rowHeight: $rowHeight
-          )
+            rowHeight: $rowHeight)
         } header: {
           Text(building.name)
             .textCase(.uppercase)
@@ -147,8 +142,7 @@ public struct RoomsTabView<Destination: View>: View {
   private var searchTextBinding: Binding<String> {
     Binding(
       get: { roomViewModel.searchText },
-      set: { roomViewModel.searchText = $0 }
-    )
+      set: { roomViewModel.searchText = $0 })
   }
 
   @ViewBuilder
@@ -169,9 +163,8 @@ public struct RoomsTabView<Destination: View>: View {
             .onTapGesture {
               withAnimation(
                 .spring(
-                  duration: RoomLayoutConstants.filterMenuAnimationDuration
-                )
-              ) {
+                  duration: RoomLayoutConstants.filterMenuAnimationDuration))
+              {
                 showingFilterMenu = false
               }
             }
@@ -181,10 +174,9 @@ public struct RoomsTabView<Destination: View>: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu
-          )
-          .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
-          .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
+            showingFilterMenu: $showingFilterMenu)
+            .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
+            .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
       }
       .toolbar {
@@ -202,8 +194,7 @@ public struct RoomsTabView<Destination: View>: View {
           FavoriteRoomsView(
             path: $path,
             selectedView: $selectedView,
-            roomDestinationBuilderView
-          )
+            roomDestinationBuilderView)
         }
       }
       .task {
@@ -218,21 +209,18 @@ public struct RoomsTabView<Destination: View>: View {
       .alert(
         item: Binding(
           get: { roomViewModel.loadRoomErrorMessage },
-          set: { roomViewModel.loadRoomErrorMessage = $0 }
-        )
-      ) { error in
+          set: { roomViewModel.loadRoomErrorMessage = $0 }))
+      { error in
         Alert(
           title: Text(error.title),
           message: Text(error.message),
-          dismissButton: .default(Text("OK"))
-        )
+          dismissButton: .default(Text("OK")))
       }
       .navigationTitle("Rooms")
       .searchable(
         text: searchTextBinding,
         placement: .navigationBarDrawer(displayMode: .always),
-        prompt: "Search..."
-      )
+        prompt: "Search...")
       .roomFilterSheets(activeFilterSheet: $activeFilterSheet)
   }
 
@@ -241,15 +229,13 @@ public struct RoomsTabView<Destination: View>: View {
     if selectedView == ViewOrientation.List {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(
-          for: "placeholder"
-        )
+          for: "placeholder")
         List {
           RoomList(
             rooms: placeholderRooms,
             isLoading: true,
             path: $path,
-            rowHeight: $rowHeight
-          )
+            rowHeight: $rowHeight)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
@@ -266,23 +252,19 @@ public struct RoomsTabView<Destination: View>: View {
     } else {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(
-          for: "placeholder"
-        )
+          for: "placeholder")
         ScrollView {
           RoomCardGrid(
             rooms: placeholderRooms,
             isLoading: true,
             path: $path,
-            cardWidth: $cardWidth
-          )
+            cardWidth: $cardWidth)
         }
         .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
         .shadow(
           color: theme.label.primary.opacity(
-            RoomLayoutConstants.cardShadowOpacity
-          ),
-          radius: RoomLayoutConstants.cardShadowRadius
-        )
+            RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
       } else {
         ScrollView {
           favoriteRoomsPreview
@@ -291,10 +273,8 @@ public struct RoomsTabView<Destination: View>: View {
         .background(theme.background.primary)
         .shadow(
           color: theme.label.primary.opacity(
-            RoomLayoutConstants.cardShadowOpacity
-          ),
-          radius: RoomLayoutConstants.cardShadowRadius
-        )
+            RoomLayoutConstants.cardShadowOpacity),
+          radius: RoomLayoutConstants.cardShadowRadius)
       }
     }
   }
@@ -312,15 +292,13 @@ public struct RoomsTabView<Destination: View>: View {
             rooms: previewRooms,
             isLoading: roomViewModel.isLoading,
             path: $path,
-            rowHeight: $rowHeight
-          )
+            rowHeight: $rowHeight)
         } else {
           RoomCardGrid(
             rooms: previewRooms,
             isLoading: roomViewModel.isLoading,
             path: $path,
-            cardWidth: $cardWidth
-          )
+            cardWidth: $cardWidth)
         }
 
         if favoriteRooms.count > 4 {
@@ -341,8 +319,7 @@ public struct RoomsTabView<Destination: View>: View {
           .buttonStyle(.plain)
           .padding(
             .horizontal,
-            RoomLayoutConstants.contentHorizontalPadding
-          )
+            RoomLayoutConstants.contentHorizontalPadding)
           .listRowInsets(EdgeInsets())
           .listRowBackground(Color.clear)
           .listRowSeparator(.hidden)
@@ -359,34 +336,29 @@ public struct RoomsTabView<Destination: View>: View {
               .foregroundStyle(theme.label.primary)
               .padding(
                 .leading,
-                RoomLayoutConstants.sectionHeaderLeadingPadding
-              )
+                RoomLayoutConstants.sectionHeaderLeadingPadding)
 
             Spacer()
           }
           .padding(
             .horizontal,
-            RoomLayoutConstants.contentHorizontalPadding
-          )
+            RoomLayoutConstants.contentHorizontalPadding)
           .padding(
             .top,
-            RoomLayoutConstants.sectionHeaderTopPadding
-          )
+            RoomLayoutConstants.sectionHeaderTopPadding)
         }
       }
     }
   }
 
-  private static func placeholderBuilding(id: String, name: String) -> Building
-  {
+  private static func placeholderBuilding(id: String, name: String) -> Building {
     Building(
       name: name,
       id: id,
       latitude: 0,
       longitude: 0,
       aliases: [],
-      numberOfAvailableRooms: 0
-    )
+      numberOfAvailableRooms: 0)
   }
 }
 
@@ -406,9 +378,9 @@ private struct PreviewWrapper: View {
     RoomsTabView<EmptyView>(
       path: $path,
       selectedTab: .constant(.rooms),
-      selectedView: $selectedView
-    ) { _ in
-      EmptyView()  // Buildings destination
+      selectedView: $selectedView)
+    { _ in
+      EmptyView() // Buildings destination
     }
     .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)

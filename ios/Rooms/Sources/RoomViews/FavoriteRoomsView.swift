@@ -5,8 +5,8 @@
 //  Created by Nicole Xie on 2026/9/11.
 //
 
-import CommonUI
 import BuildingViewModels
+import CommonUI
 import RoomModels
 import RoomViewModels
 import SwiftUI
@@ -16,7 +16,7 @@ import SwiftUI
 struct FavoriteRoomsView<Destination: View>: View {
 
   // MARK: Lifecycle
-  
+
   init(
     path: Binding<NavigationPath>,
     selectedView: Binding<ViewOrientation>,
@@ -28,10 +28,10 @@ struct FavoriteRoomsView<Destination: View>: View {
   }
 
   // MARK: Internal
-  
+
   @Binding var path: NavigationPath
   @Binding var selectedView: ViewOrientation
-  
+
   var body: some View {
     roomView
       .refreshable {
@@ -84,7 +84,7 @@ struct FavoriteRoomsView<Destination: View>: View {
       .roomFilterSheets(
         activeFilterSheet: $activeFilterSheet)
   }
-  
+
   // MARK: Private
 
   @State private var cardWidth: CGFloat?

@@ -11,19 +11,15 @@ import RoomViewModels
 import SwiftUI
 
 struct RoomCardGrid: View {
+
+  // MARK: Internal
+
   let rooms: [Room]
   let isLoading: Bool
-  
+
   @Binding var path: NavigationPath
   @Binding var cardWidth: CGFloat?
-  
-  @Environment(LiveRoomViewModel.self) private var roomViewModel
-  
-  private let columns = [
-    GridItem(.flexible()),
-    GridItem(.flexible()),
-  ]
-  
+
   var body: some View {
     LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
       ForEach(rooms) { room in
@@ -48,4 +44,14 @@ struct RoomCardGrid: View {
     }
     .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
   }
+
+  // MARK: Private
+
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+
+  private let columns = [
+    GridItem(.flexible()),
+    GridItem(.flexible()),
+  ]
+
 }

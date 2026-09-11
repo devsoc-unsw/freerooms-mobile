@@ -13,10 +13,10 @@ import SwiftUI
 struct RoomList: View {
   let rooms: [Room]
   let isLoading: Bool
-  
+
   @Binding var path: NavigationPath
   @Binding var rowHeight: CGFloat?
-  
+
   var body: some View {
     ForEach(rooms) { room in
       GenericListRowView(
@@ -28,7 +28,7 @@ struct RoomList: View {
         imageProvider: { roomID in
           RoomImage[roomID]
         })
-      .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
+        .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
     }
   }
 }

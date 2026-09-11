@@ -11,12 +11,11 @@ import RoomViewModels
 import SwiftUI
 
 struct RoomToolBar: View {
+
+  // MARK: Internal
+
   @Binding var selectedView: ViewOrientation
-  
-  @Environment(Theme.self) private var theme
-  @Environment(\.colorScheme) private var colorScheme
-  @Environment(LiveRoomViewModel.self) private var roomViewModel
-  
+
   var body: some View {
     HStack {
       Button {
@@ -50,4 +49,11 @@ struct RoomToolBar: View {
     .padding(RoomLayoutConstants.toolbarIconPadding)
     .foregroundStyle(theme.accent.primary)
   }
+
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
+  @Environment(LiveRoomViewModel.self) private var roomViewModel
+
 }

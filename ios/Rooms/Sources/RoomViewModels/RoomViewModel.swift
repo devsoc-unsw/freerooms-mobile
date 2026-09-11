@@ -153,17 +153,14 @@ public class LiveRoomViewModel: RoomViewModel {
     for (buildingId, rooms) in roomsByBuildingId {
       let filteredRooms = interactor.applyClientSideFilters(
         rooms: rooms,
-        campusLocation: selectedCampusLocation
-      )
+        campusLocation: selectedCampusLocation)
 
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
-        inAscendingOrder: roomsInAscendingOrder
-      )
+        inAscendingOrder: roomsInAscendingOrder)
       let searchedRooms = interactor.filterRoomsByQueryString(
         sortedRooms,
-        by: searchText
-      )
+        by: searchText)
 
       if !searchedRooms.isEmpty {
         result[buildingId] = searchedRooms
@@ -194,8 +191,7 @@ public class LiveRoomViewModel: RoomViewModel {
         writingMedia: ["Whiteboard"],
         status: .available,
         endTime: nil,
-        overallRating: 4.0
-      )
+        overallRating: 4.0)
     }
   }
 
@@ -230,19 +226,17 @@ public class LiveRoomViewModel: RoomViewModel {
     defer { isLoading = false }
 
     switch await interactor.getRoomsSortedAlphabetically(
-      inAscendingOrder: roomsInAscendingOrder
-    ) {
+      inAscendingOrder: roomsInAscendingOrder)
+    {
     case .success(let roomsData):
       rooms = interactor.getRoomsSortedAlphabetically(
         rooms: roomsData,
-        inAscendingOrder: roomsInAscendingOrder
-      )
+        inAscendingOrder: roomsInAscendingOrder)
       roomsByBuildingId = Dictionary(grouping: roomsData, by: \.buildingId)
       for key in roomsByBuildingId.keys {
         roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
           rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-          inAscendingOrder: roomsInAscendingOrder
-        )
+          inAscendingOrder: roomsInAscendingOrder)
       }
 
     case .failure(let error):
@@ -258,8 +252,7 @@ public class LiveRoomViewModel: RoomViewModel {
     for key in roomsByBuildingId.keys {
       roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
         rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-        inAscendingOrder: roomsInAscendingOrder
-      )
+        inAscendingOrder: roomsInAscendingOrder)
     }
     isLoading = false
   }
@@ -390,7 +383,7 @@ public class LiveRoomViewModel: RoomViewModel {
     let currentScroll = scrollID ?? RoomBookingConstants.middleIndex
     let expectedDate =
       baseDate
-      + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
+        + (Double(currentScroll - RoomBookingConstants.middleIndex) * .day)
 
     if abs(newValue.timeIntervalSince(expectedDate)) > 1 {
       baseDate = newValue
@@ -420,8 +413,7 @@ public class LiveRoomViewModel: RoomViewModel {
       selectedDate: selectedDate,
       selectedRoomTypes: selectedRoomTypes,
       selectedDuration: selectedDuration,
-      selectedCapacity: selectedCapacity
-    )
+      selectedCapacity: selectedCapacity)
   }
 }
 
@@ -434,11 +426,8 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
       interactor: RoomInteractor(
         roomService: PreviewRoomService(),
         locationService: LiveLocationService(
-          locationManager: LiveLocationManager()
-        ),
-        favouriteService: PreviewFavoriteRoomService()
-      )
-    )
+          locationManager: LiveLocationManager()),
+        favouriteService: PreviewFavoriteRoomService()))
 
     currentRoomBookings = [
       RoomBooking.exampleOne, RoomBooking.exampleTwo, RoomBooking.exampleFour,
