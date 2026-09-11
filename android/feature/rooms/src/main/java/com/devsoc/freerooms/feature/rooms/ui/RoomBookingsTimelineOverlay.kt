@@ -16,6 +16,7 @@ import kotlin.math.roundToInt
 internal fun RoomBookingsTimelineOverlay(
     placements: List<TimelinePlacement>,
     modifier: Modifier = Modifier,
+    startHour: Int = DefaultTimelineStartHour,
 ) {
     val density = LocalDensity.current
     val slotHeightPx = with(density) { SlotHeight.toPx() }
@@ -27,7 +28,7 @@ internal fun RoomBookingsTimelineOverlay(
             .padding(start = TimeColumnWidth + ThinLine + 4.dp, end = 4.dp),
     ) {
         placements.forEach { placement ->
-            val topPx = ((placement.startMinute - TimelineStartHour * 60) / 60f) * slotHeightPx
+            val topPx = ((placement.startMinute - startHour * 60) / 60f) * slotHeightPx
             val heightPx = (
                 ((placement.endMinute - placement.startMinute) / 60f) * slotHeightPx -
                     endLineGapPx
