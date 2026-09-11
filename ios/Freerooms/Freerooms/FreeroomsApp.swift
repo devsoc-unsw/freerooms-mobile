@@ -353,11 +353,11 @@ struct FreeroomsApp: App {
 
 // MARK: - FreeroomsAppIntentsPackage
 
-struct FreeroomsAppIntentsPackage: AppIntentsPackage {
-  static var includedPackages: [any AppIntentsPackage.Type] {
-    [
-      FreeroomsEntitiesPackage.self,
-      FreeroomsWidgetIntentsPackage.self,
-    ]
-  }
-}
+//struct FreeroomsAppIntentsPackage: AppIntentsPackage {
+//  static var includedPackages: [any AppIntentsPackage.Type] {
+//    [
+//      FreeroomsEntitiesPackage.self,
+//      FreeroomsWidgetIntentsPackage.self,
+//    ]
+//  }
+//}

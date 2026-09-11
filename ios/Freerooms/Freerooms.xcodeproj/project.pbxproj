@@ -72,6 +72,7 @@
 		54179CC130414C4F0078709A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		54179CC330414C4F0078709A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		54972F192F7D030900538E99 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		54A3D6ED30543F0700755149 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk/System/Library/Frameworks/AppIntents.framework; sourceTree = DEVELOPER_DIR; };
 		855865392DC3E3CA00FD9A1D /* Persistence */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Persistence; sourceTree = "<group>"; };
 		960DCBC32DB76060003D848F /* Location */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Location; sourceTree = "<group>"; };
 		96D65EDC2DA39DDA0060D06B /* Buildings */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Buildings; sourceTree = "<group>"; };
@@ -108,9 +109,9 @@
 			path = FreeroomsWidgets;
 			sourceTree = "<group>";
 		};
-		54A3D6BA30542DFC00755149 /* Shared */ = {
+		54A3D6BA30542DFC00755149 /* FreeroomsIntents */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Shared;
+			path = FreeroomsIntents;
 			sourceTree = "<group>";
 		};
 		96F9AFCC2D9BCC1200671174 /* Freerooms */ = {
@@ -163,6 +164,7 @@
 		96D65EDD2DA39EA30060D06B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				54A3D6ED30543F0700755149 /* AppIntents.framework */,
 				96FF8A022E0025E500BC4365 /* Rooms */,
 				855865392DC3E3CA00FD9A1D /* Persistence */,
 				96DE0C302DFBD45C00C77DD5 /* CommonUI */,
@@ -183,7 +185,7 @@
 				54179CC530414C4F0078709A /* FreeroomsWidgets */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
-				54A3D6BA30542DFC00755149 /* Shared */,
+				54A3D6BA30542DFC00755149 /* FreeroomsIntents */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -216,7 +218,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				54179CC530414C4F0078709A /* FreeroomsWidgets */,
-				54A3D6BA30542DFC00755149 /* Shared */,
+				54A3D6BA30542DFC00755149 /* FreeroomsIntents */,
 			);
 			name = FreeroomsWidgetsExtension;
 			packageProductDependencies = (
@@ -264,6 +266,7 @@
 				54EABF3D30531DB300E5DB48 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				54A3D6BA30542DFC00755149 /* FreeroomsIntents */,
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
 			);
 			name = Freerooms;
@@ -695,8 +698,8 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -738,8 +741,8 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

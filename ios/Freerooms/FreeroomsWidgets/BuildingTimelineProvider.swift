@@ -106,7 +106,9 @@ extension BuildingTimelineProvider.Entry {
   }
 
   static func building(_ building: Building) -> Self {
-    let image = Image(building.id, bundle: .buildingsViews)
+    let size = CGSize(width: 1024, height: 1024)
+    let uiImage = UIImage(named: building.id, in: .buildingsViews, with: nil)?.preparingThumbnail(of: size)
+    let image = uiImage.map(Image.init(uiImage:))
     return Self(value: .building(building, image: image))
   }
 

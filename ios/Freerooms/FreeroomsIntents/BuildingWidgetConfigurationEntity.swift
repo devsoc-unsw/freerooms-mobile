@@ -12,12 +12,12 @@ import BuildingServices
 struct BuildingWidgetConfigurationEntity: AppEntity {
   static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Building")
   
-  typealias Query = BuildingWidgetConfigurationEntityQuery
+  typealias DefaultQuery = BuildingWidgetConfigurationEntityQuery
   
   let id: String
   let name: String
   
-  static let defaultQuery = Query()
+  static let defaultQuery = DefaultQuery()
   
   init(id: String, name: String) {
     self.name = name
@@ -66,6 +66,10 @@ final actor BuildingWidgetConfigurationEntityQuery: EntityQuery, EntityStringQue
         $0.id.localizedStandardContains(string) ||
         $0.name.localizedStandardContains(string)
       }
+  }
+  
+  func defaultResult() async -> Entity? {
+    return .quadrangle
   }
   
   private func _getBuildings() async throws -> [BuildingWidgetConfigurationEntity] {
