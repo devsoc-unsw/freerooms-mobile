@@ -33,7 +33,7 @@ let package = Package(
   targets: [
     .target(
       name: "BookingModels",
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingServices",
       dependencies: [
@@ -43,7 +43,7 @@ let package = Package(
         .product(name: "ApolloAPI", package: "apollo-ios"),
         .product(name: "VISOR", package: "VISOR"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingInteractors",
       dependencies: [
@@ -51,11 +51,11 @@ let package = Package(
         "BookingServices",
         .product(name: "VISOR", package: "VISOR"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingViewModels",
       dependencies: ["BookingModels", "BookingServices", "BookingInteractors"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingViews",
       dependencies: [
@@ -64,11 +64,11 @@ let package = Package(
         .product(name: "CommonUI", package: "CommonUI"),
         .product(name: "RoomViews", package: "Rooms"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingTestUtils",
       dependencies: ["BookingModels"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "BookingsTests",
       dependencies: [
@@ -82,16 +82,17 @@ let package = Package(
         .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "Apollo", package: "apollo-ios"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
   ],
   swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
+let swiftSettings: [SwiftSetting] = [
+  .defaultIsolation(nil),
+  .strictMemorySafety(),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .enableUpcomingFeature("MemberImportVisibility"),
+  .enableUpcomingFeature("InferIsolatedConformances"),
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
+]
