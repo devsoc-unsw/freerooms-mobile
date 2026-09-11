@@ -14,6 +14,13 @@
   "testTargets" : [
     {
       "target" : {
+        "containerPath" : "container:..\/Bookings",
+        "identifier" : "BookingsTests",
+        "name" : "BookingsTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:..\/Buildings",
         "identifier" : "BuildingsTests",
         "name" : "BuildingsTests"

@@ -1,0 +1,42 @@
+{
+  "originHash" : "89f74d898ed9880e023dcb9a7865b5c1bb10a0b7db4be295457625fe90ffb363",
+  "pins" : [
+    {
+      "identity" : "apollo-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apollographql/apollo-ios.git",
+      "state" : {
+        "revision" : "38c202227d0f09508e573dcf22f54885cfb0c5d4",
+        "version" : "2.1.2"
+      }
+    },
+    {
+      "identity" : "bottomsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lucaszischka/BottomSheet",
+      "state" : {
+        "revision" : "720ddbd1371fef2a09cc1ab65fc503df37767f9c",
+        "version" : "3.1.1"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    },
+    {
+      "identity" : "visor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/avdn-dev/VISOR.git",
+      "state" : {
+        "revision" : "4ba6dd8d9845c431fca0edeecff2d5efbc105045",
+        "version" : "8.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}

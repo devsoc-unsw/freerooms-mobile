@@ -8,7 +8,7 @@
 import SwiftUI
 
 public enum Icons {
-  public static let buildings = Image("buildings", bundle: .module)
+  public static let buildings = Image("building", bundle: .module)
   public static let doorOpen = Image("door-open", bundle: .module)
   public static let doorClosed = Image("door-closed", bundle: .module)
 }

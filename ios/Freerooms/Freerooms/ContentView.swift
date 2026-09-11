@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 1/4/2025.
 //
 
+import BookingViewModels
 import BookingViews
 import BuildingModels
 import BuildingViewModels
@@ -25,12 +26,13 @@ struct ContentView: View {
   @Environment(\.buildingViewModel) var buildingViewModel
   @Environment(\.mapViewModel) var mapViewModel
   @Environment(\.roomViewModel) var roomViewModel
-  @State var selectedTab = "Buildings"
+  @Environment(TabController.self) var tabController
   @State var selectedRoomsView = ViewOrientation.List
   @State var selectedBuildingsView = ViewOrientation.List
 
   var body: some View {
-    TabView(selection: $selectedTab) {
+    @Bindable var tabController = tabController
+    TabView(selection: $tabController.currentTab) {
       BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
         RoomsListView(building: building, path: $buildingPath, imageProvider: {
           BuildingImage[$0]
@@ -51,7 +53,7 @@ struct ContentView: View {
         })
       RoomsTabView(
         path: $roomPath,
-        selectedTab: $selectedTab,
+        selectedTab: $tabController.currentTab,
         selectedView: $selectedRoomsView)
       { room in
         roomDetailsView(for: room)
@@ -67,7 +69,7 @@ struct ContentView: View {
   func roomDetailsView(for room: Room) -> some View {
     RoomDetailsView(room: room)
       .environment(roomViewModel)
-      .task { await roomViewModel.onAppear() }
+      .task(roomViewModel.onAppear)
       .task {
         roomViewModel.clearRoomBookings()
         await roomViewModel.getRoomBookings(roomId: room.id)
@@ -85,6 +87,10 @@ struct ContentView: View {
 
 extension LiveBuildingViewModel {
   static let preview = PreviewBuildingViewModel()
+}
+
+extension LiveBookingViewModel {
+  static let preview = PreviewBookingViewModel()
 }
 
 extension LiveRoomViewModel {
@@ -105,6 +111,7 @@ extension EnvironmentValues {
 #Preview {
   ContentView()
     .defaultTheme()
+    .environment(PreviewBookingViewModel() as LiveBookingViewModel)
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
     .environment(
       \.mapViewModel,
