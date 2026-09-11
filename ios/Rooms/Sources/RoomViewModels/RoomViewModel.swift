@@ -247,14 +247,7 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func getRoomsInOrder() {
-    isLoading = true
     roomsInAscendingOrder.toggle()
-    for key in roomsByBuildingId.keys {
-      roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
-        rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-        inAscendingOrder: roomsInAscendingOrder)
-    }
-    isLoading = false
   }
 
   public func getRoomBookings(roomId: String) async {
@@ -401,7 +394,14 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public func getAllFavoriteRooms() -> [Room] {
     let roomIds = interactor.getAllFavoriteRoomIds()
-    return rooms.filter { roomIds.contains($0.id) }
+
+    let favoriteRooms = rooms.filter {
+      roomIds.contains($0.id)
+    }
+
+    return interactor.getRoomsSortedAlphabetically(
+      rooms: favoriteRooms,
+      inAscendingOrder: roomsInAscendingOrder)
   }
 
   // MARK: Private
