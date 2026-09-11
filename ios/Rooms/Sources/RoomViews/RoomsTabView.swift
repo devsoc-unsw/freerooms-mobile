@@ -196,6 +196,16 @@ public struct RoomsTabView<Destination: View>: View {
       .navigationDestination(for: Room.self) { room in
         roomDestinationBuilderView(room)
       }
+      .navigationDestination(for: RoomsDestination.self) { destination in
+        switch destination {
+        case .favorites:
+          FavoriteRoomsView(
+            path: $path,
+            selectedView: $selectedView,
+            roomDestinationBuilderView
+          )
+        }
+      }
       .task {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
@@ -246,6 +256,7 @@ public struct RoomsTabView<Destination: View>: View {
         .background(theme.background.primary)
       } else {
         List {
+          favoriteRoomsPreview
           roomsListView(roomSectionBuildings)
         }
         .listRowInsets(EdgeInsets())
@@ -274,51 +285,100 @@ public struct RoomsTabView<Destination: View>: View {
         )
       } else {
         ScrollView {
+          favoriteRoomsPreview
           roomsCardView(roomSectionBuildings)
         }
         .background(theme.background.primary)
         .shadow(
-          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
-          radius: RoomLayoutConstants.cardShadowRadius)
+          color: theme.label.primary.opacity(
+            RoomLayoutConstants.cardShadowOpacity
+          ),
+          radius: RoomLayoutConstants.cardShadowRadius
+        )
       }
     }
   }
 
-  private var toolbarButtons: some View {
-    HStack {
-      Button {
-        theme.toggleColorScheme(from: colorScheme)
-      } label: {
-        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-      }
+  @ViewBuilder
+  private var favoriteRoomsPreview: some View {
+    let favoriteRooms = roomViewModel.getAllFavoriteRooms()
+    // Keep the inline section compact; the full list lives at `.favorites`.
+    let previewRooms = Array(favoriteRooms.prefix(4))
 
-      Button {
-        roomViewModel.getRoomsInOrder()
-      } label: {
-        Image(systemName: "arrow.up.arrow.down")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-      }
-
-      Button {
-        if selectedView == ViewOrientation.Card {
-          selectedView = ViewOrientation.List
+    if !favoriteRooms.isEmpty {
+      Section {
+        if selectedView == ViewOrientation.List {
+          RoomList(
+            rooms: previewRooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            rowHeight: $rowHeight
+          )
         } else {
-          selectedView = ViewOrientation.Card
+          RoomCardGrid(
+            rooms: previewRooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            cardWidth: $cardWidth
+          )
         }
-      } label: {
-        Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+
+        if favoriteRooms.count > 4 {
+          Button {
+            path.append(RoomsDestination.favorites)
+          } label: {
+            HStack(spacing: 4) {
+              Text("See More")
+                .fontWeight(.semibold)
+
+              Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(theme.label.tertiary)
+            .padding(.vertical, 12)
+          }
+          .buttonStyle(.plain)
+          .padding(
+            .horizontal,
+            RoomLayoutConstants.contentHorizontalPadding
+          )
+          .listRowInsets(EdgeInsets())
+          .listRowBackground(Color.clear)
+          .listRowSeparator(.hidden)
+        }
+      } header: {
+        if selectedView == ViewOrientation.List {
+          Text("Favorites")
+            .textCase(.uppercase)
+            .foregroundStyle(theme.label.primary)
+        } else {
+          HStack {
+            Text("Favorites")
+              .textCase(.uppercase)
+              .foregroundStyle(theme.label.primary)
+              .padding(
+                .leading,
+                RoomLayoutConstants.sectionHeaderLeadingPadding
+              )
+
+            Spacer()
+          }
+          .padding(
+            .horizontal,
+            RoomLayoutConstants.contentHorizontalPadding
+          )
+          .padding(
+            .top,
+            RoomLayoutConstants.sectionHeaderTopPadding
+          )
+        }
       }
     }
-    .padding(RoomLayoutConstants.toolbarIconPadding)
-    .foregroundStyle(theme.accent.primary)
   }
 
-  private static func placeholderBuilding(id: String, name: String) -> Building {
+  private static func placeholderBuilding(id: String, name: String) -> Building
+  {
     Building(
       name: name,
       id: id,
@@ -328,6 +388,12 @@ public struct RoomsTabView<Destination: View>: View {
       numberOfAvailableRooms: 0
     )
   }
+}
+
+// MARK: - RoomsDestination
+
+private enum RoomsDestination: Hashable {
+  case favorites
 }
 
 // MARK: - PreviewWrapper
