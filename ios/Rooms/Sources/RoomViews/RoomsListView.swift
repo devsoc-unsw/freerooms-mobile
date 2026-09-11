@@ -33,30 +33,24 @@ public struct RoomsListView: View {
 
     return List {
       imageProvider(building.id)
-        .frame(height: screenHeight * RoomLayoutConstants.buildingHeroImageHeightFraction)
-        .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
+        .frame(
+          height: screenHeight
+            * RoomLayoutConstants.buildingHeroImageHeightFraction)
+        .clipShape(
+          RoundedRectangle(
+            cornerRadius: RoomLayoutConstants.buildingHeroImageCornerRadius))
         .listRowInsets(EdgeInsets()) // remove default list padding
         .listRowBackground(Color.clear) // optional, to keep background consistent
         .padding(.bottom)
 
-      ForEach(rooms) { room in
-        GenericListRowView(
-          path: $path,
-          rowHeight: $rowHeight,
-          room: room,
-          rooms: rooms,
-          isLoading: roomViewModel.isLoading,
-          imageProvider: { roomID in
-            RoomImage[roomID]
-          })
-          .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-      }
-      .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+      RoomList(
+        rooms: rooms,
+        isLoading: roomViewModel.isLoading,
+        path: $path,
+        rowHeight: $rowHeight)
     }
     .refreshable {
-      Task {
-        await roomViewModel.reloadRooms()
-      }
+      await roomViewModel.reloadRooms()
     }
     .background(InteractivePopGestureEnabler())
     .navigationBarBackButtonHidden(true)
@@ -88,7 +82,9 @@ public struct RoomsListView: View {
           } label: {
             Image(systemName: "arrow.up.arrow.down")
               .resizable()
-              .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+              .frame(
+                width: RoomLayoutConstants.toolbarSortIconWidth,
+                height: RoomLayoutConstants.toolbarIconHeight)
           }
         }
         .padding(RoomLayoutConstants.toolbarIconPadding)
@@ -144,8 +140,15 @@ private struct PreviewWrapper: View {
   var body: some View {
     let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
     return RoomsListView(
-      building: Building(name: "AGSM", id: "K-B16", latitude: 0, longitude: 0, aliases: [], numberOfAvailableRooms: 1),
-      path: $path, imageProvider: {
+      building: Building(
+        name: "AGSM",
+        id: "K-B16",
+        latitude: 0,
+        longitude: 0,
+        aliases: [],
+        numberOfAvailableRooms: 1),
+      path: $path,
+      imageProvider: {
         RoomImage[$0] // This closure captures BuildingImage
       })
       .environment(viewModel)
