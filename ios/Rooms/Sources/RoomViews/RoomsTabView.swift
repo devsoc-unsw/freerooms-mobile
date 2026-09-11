@@ -193,8 +193,7 @@ public struct RoomsTabView<Destination: View>: View {
         case .favorites:
           FavoriteRoomsView(
             path: $path,
-            selectedView: $selectedView,
-            roomDestinationBuilderView)
+            selectedView: $selectedView)
         }
       }
       .task {

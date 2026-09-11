@@ -13,18 +13,16 @@ import SwiftUI
 
 // MARK: - FavoriteRoomsView
 
-struct FavoriteRoomsView<Destination: View>: View {
+struct FavoriteRoomsView: View {
 
   // MARK: Lifecycle
 
   init(
     path: Binding<NavigationPath>,
-    selectedView: Binding<ViewOrientation>,
-    _ roomDestinationBuilderView: @escaping (Room) -> Destination)
+    selectedView: Binding<ViewOrientation>)
   {
     _path = path
     _selectedView = selectedView
-    self.roomDestinationBuilderView = roomDestinationBuilderView
   }
 
   // MARK: Internal
@@ -55,9 +53,6 @@ struct FavoriteRoomsView<Destination: View>: View {
       .background(
         Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
       .scrollContentBackground(.hidden)
-      .navigationDestination(for: Room.self) { room in
-        roomDestinationBuilderView(room)
-      }
       .task {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
@@ -97,8 +92,6 @@ struct FavoriteRoomsView<Destination: View>: View {
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private let roomDestinationBuilderView: (Room) -> Destination
-
   private var favoriteRooms: [Room] {
     roomViewModel.getAllFavoriteRooms()
   }
@@ -111,7 +104,13 @@ struct FavoriteRoomsView<Destination: View>: View {
 
   @ViewBuilder
   private var roomView: some View {
-    if selectedView == ViewOrientation.List {
+    if favoriteRooms.isEmpty {
+      ContentUnavailableView(
+        "No Favorite Rooms",
+        systemImage: "heart.slash",
+        description: Text(
+          "Rooms you mark as favorites will appear here."))
+    } else if selectedView == ViewOrientation.List {
       favoriteRoomsList
     } else {
       favoriteRoomsGrid
