@@ -42,7 +42,7 @@ let package = Package(
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
       resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingViewModels",
       dependencies: [
@@ -52,11 +52,11 @@ let package = Package(
         .product(name: "RoomInteractors", package: "Rooms"),
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingInteractors",
       dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingServices",
       dependencies: [
@@ -67,11 +67,11 @@ let package = Package(
         .product(name: "VISOR", package: "VISOR"),
         .product(name: "DevSocAPI", package: "DevSocAPI"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
@@ -85,15 +85,16 @@ let package = Package(
         .product(name: "Location", package: "Location"),
         .product(name: "NetworkingTestUtils", package: "Networking"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
   ])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
+let swiftSettings: [SwiftSetting] = [
+  .defaultIsolation(nil),
+  .strictMemorySafety(),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .enableUpcomingFeature("MemberImportVisibility"),
+  .enableUpcomingFeature("InferIsolatedConformances"),
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
+]
