@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.devsoc.freerooms.core.ui.LocalAppUiSettings
+import com.devsoc.freerooms.feature.rooms.data.CampusZoneId
 import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 import java.time.LocalDate
 import java.time.ZoneId
@@ -27,7 +28,7 @@ internal fun RoomBookingsDayPage(
     bookings: List<RoomBooking>,
     lineColor: Color,
     modifier: Modifier = Modifier,
-    zoneId: ZoneId = ZoneId.systemDefault(),
+    zoneId: ZoneId = CampusZoneId,
 ) {
     val use12HourClock = LocalAppUiSettings.current.use12HourClock
     val timelineStartHour = remember(bookings, date, zoneId) {

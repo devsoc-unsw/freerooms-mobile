@@ -16,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.devsoc.freerooms.feature.rooms.data.CampusZoneId
 import com.devsoc.freerooms.feature.rooms.data.RoomBooking
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -29,8 +30,8 @@ private const val DayPagerCenterPage = Int.MAX_VALUE / 2
 internal fun RoomBookingsTimeline(
     bookings: List<RoomBooking>,
     modifier: Modifier = Modifier,
-    initialDate: LocalDate = LocalDate.now(),
-    zoneId: ZoneId = ZoneId.systemDefault(),
+    initialDate: LocalDate = LocalDate.now(CampusZoneId),
+    zoneId: ZoneId = CampusZoneId,
 ) {
     val pagerState = rememberPagerState(
         initialPage = DayPagerCenterPage,
