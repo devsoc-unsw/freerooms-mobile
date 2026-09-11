@@ -17,6 +17,8 @@ import BuildingViewModels
 import BuildingViews
 import CommonUI
 import Foundation
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import Location
 import LocationInteractors
 import Networking

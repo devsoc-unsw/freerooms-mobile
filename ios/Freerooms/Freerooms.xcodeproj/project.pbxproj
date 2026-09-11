@@ -10,25 +10,19 @@
 		2D7043062FF7AD02006BF888 /* Bookings in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* Bookings */; };
 		54179CC230414C4F0078709A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54179CC130414C4F0078709A /* WidgetKit.framework */; };
 		54179CC430414C4F0078709A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54179CC330414C4F0078709A /* SwiftUI.framework */; };
-		54179CD630414EB90078709A /* FreeroomsIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 54179CD530414EB90078709A /* FreeroomsIntents */; };
-		54179CD73041512F0078709A /* FreeroomsWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 54179CC030414C4F0078709A /* FreeroomsWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
-		5440565E304E6D6100C2CB68 /* FreeroomsIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 5440565D304E6D6100C2CB68 /* FreeroomsIntents */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
 		546D1A982F7AACB9000667BC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
 		546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA72F7AAD87000667BC /* RoomViews */; };
+		54EABF3330531BD500E5DB48 /* FreeroomsEntities in Frameworks */ = {isa = PBXBuildFile; productRef = 54EABF3230531BD500E5DB48 /* FreeroomsEntities */; };
+		54EABF3530531BDD00E5DB48 /* FreeroomsWidgetIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 54EABF3430531BDD00E5DB48 /* FreeroomsWidgetIntents */; };
+		54EABF3730531D7300E5DB48 /* FreeroomsWidgetIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 54EABF3630531D7300E5DB48 /* FreeroomsWidgetIntents */; };
+		54EABF3830531DAA00E5DB48 /* FreeroomsWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 54179CC030414C4F0078709A /* FreeroomsWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		54179CD83041512F0078709A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 96F9AFC22D9BCC1200671174 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 54179CBF30414C4F0078709A;
-			remoteInfo = FreeroomsWidgetsExtension;
-		};
 		54179CDB304151380078709A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 96F9AFC22D9BCC1200671174 /* Project object */;
@@ -43,16 +37,30 @@
 			remoteGlobalIDString = 96F9AFC92D9BCC1200671174;
 			remoteInfo = Freerooms;
 		};
+		54EABF3930531DAA00E5DB48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96F9AFC22D9BCC1200671174 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 54179CBF30414C4F0078709A;
+			remoteInfo = FreeroomsWidgetsExtension;
+		};
+		54EABF3C30531DB300E5DB48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96F9AFC22D9BCC1200671174 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 54179CBF30414C4F0078709A;
+			remoteInfo = FreeroomsWidgetsExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		54179CDA3041512F0078709A /* Embed Foundation Extensions */ = {
+		54EABF3B30531DAA00E5DB48 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				54179CD73041512F0078709A /* FreeroomsWidgetsExtension.appex in Embed Foundation Extensions */,
+				54EABF3830531DAA00E5DB48 /* FreeroomsWidgetsExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -64,6 +72,7 @@
 		54179CC130414C4F0078709A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		54179CC330414C4F0078709A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		54972F192F7D030900538E99 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		54A3D6ED30543F0700755149 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk/System/Library/Frameworks/AppIntents.framework; sourceTree = DEVELOPER_DIR; };
 		855865392DC3E3CA00FD9A1D /* Persistence */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Persistence; sourceTree = "<group>"; };
 		960DCBC32DB76060003D848F /* Location */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Location; sourceTree = "<group>"; };
 		96D65EDC2DA39DDA0060D06B /* Buildings */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Buildings; sourceTree = "<group>"; };
@@ -105,6 +114,11 @@
 			path = FreeroomsWidgets;
 			sourceTree = "<group>";
 		};
+		54A3D6BA30542DFC00755149 /* FreeroomsIntents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FreeroomsIntents;
+			sourceTree = "<group>";
+		};
 		96F9AFCC2D9BCC1200671174 /* Freerooms */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -121,8 +135,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				54179CC430414C4F0078709A /* SwiftUI.framework in Frameworks */,
-				54179CD630414EB90078709A /* FreeroomsIntents in Frameworks */,
 				54179CC230414C4F0078709A /* WidgetKit.framework in Frameworks */,
+				54EABF3530531BDD00E5DB48 /* FreeroomsWidgetIntents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54EABF3330531BD500E5DB48 /* FreeroomsEntities in Frameworks */,
 				541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */,
 				2D7043062FF7AD02006BF888 /* Bookings in Frameworks */,
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
@@ -144,7 +159,7 @@
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
 				546D1A982F7AACB9000667BC /* (null) in Frameworks */,
 				541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */,
-				5440565E304E6D6100C2CB68 /* FreeroomsIntents in Frameworks */,
+				54EABF3730531D7300E5DB48 /* FreeroomsWidgetIntents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +169,7 @@
 		96D65EDD2DA39EA30060D06B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				54A3D6ED30543F0700755149 /* AppIntents.framework */,
 				96FF8A022E0025E500BC4365 /* Rooms */,
 				855865392DC3E3CA00FD9A1D /* Persistence */,
 				96DE0C302DFBD45C00C77DD5 /* CommonUI */,
@@ -175,6 +191,7 @@
 				54179CC530414C4F0078709A /* FreeroomsWidgets */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
+				54A3D6BA30542DFC00755149 /* FreeroomsIntents */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -211,7 +228,7 @@
 			);
 			name = FreeroomsWidgetsExtension;
 			packageProductDependencies = (
-				54179CD530414EB90078709A /* FreeroomsIntents */,
+				54EABF3430531BDD00E5DB48 /* FreeroomsWidgetIntents */,
 			);
 			productName = FreeroomsWidgetsExtension;
 			productReference = 54179CC030414C4F0078709A /* FreeroomsWidgetsExtension.appex */;
@@ -245,15 +262,17 @@
 				96F9AFC72D9BCC1200671174 /* Frameworks */,
 				96F9AFC82D9BCC1200671174 /* Resources */,
 				96D65E752DA387360060D06B /* ShellScript */,
-				54179CDA3041512F0078709A /* Embed Foundation Extensions */,
+				54EABF3B30531DAA00E5DB48 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				54179CD93041512F0078709A /* PBXTargetDependency */,
 				54179CDC304151380078709A /* PBXTargetDependency */,
+				54EABF3A30531DAA00E5DB48 /* PBXTargetDependency */,
+				54EABF3D30531DB300E5DB48 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				54A3D6BA30542DFC00755149 /* FreeroomsIntents */,
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
 				C0DE20260912000000000001 /* SharedWidgetConfiguration */,
 			);
@@ -265,7 +284,8 @@
 				541DCFCA2FD2A5150040EB0F /* Apollo */,
 				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
 				2D7043052FF7AD02006BF888 /* Bookings */,
-				5440565D304E6D6100C2CB68 /* FreeroomsIntents */,
+				54EABF3230531BD500E5DB48 /* FreeroomsEntities */,
+				54EABF3630531D7300E5DB48 /* FreeroomsWidgetIntents */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -393,11 +413,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		54179CD93041512F0078709A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 54179CBF30414C4F0078709A /* FreeroomsWidgetsExtension */;
-			targetProxy = 54179CD83041512F0078709A /* PBXContainerItemProxy */;
-		};
 		54179CDC304151380078709A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 54179CBF30414C4F0078709A /* FreeroomsWidgetsExtension */;
@@ -407,6 +422,16 @@
 			isa = PBXTargetDependency;
 			target = 96F9AFC92D9BCC1200671174 /* Freerooms */;
 			targetProxy = 54972F1D2F7D030900538E99 /* PBXContainerItemProxy */;
+		};
+		54EABF3A30531DAA00E5DB48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 54179CBF30414C4F0078709A /* FreeroomsWidgetsExtension */;
+			targetProxy = 54EABF3930531DAA00E5DB48 /* PBXContainerItemProxy */;
+		};
+		54EABF3D30531DB300E5DB48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 54179CBF30414C4F0078709A /* FreeroomsWidgetsExtension */;
+			targetProxy = 54EABF3C30531DB300E5DB48 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -680,12 +705,12 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -723,12 +748,12 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -836,10 +861,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Bookings;
 		};
-		54179CD530414EB90078709A /* FreeroomsIntents */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FreeroomsIntents;
-		};
 		541DCFCA2FD2A5150040EB0F /* Apollo */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 541DCFC92FD2A5150040EB0F /* XCRemoteSwiftPackageReference "apollo-ios" */;
@@ -848,10 +869,6 @@
 		541DCFCD2FD2A5420040EB0F /* DevSocAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DevSocAPI;
-		};
-		5440565D304E6D6100C2CB68 /* FreeroomsIntents */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FreeroomsIntents;
 		};
 		546D1A942F7AACA2000667BC /* VISOR */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -865,6 +882,18 @@
 		546D1AA72F7AAD87000667BC /* RoomViews */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RoomViews;
+		};
+		54EABF3230531BD500E5DB48 /* FreeroomsEntities */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FreeroomsEntities;
+		};
+		54EABF3430531BDD00E5DB48 /* FreeroomsWidgetIntents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FreeroomsWidgetIntents;
+		};
+		54EABF3630531D7300E5DB48 /* FreeroomsWidgetIntents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FreeroomsWidgetIntents;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

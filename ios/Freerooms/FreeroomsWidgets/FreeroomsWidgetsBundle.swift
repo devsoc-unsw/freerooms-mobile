@@ -6,7 +6,8 @@
 //
 
 import AppIntents
-import FreeroomsIntents
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import SwiftUI
 import WidgetKit
 
