@@ -28,6 +28,8 @@ import RoomServices
 import RoomViewModels
 import SwiftData
 import SwiftUI
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 
 // MARK: - FreeroomsApp
 
@@ -353,6 +355,9 @@ struct FreeroomsApp: App {
 
 struct FreeroomsAppIntentsPackage: AppIntentsPackage {
   static var includedPackages: [any AppIntentsPackage.Type] {
-    [FreeroomsAppIntentsPackage.self]
+    [
+      FreeroomsEntitiesPackage.self,
+      FreeroomsWidgetIntentsPackage.self,
+    ]
   }
 }

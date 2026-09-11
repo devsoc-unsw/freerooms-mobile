@@ -7,7 +7,7 @@
 
 import AppIntents
 import CommonUI
-import FreeroomsIntents
+import FreeroomsWidgetIntents
 import SwiftUI
 import WidgetKit
 

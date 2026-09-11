@@ -10,7 +10,8 @@ import BuildingModels
 import BuildingServices
 import BuildingViews
 import CommonUI
-import FreeroomsIntents
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import Networking
 import SwiftUI
 import WidgetKit
@@ -46,6 +47,7 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
   let buildingLoader: LiveGraphQLBuildingLoader
 
   func snapshot(for configuration: Intent, in _: Context) async -> Entry {
+//    let selectedBuilding = configuration.building
     guard let selectedBuilding = configuration.building else {
       return .missingBuilding
     }
@@ -59,6 +61,7 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
   }
 
   func timeline(for configuration: Intent, in _: Context) async -> Timeline<Entry> {
+//    let selectedBuilding = configuration.building
     // Check if a building was configured for display
     guard let selectedBuilding = configuration.building else {
       // Return an empty state. Don't refresh until a building is selected

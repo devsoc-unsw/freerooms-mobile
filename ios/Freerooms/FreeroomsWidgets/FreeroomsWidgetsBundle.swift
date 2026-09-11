@@ -6,7 +6,8 @@
 //
 
 import AppIntents
-import FreeroomsIntents
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import SwiftUI
 import WidgetKit
 
@@ -24,6 +25,9 @@ struct FreeroomsWidgetsBundle: WidgetBundle {
 
 struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage {
   static var includedPackages: [any AppIntentsPackage.Type] {
-    [FreeroomsIntentsPackage.self]
+    [
+      FreeroomsEntitiesPackage.self,
+      FreeroomsWidgetIntentsPackage.self
+    ]
   }
 }

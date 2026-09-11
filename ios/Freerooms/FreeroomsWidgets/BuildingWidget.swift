@@ -10,7 +10,7 @@ import BuildingViews
 import CommonUI
 import SwiftUI
 import WidgetKit
-import FreeroomsIntents
+import FreeroomsWidgetIntents
 
 struct BuildingWidget: Widget {
 
@@ -24,6 +24,7 @@ struct BuildingWidget: Widget {
       intent: BuildingConfigurationIntent.self,
       provider: BuildingTimelineProvider(),
       content: _View.init(entry:))
+//      content: { _ in EmptyView().containerBackground(.clear, for: .widget) })
       .configurationDisplayName("Building Widget")
       .description("Shows availability information for a building")
       .contentMarginsDisabled()
