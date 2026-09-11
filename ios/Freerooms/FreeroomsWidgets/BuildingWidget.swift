@@ -10,6 +10,7 @@ import BuildingViews
 import CommonUI
 import SwiftUI
 import WidgetKit
+import RoomViews
 
 struct BuildingWidget: Widget {
 
@@ -23,7 +24,6 @@ struct BuildingWidget: Widget {
       intent: BuildingConfigurationIntent.self,
       provider: BuildingTimelineProvider(),
       content: _View.init(entry:))
-//      content: { _ in EmptyView().containerBackground(.clear, for: .widget) })
       .configurationDisplayName("Building Widget")
       .description("Shows availability information for a building")
       .contentMarginsDisabled()
@@ -77,7 +77,7 @@ struct BuildingWidget: Widget {
       // https://stackoverflow.com/questions/73707062/how-to-scale-an-image-to-fill-the-parent-view-without-affecting-the-layout-in-sw
       Color.clear
         .overlay {
-          (image ?? Image(systemName: "building"))
+          (image ?? makeFallback())
             .resizable()
             .scaledToFill()
         }
@@ -102,6 +102,12 @@ struct BuildingWidget: Widget {
           .padding(contentMargins)
         }
     }
+    
+    private func makeFallback() -> Image {
+      let size = CGSize(width: 1024, height: 1024)
+      let uiImage = UIImage(named: "default", in: .roomViews, with: nil)!.preparingThumbnail(of: size)!
+      return Image(uiImage: uiImage)
+    }
 
   }
 
@@ -113,6 +119,7 @@ struct BuildingWidget: Widget {
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
   BuildingTimelineProvider.Entry.placeholder
+  BuildingTimelineProvider.Entry.building(.init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []))
 }
 
 #Preview("System Large", as: .systemLarge) {
@@ -121,4 +128,5 @@ struct BuildingWidget: Widget {
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
   BuildingTimelineProvider.Entry.placeholder
+  BuildingTimelineProvider.Entry.building(.init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []))
 }
