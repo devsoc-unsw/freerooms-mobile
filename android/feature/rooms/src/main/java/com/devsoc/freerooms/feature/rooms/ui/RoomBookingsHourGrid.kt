@@ -22,12 +22,13 @@ import com.devsoc.freerooms.core.ui.LocalAppUiSettings
 internal fun RoomBookingsHourGrid(
     lineColor: Color,
     modifier: Modifier = Modifier,
+    startHour: Int = DefaultTimelineStartHour,
 ) {
     val use12HourClock = LocalAppUiSettings.current.use12HourClock
     val labelColor = MaterialTheme.colorScheme.onBackground
 
     Column(modifier = modifier.fillMaxWidth()) {
-        TimelineHours.forEach { hour ->
+        timelineHours(startHour).forEach { hour ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

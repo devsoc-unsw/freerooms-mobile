@@ -30,9 +30,14 @@ internal fun RoomBookingsDayPage(
     zoneId: ZoneId = ZoneId.systemDefault(),
 ) {
     val use12HourClock = LocalAppUiSettings.current.use12HourClock
-    val placements = remember(bookings, date, zoneId, use12HourClock) {
+    val timelineStartHour = remember(bookings, date, zoneId) {
+        timelineStartHourForBookings(bookings, date, zoneId)
+    }
+    val placements = remember(bookings, date, zoneId, use12HourClock, timelineStartHour) {
         bookings
-            .mapNotNull { booking -> booking.toTimelinePlacement(date, zoneId, use12HourClock) }
+            .mapNotNull { booking ->
+                booking.toTimelinePlacement(date, zoneId, use12HourClock, timelineStartHour)
+            }
             .sortedBy { placement -> placement.startMinute }
     }
 
@@ -57,9 +62,13 @@ internal fun RoomBookingsDayPage(
         }
 
         Box(modifier = Modifier.fillMaxWidth()) {
-            RoomBookingsHourGrid(lineColor = lineColor)
+            RoomBookingsHourGrid(
+                lineColor = lineColor,
+                startHour = timelineStartHour,
+            )
             RoomBookingsTimelineOverlay(
                 placements = placements,
+                startHour = timelineStartHour,
                 modifier = Modifier.matchParentSize(),
             )
         }

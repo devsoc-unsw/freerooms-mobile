@@ -9,13 +9,14 @@ internal val BookingsBoxShape = RoundedCornerShape(12.dp)
 internal val BookingsDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.US)
 internal val BookingsTime24Formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
 internal val BookingsTime12Formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.US)
-internal val TimelineHours = 9..23
 internal val SlotHeight = 60.dp
 internal val TimeColumnWidth = 64.dp
 internal val ThickLine = 2.dp
 internal val ThinLine = 1.dp
-internal val TimelineStartHour = 9
+internal val DefaultTimelineStartHour = 9
 internal val TimelineEndHour = 24
+
+internal fun timelineHours(startHour: Int): IntRange = startHour until TimelineEndHour
 
 internal fun formatBookingTime(time: java.time.LocalTime, use12HourClock: Boolean): String {
     return time.format(if (use12HourClock) BookingsTime12Formatter else BookingsTime24Formatter)

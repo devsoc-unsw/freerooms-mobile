@@ -15,6 +15,7 @@ internal fun RoomBooking.toTimelinePlacement(
     date: LocalDate,
     zoneId: ZoneId,
     use12HourClock: Boolean = false,
+    timelineStartHour: Int = DefaultTimelineStartHour,
 ): TimelinePlacement? {
     val dayStart = date.atStartOfDay(zoneId)
     val dayEnd = date.plusDays(1).atStartOfDay(zoneId)
@@ -32,8 +33,8 @@ internal fun RoomBooking.toTimelinePlacement(
         visibleEnd.hour * 60 + visibleEnd.minute
     }
 
-    val clippedStart = startMinute.coerceIn(TimelineStartHour * 60, TimelineEndHour * 60)
-    val clippedEnd = endMinute.coerceIn(TimelineStartHour * 60, TimelineEndHour * 60)
+    val clippedStart = startMinute.coerceIn(timelineStartHour * 60, TimelineEndHour * 60)
+    val clippedEnd = endMinute.coerceIn(timelineStartHour * 60, TimelineEndHour * 60)
     if (clippedEnd <= clippedStart) return null
 
     return TimelinePlacement(
@@ -43,4 +44,25 @@ internal fun RoomBooking.toTimelinePlacement(
         startMinute = clippedStart,
         endMinute = clippedEnd,
     )
+}
+
+internal fun timelineStartHourForBookings(
+    bookings: List<RoomBooking>,
+    date: LocalDate,
+    zoneId: ZoneId,
+): Int {
+    val dayStart = date.atStartOfDay(zoneId)
+    val dayEnd = date.plusDays(1).atStartOfDay(zoneId)
+    val earliestStartHour = bookings
+        .mapNotNull { booking ->
+            val bookingStart = booking.start.atZone(zoneId)
+            val bookingEnd = booking.end.atZone(zoneId)
+            val visibleStart = maxOf(bookingStart, dayStart)
+            val visibleEnd = minOf(bookingEnd, dayEnd)
+            if (!visibleEnd.isAfter(visibleStart)) null else visibleStart.hour
+        }
+        .minOrNull()
+        ?: return DefaultTimelineStartHour
+
+    return minOf(DefaultTimelineStartHour, earliestStartHour)
 }
