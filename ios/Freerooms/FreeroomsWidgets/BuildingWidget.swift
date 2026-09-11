@@ -8,9 +8,9 @@
 import BuildingModels
 import BuildingViews
 import CommonUI
+import RoomViews
 import SwiftUI
 import WidgetKit
-import RoomViews
 
 struct BuildingWidget: Widget {
 
@@ -102,7 +102,7 @@ struct BuildingWidget: Widget {
           .padding(contentMargins)
         }
     }
-    
+
     private func makeFallback() -> Image {
       let size = CGSize(width: 1024, height: 1024)
       let uiImage = UIImage(named: "default", in: .roomViews, with: nil)!.preparingThumbnail(of: size)!
