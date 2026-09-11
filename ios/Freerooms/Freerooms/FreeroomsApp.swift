@@ -350,7 +350,3 @@ struct FreeroomsApp: App {
   }
 
 }
-
-// MARK: - FreeroomsAppIntentsPackage
-
-struct FreeroomsAppIntentsPackage: AppIntentsPackage { }

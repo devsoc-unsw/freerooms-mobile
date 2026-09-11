@@ -20,7 +20,3 @@ struct FreeroomsWidgetsBundle: WidgetBundle {
     BuildingWidget()
   }
 }
-
-// MARK: - FreeroomsWidgetsBundleIntentsPackage
-
-struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage { }
