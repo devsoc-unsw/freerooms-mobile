@@ -23,8 +23,8 @@ public struct RoomsTabView<Destination: View>: View {
     path: Binding<NavigationPath>,
     selectedTab: Binding<FreeroomsTab>,
     selectedView: Binding<ViewOrientation>,
-    _ roomDestinationBuilderView: @escaping (Room) -> Destination)
-  {
+    _ roomDestinationBuilderView: @escaping (Room) -> Destination
+  ) {
     _path = path
     _selectedTab = selectedTab
     _selectedView = selectedView
@@ -38,7 +38,11 @@ public struct RoomsTabView<Destination: View>: View {
       mainContent
     }
     .tabItem {
-      Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
+      Label(
+        "Rooms",
+        systemImage: selectedTab == .rooms
+          ? "door.left.hand.open" : "door.left.hand.closed"
+      )
     }
     .tag(FreeroomsTab.rooms)
   }
@@ -53,44 +57,32 @@ public struct RoomsTabView<Destination: View>: View {
   @State var rowHeight: CGFloat?
 
   func roomsCardView(
-    _ buildings: [Building])
+    _ buildings: [Building]
+  )
     -> some View
   {
     ForEach(buildings) { building in
       let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
         EmptyView()
       } else {
         Section {
-          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
-            ForEach(rooms) { room in
-              GenericCardView(
-                path: $path,
-                cardWidth: $cardWidth,
-                room: room,
-                rooms: rooms,
-                isLoading: roomViewModel.isLoading,
-                isFavourite: Binding(
-                  get: {
-                    roomViewModel.isFavorite(roomID: room.id)
-                  },
-                  set: { _ in
-                    roomViewModel.toggleFavorite(roomID: room.id)
-                  }),
-                imageProvider: { roomID in
-                  RoomImage[roomID]
-                })
-            }
-          }
-          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          RoomCardGrid(
+            rooms: rooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            cardWidth: $cardWidth
+          )
         } header: {
           HStack {
-            Text(buildingName)
+            Text(building.name)
               .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
-              .padding(.leading, RoomLayoutConstants.sectionHeaderLeadingPadding)
+              .padding(
+                .leading,
+                RoomLayoutConstants.sectionHeaderLeadingPadding
+              )
             Spacer()
           }
           .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
@@ -101,31 +93,23 @@ public struct RoomsTabView<Destination: View>: View {
   }
 
   func roomsListView(
-    _ buildings: [Building])
+    _ buildings: [Building]
+  )
     -> some View
   {
     ForEach(buildings) { building in
       let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
-      if rooms.isEmpty {
-        EmptyView()
-      } else {
+      if !rooms.isEmpty {
         Section {
-          ForEach(rooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: rooms,
-              isLoading: roomViewModel.isLoading,
-              imageProvider: { roomID in
-                RoomImage[roomID]
-              })
-              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-          }
+          RoomList(
+            rooms: rooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            rowHeight: $rowHeight
+          )
         } header: {
-          Text(buildingName)
+          Text(building.name)
             .textCase(.uppercase)
             .foregroundStyle(theme.label.primary)
         }
@@ -139,16 +123,14 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
-  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private let columns = [
-    GridItem(.flexible()),
-    GridItem(.flexible()),
-  ]
-
   private let roomDestinationBuilderView: (Room) -> Destination
+
+  private var favoriteRooms: [Room] {
+    roomViewModel.getAllFavoriteRooms()
+  }
 
   private var roomSectionBuildings: [Building] {
     let buildings = buildingViewModel.allBuildings
@@ -156,6 +138,7 @@ public struct RoomsTabView<Destination: View>: View {
       return buildings
     }
 
+    // Preserve room sections while building metadata is still unavailable.
     return roomViewModel.roomsByBuildingId.keys
       .sorted()
       .map { Self.placeholderBuilding(id: $0, name: $0) }
@@ -164,31 +147,8 @@ public struct RoomsTabView<Destination: View>: View {
   private var searchTextBinding: Binding<String> {
     Binding(
       get: { roomViewModel.searchText },
-      set: { roomViewModel.searchText = $0 })
-  }
-
-  private var selectedDateBinding: Binding<Date> {
-    Binding(
-      get: { roomViewModel.selectedDate },
-      set: { roomViewModel.selectedDate = $0 })
-  }
-
-  private var selectedRoomTypesBinding: Binding<Set<RoomType>> {
-    Binding(
-      get: { roomViewModel.selectedRoomTypes },
-      set: { roomViewModel.selectedRoomTypes = $0 })
-  }
-
-  private var selectedCampusLocationBinding: Binding<CampusLocation?> {
-    Binding(
-      get: { roomViewModel.selectedCampusLocation },
-      set: { roomViewModel.selectedCampusLocation = $0 })
-  }
-
-  private var selectedCapacityBinding: Binding<Int?> {
-    Binding(
-      get: { roomViewModel.selectedCapacity },
-      set: { roomViewModel.selectedCapacity = $0 })
+      set: { roomViewModel.searchText = $0 }
+    )
   }
 
   @ViewBuilder
@@ -207,7 +167,11 @@ public struct RoomsTabView<Destination: View>: View {
             .ignoresSafeArea()
             .transition(.opacity)
             .onTapGesture {
-              withAnimation(.spring(duration: RoomLayoutConstants.filterMenuAnimationDuration)) {
+              withAnimation(
+                .spring(
+                  duration: RoomLayoutConstants.filterMenuAnimationDuration
+                )
+              ) {
                 showingFilterMenu = false
               }
             }
@@ -217,13 +181,14 @@ public struct RoomsTabView<Destination: View>: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu)
-            .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
-            .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
+            showingFilterMenu: $showingFilterMenu
+          )
+          .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
+          .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
       }
       .toolbar {
-        toolbarButtons
+        RoomToolBar(selectedView: $selectedView)
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets())
@@ -240,97 +205,41 @@ public struct RoomsTabView<Destination: View>: View {
           await roomViewModel.onAppear()
         }
       }
-      .alert(item: Binding(
-        get: { roomViewModel.loadRoomErrorMessage },
-        set: { roomViewModel.loadRoomErrorMessage = $0 }))
-      { error in
+      .alert(
+        item: Binding(
+          get: { roomViewModel.loadRoomErrorMessage },
+          set: { roomViewModel.loadRoomErrorMessage = $0 }
+        )
+      ) { error in
         Alert(
           title: Text(error.title),
           message: Text(error.message),
-          dismissButton: .default(Text("OK")))
+          dismissButton: .default(Text("OK"))
+        )
       }
       .navigationTitle("Rooms")
-      .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
-      .sheet(item: $activeFilterSheet) { sheet in
-        switch sheet {
-        case .date:
-          DateFilterView(selectedDate: selectedDateBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-            let vm = roomViewModel
-            Task { await vm.loadBookingsForFilteredRooms() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.dateDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .roomType:
-          RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.roomTypeDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .duration:
-          DurationFilterView(onSelect: {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          })
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.durationDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .campusLocation:
-          CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.campusLocationDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .capacity:
-          CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.capacityDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-        }
-      }
+      .searchable(
+        text: searchTextBinding,
+        placement: .navigationBarDrawer(displayMode: .always),
+        prompt: "Search..."
+      )
+      .roomFilterSheets(activeFilterSheet: $activeFilterSheet)
   }
 
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
-        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(
+          for: "placeholder"
+        )
         List {
-          ForEach(placeholderRooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: placeholderRooms,
-              isLoading: true,
-              imageProvider: { roomID in
-                RoomImage[roomID]
-              })
-              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-          }
+          RoomList(
+            rooms: placeholderRooms,
+            isLoading: true,
+            path: $path,
+            rowHeight: $rowHeight
+          )
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
@@ -345,28 +254,24 @@ public struct RoomsTabView<Destination: View>: View {
       }
     } else {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
-        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(
+          for: "placeholder"
+        )
         ScrollView {
-          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
-            ForEach(placeholderRooms) { room in
-              GenericCardView(
-                path: $path,
-                cardWidth: $cardWidth,
-                room: room,
-                rooms: placeholderRooms,
-                isLoading: true,
-                isFavourite: .constant(false),
-                imageProvider: { roomID in
-                  RoomImage[roomID]
-                })
-            }
-          }
-          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          RoomCardGrid(
+            rooms: placeholderRooms,
+            isLoading: true,
+            path: $path,
+            cardWidth: $cardWidth
+          )
         }
         .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
         .shadow(
-          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
-          radius: RoomLayoutConstants.cardShadowRadius)
+          color: theme.label.primary.opacity(
+            RoomLayoutConstants.cardShadowOpacity
+          ),
+          radius: RoomLayoutConstants.cardShadowRadius
+        )
       } else {
         ScrollView {
           roomsCardView(roomSectionBuildings)
@@ -420,7 +325,8 @@ public struct RoomsTabView<Destination: View>: View {
       latitude: 0,
       longitude: 0,
       aliases: [],
-      numberOfAvailableRooms: 0)
+      numberOfAvailableRooms: 0
+    )
   }
 }
 
@@ -434,9 +340,9 @@ private struct PreviewWrapper: View {
     RoomsTabView<EmptyView>(
       path: $path,
       selectedTab: .constant(.rooms),
-      selectedView: $selectedView)
-    { _ in
-      EmptyView() // Buildings destination
+      selectedView: $selectedView
+    ) { _ in
+      EmptyView()  // Buildings destination
     }
     .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
