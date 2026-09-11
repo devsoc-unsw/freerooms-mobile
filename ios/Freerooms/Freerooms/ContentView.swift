@@ -111,6 +111,7 @@ extension EnvironmentValues {
 #Preview {
   ContentView()
     .defaultTheme()
+    .environment(TabController())
     .environment(PreviewBookingViewModel() as LiveBookingViewModel)
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
     .environment(
