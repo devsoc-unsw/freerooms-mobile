@@ -16,7 +16,7 @@ internal fun FreeroomsNavHost(
     buildingRoomsContent: @Composable (buildingId: String, Modifier) -> Unit,
     roomsContent: @Composable (Modifier) -> Unit,
     roomDetailsContent: @Composable (roomId: String, Modifier) -> Unit,
-    mapContent: @Composable (Modifier, onBuildingClick: (String) -> Unit) -> Unit,
+    mapContent: @Composable (Modifier, onRoomClick: (String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -57,8 +57,8 @@ internal fun FreeroomsNavHost(
         }
 
         composable(FreeroomsRoute.Map) {
-            mapContent(Modifier.fillMaxSize(), { buildingId ->
-                navController.navigate(FreeroomsRoute.buildingRooms(buildingId))
+            mapContent(Modifier.fillMaxSize(), { roomId ->
+                navController.navigate(FreeroomsRoute.roomDetails(roomId))
             })
         }
     }

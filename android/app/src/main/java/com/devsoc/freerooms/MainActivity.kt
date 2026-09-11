@@ -144,11 +144,12 @@ class MainActivity : ComponentActivity() {
                             modifier = modifier,
                         )
                     },
-                    mapContent = { modifier, onBuildingClick ->
+                    mapContent = { modifier, onRoomClick ->
                         MapScreen(
                             viewModel = mapViewModel,
+                            roomViewModel = roomViewModel,
                             modifier = modifier,
-                            onBuildingClick = { building -> onBuildingClick(building.id) },
+                            onRoomClick = onRoomClick,
                         )
                     },
                     modifier = Modifier.fillMaxSize(),

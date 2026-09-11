@@ -26,6 +26,7 @@ android {
 dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:buildings"))
+    implementation(project(":feature:rooms"))
     implementation(libs.androidx.compose.ui.text)
 
     implementation(libs.androidx.core.ktx)
