@@ -40,6 +40,7 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
     }
 
     let formatter = ISO8601DateFormatter()
+    formatter.timeZone = TimeZone(identifier: "Australia/Sydney")
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     switch await remoteRoomBookingLoader.fetch(bookingsOf: roomID) {
     case .success(let remoteRoomBookings):
