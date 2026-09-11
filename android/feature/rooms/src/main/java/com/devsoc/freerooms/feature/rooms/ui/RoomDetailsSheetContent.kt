@@ -90,7 +90,6 @@ internal fun RoomDetailsSheetContent(
                 overallRating = overallRating,
                 isFavorite = isFavorite,
                 onToggleFavorite = onToggleFavorite,
-                modifier = Modifier.padding(top = 16.dp),
             )
         }
 

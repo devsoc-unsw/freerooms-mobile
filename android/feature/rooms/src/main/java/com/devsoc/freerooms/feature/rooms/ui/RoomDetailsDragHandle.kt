@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -22,8 +21,9 @@ internal fun RoomDetailsDragHandle(
 ) {
     Box(
         modifier = modifier
-            .padding(top = 6.dp, bottom = 2.dp)
-            .size(width = 48.dp, height = 28.dp)
+            .padding(top = 6.dp, bottom = 3.dp)
+            .width(48.dp)
+            .height(4.dp)
             .freeroomsClickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
