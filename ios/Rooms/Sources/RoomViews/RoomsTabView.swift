@@ -21,7 +21,7 @@ public struct RoomsTabView<Destination: View>: View {
   /// init some viewModel to depend on
   public init(
     path: Binding<NavigationPath>,
-    selectedTab: Binding<String>,
+    selectedTab: Binding<FreeroomsTab>,
     selectedView: Binding<ViewOrientation>,
     _ roomDestinationBuilderView: @escaping (Room) -> Destination)
   {
@@ -38,14 +38,14 @@ public struct RoomsTabView<Destination: View>: View {
       mainContent
     }
     .tabItem {
-      Label("Rooms", systemImage: selectedTab == "Rooms" ? "door.left.hand.open" : "door.left.hand.closed")
+      Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
     }
-    .tag("Rooms")
+    .tag(FreeroomsTab.rooms)
   }
 
   // MARK: Internal
 
-  @Binding var selectedTab: String
+  @Binding var selectedTab: FreeroomsTab
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
   @State var searchText = ""
@@ -139,6 +139,7 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
+  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
@@ -148,6 +149,17 @@ public struct RoomsTabView<Destination: View>: View {
   ]
 
   private let roomDestinationBuilderView: (Room) -> Destination
+
+  private var roomSectionBuildings: [Building] {
+    let buildings = buildingViewModel.allBuildings
+    if !buildings.isEmpty {
+      return buildings
+    }
+
+    return roomViewModel.roomsByBuildingId.keys
+      .sorted()
+      .map { Self.placeholderBuilding(id: $0, name: $0) }
+  }
 
   private var searchTextBinding: Binding<String> {
     Binding(
@@ -188,6 +200,19 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
+      .overlay {
+        if showingFilterMenu, !roomViewModel.isLoading {
+          Color.black
+            .opacity(RoomLayoutConstants.filterMenuScrimOpacity)
+            .ignoresSafeArea()
+            .transition(.opacity)
+            .onTapGesture {
+              withAnimation(.spring(duration: RoomLayoutConstants.filterMenuAnimationDuration)) {
+                showingFilterMenu = false
+              }
+            }
+        }
+      }
       .overlay(alignment: .bottomTrailing) {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
@@ -236,6 +261,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await vm.loadBookingsForFilteredRooms() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.dateDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -246,6 +272,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.roomTypeDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -256,6 +283,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           })
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.durationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -266,6 +294,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.campusLocationDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -276,6 +305,7 @@ public struct RoomsTabView<Destination: View>: View {
             Task { await roomViewModel.applyFilters() }
           }
           .environment(roomViewModel)
+          .environment(theme)
           .presentationDetents([FilterSheetLayout.capacityDetent])
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
@@ -286,7 +316,7 @@ public struct RoomsTabView<Destination: View>: View {
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
-      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+      if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
         List {
           ForEach(placeholderRooms) { room in
@@ -304,17 +334,17 @@ public struct RoomsTabView<Destination: View>: View {
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .background(theme.background.primary)
       } else {
         List {
-          roomsListView(buildingViewModel.allBuildings)
+          roomsListView(roomSectionBuildings)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
-        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .background(theme.background.primary)
       }
     } else {
-      if roomViewModel.isLoading, buildingViewModel.allBuildings.isEmpty {
+      if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
         let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
         ScrollView {
           LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
@@ -339,9 +369,9 @@ public struct RoomsTabView<Destination: View>: View {
           radius: RoomLayoutConstants.cardShadowRadius)
       } else {
         ScrollView {
-          roomsCardView(buildingViewModel.allBuildings)
+          roomsCardView(roomSectionBuildings)
         }
-        .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
+        .background(theme.background.primary)
         .shadow(
           color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
           radius: RoomLayoutConstants.cardShadowRadius)
@@ -351,6 +381,14 @@ public struct RoomsTabView<Destination: View>: View {
 
   private var toolbarButtons: some View {
     HStack {
+      Button {
+        theme.toggleColorScheme(from: colorScheme)
+      } label: {
+        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
+          .resizable()
+          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+      }
+
       Button {
         roomViewModel.getRoomsInOrder()
       } label: {
@@ -372,7 +410,17 @@ public struct RoomsTabView<Destination: View>: View {
       }
     }
     .padding(RoomLayoutConstants.toolbarIconPadding)
-    .foregroundStyle(theme.label.tertiary)
+    .foregroundStyle(theme.accent.primary)
+  }
+
+  private static func placeholderBuilding(id: String, name: String) -> Building {
+    Building(
+      name: name,
+      id: id,
+      latitude: 0,
+      longitude: 0,
+      aliases: [],
+      numberOfAvailableRooms: 0)
   }
 }
 
@@ -385,11 +433,13 @@ private struct PreviewWrapper: View {
   var body: some View {
     RoomsTabView<EmptyView>(
       path: $path,
-      selectedTab: .constant("Rooms"),
+      selectedTab: .constant(.rooms),
       selectedView: $selectedView)
     { _ in
       EmptyView() // Buildings destination
     }
+    .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
+    .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
   }
 }

@@ -37,6 +37,7 @@ class RoomLoaderTests {
     let stubRoomStatusLoader = StubRoomStatusLoader()
     stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(0))
     let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
+    stubSwiftDataRoomLoader.seedReturnValue = .success(())
     let sut = LiveRoomLoader(
       JSONRoomLoader: stubJSONRoomLoader,
       roomStatusLoader: stubRoomStatusLoader,
@@ -59,6 +60,7 @@ class RoomLoaderTests {
     let stubRoomStatusLoader = StubRoomStatusLoader()
     stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(1))
     let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
+    stubSwiftDataRoomLoader.seedReturnValue = .success(())
     let sut = LiveRoomLoader(
       JSONRoomLoader: stubJSONRoomLoader,
       roomStatusLoader: stubRoomStatusLoader,
@@ -81,6 +83,7 @@ class RoomLoaderTests {
     let stubRoomStatusLoader = StubRoomStatusLoader()
     stubRoomStatusLoader.fetchRoomStatusReturnValue = .success(createRemoteRoomStatus(10))
     let stubSwiftDataRoomLoader = StubSwiftDataRoomLoader()
+    stubSwiftDataRoomLoader.seedReturnValue = .success(())
     let sut = LiveRoomLoader(
       JSONRoomLoader: stubJSONRoomLoader,
       roomStatusLoader: stubRoomStatusLoader,

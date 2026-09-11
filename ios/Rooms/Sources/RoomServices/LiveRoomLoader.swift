@@ -5,7 +5,10 @@
 //  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
+import Apollo
+import DevSocAPI
 import Foundation
+import Networking
 import Persistence
 import RoomModels
 import VISOR
@@ -28,8 +31,91 @@ public protocol RoomLoader {
   func fetch() async -> Result<[Room], RoomLoaderError>
 }
 
+// MARK: - LiveGraphQLRoomLoader
+
+public final actor LiveGraphQLRoomLoader: RoomLoader {
+
+  // MARK: Lifecycle
+
+  public init(
+    client: ApolloClient,
+    roomStatusLoader: (any RoomStatusLoader)?)
+  {
+    self.client = client
+    self.roomStatusLoader = roomStatusLoader
+  }
+
+  // MARK: Public
+
+  public let client: ApolloClient
+  public let roomStatusLoader: (any RoomStatusLoader)?
+
+  public func fetch() async -> Result<[Room], RoomLoaderError> {
+    // Currently no caching is performed
+    let query = AllRoomsQuery()
+    do {
+      let result = try await client.fetch(query: query)
+      guard let data = result.data else {
+        return .failure(.noDataAvailable)
+      }
+      // Convert the rooms
+      var rooms = data.rooms.compactMap(Room.init(from:))
+      await _combineRoomStatuses(into: &rooms)
+      return .success(rooms)
+    } catch {
+      return .failure(.connectivity)
+    }
+  }
+
+  public func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError> {
+    let query = BuildingRoomsQuery(buildingId: buildingId)
+    do {
+      let result = try await client.fetch(query: query)
+      guard let data = result.data else {
+        return .failure(.noDataAvailable)
+      }
+      // Convert the rooms
+      var rooms = data.rooms.compactMap(Room.init(from:))
+      await _combineRoomStatuses(into: &rooms)
+      return .success(rooms)
+    } catch {
+      return .failure(.connectivity)
+    }
+  }
+
+  // MARK: Private
+
+  private func _combineRoomStatuses(into rooms: inout [Room]) async {
+    guard let roomStatusLoader else { return }
+
+    guard case .success(let roomStatuses) = await roomStatusLoader.fetchRoomStatus() else {
+      return
+    }
+
+    // Tuples are not Hashable yet, even if members are Hashable
+    struct RoomKey: Hashable {
+      let buildingId: String
+      let roomId: String
+    }
+    let collected = [RoomKey: RoomStatus](uniqueKeysWithValues: roomStatuses.flatMap { buildingId, buildingRoomStatus in
+      buildingRoomStatus.roomStatuses.map { roomId, roomStatus in
+        (RoomKey(buildingId: buildingId, roomId: roomId), roomStatus)
+      }
+    })
+
+    let dateFormatStyle = Date.ISO8601FormatStyle()
+    for i in rooms.indices {
+      guard let roomStatus = collected[RoomKey(buildingId: rooms[i].buildingId, roomId: rooms[i].roomNumber)] else { continue }
+      rooms[i].status = roomStatus.availability
+      rooms[i].endTime = try? dateFormatStyle.parse(roomStatus.endtime)
+    }
+  }
+
+}
+
 // MARK: - LiveRoomLoader
 
+@available(*, deprecated, message: "Use LiveGraphQLRoomLoader instead")
 public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
@@ -74,6 +160,8 @@ public final class LiveRoomLoader: RoomLoader {
     if !hasSavedData {
       switch await JSONRoomLoader.fetch() {
       case .success(var rooms):
+        _ = swiftDataRoomLoader.seed(rooms)
+        UserDefaults.standard.set(true, forKey: UserDefaultsKeys.hasSavedRoomsData)
         await combineLiveAndSavedData(&rooms)
         return .success(rooms)
 
@@ -94,6 +182,8 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Private
 
+  private static let liveStatusTimeoutNanoseconds: UInt64 = 2_000_000_000
+
   private let JSONRoomLoader: JSONRoomLoader
   private let roomStatusLoader: RoomStatusLoader
   private let swiftDataRoomLoader: SwiftDataRoomLoader
@@ -105,7 +195,7 @@ public final class LiveRoomLoader: RoomLoader {
   private func combineLiveAndSavedData(_ rooms: inout [Room]) async {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    if case .success(let roomStatusResponse) = await roomStatusLoader.fetchRoomStatus() {
+    if case .success(let roomStatusResponse) = await fetchRoomStatusWithTimeout() {
       for i in rooms.indices {
         let roomStatus = roomStatusResponse[rooms[i].buildingId]?.roomStatuses[rooms[i].roomNumber] ?? RoomStatus(
           status: "",
@@ -124,6 +214,25 @@ public final class LiveRoomLoader: RoomLoader {
 
         rooms[i].endTime = formatter.date(from: roomStatus.endtime)
       }
+    }
+  }
+
+  private func fetchRoomStatusWithTimeout() async -> Swift.Result<RemoteRoomStatus, RoomStatusLoaderError> {
+    let roomStatusLoader = roomStatusLoader
+
+    return await withTaskGroup(of: Swift.Result<RemoteRoomStatus, RoomStatusLoaderError>.self) { group in
+      group.addTask {
+        await roomStatusLoader.fetchRoomStatus()
+      }
+
+      group.addTask {
+        try? await Task.sleep(nanoseconds: Self.liveStatusTimeoutNanoseconds)
+        return .failure(.connectivity)
+      }
+
+      let result = await group.next() ?? .failure(.connectivity)
+      group.cancelAll()
+      return result
     }
   }
 }

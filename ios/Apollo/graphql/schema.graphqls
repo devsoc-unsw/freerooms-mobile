@@ -1527,8 +1527,8 @@ columns and relationships of "rooms"
 """
 type rooms {
   abbr: String!
-  accessibility: _text!
-  audiovisual: _text!
+  accessibility: [_text!]!
+  audiovisual: [_text!]!
 
   """An array relationship"""
   bookings(
@@ -1572,16 +1572,16 @@ type rooms {
   capacity: Int!
   floor: floortypeenum
   id: String!
-  infotechnology: _text!
+  infotechnology: [_text!]!
   lat: float8!
   long: float8!
-  microphone: _text!
+  microphone: [_text!]!
   name: String!
   school: String!
   seating: seatingtypeenum
-  service: _text!
+  service: [_text!]!
   usage: String!
-  writingMedia: _text!
+  writingMedia: [_text!]!
 }
 
 """

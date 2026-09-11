@@ -17,26 +17,26 @@ extension Room {
   public var statusTextColour: Color {
     switch status {
     case .available:
-      Theme.light.list.green
+      Theme.default.list.green
     case .availableSoon:
-      Theme.light.list.yellow
+      Theme.default.list.yellow
     case .unavailable:
-      Theme.light.list.red
+      Theme.default.list.red
     case .unknown:
-      Theme.light.list.gray
+      Theme.default.list.gray
     }
   }
 
   public var statusBackgroundColor: Color {
     switch status {
     case .available:
-      Theme.light.list.greenBackground.opacity(Self.availableBackgroundOpacity)
+      Theme.default.list.greenBackground.opacity(Self.availableBackgroundOpacity)
     case .availableSoon:
-      Theme.light.list.yellowBackground.opacity(Self.warningBackgroundOpacity)
+      Theme.default.list.yellowBackground.opacity(Self.warningBackgroundOpacity)
     case .unavailable:
-      Theme.light.list.redBackground.opacity(Self.unavailableBackgroundOpacity)
+      Theme.default.list.redBackground.opacity(Self.unavailableBackgroundOpacity)
     case .unknown:
-      Theme.light.list.grayBackground.opacity(Self.warningBackgroundOpacity)
+      Theme.default.list.grayBackground.opacity(Self.warningBackgroundOpacity)
     }
   }
 
@@ -49,7 +49,7 @@ extension Room {
     -> Color
   {
     if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
-      return isFree ? Theme.light.list.green : Theme.light.list.red
+      return isFree ? Theme.default.list.green : Theme.default.list.red
     }
     return statusTextColour
   }
@@ -63,8 +63,8 @@ extension Room {
   {
     if let isFree = isFreeFromBookings(at: referenceInstant, isCustomFilterActive: isCustomFilterActive, bookings: bookings) {
       return isFree
-        ? Theme.light.list.greenBackground.opacity(Self.availableBackgroundOpacity)
-        : Theme.light.list.redBackground.opacity(Self.unavailableBackgroundOpacity)
+        ? Theme.default.list.greenBackground.opacity(Self.availableBackgroundOpacity)
+        : Theme.default.list.redBackground.opacity(Self.unavailableBackgroundOpacity)
     }
     return statusBackgroundColor
   }

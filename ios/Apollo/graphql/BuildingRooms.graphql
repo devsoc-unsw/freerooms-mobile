@@ -1,0 +1,21 @@
+query BuildingRooms($buildingId: String!) {
+  rooms(where: { buildingId: { _eq: $buildingId } }) {
+    abbr
+    accessibility
+    audiovisual
+    capacity
+    floor
+    id
+    infotechnology
+    lat
+    long
+    microphone
+    name
+    school
+    seating
+    service
+    usage
+    writingMedia
+    buildingId
+  }
+}

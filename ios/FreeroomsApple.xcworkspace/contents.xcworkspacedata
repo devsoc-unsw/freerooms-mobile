@@ -5,6 +5,9 @@
       location = "group:Freerooms/Freerooms.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Bookings">
+   </FileRef>
+   <FileRef
       location = "group:DevSocAPI">
    </FileRef>
    <FileRef
@@ -24,6 +27,9 @@
    </FileRef>
    <FileRef
       location = "group:Rooms">
+   </FileRef>
+   <FileRef
+      location = "group:FreeroomsIntents">
    </FileRef>
    <FileRef
       location = "group:TestingSupport">

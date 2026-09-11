@@ -38,6 +38,7 @@ let package = Package(
         "CommonUI",
         "BuildingModels",
         .product(name: "RoomInteractors", package: "Rooms"),
+        .product(name: "RoomViewModels", package: "Rooms"),
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
       resources: [.process("Resources")],

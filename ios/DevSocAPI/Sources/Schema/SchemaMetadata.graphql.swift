@@ -19,8 +19,10 @@ nonisolated public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
   public static let configuration: any ApolloAPI.SchemaConfiguration.Type = SchemaConfiguration.self
 
   private static let objectTypeMap: [String: ApolloAPI.Object] = [
+    "bookings": DevSocAPI.Objects.Bookings,
     "buildings": DevSocAPI.Objects.Buildings,
-    "query_root": DevSocAPI.Objects.Query_root
+    "query_root": DevSocAPI.Objects.Query_root,
+    "rooms": DevSocAPI.Objects.Rooms
   ]
 
   @_spi(Execution) public static func objectType(forTypename typename: String) -> ApolloAPI.Object? {
