@@ -92,6 +92,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		C0DE20260912000000000001 /* SharedWidgetConfiguration */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SharedWidgetConfiguration;
+			sourceTree = "<group>";
+		};
 		54179CC530414C4F0078709A /* FreeroomsWidgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -166,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
+				C0DE20260912000000000001 /* SharedWidgetConfiguration */,
 				54179CC530414C4F0078709A /* FreeroomsWidgets */,
 				96D65EDD2DA39EA30060D06B /* Frameworks */,
 				96F9AFCB2D9BCC1200671174 /* Products */,
@@ -201,6 +207,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				54179CC530414C4F0078709A /* FreeroomsWidgets */,
+				C0DE20260912000000000001 /* SharedWidgetConfiguration */,
 			);
 			name = FreeroomsWidgetsExtension;
 			packageProductDependencies = (
@@ -248,6 +255,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				96F9AFCC2D9BCC1200671174 /* Freerooms */,
+				C0DE20260912000000000001 /* SharedWidgetConfiguration */,
 			);
 			name = Freerooms;
 			packageProductDependencies = (

@@ -6,8 +6,8 @@
 //
 
 import AppIntents
-import WidgetKit
 import BuildingModels
+import WidgetKit
 
 public struct BuildingConfigurationIntent: WidgetConfigurationIntent {
   static public let title: LocalizedStringResource = "Building"
@@ -15,7 +15,7 @@ public struct BuildingConfigurationIntent: WidgetConfigurationIntent {
 
   @Parameter(title: "Building")
   public var building: BuildingEntity?
-  
+
 //  public var building: BuildingEntity? {
 //    Building(
 //      name: "Morven Brown Building",

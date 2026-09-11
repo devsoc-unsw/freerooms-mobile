@@ -8,9 +8,9 @@
 import BuildingModels
 import BuildingViews
 import CommonUI
+import FreeroomsIntents
 import SwiftUI
 import WidgetKit
-import FreeroomsIntents
 
 struct BuildingWidget: Widget {
 

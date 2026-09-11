@@ -22,8 +22,4 @@ struct FreeroomsWidgetsBundle: WidgetBundle {
 
 // MARK: - FreeroomsWidgetsBundleIntentsPackage
 
-struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage {
-  static var includedPackages: [any AppIntentsPackage.Type] {
-    [FreeroomsIntentsPackage.self]
-  }
-}
+struct FreeroomsWidgetsBundleIntentsPackage: AppIntentsPackage { }
