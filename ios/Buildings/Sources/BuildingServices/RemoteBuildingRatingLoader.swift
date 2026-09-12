@@ -12,7 +12,7 @@ import VISOR
 
 // MARK: - BuildingRatingLoader
 
-//@Stubbable
+/// @Stubbable
 public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }

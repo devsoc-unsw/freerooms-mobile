@@ -10,7 +10,7 @@ import VISOR
 
 // MARK: - NavigationService
 
-//@Stubbable @MainActor
+/// @Stubbable @MainActor
 public protocol NavigationService: Sendable {
   func getDirection(source: MKMapItem, destination: MKMapItem) async throws -> MKRoute?
 }

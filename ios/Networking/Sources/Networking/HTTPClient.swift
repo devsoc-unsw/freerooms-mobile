@@ -13,7 +13,7 @@ public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), Error>
 
 // MARK: - HTTPClient
 
-//@Spyable
+/// @Spyable
 public protocol HTTPClient: Sendable {
   nonisolated(nonsending) func get(from url: URL) async -> HTTPClientResult
 }

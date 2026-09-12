@@ -56,7 +56,7 @@ public final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   private let client: HTTPClient
   private let url: URL
-  
+
   @concurrent
   private static func map(_ data: Data, from response: HTTPURLResponse) async -> Result {
     guard

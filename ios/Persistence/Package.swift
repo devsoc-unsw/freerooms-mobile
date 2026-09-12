@@ -21,23 +21,25 @@ let package = Package(
     .target(
       name: "Persistence",
       dependencies: [.product(name: "VISOR", package: "VISOR")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "PersistenceTestUtils",
       dependencies: ["Persistence"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence", "PersistenceTestUtils"],
-      swiftSettings: .defaultSettings),
-  ])
+      swiftSettings: swiftSettings),
+  ],
+  swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
+let swiftSettings: [SwiftSetting] = [
+  .defaultIsolation(nil),
+  .strictMemorySafety(),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .enableUpcomingFeature("MemberImportVisibility"),
+  .enableUpcomingFeature("InferIsolatedConformances"),
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
+]

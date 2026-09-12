@@ -110,7 +110,7 @@ public class BuildingInteractor {
   }
 
   // MARK: Package
-  
+
   nonisolated(nonsending)
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
