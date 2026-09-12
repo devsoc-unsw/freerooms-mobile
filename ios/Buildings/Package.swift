@@ -86,7 +86,8 @@ let package = Package(
         .product(name: "NetworkingTestUtils", package: "Networking"),
       ],
       swiftSettings: swiftSettings),
-  ])
+  ],
+  swiftLanguageModes: [.v6])
 
 let swiftSettings: [SwiftSetting] = [
   .defaultIsolation(nil),

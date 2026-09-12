@@ -15,6 +15,7 @@ import RoomModels
 
 // MARK: - BuildingViewModel
 
+@MainActor
 public protocol BuildingViewModel {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }

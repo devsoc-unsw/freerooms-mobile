@@ -31,7 +31,7 @@ extension FetchBuildingsError {
 
 @Stubbable
 public protocol BuildingService {
-  func getBuildings() async -> GetBuildingsResult
+  nonisolated(nonsending) func getBuildings() async -> GetBuildingsResult
 }
 
 // MARK: - LiveBuildingService

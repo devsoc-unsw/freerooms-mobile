@@ -517,9 +517,9 @@ public class LiveMapViewModel: MapViewModel {
 
   // MARK: Internal
 
-  nonisolated let buildingInteractor: BuildingInteractor
+  let buildingInteractor: BuildingInteractor
 
-  nonisolated let navigationInteractor: NavigationInteractor
+  let navigationInteractor: NavigationInteractor
 
   let roomInteractor: RoomInteractor
 

@@ -20,7 +20,7 @@ public protocol BookingInteracting {
     calendar: Calendar)
     -> Result<DateInterval, FetchWeeklyBookingsError>
 
-  func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
+  nonisolated(nonsending) func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
 }
 
 // MARK: - BookingInteractor

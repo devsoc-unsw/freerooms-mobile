@@ -43,6 +43,7 @@ extension FetchWeeklyBookingsError {
 
 @Stubbable
 public protocol BookingService {
+  nonisolated(nonsending)
   func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
 }
 

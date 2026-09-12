@@ -24,18 +24,12 @@ public enum BuildingLoaderError: Error {
 
 @Stubbable
 public protocol BuildingLoader {
-  func fetch() async -> Result<[Building], BuildingLoaderError>
-}
-
-extension BuildingLoader {
-  func fetch() async throws(BuildingLoaderError) -> [Building] {
-    try await fetch().get()
-  }
+  nonisolated(nonsending) func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
 // MARK: - LiveGraphQLBuildingLoader
 
-nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
+public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
   // MARK: Lifecycle
 

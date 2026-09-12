@@ -30,20 +30,31 @@ let package = Package(
         .product(name: "Apollo", package: "apollo-ios"),
         .product(name: "ApolloSQLite", package: "apollo-ios"),
       ],
-      swiftSettings: .defaultSettings),
-    .target(name: "NetworkingTestUtils", dependencies: ["Networking"], swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
+    .target(
+      name: "NetworkingTestUtils",
+      dependencies: [
+        .target(name: "Networking"),
+      ],
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "NetworkingTests",
-      dependencies: ["Networking", "TestingSupport", "NetworkingTestUtils"],
-      swiftSettings: .defaultSettings),
-  ])
+      dependencies: [
+        "Networking",
+        "TestingSupport",
+        "NetworkingTestUtils",
+      ],
+      swiftSettings: swiftSettings),
+  ],
+  swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
+let swiftSettings: [SwiftSetting] = [
+  .defaultIsolation(nil),
+  .strictMemorySafety(),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .enableUpcomingFeature("MemberImportVisibility"),
+  .enableUpcomingFeature("InferIsolatedConformances"),
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
+]

@@ -21,23 +21,24 @@ let package = Package(
     .target(
       name: "Location",
       dependencies: [.product(name: "VISOR", package: "VISOR")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "LocationInteractors",
       dependencies: ["Location"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "LocationTests",
       dependencies: ["Location"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
   ])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
-}
+let swiftSettings: [SwiftSetting] = [
+  .defaultIsolation(nil),
+  .strictMemorySafety(),
+  .enableUpcomingFeature("ExistentialAny"),
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .enableUpcomingFeature("MemberImportVisibility"),
+  .enableUpcomingFeature("InferIsolatedConformances"),
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("ImmutableWeakCaptures"),
+]
