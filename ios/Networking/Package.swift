@@ -17,7 +17,7 @@ let package = Package(
     .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(name: "DevSocAPI", path: "../DevSocAPI"),
     .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
-    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.0.0"),
+    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.4.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.

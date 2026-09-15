@@ -88,7 +88,7 @@ extension View {
 
 // MARK: - RoundedCorner
 
-struct RoundedCorner: Shape {
+nonisolated struct RoundedCorner: Shape {
   var radius = CGFloat.infinity
   var corners = UIRectCorner.allCorners
 

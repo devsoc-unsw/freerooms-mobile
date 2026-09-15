@@ -254,7 +254,7 @@ public nonisolated struct Room: Equatable, Identifiable, Hashable, Sendable {
 
 // MARK: - GraphQLRoomProtocol
 
-public protocol GraphQLRoomProtocol {
+public nonisolated protocol GraphQLRoomProtocol {
   var abbr: String { get }
   var accessibility: [String] { get }
   var audiovisual: [String] { get }
@@ -276,6 +276,7 @@ public protocol GraphQLRoomProtocol {
 
 extension Room {
 
+  nonisolated
   public init?(from graphQLRoom: some GraphQLRoomProtocol) {
     guard
       let lat = Double(graphQLRoom.lat),
