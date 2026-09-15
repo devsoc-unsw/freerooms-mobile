@@ -11,7 +11,7 @@ import WidgetKit
 struct EmptyTimelineProvider: TimelineProvider {
 
   struct Entry: TimelineEntry {
-    var date: Date = Date()
+    let date = Date()
   }
 
   func getSnapshot(in _: Context, completion: @escaping (Entry) -> Void) {

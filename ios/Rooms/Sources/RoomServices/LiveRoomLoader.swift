@@ -37,6 +37,7 @@ public final actor LiveGraphQLRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
+  /// I can't find a way to mark the actor initializer as nonisolated
   public init(
     client: ApolloClient,
     roomStatusLoader: (any RoomStatusLoader)?)

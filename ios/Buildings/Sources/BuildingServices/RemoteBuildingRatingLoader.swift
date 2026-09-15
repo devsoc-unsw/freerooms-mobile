@@ -26,7 +26,7 @@ public enum BuildingRatingLoaderError: Error {
 
 // MARK: - RemoteBuildingRatingLoader
 
-public struct RemoteBuildingRatingLoader: BuildingRatingLoader, Sendable {
+public nonisolated struct RemoteBuildingRatingLoader: BuildingRatingLoader, Sendable {
 
   // MARK: Lifecycle
 

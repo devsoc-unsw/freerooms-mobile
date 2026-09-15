@@ -15,7 +15,7 @@ let package = Package(
     .library(name: "DevSocAPI", targets: ["DevSocAPI"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apollographql/apollo-ios", exact: "2.1.2"),
+    .package(url: "https://github.com/apollographql/apollo-ios", from: "2.4.0"),
   ],
   targets: [
     .target(

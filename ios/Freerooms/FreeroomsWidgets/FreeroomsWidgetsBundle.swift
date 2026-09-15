@@ -6,13 +6,17 @@
 //
 
 import AppIntents
-import FreeroomsIntents
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import SwiftUI
 import WidgetKit
+
+// MARK: - FreeroomsWidgetsBundle
 
 @main
 struct FreeroomsWidgetsBundle: WidgetBundle {
   var body: some Widget {
     OpenTabWidget()
+    BuildingWidget()
   }
 }

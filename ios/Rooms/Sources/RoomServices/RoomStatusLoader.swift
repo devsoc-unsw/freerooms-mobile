@@ -26,7 +26,7 @@ public protocol RoomStatusLoader: Sendable {
 
 // MARK: - LiveRoomStatusLoader
 
-public final class LiveRoomStatusLoader: RoomStatusLoader, Sendable {
+public nonisolated final class LiveRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 

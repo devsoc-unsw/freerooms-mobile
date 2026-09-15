@@ -5,6 +5,7 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
+import AppIntents
 import DevSocAPI
 import Foundation
 import Location
@@ -154,7 +155,7 @@ public enum BuildingFilterOptions: Sendable {
 
 extension Building {
 
-  public init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
+  nonisolated public init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
     // Make sure the lat and long are valid
     guard let lat = Double(graphQLBuilding.lat), let long = Double(graphQLBuilding.long) else {
       return nil
