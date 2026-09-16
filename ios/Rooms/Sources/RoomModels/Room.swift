@@ -310,11 +310,11 @@ extension Room {
 
 // MARK: - DevSocAPI.AllRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+nonisolated extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - DevSocAPI.BuildingRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+nonisolated extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - Testing
 
