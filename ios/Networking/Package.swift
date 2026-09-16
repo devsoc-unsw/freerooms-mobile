@@ -26,6 +26,7 @@ let package = Package(
       name: "Networking",
       dependencies: [
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
         .product(name: "DevSocAPI", package: "DevSocAPI"),
         .product(name: "Apollo", package: "apollo-ios"),
         .product(name: "ApolloSQLite", package: "apollo-ios"),
@@ -48,13 +49,15 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}

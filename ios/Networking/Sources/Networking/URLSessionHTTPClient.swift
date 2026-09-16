@@ -5,7 +5,7 @@
 //  Created by Anh Nguyen on 23/4/2025.
 //
 
-import Foundation
+public import Foundation
 
 // MARK: - URLSessionHTTPClient
 
@@ -13,7 +13,7 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Lifecycle
 
-  public init(session: HTTPSession) {
+  public init(session: any HTTPSession) {
     self.session = session
   }
 
@@ -33,7 +33,7 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Private
 
-  private var session: HTTPSession
+  private var session: any HTTPSession
 }
 
 // MARK: - HTTPSession

@@ -15,8 +15,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Rooms"
-               BuildableName = "Rooms"
+               BlueprintIdentifier = "Networking"
+               BuildableName = "Networking"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "RoomsTests"
-               BuildableName = "RoomsTests"
+               BlueprintIdentifier = "NetworkingTests"
+               BuildableName = "NetworkingTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -61,8 +61,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Rooms"
-            BuildableName = "Rooms"
+            BlueprintIdentifier = "Networking"
+            BuildableName = "Networking"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>
