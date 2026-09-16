@@ -141,6 +141,7 @@ private final class SuspendingBookingInteractor: BookingInteracting {
     .success(interval)
   }
 
+  @MainActor
   func getWeeklyBookings(in _: DateInterval) async -> GetWeeklyBookingsResult {
     getWeeklyBookingsCallCount += 1
     while isSuspended {

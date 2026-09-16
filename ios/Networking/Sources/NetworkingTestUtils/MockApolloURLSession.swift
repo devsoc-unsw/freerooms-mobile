@@ -5,9 +5,9 @@
 //  Created by Matthew Yuen on 3/6/2026.
 //
 
-import Apollo
-import ApolloAPI
-import Foundation
+public import Apollo
+public import ApolloAPI
+public import Foundation
 
 // MARK: - MockApolloURLSession
 

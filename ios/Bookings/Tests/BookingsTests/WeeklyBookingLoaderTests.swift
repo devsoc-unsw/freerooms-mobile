@@ -6,6 +6,7 @@
 //
 
 import Apollo
+import BookingModels
 import BookingServices
 import DevSocAPI
 import Foundation

@@ -89,6 +89,8 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
+// MARK: - Swift Settings
+
 var swiftSettings: [SwiftSetting] {
   [
     .defaultIsolation(nil),

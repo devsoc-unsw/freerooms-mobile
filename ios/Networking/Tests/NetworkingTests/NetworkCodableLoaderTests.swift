@@ -7,6 +7,7 @@
 
 import Foundation
 import Networking
+import os
 import Testing
 import TestingSupport
 
@@ -16,7 +17,6 @@ final class NetworkCodableLoaderTests {
 
   // MARK: Lifecycle
 
-  @MainActor
   deinit {
     clientTracker?.verifyDeallocation()
     sutTracker?.verifyDeallocation()
@@ -155,37 +155,65 @@ private final class MockHTTPClient: HTTPClient {
 
   // MARK: Internal
 
-  var networkCallCount = 0
-  var returnedStringData: Data?
+  var networkCallCount: Int {
+    get { _state.withLock(\.networkCallCount) }
+    set { _state.withLock { $0.networkCallCount = newValue } }
+  }
+
+  var returnedStringData: Data? {
+    get { _state.withLock(\.returnedStringData) }
+    set { _state.withLock { $0.returnedStringData = newValue } }
+  }
+
   // swiftlint:disable:next implicitly_unwrapped_optional
-  var returnedStatusCode: Int!
+  var returnedStatusCode: Int! {
+    get { _state.withLock(\.returnedStatusCode) }
+    set { _state.withLock { $0.returnedStatusCode = newValue } }
+  }
 
   func setNextRequestToFailWithClientError() {
     returnedStringData = nil
   }
 
-  @MainActor
   func setNextRequestToSucceedWithStatusCode(_ statusCode: Int) {
-    returnedStringData = "".data
-    returnedStatusCode = statusCode
+    _state.withLock {
+      $0.returnedStringData = "".data
+      $0.returnedStatusCode = statusCode
+    }
   }
 
   func setNextRequestToSucceedWithReturnedData(_ data: Data?) {
-    returnedStringData = data
-    returnedStatusCode = 200
+    _state.withLock {
+      $0.returnedStringData = data
+      $0.returnedStatusCode = 200
+    }
   }
 
   func get(from url: URL) async -> HTTPClientResult {
-    networkCallCount += 1
+    _state.withLock { state in
+      state.networkCallCount += 1
 
-    if let returnedStringData {
-      return Result.success((
-        returnedStringData,
-        HTTPURLResponse(url: url, statusCode: returnedStatusCode, httpVersion: nil, headerFields: nil)!))
-    } else {
-      return .failure(Error.networkFailure)
+      if let returnedStringData = state.returnedStringData {
+        return Result.success((
+          returnedStringData,
+          HTTPURLResponse(url: url, statusCode: state.returnedStatusCode, httpVersion: nil, headerFields: nil)!))
+      } else {
+        return .failure(Error.networkFailure)
+      }
     }
   }
+
+  // MARK: Private
+
+  private struct _State {
+    var networkCallCount = 0
+    var returnedStringData: Data?
+    // swiftlint:disable:next implicitly_unwrapped_optional
+    var returnedStatusCode: Int!
+  }
+
+  private let _state = OSAllocatedUnfairLock(initialState: _State())
+
 }
 
 extension String {

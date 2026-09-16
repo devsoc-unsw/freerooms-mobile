@@ -5,9 +5,9 @@
 //  Created by Matthew Yuen on 5/6/2026.
 //
 
-import Apollo
+public import Apollo
 import DevSocAPI
-import Foundation
+public import Foundation
 
 final public actor MockApolloDataSource {
 

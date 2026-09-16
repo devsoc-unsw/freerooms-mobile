@@ -9,10 +9,11 @@ import BuildingModels
 public import Foundation
 public import Networking
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - BuildingRatingLoader
 
-/// @Stubbable
+@GenerateStub(.sendable)
 public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }
