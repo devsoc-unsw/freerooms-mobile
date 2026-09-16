@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import Location
-import RoomModels
-import RoomServices
+public import Location
+public import RoomModels
+public import RoomServices
 
 public class RoomInteractor {
 

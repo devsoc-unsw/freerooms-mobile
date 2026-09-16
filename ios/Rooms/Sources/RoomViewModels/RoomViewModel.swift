@@ -6,11 +6,11 @@
 //
 
 import BuildingModels
-import Foundation
+public import Foundation
 import Location
 import Observation
-import RoomInteractors
-import RoomModels
+public import RoomInteractors
+public import RoomModels
 import RoomServices
 
 // MARK: - RoomViewModel

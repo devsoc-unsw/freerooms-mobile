@@ -5,14 +5,15 @@
 //  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
-import Apollo
+public import Apollo
 import DevSocAPI
 import Foundation
 import Networking
 import Persistence
-import RoomModels
+public import RoomModels
+import Observation
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - RoomLoaderError
 

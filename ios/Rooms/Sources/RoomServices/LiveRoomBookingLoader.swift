@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import RoomModels
+import Observation
+public import RoomModels
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - RoomBookingLoaderError
 

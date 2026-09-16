@@ -94,7 +94,7 @@ var swiftSettings: [SwiftSetting] {
     .defaultIsolation(nil),
     .strictMemorySafety(),
     .enableUpcomingFeature("ExistentialAny"),
-//    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
     .enableUpcomingFeature("MemberImportVisibility"),
     .enableUpcomingFeature("InferIsolatedConformances"),
     .enableUpcomingFeature("NonisolatedNonsendingByDefault"),

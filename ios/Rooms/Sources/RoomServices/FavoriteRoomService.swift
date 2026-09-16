@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import RoomModels
-import SwiftData
+public import RoomModels
+public import SwiftData
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - FavoriteRoomService
 

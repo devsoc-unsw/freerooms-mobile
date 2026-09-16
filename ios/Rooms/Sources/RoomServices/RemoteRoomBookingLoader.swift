@@ -9,7 +9,7 @@ public import Foundation
 public import Networking
 public import RoomModels
 import VISOR
-public import VISORTestDoubles
+import VISORTestDoubles
 
 // MARK: - RemoteRoomBookingLoader
 

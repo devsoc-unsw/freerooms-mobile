@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import RoomModels
+public import RoomModels
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 public typealias GetRoomBookingsResult = Swift.Result<[RoomBooking], FetchRoomError>

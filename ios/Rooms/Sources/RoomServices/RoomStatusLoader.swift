@@ -5,9 +5,9 @@
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //
 
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
 import VISORTestDoubles
 

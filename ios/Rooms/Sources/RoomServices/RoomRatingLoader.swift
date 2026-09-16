@@ -4,9 +4,9 @@
 //
 //  Created by Dicko Evaldo on 17/3/2026.
 //
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
 import VISORTestDoubles
 

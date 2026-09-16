@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 public import Persistence
 public import RoomModels
 import VISOR

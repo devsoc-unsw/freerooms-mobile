@@ -5,11 +5,11 @@
 //  Created by Yanlin Li  on 17/4/2026.
 //
 
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - FilterRoomServiceError
 

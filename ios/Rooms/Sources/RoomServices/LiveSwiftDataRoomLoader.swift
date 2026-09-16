@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Persistence
-import RoomModels
+public import Persistence
+public import RoomModels
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - SwiftDataRoomLoader
 
