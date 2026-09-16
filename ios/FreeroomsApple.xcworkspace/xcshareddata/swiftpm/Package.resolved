@@ -1,5 +1,5 @@
 {
-  "originHash" : "6e594d4dbd71e484592d7b38a588bc3ba13d1fd9214e8662d7741e3ccd836925",
+  "originHash" : "6af1238e3c4ba8bc3869ac5ddddb508d0221f153bf1daaf2376cb3edb874e5e7",
   "pins" : [
     {
       "identity" : "apollo-ios",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
+        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
+        "version" : "603.0.2"
       }
     },
     {
