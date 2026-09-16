@@ -284,8 +284,16 @@ public struct RoomsTabView<Destination: View>: View {
     // Keep the inline section compact; the full list lives at `.favorites`.
     let previewRooms = Array(favoriteRooms.prefix(4))
 
-    if !favoriteRooms.isEmpty {
-      Section {
+    Section {
+      if favoriteRooms.isEmpty {
+        ContentUnavailableView(
+          "No Favorite Rooms",
+          systemImage: "heart.slash",
+          description: Text(
+            "Rooms you mark as favorites will appear here."))
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+      } else {
         if selectedView == ViewOrientation.List {
           RoomList(
             rooms: previewRooms,
@@ -323,29 +331,29 @@ public struct RoomsTabView<Destination: View>: View {
           .listRowBackground(Color.clear)
           .listRowSeparator(.hidden)
         }
-      } header: {
-        if selectedView == ViewOrientation.List {
+      }
+    } header: {
+      if selectedView == ViewOrientation.List {
+        Text("Favorites")
+          .textCase(.uppercase)
+          .foregroundStyle(theme.label.primary)
+      } else {
+        HStack {
           Text("Favorites")
             .textCase(.uppercase)
             .foregroundStyle(theme.label.primary)
-        } else {
-          HStack {
-            Text("Favorites")
-              .textCase(.uppercase)
-              .foregroundStyle(theme.label.primary)
-              .padding(
-                .leading,
-                RoomLayoutConstants.sectionHeaderLeadingPadding)
+            .padding(
+              .leading,
+              RoomLayoutConstants.sectionHeaderLeadingPadding)
 
-            Spacer()
-          }
-          .padding(
-            .horizontal,
-            RoomLayoutConstants.contentHorizontalPadding)
-          .padding(
-            .top,
-            RoomLayoutConstants.sectionHeaderTopPadding)
+          Spacer()
         }
+        .padding(
+          .horizontal,
+          RoomLayoutConstants.contentHorizontalPadding)
+        .padding(
+          .top,
+          RoomLayoutConstants.sectionHeaderTopPadding)
       }
     }
   }
