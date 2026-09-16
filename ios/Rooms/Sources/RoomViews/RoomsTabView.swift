@@ -291,8 +291,8 @@ public struct RoomsTabView<Destination: View>: View {
           systemImage: "heart.slash",
           description: Text(
             "Rooms you mark as favorites will appear here."))
-        .listRowInsets(EdgeInsets())
-        .listRowBackground(Color.clear)
+          .listRowInsets(EdgeInsets())
+          .listRowBackground(Color.clear)
       } else {
         if selectedView == ViewOrientation.List {
           RoomList(
