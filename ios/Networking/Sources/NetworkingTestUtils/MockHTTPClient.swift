@@ -10,7 +10,7 @@ import Networking
 
 // MARK: - MockHTTPClient
 
-public class MockHTTPClient: HTTPClient {
+public final class MockHTTPClient: HTTPClient {
 
   // MARK: Lifecycle
 
