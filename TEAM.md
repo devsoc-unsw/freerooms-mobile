@@ -1,5 +1,22 @@
 # Freerooms Mobile Team
 
+## 2026
+
+### Leads
+- Chris Wong (@xleonx0x)
+- Yanlin Li (@Yalilix)
+
+### Developers
+- Nareeco William (@nareeco)
+- Matthew Yuen (@floormatgen)
+- Jesslyn Wu (@jes-lyn36)
+- Gabriella Lianti (@gabriellalianti)
+- Brian Adi (@PPigeon98)
+- Shaun Tan (@ShaunJJ)
+- Nicole Xie (@nicalic)
+
+### Developers
+
 ## 2025
 
 ### Lead
