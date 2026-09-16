@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D7043062FF7AD02006BF888 /* BookingViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* BookingViews */; };
+		2D7043062FF7AD02006BF888 /* Bookings in Frameworks */ = {isa = PBXBuildFile; productRef = 2D7043052FF7AD02006BF888 /* Bookings */; };
 		5417827630418382005BCD5E /* FreeroomsIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 5417827530418382005BCD5E /* FreeroomsIntents */; };
 		54179CC230414C4F0078709A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54179CC130414C4F0078709A /* WidgetKit.framework */; };
 		54179CC430414C4F0078709A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54179CC330414C4F0078709A /* SwiftUI.framework */; };
@@ -256,7 +256,7 @@
 				546D1AA72F7AAD87000667BC /* RoomViews */,
 				541DCFCA2FD2A5150040EB0F /* Apollo */,
 				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
-				2D7043052FF7AD02006BF888 /* BookingViews */,
+				2D7043052FF7AD02006BF888 /* Bookings */,
 				5417827530418382005BCD5E /* FreeroomsIntents */,
 			);
 			productName = Freerooms;
@@ -808,7 +808,7 @@
 			repositoryURL = "https://github.com/apollographql/apollo-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.2;
+				minimumVersion = 2.4.0;
 			};
 		};
 		546D1A932F7AAC20000667BC /* XCRemoteSwiftPackageReference "VISOR" */ = {
