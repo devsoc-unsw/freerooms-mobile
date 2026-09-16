@@ -7,15 +7,17 @@
 
 import CoreLocation
 import VISOR
+import VISORTestDoubles
 
 // MARK: - LocationManager
 
-@Stubbable @Spyable
+@GenerateSpy
+@GenerateStub
 public protocol LocationManager: AnyObject {
   // MARK: Internal
 
   var delegate: LocationManagerDelegate? { get set }
-  @StubbableDefault(CLAuthorizationStatus.notDetermined)
+  @DefaultValue(CLAuthorizationStatus.notDetermined)
   var authorizationStatus: CLAuthorizationStatus { get }
   var location: Location? { get }
   var heading: CLHeading? { get }

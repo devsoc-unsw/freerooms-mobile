@@ -7,6 +7,7 @@
 
 import Foundation
 import VISOR
+import VISORTestDoubles
 
 // MARK: - FileLoaderError
 
@@ -16,7 +17,7 @@ public enum FileLoaderError: Error {
 
 // MARK: - FileLoader
 
-@Stubbable
+@GenerateStub(.sendable)
 public protocol FileLoader: Sendable {
   func load(at path: String) throws -> Data
 }

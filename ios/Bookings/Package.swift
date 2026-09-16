@@ -27,7 +27,7 @@ let package = Package(
     .package(name: "DevSocAPI", path: "../DevSocAPI"),
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Rooms", path: "../Rooms"),
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
     .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.4.0"),
   ],
   targets: [

@@ -8,10 +8,11 @@
 import CoreLocation
 import Foundation
 import VISOR
+import VISORTestDoubles
 
 // MARK: - LocationService
 
-@Stubbable
+@GenerateStub
 public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool
