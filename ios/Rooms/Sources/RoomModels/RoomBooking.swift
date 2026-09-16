@@ -9,6 +9,8 @@ public import Foundation
 
 public struct RoomBooking: Equatable, Sendable, Hashable {
 
+  #warning("TODO: Migrate to the new Foundation FormatStyle API")
+
   // MARK: Lifecycle
 
   public init(bookingType: String, end: Date, name: String, start: Date) {
@@ -54,10 +56,6 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
   public let end: Date
   public let name: String
   public let start: Date
-
-  // MARK: Private
-
-  #warning("TODO: Migrate to the new Foundation FormatStyle API")
 
   // MARK: Private
 
