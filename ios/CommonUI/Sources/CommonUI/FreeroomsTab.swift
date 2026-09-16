@@ -5,7 +5,8 @@
 //  Created by Matthew Yuen on 28/8/2026.
 //
 
-import AppIntents
+public import AppIntents
+public import Observation
 
 // MARK: - FreeroomsTab
 

@@ -5,7 +5,7 @@
 //  Created by Anh Nguyen on 13/6/2025.
 //
 
-import SwiftUI
+public import SwiftUI
 
 public enum Icons {
   public static let buildings = Image("building", bundle: .module)

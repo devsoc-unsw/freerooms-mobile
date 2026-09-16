@@ -5,7 +5,7 @@
 //  Created by Yanlin Li  on 4/4/2026.
 //
 
-import SwiftUI
+public import SwiftUI
 
 public struct ClearButton: View {
 

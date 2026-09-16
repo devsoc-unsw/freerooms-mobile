@@ -8,7 +8,7 @@
 import BuildingModels
 import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - WidthPreferenceKey
 

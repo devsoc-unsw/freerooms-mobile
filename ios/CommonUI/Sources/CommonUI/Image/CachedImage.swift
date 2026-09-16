@@ -3,7 +3,7 @@
 //  CommonUI
 //
 
-import SwiftUI
+public import SwiftUI
 
 public struct CachedImage: View {
 
