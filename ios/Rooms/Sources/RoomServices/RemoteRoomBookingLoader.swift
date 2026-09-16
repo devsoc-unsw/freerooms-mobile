@@ -5,14 +5,15 @@
 //  Created by Chris Wong on 4/9/2025.
 //
 
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - RemoteRoomBookingLoader
 
-@Stubbable
+@GenerateStub
 public protocol RemoteRoomBookingLoader {
   func fetch(bookingsOf roomID: String) async -> Result<[RemoteRoomBooking], RoomBookingLoaderError>
 }
@@ -23,7 +24,7 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/bookings/") {
+  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/bookings/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -58,7 +59,7 @@ public struct LiveRemoteRoomBookingLoader: RemoteRoomBookingLoader {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let statusEndpointPath: String
 }

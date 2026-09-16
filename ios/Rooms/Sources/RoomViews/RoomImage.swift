@@ -9,6 +9,7 @@ import CommonUI
 import SwiftUI
 
 public enum RoomImage {
+  @MainActor
   public static subscript(roomID: String, size: ImageSize = .medium) -> CachedImage {
     CachedImage(
       name: roomID,

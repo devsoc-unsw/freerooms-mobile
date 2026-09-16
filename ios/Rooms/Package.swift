@@ -51,10 +51,11 @@ let package = Package(
     .target(
       name: "RoomServices",
       dependencies: [
+        "RoomModels",
         .product(name: "Networking", package: "Networking"),
         .product(name: "Persistence", package: "Persistence"),
         .product(name: "VISOR", package: "VISOR"),
-        "RoomModels",
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
       resources: [.process("Resources")],
       swiftSettings: swiftSettings),
@@ -88,13 +89,15 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+//    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}

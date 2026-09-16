@@ -8,6 +8,7 @@
 import Foundation
 import RoomModels
 import VISOR
+import VISORTestDoubles
 
 public typealias GetRoomResult = Swift.Result<[Room], FetchRoomError>
 public typealias GetRoomBookingsResult = Swift.Result<[RoomBooking], FetchRoomError>
@@ -39,7 +40,7 @@ extension FetchRoomError {
 
 // MARK: - RoomService
 
-@Stubbable
+@GenerateStub
 public protocol RoomService {
   func getRooms() async -> GetRoomResult
   func getRooms(buildingId: String) async -> GetRoomResult

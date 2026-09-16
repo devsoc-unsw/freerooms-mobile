@@ -6,13 +6,14 @@
 //
 
 import Foundation
-import Persistence
-import RoomModels
+public import Persistence
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - JSONRoomLoader
 
-@Stubbable
+@GenerateStub
 public protocol JSONRoomLoader {
   func fetch() async -> Swift.Result<[Room], RoomLoaderError>
 }

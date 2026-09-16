@@ -9,6 +9,7 @@ import BuildingModels
 import Foundation
 import Networking
 import VISOR
+import VISORTestDoubles
 
 public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
@@ -29,7 +30,7 @@ extension FetchBuildingsError {
 
 // MARK: - BuildingService
 
-@Stubbable
+@GenerateStub
 public protocol BuildingService {
   nonisolated(nonsending) func getBuildings() async -> GetBuildingsResult
 }

@@ -15,9 +15,9 @@ public enum JSONLoaderError: Error {
 
 // MARK: - JSONLoader
 
-public protocol JSONLoader<T> {
+public protocol JSONLoader<T>: Sendable {
   associatedtype T: Decodable & Sendable
-  func load(from file: String) async -> Result<T, JSONLoaderError>
+  @concurrent func load(from file: String) async -> Result<T, JSONLoaderError>
 }
 
 // MARK: - LiveJSONLoader
@@ -36,7 +36,7 @@ public struct LiveJSONLoader<T: Decodable & Sendable>: JSONLoader {
 
   @concurrent
   public func load(from fileName: String) async -> Result {
-    guard let data = try? await fileLoader.load(at: fileName) else {
+    guard let data = try? fileLoader.load(at: fileName) else {
       return .failure(.fileNotFound)
     }
 

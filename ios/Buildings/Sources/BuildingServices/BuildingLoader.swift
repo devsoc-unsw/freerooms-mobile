@@ -12,6 +12,7 @@ import Foundation
 import OSLog
 import RoomServices
 import VISOR
+import VISORTestDoubles
 
 // MARK: - BuildingLoaderError
 
@@ -22,7 +23,7 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
-@Stubbable
+@GenerateStub
 public protocol BuildingLoader {
   nonisolated(nonsending) func fetch() async -> Result<[Building], BuildingLoaderError>
 }

@@ -5,7 +5,7 @@
 //  Created by Chris Wong on 4/9/2025.
 //
 
-import Foundation
+public import Foundation
 
 public struct RoomBooking: Equatable, Sendable, Hashable {
 
@@ -56,11 +56,12 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
   public let start: Date
 
   // MARK: Private
-
-  private static let formatter: ISO8601DateFormatter = {
+  
+  #warning("TODO: Migrate to the new Foundation FormatStyle API")
+  private static var formatter: ISO8601DateFormatter {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
-  }()
+  }
 
 }
