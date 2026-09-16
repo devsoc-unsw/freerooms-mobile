@@ -5,7 +5,7 @@
 //  Created by Yanlin Li  on 7/8/2025.
 //
 
-import Foundation
+public import Foundation
 
 /// A booking prepared for display in the cross-room weekly discovery feed.
 public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {

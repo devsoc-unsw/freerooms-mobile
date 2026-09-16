@@ -5,10 +5,10 @@
 //  Created by Yanlin Li  on 8/8/2025.
 //
 
-import BookingInteractors
-import BookingModels
+public import BookingInteractors
+public import BookingModels
 import BookingServices
-import Foundation
+public import Foundation
 import Observation
 
 // MARK: - BookingPresentationError

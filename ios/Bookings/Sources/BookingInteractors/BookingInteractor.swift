@@ -6,21 +6,22 @@
 //
 
 import BookingModels
-import BookingServices
-import Foundation
+public import BookingServices
+public import Foundation
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - BookingInteracting
 
 /// Defines the calendar and service policies needed by the weekly Bookings view model.
-@Spyable
+@GenerateSpy
 public protocol BookingInteracting {
   func weekInterval(
     containing referenceDate: Date,
     calendar: Calendar)
     -> Result<DateInterval, FetchWeeklyBookingsError>
 
-  nonisolated(nonsending) func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
+  func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
 }
 
 // MARK: - BookingInteractor

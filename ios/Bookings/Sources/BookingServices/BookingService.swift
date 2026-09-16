@@ -5,9 +5,10 @@
 //  Created by Yanlin Li  on 7/8/2025.
 //
 
-import BookingModels
-import Foundation
+public import BookingModels
+public import Foundation
 import VISOR
+public import VISORTestDoubles
 
 public typealias GetWeeklyBookingsResult = Result<[WeeklyBooking], FetchWeeklyBookingsError>
 
@@ -41,9 +42,8 @@ extension FetchWeeklyBookingsError {
 
 // MARK: - BookingService
 
-@Stubbable
+@GenerateStub
 public protocol BookingService {
-  nonisolated(nonsending)
   func getWeeklyBookings(in interval: DateInterval) async -> GetWeeklyBookingsResult
 }
 

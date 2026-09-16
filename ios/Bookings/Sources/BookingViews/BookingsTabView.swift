@@ -8,7 +8,7 @@
 import BookingModels
 import BookingViewModels
 import CommonUI
-import SwiftUI
+public import SwiftUI
 
 // MARK: - BookingsTabView
 

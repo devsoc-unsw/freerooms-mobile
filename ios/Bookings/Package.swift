@@ -42,6 +42,7 @@ let package = Package(
         .product(name: "Apollo", package: "apollo-ios"),
         .product(name: "ApolloAPI", package: "apollo-ios"),
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
       swiftSettings: swiftSettings),
     .target(
@@ -50,6 +51,7 @@ let package = Package(
         "BookingModels",
         "BookingServices",
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
       swiftSettings: swiftSettings),
     .target(
@@ -86,13 +88,17 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}
