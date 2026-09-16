@@ -6,8 +6,8 @@
 //
 
 import BuildingModels
-import Foundation
-import Networking
+public import Foundation
+public import Networking
 import VISOR
 
 // MARK: - BuildingRatingLoader
@@ -30,7 +30,7 @@ public struct RemoteBuildingRatingLoader: BuildingRatingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/buildingRating/") {
+  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/buildingRating/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -55,7 +55,7 @@ public struct RemoteBuildingRatingLoader: BuildingRatingLoader {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let statusEndpointPath: String
 }

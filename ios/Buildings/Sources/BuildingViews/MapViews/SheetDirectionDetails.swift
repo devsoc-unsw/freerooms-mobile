@@ -7,7 +7,7 @@
 import BuildingViewModels
 import CommonUI
 import MapKit
-import SwiftUI
+public import SwiftUI
 
 public struct SheetDirectionDetails: View {
 

@@ -65,6 +65,7 @@ let package = Package(
         "BuildingModels",
         .product(name: "RoomServices", package: "Rooms"),
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
         .product(name: "DevSocAPI", package: "DevSocAPI"),
       ],
       swiftSettings: swiftSettings),
@@ -89,13 +90,15 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}

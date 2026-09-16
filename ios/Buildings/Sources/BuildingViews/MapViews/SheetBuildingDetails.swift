@@ -5,9 +5,9 @@
 //  Created by Dicko Evaldo on 23/10/2025.
 
 import BuildingViewModels
-import CommonUI
-import RoomModels
-import SwiftUI
+public import CommonUI
+public import RoomModels
+public import SwiftUI
 
 // MARK: - SheetBuildingDetails
 

@@ -5,12 +5,13 @@
 //  Created by Dicko Evaldo on 16/10/2025.
 //
 
-import MapKit
+@unsafe @preconcurrency public import MapKit // MKRoute is thread safe
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - NavigationService
 
-/// @Stubbable @MainActor
+@GenerateStub(.sendable)
 public protocol NavigationService: Sendable {
   func getDirection(source: MKMapItem, destination: MKMapItem) async throws -> MKRoute?
 }

@@ -5,9 +5,9 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
-import DevSocAPI
+public import DevSocAPI
 import Foundation
-import Location
+public import Location
 
 // MARK: - Building
 

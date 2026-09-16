@@ -5,11 +5,11 @@
 //  Created by Anh Nguyen on 22/4/2025.
 //
 
-import BuildingModels
+public import BuildingModels
 import Foundation
 import Networking
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 

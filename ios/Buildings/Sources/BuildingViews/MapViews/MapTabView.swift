@@ -6,12 +6,13 @@
 //
 
 import BottomSheet
+import BuildingInteractors
 import BuildingModels
-import BuildingViewModels
-import CommonUI
+public import BuildingViewModels
+public import CommonUI
 import MapKit
-import RoomModels
-import SwiftUI
+public import RoomModels
+public import SwiftUI
 
 extension View {
   func hideKeyboard() {
