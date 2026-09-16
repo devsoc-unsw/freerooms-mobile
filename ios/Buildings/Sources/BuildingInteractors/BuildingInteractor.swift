@@ -165,8 +165,8 @@ public class BuildingInteractor {
 
   // MARK: Private
 
-  private let buildingService: BuildingService
-  private let locationService: LocationService
+  private let buildingService: any BuildingService
+  private let locationService: any LocationService
 
   /// Calculates the squared distance between a location and a building.
   /// Uses squared distance for performance (avoiding square root calculation).

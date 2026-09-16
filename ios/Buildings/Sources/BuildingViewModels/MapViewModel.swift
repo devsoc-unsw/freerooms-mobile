@@ -151,7 +151,7 @@ extension MKMultiPoint {
       repeating: kCLLocationCoordinate2DInvalid,
       count: pointCount)
 
-    getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
+    unsafe getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
 
     return coords
   }
@@ -519,7 +519,7 @@ public class LiveMapViewModel: MapViewModel {
 
   let buildingInteractor: BuildingInteractor
 
-  let navigationInteractor: NavigationInteractor
+  let navigationInteractor: any NavigationInteractor
 
   let roomInteractor: RoomInteractor
 

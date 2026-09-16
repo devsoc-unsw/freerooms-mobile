@@ -5,7 +5,10 @@
 //  Created by Matthew Yuen on 28/8/2026.
 //
 
-import AppIntents
+#if swift(>=6.4)
+@diagnose(UnusedImportAccess, as: ignored)
+#endif
+public import AppIntents
 import CommonUI
 
 @freestanding(declaration, names: arbitrary)
