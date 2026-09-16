@@ -76,7 +76,7 @@ struct CompassUserAnnotation: View {
 
 // MARK: - DirectionalArrow
 
-struct DirectionalArrow: Shape {
+nonisolated struct DirectionalArrow: Shape {
 
   // MARK: Internal
 
