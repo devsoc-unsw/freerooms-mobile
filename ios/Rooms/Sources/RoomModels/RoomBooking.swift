@@ -56,8 +56,11 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
   public let start: Date
 
   // MARK: Private
-  
+
   #warning("TODO: Migrate to the new Foundation FormatStyle API")
+
+  // MARK: Private
+
   private static var formatter: ISO8601DateFormatter {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

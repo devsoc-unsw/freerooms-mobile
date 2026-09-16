@@ -6,8 +6,8 @@
 //
 
 public import Foundation
-public import SwiftData
 import Persistence
+public import SwiftData
 
 @Model
 public final class SwiftDataFavoriteRoom {

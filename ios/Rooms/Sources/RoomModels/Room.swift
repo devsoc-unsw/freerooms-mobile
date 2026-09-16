@@ -318,13 +318,13 @@ nonisolated extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtoco
 
 // MARK: - Testing
 
-//import Apollo
-//import ApolloAPI
-//import Networking
-//import Playgrounds
+// import Apollo
+// import ApolloAPI
+// import Networking
+// import Playgrounds
 //
-//#Playground {
+// #Playground {
 //  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
 //  let result = try await client.fetch(query: AllRoomsQuery())
 //  extendLifetime(result)
-//}
+// }

@@ -9,9 +9,9 @@ public import Apollo
 import DevSocAPI
 import Foundation
 import Networking
+import Observation
 import Persistence
 public import RoomModels
-import Observation
 import VISOR
 public import VISORTestDoubles
 
@@ -122,7 +122,11 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
-  public init(JSONRoomLoader: any JSONRoomLoader, roomStatusLoader: any RoomStatusLoader, swiftDataRoomLoader: any SwiftDataRoomLoader) {
+  public init(
+    JSONRoomLoader: any JSONRoomLoader,
+    roomStatusLoader: any RoomStatusLoader,
+    swiftDataRoomLoader: any SwiftDataRoomLoader)
+  {
     self.JSONRoomLoader = JSONRoomLoader
     self.roomStatusLoader = roomStatusLoader
     self.swiftDataRoomLoader = swiftDataRoomLoader

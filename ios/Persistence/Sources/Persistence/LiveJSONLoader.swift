@@ -17,7 +17,8 @@ public enum JSONLoaderError: Error {
 
 public protocol JSONLoader<T>: Sendable {
   associatedtype T: Decodable & Sendable
-  @concurrent func load(from file: String) async -> Result<T, JSONLoaderError>
+  @concurrent
+  func load(from file: String) async -> Result<T, JSONLoaderError>
 }
 
 // MARK: - LiveJSONLoader
