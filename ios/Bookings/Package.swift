@@ -28,7 +28,7 @@ let package = Package(
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Rooms", path: "../Rooms"),
     .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
-    .package(url: "https://github.com/apollographql/apollo-ios.git", exact: "2.1.2"),
+    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.4.0"),
   ],
   targets: [
     .target(
