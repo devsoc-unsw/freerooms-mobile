@@ -5,7 +5,7 @@
 //  Created by Chris Wong on 22/6/2025.
 //
 
-import Foundation
+public import Foundation
 import VISOR
 import VISORTestDoubles
 

@@ -20,7 +20,10 @@ let package = Package(
   targets: [
     .target(
       name: "Persistence",
-      dependencies: [.product(name: "VISOR", package: "VISOR")],
+      dependencies: [
+        .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
+      ],
       swiftSettings: swiftSettings),
     .target(
       name: "PersistenceTestUtils",
@@ -33,13 +36,17 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}

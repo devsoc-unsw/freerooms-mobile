@@ -27,7 +27,7 @@ public struct LiveJSONLoader<T: Decodable & Sendable>: JSONLoader {
 
   // MARK: Lifecycle
 
-  public init(using fileLoader: FileLoader = LiveFileLoader()) {
+  public init(using fileLoader: any FileLoader = LiveFileLoader()) {
     self.fileLoader = fileLoader
   }
 
@@ -50,6 +50,6 @@ public struct LiveJSONLoader<T: Decodable & Sendable>: JSONLoader {
 
   // MARK: Private
 
-  private let fileLoader: FileLoader
+  private let fileLoader: any FileLoader
 
 }
