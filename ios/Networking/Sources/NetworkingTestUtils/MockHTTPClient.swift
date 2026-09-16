@@ -10,7 +10,9 @@ import Networking
 
 // MARK: - MockHTTPClient
 
-public final class MockHTTPClient: HTTPClient {
+#warning("TODO: Remove @unchecked Sendable when CI is fixed")
+// swiftlint:disable:next no_unchecked_sendable
+public final class MockHTTPClient: HTTPClient, @unchecked Sendable {
 
   // MARK: Lifecycle
 
@@ -44,9 +46,3 @@ public final class MockHTTPClient: HTTPClient {
   private var stubbedData: Data?
   private var stubbedError: Error?
 }
-
-#if swift(<6.4)
-// CI bug
-// swiftlint:disable:next no_unchecked_sendable
-extension MockHTTPClient: @unchecked Sendable { }
-#endif
