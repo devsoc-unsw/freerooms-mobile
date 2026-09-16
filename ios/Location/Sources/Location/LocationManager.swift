@@ -5,9 +5,9 @@
 //  Created by Dicko Evaldo on 27/4/2025.
 //
 
-import CoreLocation
+public import CoreLocation
 import VISOR
-import VISORTestDoubles
+public import VISORTestDoubles
 
 // MARK: - LocationManager
 
@@ -16,7 +16,7 @@ import VISORTestDoubles
 public protocol LocationManager: AnyObject {
   // MARK: Internal
 
-  var delegate: LocationManagerDelegate? { get set }
+  var delegate: (any LocationManagerDelegate)? { get set }
   @DefaultValue(CLAuthorizationStatus.notDetermined)
   var authorizationStatus: CLAuthorizationStatus { get }
   var location: Location? { get }
@@ -30,9 +30,9 @@ public protocol LocationManager: AnyObject {
 // MARK: - LocationManagerDelegate
 
 public protocol LocationManagerDelegate: NSObjectProtocol {
-  func locationManagerDidChangeAuthorization(_ manager: LocationManager)
-  func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation])
-  func locationManager(_ manager: LocationManager, didUpdateHeading newHeading: CLHeading)
+  func locationManagerDidChangeAuthorization(_ manager: any LocationManager)
+  func locationManager(_ manager: any LocationManager, didUpdateLocations locations: [CLLocation])
+  func locationManager(_ manager: any LocationManager, didUpdateHeading newHeading: CLHeading)
 }
 
 // MARK: - LiveLocationManager
@@ -55,7 +55,7 @@ public final class LiveLocationManager: NSObject, LocationManager, CLLocationMan
   public var location: Location?
   public var heading: CLHeading?
 
-  public weak var delegate: LocationManagerDelegate?
+  public weak var delegate: (any LocationManagerDelegate)?
 
   public var authorizationStatus: CLAuthorizationStatus {
     locationManager.authorizationStatus
@@ -97,7 +97,7 @@ public final class LiveLocationManager: NSObject, LocationManager, CLLocationMan
     delegate?.locationManager(self, didUpdateHeading: newHeading)
   }
 
-  public func locationManager(_: CLLocationManager, didFailWithError _: Error) {
+  public func locationManager(_: CLLocationManager, didFailWithError _: any Error) {
     location = nil
   }
 

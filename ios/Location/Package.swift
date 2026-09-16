@@ -35,13 +35,17 @@ let package = Package(
       swiftSettings: swiftSettings),
   ])
 
-let swiftSettings: [SwiftSetting] = [
-  .defaultIsolation(nil),
-  .strictMemorySafety(),
-  .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault"),
-  .enableUpcomingFeature("MemberImportVisibility"),
-  .enableUpcomingFeature("InferIsolatedConformances"),
-  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-  .enableUpcomingFeature("ImmutableWeakCaptures"),
-]
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
+}
