@@ -17,12 +17,12 @@ nonisolated struct FileBackedCodableTests {
   // MARK: Lifecycle
 
   init() {
-    let fileManager = FileManager.default
+    let fileManager = FileManager()
     let temporaryDirectory = fileManager.temporaryDirectory
 
     let concurrentQueue = DispatchQueue.global(qos: .utility)
     let operationQueue = OperationQueue()
-    operationQueue.underlyingQueue = concurrentQueue
+    unsafe operationQueue.underlyingQueue = concurrentQueue
 
     self.fileManager = fileManager
     self.temporaryDirectory = temporaryDirectory
@@ -41,7 +41,7 @@ nonisolated struct FileBackedCodableTests {
   }
 
   let temporaryDirectory: URL
-  let fileManager: FileManager
+  @safe nonisolated(unsafe) let fileManager: FileManager
   let concurrentQueue: DispatchQueue
   let operationQueue: OperationQueue
 
@@ -73,7 +73,6 @@ nonisolated struct FileBackedCodableTests {
   }
 
   func coordinatedDelete(at fileURL: URL) async throws {
-    nonisolated(unsafe) let fileManager = fileManager
     let coordinator = NSFileCoordinator()
     let intent = NSFileAccessIntent.writingIntent(with: fileURL, options: .forDeleting)
     return try await withCheckedThrowingContinuation { continuation in
@@ -96,7 +95,6 @@ nonisolated struct FileBackedCodableTests {
   }
 
   func coordinatedMove(from sourceURL: URL, to destinationURL: URL) async throws {
-    nonisolated(unsafe) let fileManager = fileManager
     nonisolated(unsafe) let coordinator = NSFileCoordinator()
 
     let intents: [NSFileAccessIntent] = [
@@ -105,15 +103,15 @@ nonisolated struct FileBackedCodableTests {
     ]
 
     return try await withCheckedThrowingContinuation { continuation in
-      coordinator.coordinate(with: intents, queue: operationQueue) { error in
+      unsafe coordinator.coordinate(with: intents, queue: operationQueue) { error in
         if let error {
           continuation.resume(throwing: error)
         }
 
         do {
-          coordinator.item(at: sourceURL, willMoveTo: destinationURL)
+          unsafe coordinator.item(at: sourceURL, willMoveTo: destinationURL)
           try fileManager.moveItem(at: sourceURL, to: destinationURL)
-          coordinator.item(at: sourceURL, didMoveTo: destinationURL)
+          unsafe coordinator.item(at: sourceURL, didMoveTo: destinationURL)
         } catch {
           continuation.resume(throwing: error)
         }
@@ -183,6 +181,6 @@ nonisolated struct FileBackedCodableTests {
 
 extension FileBackedCodable {
   init(fileURL: URL) {
-    self.init(fileURL: fileURL, name: "")
+    self.init(fileURL: fileURL, name: "FileBackedCodableTests")
   }
 }
