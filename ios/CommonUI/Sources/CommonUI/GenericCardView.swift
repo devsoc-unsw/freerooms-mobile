@@ -5,11 +5,11 @@
 //  Created by Gabriella Lianti on 15/10/25.
 //
 
-import BuildingModels
+public import BuildingModels
 import Combine
-import RoomModels
+public import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - GenericCardView
 

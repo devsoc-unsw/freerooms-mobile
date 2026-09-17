@@ -22,7 +22,7 @@ let package = Package(
     .package(name: "CommonUI", path: "../CommonUI"),
     .package(name: "Persistence", path: "../Persistence"),
     .package(name: "Buildings", path: "../Buildings"),
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
   ],
   targets: [
     .target(
@@ -32,7 +32,7 @@ let package = Package(
         .product(name: "CommonUI", package: "CommonUI"),
       ],
       resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "RoomViewModels",
       dependencies: [
@@ -40,24 +40,25 @@ let package = Package(
         "RoomModels",
         .product(name: "BuildingModels", package: "Buildings"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "RoomInteractors",
       dependencies: [
         "RoomServices",
         .product(name: "Location", package: "Location"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "RoomServices",
       dependencies: [
+        "RoomModels",
         .product(name: "Networking", package: "Networking"),
         .product(name: "Persistence", package: "Persistence"),
         .product(name: "VISOR", package: "VISOR"),
-        "RoomModels",
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
       resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "RoomModels",
       dependencies: [
@@ -65,11 +66,11 @@ let package = Package(
         .product(name: "Networking", package: "Networking"),
         .product(name: "Persistence", package: "Persistence"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "RoomTestUtils",
       dependencies: ["RoomServices", "RoomModels"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "RoomsTests",
       dependencies: [
@@ -84,15 +85,21 @@ let package = Package(
         .product(name: "PersistenceTestUtils", package: "Persistence"),
         .product(name: "Location", package: "Location"),
       ],
-      swiftSettings: .defaultSettings),
-  ])
+      swiftSettings: swiftSettings),
+  ],
+  swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
 }

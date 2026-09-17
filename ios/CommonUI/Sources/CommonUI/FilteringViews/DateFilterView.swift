@@ -6,7 +6,7 @@
 //
 
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - DateFilterView
 

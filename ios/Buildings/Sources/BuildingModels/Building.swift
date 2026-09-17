@@ -5,9 +5,9 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
-import DevSocAPI
+public import DevSocAPI
 import Foundation
-import Location
+public import Location
 
 // MARK: - Building
 
@@ -59,12 +59,10 @@ struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
   public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
-  @MainActor
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
 
-  @MainActor
   public var availabilityStatus: AvailabilityStatus {
     AvailabilityStatus(numberOfAvailableRooms)
   }

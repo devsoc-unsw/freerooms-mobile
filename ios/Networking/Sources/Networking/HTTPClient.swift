@@ -5,16 +5,17 @@
 //  Created by Anh Nguyen on 31/1/2025.
 //
 
-import Foundation
+public import Foundation
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - HTTPClient
-public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), Error>
+public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), any Error>
 
 // MARK: - HTTPClient
 
-@Spyable
-public protocol HTTPClient {
+@GenerateSpy(.sendable)
+public protocol HTTPClient: Sendable {
   func get(from url: URL) async -> HTTPClientResult
 }
 

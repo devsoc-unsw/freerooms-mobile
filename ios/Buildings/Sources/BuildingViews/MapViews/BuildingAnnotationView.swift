@@ -6,6 +6,7 @@
 //
 
 import BuildingModels
+import BuildingViewModels
 import SwiftUI
 
 struct BuildingAnnotationView: View {

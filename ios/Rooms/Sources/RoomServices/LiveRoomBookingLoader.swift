@@ -6,8 +6,10 @@
 //
 
 import Foundation
-import RoomModels
+import Observation
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - RoomBookingLoaderError
 
@@ -17,7 +19,7 @@ public enum RoomBookingLoaderError: Error {
 
 // MARK: - RoomBookingLoader
 
-@Stubbable
+@GenerateStub
 public protocol RoomBookingLoader {
   func fetch(bookingsOf roomID: String) async -> Result<[RoomBooking], RoomBookingLoaderError>
 }
@@ -28,7 +30,7 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
 
   // MARK: Lifecycle
 
-  public init(remoteRoomBookingLoader: RemoteRoomBookingLoader) {
+  public init(remoteRoomBookingLoader: any RemoteRoomBookingLoader) {
     self.remoteRoomBookingLoader = remoteRoomBookingLoader
   }
 
@@ -59,5 +61,5 @@ public struct LiveRoomBookingLoader: RoomBookingLoader {
 
   // MARK: Internal
 
-  let remoteRoomBookingLoader: RemoteRoomBookingLoader
+  let remoteRoomBookingLoader: any RemoteRoomBookingLoader
 }

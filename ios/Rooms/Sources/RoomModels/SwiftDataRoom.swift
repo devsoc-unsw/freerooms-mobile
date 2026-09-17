@@ -5,9 +5,9 @@
 //  Created by MUQUEET MOHSEN CHOWDHURY on 2/5/25.
 //
 
-import Foundation
-import Persistence
-import SwiftData
+public import Foundation
+public import Persistence
+public import SwiftData
 
 /// A SwiftData model representing a room, linked to a building and used for persistence.
 /// Stores detailed room information including facilities, capacity, and location.
@@ -103,7 +103,6 @@ public final class SwiftDataRoom: IdentifiableModel {
     id
   }
 
-  @MainActor
   public func toRoom() -> Room {
     Room(
       abbreviation: abbreviation,

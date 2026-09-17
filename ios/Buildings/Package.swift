@@ -25,7 +25,7 @@ let package = Package(
     .package(name: "TestingSupport", path: "../TestingSupport"),
     .package(name: "DevSocAPI", path: "../DevSocAPI"),
     .package(url: "https://github.com/lucaszischka/BottomSheet", from: "3.1.1"),
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
     .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.0.0"),
   ],
   targets: [
@@ -42,7 +42,7 @@ let package = Package(
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
       resources: [.process("Resources")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingViewModels",
       dependencies: [
@@ -52,11 +52,11 @@ let package = Package(
         .product(name: "RoomInteractors", package: "Rooms"),
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingInteractors",
       dependencies: ["BuildingServices", "Location", "BuildingModels", .product(name: "RoomServices", package: "Rooms")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingServices",
       dependencies: [
@@ -65,13 +65,14 @@ let package = Package(
         "BuildingModels",
         .product(name: "RoomServices", package: "Rooms"),
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
         .product(name: "DevSocAPI", package: "DevSocAPI"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BuildingModels",
       dependencies: ["Persistence", "Location", .product(name: "RoomModels", package: "Rooms")],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "BuildingsTests",
       dependencies: [
@@ -85,15 +86,21 @@ let package = Package(
         .product(name: "Location", package: "Location"),
         .product(name: "NetworkingTestUtils", package: "Networking"),
       ],
-      swiftSettings: .defaultSettings),
-  ])
+      swiftSettings: swiftSettings),
+  ],
+  swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
 }

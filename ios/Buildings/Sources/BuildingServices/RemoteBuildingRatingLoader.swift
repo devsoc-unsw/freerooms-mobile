@@ -6,13 +6,14 @@
 //
 
 import BuildingModels
-import Foundation
-import Networking
+public import Foundation
+public import Networking
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - BuildingRatingLoader
 
-@Stubbable
+@GenerateStub(.sendable)
 public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }
@@ -26,11 +27,11 @@ public enum BuildingRatingLoaderError: Error {
 
 // MARK: - RemoteBuildingRatingLoader
 
-public struct RemoteBuildingRatingLoader: BuildingRatingLoader, Sendable {
+public struct RemoteBuildingRatingLoader: BuildingRatingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/buildingRating/") {
+  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/buildingRating/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -55,7 +56,7 @@ public struct RemoteBuildingRatingLoader: BuildingRatingLoader, Sendable {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let statusEndpointPath: String
 }

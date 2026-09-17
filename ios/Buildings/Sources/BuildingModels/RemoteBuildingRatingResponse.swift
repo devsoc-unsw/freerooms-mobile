@@ -5,7 +5,7 @@
 //  Created by Chris Wong on 11/9/2025.
 //
 
-public struct RemoteBuildingRatingResponse: Codable {
+public struct RemoteBuildingRatingResponse: Codable, Sendable {
   public let buildingId: String
   public let overallRating: Double
 

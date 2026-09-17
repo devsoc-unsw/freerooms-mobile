@@ -5,13 +5,15 @@
 //  Created by Chris Wong on 29/4/2025.
 //
 
-import Apollo
-import BuildingModels
+public import Apollo
+public import BuildingModels
 import DevSocAPI
 import Foundation
 import OSLog
-import RoomServices
+import RoomModels
+public import RoomServices
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - BuildingLoaderError
 
@@ -22,20 +24,14 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
-@Stubbable
+@GenerateStub
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
-extension BuildingLoader {
-  func fetch() async throws(BuildingLoaderError) -> [Building] {
-    try await fetch().get()
-  }
-}
-
 // MARK: - LiveGraphQLBuildingLoader
 
-nonisolated public final class LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
+public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
   // MARK: Lifecycle
 

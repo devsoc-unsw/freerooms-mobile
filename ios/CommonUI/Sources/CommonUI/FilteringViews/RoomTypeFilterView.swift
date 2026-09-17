@@ -5,9 +5,9 @@
 //  Created by select on 13/10/2025.
 //
 
-import RoomModels
+public import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - RoomTypeFilterView
 

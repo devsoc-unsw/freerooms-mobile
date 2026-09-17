@@ -5,13 +5,14 @@
 //  Created by Yanlin Li  on 7/8/2025.
 //
 
-import Apollo
+public import Apollo
 import ApolloAPI
-import BookingModels
+public import BookingModels
 import DevSocAPI
-import Foundation
+public import Foundation
 import OSLog
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - WeeklyBookingLoaderError
 
@@ -27,9 +28,9 @@ public enum WeeklyBookingLoaderError: Error, Equatable, Sendable {
 // MARK: - WeeklyBookingLoader
 
 /// Loads bookings that overlap a supplied calendar interval.
-@Stubbable
+@GenerateStub
 public protocol WeeklyBookingLoader {
-  func fetch(in interval: DateInterval) async -> Result<[WeeklyBooking], WeeklyBookingLoaderError>
+  nonisolated(nonsending) func fetch(in interval: DateInterval) async -> Result<[WeeklyBooking], WeeklyBookingLoaderError>
 }
 
 // MARK: - LiveGraphQLWeeklyBookingLoader

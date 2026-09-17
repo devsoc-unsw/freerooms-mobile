@@ -5,17 +5,18 @@
 //  Created by Anh Nguyen on 22/4/2025.
 //
 
-import CoreLocation
+public import CoreLocation
 import Foundation
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - LocationService
 
-@Stubbable
+@GenerateStub
 public protocol LocationService {
   func getCurrentLocation() throws -> Location
   func requestLocationPermissions() throws -> Bool
-  func locationManagerDidChangeAuthorization(_ locationManager: LocationManager)
+  func locationManagerDidChangeAuthorization(_ locationManager: any LocationManager)
 
   var onLocationUpdate: ((Location) -> Void)? { get set }
   var onHeadingUpdate: ((CLHeading) -> Void)? { get set }
@@ -27,7 +28,7 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
 
   // MARK: Lifecycle
 
-  public init(locationManager: LocationManager) {
+  public init(locationManager: any LocationManager) {
     self.locationManager = locationManager
     super.init()
     locationManager.delegate = self
@@ -45,7 +46,7 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
     onHeadingUpdate?(newHeading)
   }
 
-  public func locationManager(_: LocationManager, didUpdateLocations locations: [CLLocation]) {
+  public func locationManager(_: any LocationManager, didUpdateLocations locations: [CLLocation]) {
     guard let latestLocation = locations.last else { return }
 
     let location = Location(latitude: latestLocation.coordinate.latitude, longitude: latestLocation.coordinate.longitude)
@@ -90,7 +91,7 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
     return true
   }
 
-  public func locationManagerDidChangeAuthorization(_: LocationManager) {
+  public func locationManagerDidChangeAuthorization(_: any LocationManager) {
     switch locationManager.authorizationStatus {
     case .authorizedWhenInUse:
       currentPermissionState = .granted
@@ -105,7 +106,7 @@ public final class LiveLocationService: NSObject, LocationService, LocationManag
 
   // MARK: Package
 
-  package let locationManager: LocationManager
+  package let locationManager: any LocationManager
 
   // MARK: Internal
 

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftData
+public import SwiftData
 
 // MARK: - SwiftDataStore
 

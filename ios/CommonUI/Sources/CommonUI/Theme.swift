@@ -8,7 +8,7 @@
 import CoreGraphics
 import CoreText
 import Observation
-import SwiftUI
+public import SwiftUI
 import UIKit
 
 // MARK: - Theme

@@ -5,10 +5,10 @@
 //  Created by Dicko Evaldo on 16/10/2025.
 //
 
-import BuildingModels
-import BuildingServices
-import Location
-import MapKit
+public import BuildingModels
+public import BuildingServices
+public import Location
+public import MapKit
 
 extension Building {
   public var coordinate: CLLocationCoordinate2D {
@@ -28,7 +28,7 @@ public final class LiveNavigationInteractor: NavigationInteractor, Sendable {
 
   // MARK: Lifecycle
 
-  public init(nagivationService: NavigationService) {
+  public init(nagivationService: any NavigationService) {
     self.nagivationService = nagivationService
   }
 
@@ -42,7 +42,7 @@ public final class LiveNavigationInteractor: NavigationInteractor, Sendable {
 
   // MARK: Private
 
-  private let nagivationService: NavigationService
+  private let nagivationService: any NavigationService
 }
 
 // MARK: - PreviewNavigationInteractor

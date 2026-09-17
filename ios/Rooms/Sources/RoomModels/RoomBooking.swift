@@ -5,9 +5,11 @@
 //  Created by Chris Wong on 4/9/2025.
 //
 
-import Foundation
+public import Foundation
 
 public struct RoomBooking: Equatable, Sendable, Hashable {
+
+  #warning("TODO: Migrate to the new Foundation FormatStyle API")
 
   // MARK: Lifecycle
 
@@ -57,10 +59,10 @@ public struct RoomBooking: Equatable, Sendable, Hashable {
 
   // MARK: Private
 
-  private static let formatter: ISO8601DateFormatter = {
+  private static var formatter: ISO8601DateFormatter {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
-  }()
+  }
 
 }

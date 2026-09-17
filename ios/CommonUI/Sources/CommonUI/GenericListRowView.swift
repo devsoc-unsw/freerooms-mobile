@@ -5,10 +5,10 @@
 //  Created by Yanlin Li on 23/8/2025.
 //
 
-import BuildingModels
-import RoomModels
+public import BuildingModels
+public import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - GenericListRowView
 

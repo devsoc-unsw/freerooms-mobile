@@ -7,9 +7,9 @@
 
 import Foundation
 import SwiftParser
-import SwiftSyntax
+public import SwiftSyntax
 import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
+public import SwiftSyntaxMacros
 
 public struct OpenTabIntentMacro: DeclarationMacro {
   public static func expansion(
