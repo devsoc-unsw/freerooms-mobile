@@ -6,8 +6,8 @@
 //
 
 import Apollo
-import AppIntents
-import BuildingModels
+public import AppIntents
+public import BuildingModels
 import BuildingServices
 import Networking
 import RoomServices

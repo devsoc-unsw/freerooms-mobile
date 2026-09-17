@@ -5,7 +5,7 @@
 //  Created by Matthew Yuen on 11/9/2026.
 //
 
-import AppIntents
+public import AppIntents
 import FreeroomsEntities
 
 public struct FreeroomsWidgetIntentsPackage: AppIntentsPackage {
