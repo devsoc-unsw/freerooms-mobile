@@ -3,7 +3,7 @@
 //  CommonUI
 //
 
-import SwiftUI
+public import SwiftUI
 
 public enum FilterSheetLayout {
   public static let contentSpacing: CGFloat = 15

@@ -21,19 +21,24 @@ let package = Package(
     .target(
       name: "TestingSupport",
       dependencies: ["Persistence"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "TestingSupportTests",
       dependencies: ["TestingSupport"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
   ])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
 }

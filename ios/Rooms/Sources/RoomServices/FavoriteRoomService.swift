@@ -6,14 +6,15 @@
 //
 
 import Foundation
-import RoomModels
-import SwiftData
+public import RoomModels
+public import SwiftData
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - FavoriteRoomService
 
-@Spyable
-@Stubbable
+@GenerateSpy
+@GenerateStub
 public protocol FavoriteRoomService: AnyObject {
 
   /// Adds a new favorite

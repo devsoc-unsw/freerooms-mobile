@@ -7,7 +7,7 @@
 
 import Persistence
 
-struct MockJSONLoader<T: Decodable>: JSONLoader {
+struct MockJSONLoader<T: Decodable & Sendable>: JSONLoader {
   private let decodedData: T?
   private let JSONLoaderError: JSONLoaderError?
 

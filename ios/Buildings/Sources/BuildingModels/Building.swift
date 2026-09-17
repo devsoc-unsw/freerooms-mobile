@@ -5,10 +5,9 @@
 //  Created by Anh Nguyen on 12/1/2025.
 //
 
-import AppIntents
-import DevSocAPI
+public import DevSocAPI
 import Foundation
-import Location
+public import Location
 
 // MARK: - Building
 
@@ -60,12 +59,10 @@ struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
   public var overallRating: Double?
 
   /// Computed grid reference based on the building ID for campus organization
-  @MainActor
   public var gridReference: GridReference {
     GridReference.fromBuildingID(buildingID: id)
   }
 
-  @MainActor
   public var availabilityStatus: AvailabilityStatus {
     AvailabilityStatus(numberOfAvailableRooms)
   }
@@ -155,7 +152,7 @@ public enum BuildingFilterOptions: Sendable {
 
 extension Building {
 
-  nonisolated public init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
+  public nonisolated init?(from graphQLBuilding: DevSocAPI.AllBuildingsQuery.Data.Building) {
     // Make sure the lat and long are valid
     guard let lat = Double(graphQLBuilding.lat), let long = Double(graphQLBuilding.long) else {
       return nil

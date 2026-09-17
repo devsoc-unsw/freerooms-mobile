@@ -14,7 +14,6 @@ class DataStoreTest {
 
   // MARK: Lifecycle
 
-  @MainActor
   deinit {
     try? sut.deleteAll()
   }

@@ -5,7 +5,7 @@
 //  Created by Dicko Evaldo on 10/10/2025.
 //
 
-import SwiftUI
+public import SwiftUI
 
 public struct XButton: View {
 

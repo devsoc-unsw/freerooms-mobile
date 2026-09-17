@@ -5,7 +5,7 @@
 //  Created by Yanlin Li  on 21/11/2025.
 //
 
-import SwiftUI
+public import SwiftUI
 
 public struct SelectButton: View {
 

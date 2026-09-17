@@ -5,10 +5,10 @@
 //  Created by Anh Nguyen on 27/4/2025.
 //
 
-import BuildingModels
-import BuildingServices
+public import BuildingModels
+public import BuildingServices
 import Foundation
-import Location
+public import Location
 import RoomModels
 import RoomServices
 
@@ -25,8 +25,8 @@ public class BuildingInteractor {
   ///   - buildingService: Service for building data operations
   ///   - locationService: Service for location-based operations
   public init(
-    buildingService: BuildingService,
-    locationService: LocationService)
+    buildingService: any BuildingService,
+    locationService: any LocationService)
   {
     self.buildingService = buildingService
     self.locationService = locationService
@@ -51,7 +51,7 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], Error> {
+  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], any Error> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
       do {
@@ -111,6 +111,7 @@ public class BuildingInteractor {
 
   // MARK: Package
 
+  nonisolated(nonsending)
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -164,8 +165,8 @@ public class BuildingInteractor {
 
   // MARK: Private
 
-  private let buildingService: BuildingService
-  private let locationService: LocationService
+  private let buildingService: any BuildingService
+  private let locationService: any LocationService
 
   /// Calculates the squared distance between a location and a building.
   /// Uses squared distance for performance (avoiding square root calculation).

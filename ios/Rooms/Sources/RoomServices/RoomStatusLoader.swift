@@ -5,10 +5,11 @@
 //  Created by Muqueet Mohsen Chowdhury on 2/9/2025.
 //
 
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
+import VISORTestDoubles
 
 // MARK: - RoomStatusLoaderError
 
@@ -19,7 +20,7 @@ public enum RoomStatusLoaderError: Error, Equatable {
 
 // MARK: - RoomStatusLoader
 
-@Stubbable
+@GenerateStub(.sendable)
 public protocol RoomStatusLoader: Sendable {
   func fetchRoomStatus() async -> Result<RemoteRoomStatus, RoomStatusLoaderError>
 }
@@ -30,7 +31,7 @@ public nonisolated final class LiveRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/status") {
+  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/status") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -55,7 +56,7 @@ public nonisolated final class LiveRoomStatusLoader: RoomStatusLoader {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let statusEndpointPath: String
 }

@@ -5,13 +5,15 @@
 //  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
-import Apollo
+public import Apollo
 import DevSocAPI
 import Foundation
 import Networking
+import Observation
 import Persistence
-import RoomModels
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - RoomLoaderError
 
@@ -25,7 +27,7 @@ public enum RoomLoaderError: Error {
 
 // MARK: - RoomLoader
 
-@Stubbable
+@GenerateStub
 public protocol RoomLoader {
   func fetch(buildingId: String) async -> Result<[Room], RoomLoaderError>
   func fetch() async -> Result<[Room], RoomLoaderError>
@@ -121,7 +123,11 @@ public final class LiveRoomLoader: RoomLoader {
 
   // MARK: Lifecycle
 
-  public init(JSONRoomLoader: JSONRoomLoader, roomStatusLoader: RoomStatusLoader, swiftDataRoomLoader: SwiftDataRoomLoader) {
+  public init(
+    JSONRoomLoader: any JSONRoomLoader,
+    roomStatusLoader: any RoomStatusLoader,
+    swiftDataRoomLoader: any SwiftDataRoomLoader)
+  {
     self.JSONRoomLoader = JSONRoomLoader
     self.roomStatusLoader = roomStatusLoader
     self.swiftDataRoomLoader = swiftDataRoomLoader
@@ -185,9 +191,9 @@ public final class LiveRoomLoader: RoomLoader {
 
   private static let liveStatusTimeoutNanoseconds: UInt64 = 2_000_000_000
 
-  private let JSONRoomLoader: JSONRoomLoader
-  private let roomStatusLoader: RoomStatusLoader
-  private let swiftDataRoomLoader: SwiftDataRoomLoader
+  private let JSONRoomLoader: any JSONRoomLoader
+  private let roomStatusLoader: any RoomStatusLoader
+  private let swiftDataRoomLoader: any SwiftDataRoomLoader
 
   private var hasSavedData: Bool {
     UserDefaults.standard.bool(forKey: UserDefaultsKeys.hasSavedRoomsData)

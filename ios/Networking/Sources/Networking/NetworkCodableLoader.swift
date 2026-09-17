@@ -5,14 +5,14 @@
 //  Created by Anh Nguyen on 7/4/2025.
 //
 
-import Foundation
+public import Foundation
 
 // MARK: - CodableLoader
 
 public protocol CodableLoader {
   associatedtype Generic: Codable
 
-  func fetch() async -> Swift.Result<Generic, Swift.Error>
+  func fetch() async -> Swift.Result<Generic, any Swift.Error>
 }
 
 // MARK: - StatusCode
@@ -23,11 +23,11 @@ public enum StatusCode: Int {
 
 // MARK: - NetworkCodableLoader
 
-public nonisolated final class NetworkCodableLoader<T: Codable>: CodableLoader {
+public final class NetworkCodableLoader<T: Codable & Sendable>: CodableLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, url: URL) {
+  public init(client: any HTTPClient, url: URL) {
     self.client = client
     self.url = url
   }
@@ -40,7 +40,7 @@ public nonisolated final class NetworkCodableLoader<T: Codable>: CodableLoader {
     case connectivity, invalidData
   }
 
-  public typealias Result = Swift.Result<T, Swift.Error>
+  public typealias Result = Swift.Result<T, any Swift.Error>
 
   public func fetch() async -> Result {
     switch await client.get(from: url) {
@@ -53,7 +53,7 @@ public nonisolated final class NetworkCodableLoader<T: Codable>: CodableLoader {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let url: URL
 
   @concurrent

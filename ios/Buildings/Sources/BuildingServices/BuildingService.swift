@@ -5,10 +5,11 @@
 //  Created by Anh Nguyen on 22/4/2025.
 //
 
-import BuildingModels
+public import BuildingModels
 import Foundation
 import Networking
 import VISOR
+public import VISORTestDoubles
 
 public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
@@ -29,9 +30,9 @@ extension FetchBuildingsError {
 
 // MARK: - BuildingService
 
-@Stubbable
+@GenerateStub
 public protocol BuildingService {
-  func getBuildings() async -> GetBuildingsResult
+  nonisolated(nonsending) func getBuildings() async -> GetBuildingsResult
 }
 
 // MARK: - LiveBuildingService

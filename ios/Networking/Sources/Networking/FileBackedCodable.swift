@@ -34,7 +34,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Shared object and presenter queue
     let serialQueue = DispatchSerialQueue(label: "FileBackedCodable", qos: .userInitiated)
     let operationQueue = OperationQueue()
-    operationQueue.underlyingQueue = serialQueue
+    unsafe operationQueue.underlyingQueue = serialQueue
 
     // Presenter
     let presenter = _Presenter(
@@ -92,11 +92,9 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
   /// Used on `iOS` to prevent deadlocking the file
   public let notificationCenter: NotificationCenter
 
-  public let fileManager: FileManager
-
   public nonisolated var unownedExecutor: UnownedSerialExecutor {
     // Part of the `Actor` protocol, allows the replacement of the actor's default executor
-    serialQueue.asUnownedSerialExecutor()
+    unsafe serialQueue.asUnownedSerialExecutor()
   }
 
   public var currentFileURL: URL {
@@ -165,7 +163,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     logger.trace("\(name): Updating file")
 
     // Write the new version of the data
-    nonisolated(unsafe) let fileManager = fileManager
+    @safe nonisolated(unsafe) let fileManager = fileManager
     let newFileVersion: NSFileVersion? = try await _withCoordinatedAccess(for: intent) { [encoder] _ in
       // Check if we are deleting the file
       guard !isDeleting else {
@@ -200,11 +198,14 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
   // MARK: Private
 
+  /// The `FileManager` class is generally thread safe, but the `delegate` property is not
+  @safe nonisolated(unsafe) private let fileManager: FileManager
+
   private let logger: Logger
 
   /// While the presenter is non-Sendable,
   /// registering and unregistering the presenter is thread-safe.
-  nonisolated(unsafe)
+  @safe nonisolated(unsafe)
   private let _presenter: _Presenter
 
   /// The serial queue is used instead of the `actor`'s default executor,
@@ -229,8 +230,6 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
   /// Fetch the data from the file system, and attempt to decode it
   private func _getValue_getFromFile(url: URL) async throws -> T? {
-    /// The `FileManager` class is generally thread safe, but the `delegate` property is not
-    nonisolated(unsafe) let fileManager = fileManager
     let name = name
 
     // Preform the coordinated read
@@ -238,7 +237,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
     let result: (data: Data?, fileVersionState: FileVersionState) = try await _withCoordinatedAccess(for: intent) { _ in
       // Check if the file exists
-      guard fileManager.fileExists(atPath: url.path) else {
+      guard self.fileManager.fileExists(atPath: url.path) else {
         return (nil, .deleted)
       }
 
@@ -280,7 +279,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
     // Create a coordinator for the operation
     nonisolated(unsafe) let coordinator = NSFileCoordinator(filePresenter: _presenter)
     return try await withCheckedThrowingContinuation { continuation in
-      coordinator.coordinate(with: [intent], queue: _coordinatorOperationQueue) { error in
+      unsafe coordinator.coordinate(with: [intent], queue: _coordinatorOperationQueue) { error in
         // Make sure there isn't an error
         // If an error is provided, the file isn't safe to read or modify
         if let error {
@@ -290,7 +289,7 @@ public final actor FileBackedCodable<T: Codable & Sendable> {
 
         // Otherwise run the operation
         do {
-          continuation.resume(returning: try operation(coordinator))
+          unsafe continuation.resume(returning: try operation(coordinator))
         } catch {
           continuation.resume(throwing: error)
         }

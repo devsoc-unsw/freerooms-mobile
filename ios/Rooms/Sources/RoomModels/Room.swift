@@ -6,15 +6,15 @@
 //
 
 import DevSocAPI
-import Foundation
+public import Foundation
 
 // MARK: - Room
 
-import Location
+public import Location
 
 // MARK: - RoomAvailability
 
-public enum RoomAvailability: String, Codable {
+public enum RoomAvailability: String, Codable, Sendable {
   case available
   case availableSoon
   case unavailable
@@ -27,7 +27,7 @@ public enum RoomAvailability: String, Codable {
 
 // MARK: - Room
 
-public nonisolated struct Room: Equatable, Identifiable, Hashable, Sendable {
+public struct Room: Equatable, Identifiable, Hashable, Sendable {
 
   // MARK: Lifecycle
 
@@ -276,8 +276,7 @@ public nonisolated protocol GraphQLRoomProtocol {
 
 extension Room {
 
-  nonisolated
-  public init?(from graphQLRoom: some GraphQLRoomProtocol) {
+  public nonisolated init?(from graphQLRoom: some GraphQLRoomProtocol) {
     guard
       let lat = Double(graphQLRoom.lat),
       let long = Double(graphQLRoom.long)
@@ -311,21 +310,21 @@ extension Room {
 
 // MARK: - DevSocAPI.AllRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+nonisolated extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - DevSocAPI.BuildingRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+nonisolated extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - Testing
 
-import Apollo
-import ApolloAPI
-import Networking
-import Playgrounds
-
-#Playground {
-  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
-  let result = try await client.fetch(query: AllRoomsQuery())
-  extendLifetime(result)
-}
+// import Apollo
+// import ApolloAPI
+// import Networking
+// import Playgrounds
+//
+// #Playground {
+//  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
+//  let result = try await client.fetch(query: AllRoomsQuery())
+//  extendLifetime(result)
+// }

@@ -6,9 +6,9 @@
 //
 
 import CommonUI
-import RoomModels
+public import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - RoomDetailsView
 

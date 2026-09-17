@@ -4,10 +4,11 @@
 //
 //  Created by Dicko Evaldo on 17/3/2026.
 //
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
+import VISORTestDoubles
 
 // MARK: - RoomRatingLoaderError
 
@@ -19,7 +20,7 @@ public enum RoomRatingLoaderError: Error, Equatable {
 
 // MARK: - RoomRatingLoader
 
-@Stubbable
+@GenerateStub
 public protocol RoomRatingLoader {
   func fetchRoomRating(roomID: String) async -> Result<RoomRating, RoomRatingLoaderError>
 }
@@ -43,7 +44,7 @@ public struct LiveRoomRatingLoader: RoomRatingLoader {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rating/") {
+  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rating/") {
     self.client = client
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
@@ -72,7 +73,7 @@ public struct LiveRoomRatingLoader: RoomRatingLoader {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let statusEndpointPath: String
 }

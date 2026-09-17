@@ -4,7 +4,8 @@
 //
 //  Created by Anh Nguyen on 22/4/2025.
 //
-import CoreLocation
+
+public import CoreLocation
 
 // MARK: - Location
 

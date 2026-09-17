@@ -5,10 +5,11 @@
 //  Created by Yanlin Li  on 17/4/2026.
 //
 
-import Foundation
-import Networking
-import RoomModels
+public import Foundation
+public import Networking
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - FilterRoomServiceError
 
@@ -20,8 +21,8 @@ public enum FilterRoomServiceError: Error, Equatable {
 
 // MARK: - FilterRoomService
 
-@Spyable
-@Stubbable
+@GenerateSpy
+@GenerateStub
 public protocol FilterRoomService {
 
   /// Fetches rooms that match the provided filter conditions.
@@ -53,7 +54,7 @@ public final class LiveFilterRoomService: FilterRoomService {
 
   // MARK: Lifecycle
 
-  public init(client: HTTPClient, baseURL: URL, endpointPath: String = "api/rooms/search") {
+  public init(client: any HTTPClient, baseURL: URL, endpointPath: String = "api/rooms/search") {
     self.client = client
     self.baseURL = baseURL
     self.endpointPath = endpointPath
@@ -87,7 +88,7 @@ public final class LiveFilterRoomService: FilterRoomService {
 
   // MARK: Private
 
-  private let client: HTTPClient
+  private let client: any HTTPClient
   private let baseURL: URL
   private let endpointPath: String
 

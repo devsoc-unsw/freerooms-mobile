@@ -5,7 +5,7 @@
 //  Created by Chris Wong on 4/9/2025.
 //
 
-public struct RemoteRoomBooking: Codable {
+public struct RemoteRoomBooking: Sendable, Codable {
   public let bookingType: String
   public let end: String
   public let name: String

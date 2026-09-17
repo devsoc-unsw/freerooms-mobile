@@ -5,12 +5,12 @@
 //  Created by Yanlin Li  on 3/7/2025.
 //
 
-import BuildingModels
+public import BuildingModels
 import BuildingViewModels
-import CommonUI
-import RoomModels
+public import CommonUI
+public import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - BuildingsTabView
 

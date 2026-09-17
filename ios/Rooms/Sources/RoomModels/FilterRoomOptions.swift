@@ -5,7 +5,7 @@
 //  Created by Yanlin Li  on 26/4/2026.
 //
 
-import Foundation
+public import Foundation
 
 // MARK: - FilterRoomOptions
 
@@ -81,9 +81,9 @@ extension FilterRoomOptions {
 
   /// Backend requires fractional seconds (e.g. `2026-05-21T06:47:00.000Z`);
   /// without them the API responds with HTTP 400.
-  private static let iso8601Formatter: ISO8601DateFormatter = {
+  private static var iso8601Formatter: ISO8601DateFormatter {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
-  }()
+  }
 }
