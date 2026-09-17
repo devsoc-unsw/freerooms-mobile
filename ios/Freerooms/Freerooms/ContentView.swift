@@ -102,13 +102,19 @@ extension LiveMapViewModel {
 }
 
 extension EnvironmentValues {
-  private static var _buildingViewModel: LiveBuildingViewModel { MainActor.assumeIsolated { .preview } }
-  private static var _mapViewModel: LiveMapViewModel { MainActor.assumeIsolated { .preview } }
-  private static var _roomViewModel: LiveRoomViewModel { MainActor.assumeIsolated { .preview } }
-  
+
+  // MARK: Internal
+
   @Entry var buildingViewModel: LiveBuildingViewModel = Self._buildingViewModel
   @Entry var mapViewModel: LiveMapViewModel = Self._mapViewModel
   @Entry var roomViewModel: LiveRoomViewModel = Self._roomViewModel
+
+  // MARK: Private
+
+  private static var _buildingViewModel: LiveBuildingViewModel { MainActor.assumeIsolated { .preview } }
+  private static var _mapViewModel: LiveMapViewModel { MainActor.assumeIsolated { .preview } }
+  private static var _roomViewModel: LiveRoomViewModel { MainActor.assumeIsolated { .preview } }
+
 }
 
 #Preview {
