@@ -16,9 +16,6 @@ import Networking
 import SwiftUI
 import WidgetKit
 
-/// How long we should wait on an error to refresh building info
-let errorRetryInterval: TimeInterval = 5 * 60
-
 // MARK: - BuildingTimelineProvider
 
 struct BuildingTimelineProvider: AppIntentTimelineProvider {
@@ -46,7 +43,7 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
 
   let buildingLoader: LiveGraphQLBuildingLoader
 
-  func snapshot(for configuration: Intent, in _: Context) async -> Entry {
+  func snapshot(for configuration: Intent, in context: Context) async -> Entry {
 //    let selectedBuilding = configuration.building
     guard let selectedBuilding = configuration.building else {
       return .missingBuilding
@@ -54,13 +51,13 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
 
     do {
       let building = try await buildingLoader.fetch(id: selectedBuilding.id).get()
-      return .building(building)
+      return .building(building, family: context.family)
     } catch {
       return .failed(error)
     }
   }
 
-  func timeline(for configuration: Intent, in _: Context) async -> Timeline<Entry> {
+  func timeline(for configuration: Intent, in context: Context) async -> Timeline<Entry> {
 //    let selectedBuilding = configuration.building
     // Check if a building was configured for display
     guard let selectedBuilding = configuration.building else {
@@ -71,20 +68,24 @@ struct BuildingTimelineProvider: AppIntentTimelineProvider {
     do {
       // Load the current building status
       let building = try await buildingLoader.fetch(id: selectedBuilding.id).get()
-      return .building(building)
+      return .building(building, family: context.family)
     } catch {
       return .failed(error)
     }
   }
 
-  func placeholder(in _: Context) -> Entry {
-    .placeholder
+  func placeholder(in context: Context) -> Entry {
+    .placeholder(family: context.family)
   }
 
 }
 
 extension BuildingTimelineProvider.Entry {
-  static var placeholder: Self {
+  static var missingBuilding: Self {
+    Self(value: .missingBuilding)
+  }
+
+  static func placeholder(family: WidgetFamily) -> Self {
     // Use a random placeholder building
     let previewBuilding = Building(
       name: "Morven Brown Building",
@@ -94,20 +95,17 @@ extension BuildingTimelineProvider.Entry {
       aliases: [],
       numberOfAvailableRooms: 15)
 
-    return .building(previewBuilding)
-  }
-
-  static var missingBuilding: Self {
-    Self(value: .missingBuilding)
+    return .building(previewBuilding, family: family)
   }
 
   static func failed(_ error: any Error) -> Self {
     Self(value: .failed(error))
   }
 
-  static func building(_ building: Building) -> Self {
-    let size = CGSize(width: 1024, height: 1024)
-    let uiImage = UIImage(named: building.id, in: .buildingsViews, with: nil)?.preparingThumbnail(of: size)
+  static func building(_ building: Building, family: WidgetFamily) -> Self {
+    let size = Configuration.backgroundImageSize(for: family)
+    let uiImage = UIImage(named: building.id, in: .buildingsViews, with: nil)?
+      .preparingThumbnail(of: size)
     let image = uiImage.map(Image.init(uiImage:))
     return Self(value: .building(building, image: image))
   }
@@ -120,12 +118,12 @@ extension Timeline<BuildingTimelineProvider.Entry> {
   }
 
   static func failed(_ error: any Error) -> Self {
-    Self(entries: [.failed(error)], policy: .after(.now + errorRetryInterval))
+    Self(entries: [.failed(error)], policy: .after(.now + Configuration.errorRetryInterval))
   }
 
-  static func building(_ building: Building) -> Self {
+  static func building(_ building: Building, family: WidgetFamily) -> Self {
     // We currently only reload the timeline after the scraper runs
     let reloadPolicy = TimelineReloadPolicy.after(.now + DevSoc.scraperFrequency)
-    return Self(entries: [.building(building)], policy: reloadPolicy)
+    return Self(entries: [.building(building, family: family)], policy: reloadPolicy)
   }
 }

@@ -70,8 +70,6 @@ struct BuildingWidget: Widget {
 
     // MARK: Private
 
-    private static let additionalPadding: CGFloat = 8
-
     @Environment(\.widgetContentMargins) private var contentMargins
     @Environment(\.widgetFamily) private var family
 
@@ -87,23 +85,18 @@ struct BuildingWidget: Widget {
       // https://stackoverflow.com/questions/73707062/how-to-scale-an-image-to-fill-the-parent-view-without-affecting-the-layout-in-sw
       Color.clear
         .overlay {
-          (image ?? makeFallback())
+          (image ?? Shared.makeFallback(for: family))
             .resizable()
             .scaledToFill()
         }
-        .overlay {
-          LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
-        }
-        .overlay {
-          LinearGradient(colors: [theme.accent.primary.opacity(0.1), .clear], startPoint: .topTrailing, endPoint: .bottomLeading)
-        }
+        .addWidgetGradients()
         .overlay(alignment: .topLeading) {
           if family == .systemLarge {
             Text("Freerooms")
               .font(.caption)
               .foregroundStyle(.white)
               .opacity(0.25)
-              .padding(Self.additionalPadding)
+              .padding(Configuration.additionalPadding)
               .padding(contentMargins)
           }
         }
@@ -128,15 +121,9 @@ struct BuildingWidget: Widget {
           }
           .frame(maxWidth: .infinity)
           .foregroundStyle(.white)
-          .padding(Self.additionalPadding)
+          .padding(Configuration.additionalPadding)
           .padding(contentMargins)
         }
-    }
-
-    private func makeFallback() -> Image {
-      let size = CGSize(width: 1024, height: 1024)
-      let uiImage = UIImage(named: "default", in: .roomViews, with: nil)!.preparingThumbnail(of: size)!
-      return Image(uiImage: uiImage)
     }
 
     @ViewBuilder
@@ -167,23 +154,27 @@ struct BuildingWidget: Widget {
 #Preview("System Medium", as: .systemMedium) {
   BuildingWidget()
 } timeline: {
-  BuildingTimelineProvider.Entry.placeholder
+  BuildingTimelineProvider.Entry.placeholder(family: .systemMedium)
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
-  BuildingTimelineProvider.Entry.building(.init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []))
+  BuildingTimelineProvider.Entry.building(
+    .init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []),
+    family: .systemLarge)
 }
 
 #Preview("System Large", as: .systemLarge) {
   BuildingWidget()
 } timeline: {
-  BuildingTimelineProvider.Entry.placeholder
+  BuildingTimelineProvider.Entry.placeholder(family: .systemMedium)
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
-  BuildingTimelineProvider.Entry.building(.init(
-    name: "john",
-    id: "invalid",
-    latitude: 0,
-    longitude: 0,
-    aliases: [],
-    numberOfAvailableRooms: 0))
+  BuildingTimelineProvider.Entry.building(
+    .init(
+      name: "john",
+      id: "invalid",
+      latitude: 0,
+      longitude: 0,
+      aliases: [],
+      numberOfAvailableRooms: 0),
+    family: .systemLarge)
 }
