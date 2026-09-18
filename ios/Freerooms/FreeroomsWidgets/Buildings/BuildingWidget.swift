@@ -108,7 +108,7 @@ struct BuildingWidget: Widget {
               .font(.largeTitle.weight(.medium))
               .multilineTextAlignment(.leading)
             HStack(spacing: 8.0) {
-              makeActivityIndicator()
+              AvailabilityIndicator(availableRooms: building.numberOfAvailableRooms)
               Group {
                 if let availableRooms = building.numberOfAvailableRooms {
                   Text("\(availableRooms) rooms available")
@@ -124,27 +124,6 @@ struct BuildingWidget: Widget {
           .padding(Configuration.additionalPadding)
           .padding(contentMargins)
         }
-    }
-
-    @ViewBuilder
-    private func makeActivityIndicator() -> some View {
-      var indicatorColor: Color {
-        guard let rooms = building.numberOfAvailableRooms else { return .gray }
-        return switch rooms {
-        case 5...: .green
-        case 1..<5: .yellow
-        case 0: .red
-        default:
-          .gray
-        }
-      }
-
-      let width: CGFloat = 8
-
-      Circle()
-        .foregroundStyle(indicatorColor)
-        .frame(width: width, height: width)
-        .shadow(color: indicatorColor.opacity(0.5), radius: 5)
     }
 
   }

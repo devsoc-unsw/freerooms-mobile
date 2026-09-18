@@ -25,7 +25,7 @@ struct RoomWidget: Widget {
       .configurationDisplayName("Room Widget")
       .description("Shows availability information for a room")
       .contentMarginsDisabled()
-      .supportedFamilies([.systemMedium, .systemLarge])
+      .supportedFamilies([.systemLarge])
       .polyfillPromptsForUserConfiguration()
   }
 
@@ -70,6 +70,8 @@ struct RoomWidget: Widget {
     @Environment(\.widgetContentMargins) private var contentMargins
     @Environment(\.widgetFamily) private var family
 
+    private let theme = Theme.default
+
     @ViewBuilder
     private func makeView(for room: Room, image: Image?) -> some View {
       Color.clear
@@ -80,18 +82,60 @@ struct RoomWidget: Widget {
         }
         .addWidgetGradients()
         .overlay(alignment: .bottom) {
-          HStack {
-            Text(room.name)
-              .font(.title)
-              .fontWeight(.medium)
-              .foregroundColor(.white)
-            Spacer(minLength: 0)
+          VStack(alignment: .leading) {
+            HStack(alignment: .bottom) {
+              Text(room.name)
+                .font(.title)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+              Spacer(minLength: 0)
+              makeRatingView(forRating: room.overallRating)
+                .padding(.bottom, 4)
+            }
+            #warning("TODO: Replace with building name")
+            Label(room.buildingId, systemImage: "building")
+              .foregroundStyle(.white)
+            HStack {
+              AvailabilityIndicator(isAvailable: nil)
+              Text("idk")
+                .foregroundStyle(.white)
+            }
           }
           .padding(Configuration.additionalPadding)
           .padding(contentMargins)
         }
     }
 
+    @ViewBuilder
+    private func makeRatingView(forRating rating: Double?) -> some View {
+      
+      var ratingText: String {
+        guard let rating else { return "?.?" }
+        return rating.formatted(.number.precision(.fractionLength(1)))
+      }
+
+      HStack(spacing: 6) {
+        Image(systemName: "star.fill")
+        Text(ratingText)
+      }
+      .font(.caption)
+      .foregroundStyle(.white)
+      .padding(.vertical, 4)
+      .padding(.horizontal, 6)
+      .background {
+        Capsule()
+          .foregroundStyle(
+            LinearGradient(
+              colors: [
+                theme.accent.tertiary,
+                theme.accent.primary,
+              ],
+              startPoint: .topLeading,
+              endPoint: .bottomTrailing))
+      }
+    }
   }
 }
 

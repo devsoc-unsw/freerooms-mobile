@@ -17,3 +17,13 @@ extension WidgetConfiguration {
     }
   }
 }
+
+extension View {
+  func polyfillGlassEffect() -> some View {
+    if #available(iOS 26.0, *) {
+      return glassEffect()
+    } else {
+      return self
+    }
+  }
+}
