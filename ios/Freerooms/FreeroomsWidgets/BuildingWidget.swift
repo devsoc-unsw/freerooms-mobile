@@ -70,7 +70,17 @@ struct BuildingWidget: Widget {
 
     // MARK: Private
 
+    private static let additionalPadding: CGFloat = 8
+
     @Environment(\.widgetContentMargins) private var contentMargins
+    @Environment(\.widgetFamily) private var family
+
+    private var building: Building {
+      guard case .building(let building, _) = entry.value else {
+        preconditionFailure("\(#function): Make sure building is available")
+      }
+      return building
+    }
 
     @ViewBuilder
     private func makeView(for building: Building, image: Image?) -> some View {
@@ -81,24 +91,44 @@ struct BuildingWidget: Widget {
             .resizable()
             .scaledToFill()
         }
+        .overlay {
+          LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
+        }
+        .overlay {
+          LinearGradient(colors: [theme.accent.primary.opacity(0.1), .clear], startPoint: .topTrailing, endPoint: .bottomLeading)
+        }
+        .overlay(alignment: .topLeading) {
+          if family == .systemLarge {
+            Text("Freerooms")
+              .font(.caption)
+              .foregroundStyle(.white)
+              .opacity(0.25)
+              .padding(Self.additionalPadding)
+              .padding(contentMargins)
+          }
+        }
         .clipped()
         .overlay(alignment: .bottom) {
-          VStack(alignment: .leading) {
+          VStack(alignment: .leading, spacing: 8.0) {
             Text(building.name)
-              .font(.title3)
-              .bold()
-            if let availableRooms = building.numberOfAvailableRooms {
-              Text("\(availableRooms) rooms available")
-            } else {
-              Text("Unknown rooms available")
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .font(.largeTitle.weight(.medium))
+              .multilineTextAlignment(.leading)
+            HStack(spacing: 8.0) {
+              makeActivityIndicator()
+              Group {
+                if let availableRooms = building.numberOfAvailableRooms {
+                  Text("\(availableRooms) rooms available")
+                } else {
+                  Text("Unknown rooms available")
+                }
+              }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
           }
-          .padding(4.0)
           .frame(maxWidth: .infinity)
-          .background {
-            ContainerRelativeShape()
-              .foregroundStyle(.white)
-          }
+          .foregroundStyle(.white)
+          .padding(Self.additionalPadding)
           .padding(contentMargins)
         }
     }
@@ -109,6 +139,27 @@ struct BuildingWidget: Widget {
       return Image(uiImage: uiImage)
     }
 
+    @ViewBuilder
+    private func makeActivityIndicator() -> some View {
+      var indicatorColor: Color {
+        guard let rooms = building.numberOfAvailableRooms else { return .gray }
+        return switch rooms {
+        case 5...: .green
+        case 1..<5: .yellow
+        case 0: .red
+        default:
+          .gray
+        }
+      }
+
+      let width: CGFloat = 8
+
+      Circle()
+        .foregroundStyle(indicatorColor)
+        .frame(width: width, height: width)
+        .shadow(color: indicatorColor.opacity(0.5), radius: 5)
+    }
+
   }
 
 }
@@ -116,17 +167,23 @@ struct BuildingWidget: Widget {
 #Preview("System Medium", as: .systemMedium) {
   BuildingWidget()
 } timeline: {
+  BuildingTimelineProvider.Entry.placeholder
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
-  BuildingTimelineProvider.Entry.placeholder
   BuildingTimelineProvider.Entry.building(.init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []))
 }
 
 #Preview("System Large", as: .systemLarge) {
   BuildingWidget()
 } timeline: {
+  BuildingTimelineProvider.Entry.placeholder
   BuildingTimelineProvider.Entry.failed(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
   BuildingTimelineProvider.Entry.missingBuilding
-  BuildingTimelineProvider.Entry.placeholder
-  BuildingTimelineProvider.Entry.building(.init(name: "john", id: "invalid", latitude: 0, longitude: 0, aliases: []))
+  BuildingTimelineProvider.Entry.building(.init(
+    name: "john",
+    id: "invalid",
+    latitude: 0,
+    longitude: 0,
+    aliases: [],
+    numberOfAvailableRooms: 0))
 }
