@@ -9,7 +9,7 @@ public import Foundation
 
 // MARK: - URLSessionHTTPClient
 
-public struct URLSessionHTTPClient: HTTPClient, Sendable {
+public nonisolated struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Lifecycle
 

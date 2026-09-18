@@ -102,9 +102,19 @@ extension LiveMapViewModel {
 }
 
 extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = MainActor.assumeIsolated { .preview }
-  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated { .preview }
-  @Entry var roomViewModel: LiveRoomViewModel = MainActor.assumeIsolated { .preview }
+
+  // MARK: Internal
+
+  @Entry var buildingViewModel: LiveBuildingViewModel = Self._buildingViewModel
+  @Entry var mapViewModel: LiveMapViewModel = Self._mapViewModel
+  @Entry var roomViewModel: LiveRoomViewModel = Self._roomViewModel
+
+  // MARK: Private
+
+  private static var _buildingViewModel: LiveBuildingViewModel { MainActor.assumeIsolated { .preview } }
+  private static var _mapViewModel: LiveMapViewModel { MainActor.assumeIsolated { .preview } }
+  private static var _roomViewModel: LiveRoomViewModel { MainActor.assumeIsolated { .preview } }
+
 }
 
 #Preview {
@@ -118,4 +128,5 @@ extension EnvironmentValues {
         PreviewMapViewModel()
       })
     .environment(\.roomViewModel, PreviewRoomViewModel())
+    .environment(TabController())
 }

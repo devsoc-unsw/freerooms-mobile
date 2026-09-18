@@ -9,6 +9,7 @@ public import Apollo
 public import BuildingModels
 import DevSocAPI
 import Foundation
+import Networking
 import OSLog
 import RoomModels
 public import RoomServices
@@ -27,6 +28,23 @@ public enum BuildingLoaderError: Error {
 @GenerateStub
 public protocol BuildingLoader {
   func fetch() async -> Result<[Building], BuildingLoaderError>
+  func fetch(id: String) async -> Result<Building, BuildingLoaderError>
+}
+
+extension BuildingLoader {
+
+  public func fetch(id: String) async -> Result<Building, BuildingLoaderError> {
+    do throws(BuildingLoaderError) {
+      let buildings = try await fetch().get()
+      guard let building = buildings.first(where: { $0.id == id }) else {
+        return .failure(.noDataAvailable)
+      }
+      return .success(building)
+    } catch {
+      return .failure(error)
+    }
+  }
+
 }
 
 // MARK: - LiveGraphQLBuildingLoader
@@ -48,6 +66,41 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
   }
 
   // MARK: Public
+
+  /// The default building loader
+  ///
+  /// This singleton is intended to be used in app extensions, like intent and widget extensions.
+  public static let `default`: LiveGraphQLBuildingLoader = {
+    let logger = Logger(subsystem: "com.devsoc.Freerooms.Buildings", category: "LiveGraphQLBuildingLoader (default)")
+
+    let backendURL = DevSoc.defaultBackendURL
+    let session = URLSession(configuration: .default)
+    let httpClient = URLSessionHTTPClient(session: session)
+    let apolloStore = ApolloStore()
+
+    logger.trace("Creating default LiveGraphQLBuildingLoader")
+
+    let buildingsCache: (any BuildingsCache)?
+    do {
+      #warning(
+        "This will create a new building cache in the extension directory. When adopting app groups, move the cache there instead.")
+      buildingsCache = try FileBackedCodable.sharedBuildingsCache.get()
+      logger.trace("Will use buildings cache.")
+    } catch {
+      logger.error("Failed to load buildings cache: \(error), will not use cache.")
+      buildingsCache = nil
+    }
+
+    return LiveGraphQLBuildingLoader(
+      client: DevSoc.createLiveApolloClient(using: apolloStore),
+      roomStatusLoader: LiveRoomStatusLoader(
+        client: httpClient,
+        baseURL: backendURL),
+      buildingRatingLoader: RemoteBuildingRatingLoader(
+        client: httpClient,
+        baseURL: backendURL),
+      buildingsCache: buildingsCache)
+  }()
 
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
     // Check if we have a cache
