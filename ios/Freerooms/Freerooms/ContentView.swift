@@ -128,4 +128,5 @@ extension EnvironmentValues {
         PreviewMapViewModel()
       })
     .environment(\.roomViewModel, PreviewRoomViewModel())
+    .environment(TabController())
 }
