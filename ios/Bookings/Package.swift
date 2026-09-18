@@ -27,13 +27,13 @@ let package = Package(
     .package(name: "DevSocAPI", path: "../DevSocAPI"),
     .package(name: "Networking", path: "../Networking"),
     .package(name: "Rooms", path: "../Rooms"),
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
     .package(url: "https://github.com/apollographql/apollo-ios.git", from: "2.4.0"),
   ],
   targets: [
     .target(
       name: "BookingModels",
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingServices",
       dependencies: [
@@ -42,20 +42,22 @@ let package = Package(
         .product(name: "Apollo", package: "apollo-ios"),
         .product(name: "ApolloAPI", package: "apollo-ios"),
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingInteractors",
       dependencies: [
         "BookingModels",
         "BookingServices",
         .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingViewModels",
       dependencies: ["BookingModels", "BookingServices", "BookingInteractors"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingViews",
       dependencies: [
@@ -64,11 +66,11 @@ let package = Package(
         .product(name: "CommonUI", package: "CommonUI"),
         .product(name: "RoomViews", package: "Rooms"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .target(
       name: "BookingTestUtils",
       dependencies: ["BookingModels"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "BookingsTests",
       dependencies: [
@@ -82,16 +84,21 @@ let package = Package(
         .product(name: "NetworkingTestUtils", package: "Networking"),
         .product(name: "Apollo", package: "apollo-ios"),
       ],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
   ],
   swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
 }

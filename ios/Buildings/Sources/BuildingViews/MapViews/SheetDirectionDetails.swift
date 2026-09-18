@@ -7,7 +7,7 @@
 import BuildingViewModels
 import CommonUI
 import MapKit
-import SwiftUI
+public import SwiftUI
 
 public struct SheetDirectionDetails: View {
 
@@ -53,6 +53,6 @@ public struct SheetDirectionDetails: View {
   }
 
   private var formattedDistance: String {
-    String(format: "%.0f", floor(viewModel.currentRoute?.distance ?? 0)) + "m"
+    unsafe String(format: "%.0f", floor(viewModel.currentRoute?.distance ?? 0)) + "m"
   }
 }

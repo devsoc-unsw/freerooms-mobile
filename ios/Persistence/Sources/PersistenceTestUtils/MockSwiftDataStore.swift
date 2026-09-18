@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import Persistence
-import SwiftData
+public import Persistence
+public import SwiftData
 
 public class MockSwiftDataStore<Model: PersistentModel & IdentifiableModel>: PersistentStore {
 
   // MARK: Lifecycle
 
-  public init(loads items: [Model] = [], throws error: Error? = nil) {
+  public init(loads items: [Model] = [], throws error: (any Error)? = nil) {
     self.items = items
     self.error = error
   }
@@ -76,5 +76,5 @@ public class MockSwiftDataStore<Model: PersistentModel & IdentifiableModel>: Per
   // MARK: Private
 
   private let items: [Model]
-  private let error: Error?
+  private let error: (any Error)?
 }

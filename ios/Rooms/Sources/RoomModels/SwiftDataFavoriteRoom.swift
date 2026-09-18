@@ -5,9 +5,9 @@
 //  Created by Matthew Yuen on 17/4/2026.
 //
 
-import Foundation
+public import Foundation
 import Persistence
-import SwiftData
+public import SwiftData
 
 @Model
 public final class SwiftDataFavoriteRoom {

@@ -5,7 +5,7 @@
 //  Created by Anh Nguyen on 31/1/2025.
 //
 
-import Testing
+public import Testing
 
 public struct MemoryLeakTracker<T: AnyObject> {
   weak var instance: T?

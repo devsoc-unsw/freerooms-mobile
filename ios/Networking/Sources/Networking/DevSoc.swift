@@ -5,10 +5,10 @@
 //  Created by Matthew Yuen on 2/6/2026.
 //
 
-import Apollo
+public import Apollo
 import ApolloSQLite
 import DevSocAPI
-import Foundation
+public import Foundation
 import OSLog
 
 // MARK: - DevSoc

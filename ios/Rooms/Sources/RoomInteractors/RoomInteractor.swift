@@ -4,16 +4,17 @@
 //
 //  Created by Yanlin Li  on 3/9/2025.
 //
+
 import Foundation
-import Location
-import RoomModels
-import RoomServices
+public import Location
+public import RoomModels
+public import RoomServices
 
 public class RoomInteractor {
 
   // MARK: Lifecycle
 
-  public init(roomService: RoomService, locationService: LocationService, favouriteService: FavoriteRoomService) {
+  public init(roomService: any RoomService, locationService: any LocationService, favouriteService: any FavoriteRoomService) {
     self.roomService = roomService
     self.locationService = locationService
     self.favouriteService = favouriteService
@@ -155,7 +156,7 @@ public class RoomInteractor {
 
   // MARK: Private
 
-  private let roomService: RoomService
-  private let locationService: LocationService
-  private let favouriteService: FavoriteRoomService
+  private let roomService: any RoomService
+  private let locationService: any LocationService
+  private let favouriteService: any FavoriteRoomService
 }

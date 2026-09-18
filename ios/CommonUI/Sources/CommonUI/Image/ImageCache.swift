@@ -3,7 +3,7 @@
 //  CommonUI
 //
 
-import UIKit
+public import UIKit
 
 // MARK: - ImageCache
 
@@ -47,7 +47,6 @@ import UIKit
 /// 50 MB holds ~100 medium thumbnails — enough to scroll through the full
 /// buildings list AND a building's room list without evictions. `NSCache`
 /// also purges automatically under system memory pressure.
-nonisolated
 public final class ImageCache: Sendable {
 
   // MARK: Lifecycle
@@ -119,7 +118,7 @@ public final class ImageCache: Sendable {
       return image
     }
     return await _generateThumbnailConcurrently(
-      for: name, in: bundle, size: size, key: key)
+      for: name, in: bundle, size: size, key: key.copy() as! NSString)
   }
 
   /// Removes all cached thumbnails.

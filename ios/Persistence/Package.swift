@@ -15,29 +15,38 @@ let package = Package(
       targets: ["PersistenceTestUtils"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "8.0.0"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
   ],
   targets: [
     .target(
       name: "Persistence",
-      dependencies: [.product(name: "VISOR", package: "VISOR")],
-      swiftSettings: .defaultSettings),
+      dependencies: [
+        .product(name: "VISOR", package: "VISOR"),
+        .product(name: "VISORTestDoubles", package: "VISOR"),
+      ],
+      swiftSettings: swiftSettings),
     .target(
       name: "PersistenceTestUtils",
       dependencies: ["Persistence"],
-      swiftSettings: .defaultSettings),
+      swiftSettings: swiftSettings),
     .testTarget(
       name: "PersistenceTests",
       dependencies: ["Persistence", "PersistenceTestUtils"],
-      swiftSettings: .defaultSettings),
-  ])
+      swiftSettings: swiftSettings),
+  ],
+  swiftLanguageModes: [.v6])
 
-extension [SwiftSetting] {
-  static var defaultSettings: [SwiftSetting] {
-    [
-      .defaultIsolation(MainActor.self),
-      .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-      .enableUpcomingFeature("InferIsolatedConformances"),
-    ]
-  }
+// MARK: - Swift Settings
+
+var swiftSettings: [SwiftSetting] {
+  [
+    .defaultIsolation(nil),
+    .strictMemorySafety(),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .enableUpcomingFeature("InferIsolatedConformances"),
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+    .enableUpcomingFeature("ImmutableWeakCaptures"),
+  ]
 }

@@ -4,14 +4,15 @@
 //
 //  Created by Dicko Evaldo on 31/8/2025.
 //
-import CoreLocation
-import Location
+
+public import CoreLocation
+public import Location
 
 public class LocationInteractor {
 
   // MARK: Lifecycle
 
-  public init(locationService: LocationService) {
+  public init(locationService: any LocationService) {
     self.locationService = locationService
   }
 
@@ -35,5 +36,5 @@ public class LocationInteractor {
 
   // MARK: Private
 
-  private var locationService: LocationService
+  private var locationService: any LocationService
 }

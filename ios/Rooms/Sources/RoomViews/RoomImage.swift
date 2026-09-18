@@ -5,10 +5,10 @@
 //  Created by Yanlin on 23/6/2025.
 //
 
-import CommonUI
-import SwiftUI
+public import CommonUI
 
 public enum RoomImage {
+  @MainActor
   public static subscript(roomID: String, size: ImageSize = .medium) -> CachedImage {
     CachedImage(
       name: roomID,

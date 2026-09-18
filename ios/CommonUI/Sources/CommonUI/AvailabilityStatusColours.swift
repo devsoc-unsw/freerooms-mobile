@@ -5,11 +5,12 @@
 //  Created by Gabriella Lianti on 11/11/25.
 //
 
-import RoomModels
-import SwiftUI
+public import RoomModels
+public import SwiftUI
 
 // MARK: - Room Status Styling
 
+@MainActor
 extension Room {
 
   // MARK: Public

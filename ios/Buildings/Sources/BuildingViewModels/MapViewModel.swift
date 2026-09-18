@@ -5,19 +5,19 @@
 //  Created by Dicko Evaldo
 //
 
-import BottomSheet
-import BuildingInteractors
-import BuildingModels
+public import BottomSheet
+public import BuildingInteractors
+public import BuildingModels
 import BuildingServices
 import Combine
 import Foundation
-import Location
-import LocationInteractors
-@preconcurrency import MapKit
-import RoomInteractors
-import RoomModels
+public import Location
+public import LocationInteractors
+@unsafe @preconcurrency public import MapKit // MKRoute is thread safe
+public import RoomInteractors
+public import RoomModels
 import RoomServices
-import SwiftUI
+public import SwiftUI
 
 // MARK: - MapViewModel
 @MainActor
@@ -151,7 +151,7 @@ extension MKMultiPoint {
       repeating: kCLLocationCoordinate2DInvalid,
       count: pointCount)
 
-    getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
+    unsafe getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
 
     return coords
   }
@@ -208,7 +208,7 @@ public class LiveMapViewModel: MapViewModel {
   public init(
     buildingInteractor: BuildingInteractor,
     locationInteractor: LocationInteractor,
-    navigationInteractor: NavigationInteractor,
+    navigationInteractor: any NavigationInteractor,
     roomInteractor: RoomInteractor)
   {
     self.buildingInteractor = buildingInteractor
@@ -517,9 +517,9 @@ public class LiveMapViewModel: MapViewModel {
 
   // MARK: Internal
 
-  nonisolated let buildingInteractor: BuildingInteractor
+  let buildingInteractor: BuildingInteractor
 
-  nonisolated let navigationInteractor: NavigationInteractor
+  let navigationInteractor: any NavigationInteractor
 
   let roomInteractor: RoomInteractor
 

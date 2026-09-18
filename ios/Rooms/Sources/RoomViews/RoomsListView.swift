@@ -4,11 +4,12 @@
 //
 //  Created by Yanlin Li  on 17/9/2025.
 //
-import BuildingModels
-import CommonUI
+
+public import BuildingModels
+public import CommonUI
 import RoomModels
 import RoomViewModels
-import SwiftUI
+public import SwiftUI
 
 // MARK: - RoomsListView
 

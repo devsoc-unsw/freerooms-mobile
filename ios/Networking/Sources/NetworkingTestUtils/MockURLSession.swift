@@ -5,15 +5,15 @@
 //  Created by Chris Wong on 27/4/2025.
 //
 
-import Foundation
-import Networking
+public import Foundation
+public import Networking
 
 public struct MockURLSession: HTTPSession {
   public var data: Data
   public var urlResponse: URLResponse
-  public var error: Error?
+  public var error: (any Error)?
 
-  public init(data: Data, urlResponse: URLResponse, error: Error? = nil) {
+  public init(data: Data, urlResponse: URLResponse, error: (any Error)? = nil) {
     self.data = data
     self.urlResponse = urlResponse
     self.error = error

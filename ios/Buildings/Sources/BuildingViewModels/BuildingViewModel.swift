@@ -5,16 +5,17 @@
 //  Created by Yanlin Li  on 3/7/2025.
 //
 
-import BuildingInteractors
-import BuildingModels
+public import BuildingInteractors
+public import BuildingModels
 import BuildingServices
 import Foundation
 import Location
-import Observation
-import RoomModels
+public import Observation
+public import RoomModels
 
 // MARK: - BuildingViewModel
 
+@MainActor
 public protocol BuildingViewModel {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }

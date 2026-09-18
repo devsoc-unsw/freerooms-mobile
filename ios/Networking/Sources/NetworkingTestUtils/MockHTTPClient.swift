@@ -5,18 +5,29 @@
 //  Created by Muqueet Mohsen Chowdhury on 6/8/2025.
 //
 
-import Foundation
-import Networking
+public import Foundation
+public import Networking
+import os
 
 // MARK: - MockHTTPClient
 
-public class MockHTTPClient: HTTPClient {
+public final class MockHTTPClient: HTTPClient {
 
   // MARK: Lifecycle
 
   public init() { }
 
   // MARK: Public
+
+  public var stubbedData: Data? {
+    get { _state.withLock(\.stubbedData) }
+    set { _state.withLock { $0.stubbedData = newValue } }
+  }
+
+  public var stubbedError: (any Error)? {
+    get { _state.withLock(\.stubbedError) }
+    set { _state.withLock { $0.stubbedError = newValue } }
+  }
 
   public func stubSuccess(_ data: some Codable, for _: String) {
     stubbedData = try? JSONEncoder().encode(data)
@@ -27,20 +38,27 @@ public class MockHTTPClient: HTTPClient {
   }
 
   public func get(from url: URL) async -> HTTPClientResult {
-    if let error = stubbedError {
-      return .failure(error)
-    }
+    _state.withLock { state in
+      if let error = state.stubbedError {
+        return .failure(error)
+      }
 
-    if let data = stubbedData {
-      let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
-      return .success((data, response))
-    }
+      if let data = state.stubbedData {
+        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        return .success((data, response))
+      }
 
-    return .failure(NSError(domain: "test", code: 0))
+      return .failure(NSError(domain: "test", code: 0))
+    }
   }
 
   // MARK: Private
 
-  private var stubbedData: Data?
-  private var stubbedError: Error?
+  private struct _State {
+    var stubbedData: Data?
+    var stubbedError: (any Error)?
+  }
+
+  private let _state = OSAllocatedUnfairLock(initialState: _State())
+
 }

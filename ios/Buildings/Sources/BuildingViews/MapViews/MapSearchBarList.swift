@@ -7,7 +7,7 @@
 import BuildingModels
 import BuildingViewModels
 import CommonUI
-import SwiftUI
+public import SwiftUI
 
 public struct MapSearchBarList: View {
 

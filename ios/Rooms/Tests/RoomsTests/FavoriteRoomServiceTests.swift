@@ -14,7 +14,7 @@ import Testing
 @Suite
 struct FavoriteRoomServiceTests {
 
-  @Suite
+  @Suite @MainActor
   struct SwiftDataTests {
 
     // MARK: Lifecycle

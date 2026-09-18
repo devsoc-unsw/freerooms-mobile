@@ -5,8 +5,8 @@
 //  Created by Yanlin Li  on 7/8/2025.
 //
 
-import BookingModels
-import Foundation
+public import BookingModels
+public import Foundation
 
 // MARK: - BookingFixtures
 

@@ -6,13 +6,14 @@
 //
 
 import Foundation
-import Persistence
-import RoomModels
+public import Persistence
+public import RoomModels
 import VISOR
+public import VISORTestDoubles
 
 // MARK: - SwiftDataRoomLoader
 
-@Stubbable
+@GenerateStub
 public protocol SwiftDataRoomLoader {
   func fetch() -> Result<[Room], RoomLoaderError>
   func seed(_ rooms: [Room]) -> Result<Void, RoomLoaderError>

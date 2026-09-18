@@ -5,6 +5,7 @@
 //  Created by Chris Wong on 5/8/2025.
 //
 
+import Persistence
 import RoomModels
 import Testing
 @testable import PersistenceTestUtils
