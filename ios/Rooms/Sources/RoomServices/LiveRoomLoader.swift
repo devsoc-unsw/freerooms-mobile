@@ -50,6 +50,22 @@ public final actor LiveGraphQLRoomLoader: RoomLoader {
 
   // MARK: Public
 
+  /// The default ``LiveGraphQLRoomLoader``
+  ///
+  /// This is intended to be used by extensions, such as intent and widget extensions.
+  public static let `default`: LiveGraphQLRoomLoader = {
+    let session = URLSession(configuration: .default)
+    let store = ApolloStore()
+    let client = DevSoc.createLiveApolloClient(using: store, urlSession: session)
+    let httpClient = URLSessionHTTPClient(session: session)
+
+    return LiveGraphQLRoomLoader(
+      client: client,
+      roomStatusLoader: LiveRoomStatusLoader(
+        client: httpClient,
+        baseURL: DevSoc.defaultBackendURL))
+  }()
+
   public let client: ApolloClient
   public let roomStatusLoader: (any RoomStatusLoader)?
 

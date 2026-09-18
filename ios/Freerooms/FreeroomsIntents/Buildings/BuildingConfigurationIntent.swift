@@ -11,7 +11,7 @@ import FreeroomsEntities
 import WidgetKit
 
 struct BuildingConfigurationIntent: WidgetConfigurationIntent {
-  static let title: LocalizedStringResource = "Building"
+  static let title: LocalizedStringResource = "Configure Building"
   static let description = IntentDescription("Shows the current status of a building")
 
   @Parameter(

@@ -47,7 +47,7 @@ struct BuildingWidgetConfigurationEntity: AppEntity {
 }
 
 extension Building {
-  nonisolated var buildingConfigurationEntity: BuildingWidgetConfigurationEntity {
+  var widgetConfigurationEntity: BuildingWidgetConfigurationEntity {
     BuildingWidgetConfigurationEntity(from: self)
   }
 }
@@ -92,7 +92,7 @@ final actor BuildingWidgetConfigurationEntityQuery: EntityQuery, EntityStringQue
     }
 
     let buildings = try await buildingLoader.fetch().get()
-    savedBuildings = buildings.map(\.buildingConfigurationEntity)
+    savedBuildings = buildings.map(\.widgetConfigurationEntity)
     return savedBuildings!
   }
 
