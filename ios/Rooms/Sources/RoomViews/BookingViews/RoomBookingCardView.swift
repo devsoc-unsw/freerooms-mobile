@@ -13,16 +13,17 @@ struct RoomBookingCardView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, booking: RoomBooking) {
+    public init(room: Room, booking: RoomBooking, scheduleStartHour: Int) {
     self.room = room
     self.booking = booking
+    self.scheduleStartHour = scheduleStartHour
     start = Calendar.current.dateComponents(
       [.hour, .minute],
       from: booking.start)
     end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
     startMinutes = max(
       (start.hour ?? Self.defaultTime) * Self.minutesPerHour + (start.minute ?? Self.defaultTime),
-      Self.dayStartHour * Self.minutesPerHour) - (Self.minutesPerHour * Self.dayStartHour)
+      scheduleStartHour * Self.minutesPerHour) - (Self.minutesPerHour * scheduleStartHour)
   }
 
   // MARK: Internal
@@ -173,6 +174,7 @@ struct RoomBookingCardView: View {
   private var start: DateComponents
   private var end: DateComponents
   private let startMinutes: Int
+  private let scheduleStartHour: Int
 
   private var numberTimeSlots: CGFloat {
     let startTimeMinute = start.minute ?? Self.defaultTime
@@ -180,8 +182,8 @@ struct RoomBookingCardView: View {
     let endTimeMinute = end.minute ?? Self.defaultTime
     let endTimeHour = end.hour ?? Self.defaultTime
 
-    let startTotalMinutes = startTimeHour * Self.minutesPerHour + startTimeMinute
-    let endTotalMinutes = endTimeHour * Self.minutesPerHour + endTimeMinute
+    let startTotalMinutes = startTimeHour * scheduleStartHour  + startTimeMinute
+    let endTotalMinutes = endTimeHour * scheduleStartHour  + endTimeMinute
     let range = abs(endTotalMinutes - startTotalMinutes)
 
     // Remove the part of a booking that starts before the visible schedule window.
@@ -238,6 +240,7 @@ struct RoomBookingCardView: View {
 #Preview {
   RoomBookingCardView(
     room: Room.exampleOne,
-    booking: RoomBooking.exampleOne)
+    booking: RoomBooking.exampleOne,
+    scheduleStartHour: 9)
     .defaultTheme()
 }

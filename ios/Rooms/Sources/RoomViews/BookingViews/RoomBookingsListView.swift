@@ -23,7 +23,8 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
-  let hoursToDisplay: CGFloat = CGFloat(RoomLayoutConstants.scheduleEndHour - RoomLayoutConstants.scheduleStartHour)
+    var hoursToDisplay: CGFloat { CGFloat(RoomLayoutConstants.scheduleEndHour - dynamicScheduleStartHour)
+    }
 
   var dateComponent: DateComponents {
     Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
@@ -35,6 +36,14 @@ struct RoomBookingsListView: View {
         Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
       }
   }
+    
+    var dynamicScheduleStartHour: Int {
+      let result = roomViewModel.getDisplayStartHour(
+        for: filteredCurrentDayBookings,
+        defaultStartHour: RoomLayoutConstants.scheduleStartHour)
+      
+      return result
+    }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -46,7 +55,7 @@ struct RoomBookingsListView: View {
 
       // Background time grid
       VStack(spacing: 0) {
-        ForEach(RoomLayoutConstants.scheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
+        ForEach(dynamicScheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
           BookingsLayoutView(hour: hour)
             .id("\(hour)")
         }
@@ -58,7 +67,8 @@ struct RoomBookingsListView: View {
       ForEach(filteredCurrentDayBookings, id: \.self) { booking in
         RoomBookingCardView(
           room: room,
-          booking: booking)
+          booking: booking,
+          scheduleStartHour: dynamicScheduleStartHour)
           .padding(.leading, Self.bookingLeadingPadding)
           .padding(.trailing, Self.bookingTrailingPadding)
       }
@@ -81,9 +91,15 @@ struct RoomBookingsListView: View {
 
 #Preview {
   let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
-  return RoomBookingsListView(
-    room: Room.exampleOne,
-    dateSelect: .constant(Date()))
-    .environment(viewModel)
-    .defaultTheme()
+    return VStack {
+        ScrollView(.vertical) {
+            Text("HI")
+            Spacer()
+            RoomBookingsListView(
+              room: Room.exampleOne,
+              dateSelect: .constant(Date()))
+              .environment(viewModel)
+              .defaultTheme()
+        }
+    }
 }

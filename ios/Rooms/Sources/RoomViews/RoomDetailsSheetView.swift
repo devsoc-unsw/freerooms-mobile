@@ -65,6 +65,7 @@ public struct RoomDetailsSheetView: View {
             }
             .scrollTargetLayout()
           }
+          .scrollClipDisabled()
           .scrollTargetBehavior(.paging)
           .scrollPosition(id: Binding(
             get: { roomViewModel.scrollID },
