@@ -54,6 +54,7 @@ struct BookingFacilities: View {
             VStack(spacing: BookingViewLayout.facilityContentSpacing) {
               Image(systemName: facility.symbol)
                 .font(.title2)
+                .frame(height: facilityIconHeight)
                 .foregroundStyle(theme.accent.primary)
                 .accessibilityHidden(true)
               Text(facility.name)
@@ -61,6 +62,7 @@ struct BookingFacilities: View {
                 .foregroundStyle(theme.label.primary)
                 .multilineTextAlignment(.center)
             }
+            .frame(maxWidth: .infinity, alignment: .top)
           }
         }
       }
@@ -71,6 +73,8 @@ struct BookingFacilities: View {
 
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @Environment(Theme.self) private var theme
+  @ScaledMetric(relativeTo: .title2)
+  private var facilityIconHeight = BookingViewLayout.facilityIconHeight
   @State private var showsAllFacilities = false
 
   private var facilities: [BookingFormatting.Facility] {

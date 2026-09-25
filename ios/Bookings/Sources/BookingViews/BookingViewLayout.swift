@@ -47,6 +47,7 @@ enum BookingViewLayout {
   static let facilitiesPreviewCount = 4
   static let facilitiesGridSpacing: CGFloat = 12
   static let facilityContentSpacing: CGFloat = 10
+  static let facilityIconHeight: CGFloat = 28
   static let facilityPadding: CGFloat = 16
   static let facilityMinimumHeight: CGFloat = 104
   static let facilityCornerRadius: CGFloat = 18
