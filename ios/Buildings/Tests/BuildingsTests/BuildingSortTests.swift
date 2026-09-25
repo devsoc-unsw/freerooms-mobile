@@ -5,14 +5,14 @@
 //  Created by Matthew Yuen on 19/9/2026.
 //
 
-import Testing
-import Location
 import CoreLocation
+import Location
+import Testing
 @testable import BuildingModels
 
 @Suite
 struct BuildingSortTests {
-  
+
   static var testBuildings: [Building] {
     [
       Building(
@@ -45,17 +45,17 @@ struct BuildingSortTests {
         numberOfAvailableRooms: 3),
     ]
   }
-  
+
   @Test("Empty options does not change order", arguments: [
     Building.SortOptions(),
     [],
-    Building.SortOptions(from: [])
+    Building.SortOptions(from: []),
   ])
   func test_emptyOptionsDoesNotChangeOrder(_ options: Building.SortOptions) {
     let buildings = Self.testBuildings
     #expect(options.sort(buildings) == buildings)
   }
-  
+
   @Test("Can sort by name (alphabetical)", arguments: [
     Building.SortOptions(from: [.alphabetical]),
     [.alphabetical],
@@ -67,7 +67,7 @@ struct BuildingSortTests {
     let resultIDs = options.sort(buildings).map(\.id)
     #expect(resultIDs == ["ALICE", "JANE", "JOE", "JOHN"])
   }
-  
+
   @Test("Can sort by name (reverse)", arguments: [
     Building.SortOptions(from: [.reverseAlphabetical]),
     [.reverseAlphabetical],
@@ -79,7 +79,7 @@ struct BuildingSortTests {
     let resultIDs = options.sort(buildings).map(\.id)
     #expect(resultIDs == ["ALICE", "JANE", "JOE", "JOHN"].reversed())
   }
-  
+
   @Test("Can sort by distance", arguments: [
     Building.SortOptions(from: [.nearest(.init(latitude: 0, longitude: 0)), .alphabetical]),
     [.nearest(.init(latitude: 0, longitude: 0)), .alphabetical]
@@ -89,7 +89,7 @@ struct BuildingSortTests {
     let resultIDs = options.sort(buildings).map(\.id)
     #expect(resultIDs == ["JOHN", "JANE", "ALICE", "JOE"])
   }
-  
+
   @Test("Can sort by available rooms", arguments: [
     Building.SortOptions(from: [.mostAvailable]),
     [.mostAvailable],
@@ -101,5 +101,5 @@ struct BuildingSortTests {
     let resultIDs = options.sort(buildings).map(\.id)
     #expect(resultIDs == ["ALICE", "JOE", "JANE", "JOHN"])
   }
-  
+
 }

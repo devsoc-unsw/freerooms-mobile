@@ -14,7 +14,7 @@ extension Building {
 
   /// Options to sort a collection of buildings
   ///
-  /// Options specified first are preferred
+  /// Options are evaulated in the order they are specified.
   public struct SortOptions: Sendable, ExpressibleByArrayLiteral {
 
     // MARK: Lifecycle
@@ -36,6 +36,10 @@ extension Building {
     public init(from options: some Collection<Option>) {
       guard !options.isEmpty else {
         _storage = .none
+        return
+      }
+      if options.count == 1, let first = options.first {
+        _storage = .single(first)
         return
       }
       _storage = .multiple(Array(options))
@@ -127,12 +131,18 @@ extension Building {
 
     }
 
+    /// Same as ``Option/mostAvailable``
     public static var mostAvailable: SortOptions { SortOptions(.mostAvailable) }
+    /// Same as ``Option/alphabetical``
     public static var alphabetical: SortOptions { SortOptions(.alphabetical) }
+    /// Same as ``Option/reverseAlphabetical``
     public static var reverseAlphabetical: SortOptions { SortOptions(.reverseAlphabetical) }
+    /// Same as ``Option/lowerCampus``
     public static var lowerCampus: SortOptions { SortOptions(.lowerCampus) }
+    /// Same as ``Option/upperCampus``
     public static var upperCampus: SortOptions { SortOptions(.upperCampus) }
 
+    /// Same as ``Option/nearest(_:)``
     public static func nearest(_ coordinate: CLLocationCoordinate2D) -> SortOptions {
       SortOptions(.nearest(coordinate))
     }
@@ -142,22 +152,28 @@ extension Building {
       switch _storage {
       case .none:
         buildings.map(\.self)
+
       case .single(let option):
         buildings.sorted {
-          switch option.compare($0, $1) {
+          let result = option.compare($0, $1)
+          switch result {
           case .orderedDescending: return false
           case .orderedAscending, .orderedSame: return true
           @unknown default:
-            preconditionFailure()
+            reportUnknownCase(result)
           }
         }
+
       case .multiple(let options):
         buildings.sorted {
           for option in options {
-            switch option.compare($0, $1) {
+            let result = option.compare($0, $1)
+            switch result {
             case .orderedDescending: return false
             case .orderedAscending: return true
             case .orderedSame: continue
+            @unknown default:
+              reportUnknownCase(result)
             }
           }
           return false
@@ -190,6 +206,16 @@ private func reverse(_ comparisonResult: ComparisonResult) -> ComparisonResult {
   case .orderedSame:
     return .orderedSame
   @unknown default:
-    preconditionFailure()
+    reportUnknownCase(comparisonResult)
   }
+}
+
+private func reportUnknownCase(
+  _ comparisonResult: ComparisonResult,
+  file: StaticString = #file,
+  line: UInt = #line,
+  function: StaticString = #function)
+  -> Never
+{
+  preconditionFailure("\(function): Unknown case for ComparisonResult: \(comparisonResult)", file: file, line: line)
 }
