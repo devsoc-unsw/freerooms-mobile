@@ -28,11 +28,32 @@ enum BookingViewLayout {
   static let rowMainContentDividerBottomPadding: CGFloat = 4
 
   // Constants for BookingDetailsSheet
-  static let detailsPadding: CGFloat = 12
-  static let detailsSectionSpacing: CGFloat = 10
-  static let detailsImageRadius: CGFloat = 12
-  static let detailsImageHeight: CGFloat = 140
-  static let detailsCardHorizontalPadding: CGFloat = 8
-  static let detailsCornerRadius: CGFloat = 18
-  static let detailsFieldSpacing: CGFloat = 12
+  static let detailsPadding: CGFloat = 20
+  static let detailsSectionSpacing: CGFloat = 24
+  static let detailsImageRadius: CGFloat = 16
+  static let detailsImageSize: CGFloat = 112
+  static let detailsFieldSpacing: CGFloat = 20
+
+  // Constants for BookingHeader and BookingInformation
+  static let detailsHeaderSpacing: CGFloat = 16
+  static let detailsHeaderTextSpacing: CGFloat = 8
+  static let detailLabelSpacing: CGFloat = 6
+  static let detailsColumnCount = 2
+  static let detailsAccessibilityColumnCount = 1
+
+  // Constants for BookingFacilities
+  static let facilitiesSectionSpacing: CGFloat = 16
+  static let facilitiesHeaderMinimumSpacing: CGFloat = 8
+  static let facilitiesPreviewCount = 4
+  static let facilitiesGridSpacing: CGFloat = 12
+  static let facilityContentSpacing: CGFloat = 10
+  static let facilityPadding: CGFloat = 16
+  static let facilityMinimumHeight: CGFloat = 104
+  static let facilityCornerRadius: CGFloat = 18
+
+  static func detailColumns(for dynamicTypeSize: DynamicTypeSize) -> [GridItem] {
+    Array(
+      repeating: GridItem(.flexible(), alignment: .topLeading),
+      count: dynamicTypeSize.isAccessibilitySize ? detailsAccessibilityColumnCount : detailsColumnCount)
+  }
 }
