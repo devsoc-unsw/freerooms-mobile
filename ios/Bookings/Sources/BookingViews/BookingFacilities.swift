@@ -5,8 +5,8 @@
 //  Created by Nicole Xie  on 18/09/2026.
 //
 
+import BookingModels
 import CommonUI
-import RoomModels
 import SwiftUI
 
 // MARK: - BookingFacilities
@@ -15,8 +15,7 @@ struct BookingFacilities: View {
 
   // MARK: Internal
 
-  let room: Room?
-  let isLoadingFacilities: Bool
+  let booking: WeeklyBooking
 
   var body: some View {
     VStack(alignment: .leading, spacing: BookingViewLayout.facilitiesSectionSpacing) {
@@ -39,10 +38,7 @@ struct BookingFacilities: View {
         }
       }
 
-      if room == nil, isLoadingFacilities {
-        ProgressView("Loading facilities…")
-          .font(.subheadline)
-      } else if facilities.isEmpty {
+      if facilities.isEmpty {
         Text("Facility information is not available for this room.")
           .font(.subheadline)
           .foregroundStyle(theme.label.secondary)
@@ -65,11 +61,6 @@ struct BookingFacilities: View {
                 .foregroundStyle(theme.label.primary)
                 .multilineTextAlignment(.center)
             }
-            .padding(BookingViewLayout.facilityPadding)
-            .frame(maxWidth: .infinity, minHeight: BookingViewLayout.facilityMinimumHeight)
-            .background(
-              theme.background.secondary,
-              in: RoundedRectangle(cornerRadius: BookingViewLayout.facilityCornerRadius))
           }
         }
       }
@@ -83,6 +74,6 @@ struct BookingFacilities: View {
   @State private var showsAllFacilities = false
 
   private var facilities: [BookingFormatting.Facility] {
-    BookingFormatting.facilities(for: room)
+    BookingFormatting.facilities(for: booking)
   }
 }
