@@ -11,22 +11,10 @@ import SwiftUI
 
 struct RoomBookingCardView: View {
 
-  // MARK: Lifecycle
-
-    public init(room: Room, booking: RoomBooking, scheduleStartHour: Int) {
-    self.room = room
-    self.booking = booking
-    self.scheduleStartHour = scheduleStartHour
-    start = Calendar.current.dateComponents(
-      [.hour, .minute],
-      from: booking.start)
-    end = Calendar.current.dateComponents([.hour, .minute], from: booking.end)
-    startMinutes = max(
-      (start.hour ?? Self.defaultTime) * Self.minutesPerHour + (start.minute ?? Self.defaultTime),
-      scheduleStartHour * Self.minutesPerHour) - (Self.minutesPerHour * scheduleStartHour)
-  }
-
   // MARK: Internal
+
+  let booking: RoomBooking
+  let isCompact: Bool
 
   var topRadius: CGFloat {
     switch bookingSize {
@@ -52,27 +40,7 @@ struct RoomBookingCardView: View {
       time: time,
       bookingSize: bookingSize,
       topRadius: topRadius,
-      bottomRadius: bottomRadius,
-      isPreview: false)
-      .frame(height: normalCardHeight)
-      .contextMenu {
-        Button("Dismiss", role: .destructive) { }
-      } preview: {
-        RoomBookingCardContent(
-          booking: booking,
-          time: time,
-          bookingSize: bookingSize,
-          topRadius: topRadius,
-          bottomRadius: bottomRadius,
-          isPreview: true)
-          .frame(
-            width: UIScreen.main.bounds.width - Self.contextMenuPreviewHorizontalInset,
-            height: numberTimeSlots <= Self.previewExtendedHeightSlotThreshold ? extendedCardHeight : normalCardHeight)
-          .environment(theme)
-      }
-      .offset(
-        x: Self.xOffset,
-        y: CGFloat(startMinutes) + Self.additionalYOffset)
+      bottomRadius: bottomRadius)
   }
 
   // MARK: Private
@@ -86,7 +54,6 @@ struct RoomBookingCardView: View {
     let bookingSize: RoomBookingCardView.BookingSize
     let topRadius: CGFloat
     let bottomRadius: CGFloat
-    let isPreview: Bool
 
     var body: some View {
       ZStack(alignment: .topLeading) {
@@ -127,7 +94,6 @@ struct RoomBookingCardView: View {
     private static let mediumTextSpacingMultiplier: CGFloat = 2
     private static let mediumTimeFontSize: CGFloat = 12
     private static let mediumVerticalPadding: CGFloat = 5
-    private static let previewPadding: CGFloat = 8
     private static let smallNameFontSize: CGFloat = 14
     private static let smallTextSpacingMultiplier: CGFloat = 1
     private static let smallTimeFontSize: CGFloat = 8
@@ -137,12 +103,11 @@ struct RoomBookingCardView: View {
     @Environment(Theme.self) private var theme
 
     private var verticalPadding: CGFloat {
-      (bookingSize == .small ? Self.smallVerticalPadding : Self.mediumVerticalPadding)
-        + (isPreview ? Self.previewPadding : 0)
+      bookingSize == .small ? Self.smallVerticalPadding : Self.mediumVerticalPadding
     }
 
     private var fullHorizontalPadding: CGFloat {
-      Self.horizontalPadding + (isPreview ? Self.previewPadding : 0)
+      Self.horizontalPadding
     }
   }
 
@@ -150,97 +115,24 @@ struct RoomBookingCardView: View {
     case small, medium
   }
 
-  private static let additionalYOffset: CGFloat = 2
-  private static let contextMenuPreviewHorizontalInset: CGFloat = 64
-  private static let dayStartHour: Int = RoomLayoutConstants.scheduleStartHour
-  private static let defaultTime = 0
-  private static let frameHeightOffset: CGFloat = 4
-  private static let halfHourMinute = 30
   private static let mediumRadius: CGFloat = 10
-  private static let midnightHour = 0
-  private static let minutesPerHour: Int = 60
-  private static let minutesPerSlot: Int = 30
-  private static let previewExtendedHeightSlotThreshold: CGFloat = 3
-  private static let previewExtraSlotCount: CGFloat = 1
+
   private static let smallRadius: CGFloat = 8
-  private static let smallTimeSlotAmount: CGFloat = 1
-  private static let twelveHourClock = 12
-  private static let xOffset: CGFloat = 0
-
-  @Environment(Theme.self) private var theme
-
-  private var room: Room
-  private var booking: RoomBooking
-  private var start: DateComponents
-  private var end: DateComponents
-  private let startMinutes: Int
-  private let scheduleStartHour: Int
-
-  private var numberTimeSlots: CGFloat {
-    let startTimeMinute = start.minute ?? Self.defaultTime
-    let startTimeHour = start.hour ?? Self.defaultTime
-    let endTimeMinute = end.minute ?? Self.defaultTime
-    let endTimeHour = end.hour ?? Self.defaultTime
-
-    let startTotalMinutes = startTimeHour * scheduleStartHour  + startTimeMinute
-    let endTotalMinutes = endTimeHour * scheduleStartHour  + endTimeMinute
-    let range = abs(endTotalMinutes - startTotalMinutes)
-
-    // Remove the part of a booking that starts before the visible schedule window.
-    let timeToRemove =
-      if startTimeHour < Self.dayStartHour, endTimeHour > Self.dayStartHour {
-        Self.dayStartHour * Self.minutesPerHour - startTotalMinutes
-      } else {
-        Self.defaultTime
-      }
-    return CGFloat((range - timeToRemove) / Self.minutesPerSlot)
-  }
 
   private var time: (String, String) {
-    let startTimeMinute = start.minute ?? Self.defaultTime
-    let startTimeHour = start.hour ?? Self.defaultTime
-    let endTimeMinute = end.minute ?? Self.defaultTime
-    let endTimeHour = end.hour ?? Self.defaultTime
-
-    return (
-      "\(formatHour(startTimeHour, startTimeMinute))",
-      "\(formatHour(endTimeHour, endTimeMinute))")
+    (
+      booking.start.formatted(RoomBookingTime.timeFormat),
+      booking.end.formatted(RoomBookingTime.timeFormat))
   }
 
   private var bookingSize: BookingSize {
-    if numberTimeSlots == Self.smallTimeSlotAmount {
-      .small
-    } else {
-      .medium
-    }
+    isCompact ? .small : .medium
   }
-
-  private var normalCardHeight: CGFloat {
-    (CGFloat(Self.minutesPerSlot) * numberTimeSlots) - Self.frameHeightOffset
-  }
-
-  private var extendedCardHeight: CGFloat {
-    (CGFloat(Self.minutesPerSlot) * (numberTimeSlots + Self.previewExtraSlotCount)) - Self.frameHeightOffset
-  }
-
-  private func formatHour(_ hour: Int, _ minute: Int) -> String {
-    if hour == Self.midnightHour {
-      "12\(minute >= Self.halfHourMinute ? ":30" : "") AM"
-    } else if hour < Self.twelveHourClock {
-      "\(hour)\(minute >= Self.halfHourMinute ? ":30" : "") AM"
-    } else if hour == Self.twelveHourClock {
-      "12\(minute >= Self.halfHourMinute ? ":30" : "") PM"
-    } else {
-      "\(hour - Self.twelveHourClock)\(minute >= Self.halfHourMinute ? ":30" : "") PM"
-    }
-  }
-
 }
 
 #Preview {
   RoomBookingCardView(
-    room: Room.exampleOne,
     booking: RoomBooking.exampleOne,
-    scheduleStartHour: 9)
+    isCompact: false)
     .defaultTheme()
 }

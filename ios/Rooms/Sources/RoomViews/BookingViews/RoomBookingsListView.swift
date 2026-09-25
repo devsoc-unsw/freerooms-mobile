@@ -14,8 +14,7 @@ struct RoomBookingsListView: View {
 
   // MARK: Lifecycle
 
-  public init(room: Room, dateSelect: Binding<Date>) {
-    self.room = room
+  init(dateSelect: Binding<Date>) {
     _dateSelect = dateSelect
   }
 
@@ -23,83 +22,65 @@ struct RoomBookingsListView: View {
 
   @Binding var dateSelect: Date
 
-    var hoursToDisplay: CGFloat { CGFloat(RoomLayoutConstants.scheduleEndHour - dynamicScheduleStartHour)
-    }
-
-  var dateComponent: DateComponents {
-    Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: dateSelect)
-  }
-
-  var filteredCurrentDayBookings: [RoomBooking] {
-    roomViewModel.currentRoomBookings
-      .filter {
-        Calendar.current.isDate(dateSelect, inSameDayAs: $0.start)
-      }
-  }
-    
-    var dynamicScheduleStartHour: Int {
-      let result = roomViewModel.getDisplayStartHour(
-        for: filteredCurrentDayBookings,
-        defaultStartHour: RoomLayoutConstants.scheduleStartHour)
-      
-      return result
-    }
-
   var body: some View {
     ZStack(alignment: .topLeading) {
       if roomViewModel.getBookingsIsLoading {
         RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
           .fill(Color.gray.opacity(0.3))
-          .frame(height: CGFloat(RoomLayoutConstants.scheduleEndHour) * RoomLayoutConstants.slotHeight)
+          .frame(height: timelineLayout.totalHeight)
       }
 
       // Background time grid
       VStack(spacing: 0) {
-        ForEach(dynamicScheduleStartHour..<RoomLayoutConstants.scheduleEndHour, id: \.self) { hour in
+        ForEach(timelineLayout.hours, id: \.self) { hour in
           BookingsLayoutView(hour: hour)
-            .id("\(hour)")
         }
       }
       .scrollTargetLayout()
-      .padding(.trailing, Self.gridTrailingPadding)
+      .padding(.trailing, gridTrailingPadding)
 
       // Overlaid booking cards
-      ForEach(filteredCurrentDayBookings, id: \.self) { booking in
+      ForEach(timelineLayout.items) { item in
         RoomBookingCardView(
-          room: room,
-          booking: booking,
-          scheduleStartHour: dynamicScheduleStartHour)
-          .padding(.leading, Self.bookingLeadingPadding)
-          .padding(.trailing, Self.bookingTrailingPadding)
+          booking: item.booking,
+          isCompact: item.height <= RoomLayoutConstants.slotHeight / 2)
+          .frame(height: item.height)
+          .offset(y: item.topOffset)
+          .padding(.leading, bookingLeadingPadding)
+          .padding(.trailing, bookingTrailingPadding)
       }
     }
-    .frame(height: hoursToDisplay * RoomLayoutConstants.slotHeight)
+    .frame(height: timelineLayout.totalHeight)
     .redacted(reason: roomViewModel.getBookingsIsLoading ? .placeholder : [])
   }
 
   // MARK: Private
 
-  private static let bookingLeadingPadding: CGFloat = 60
-  private static let bookingTrailingPadding: CGFloat = 10
-  private static let gridTrailingPadding: CGFloat = 8
-
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private let room: Room
+  private let bookingLeadingPadding: CGFloat = 60
+  private let bookingTrailingPadding: CGFloat = 10
+  private let gridTrailingPadding: CGFloat = 8
+
+  /// Room bookings layout calculations configs
+  private var timelineLayout: BookingTimelineLayout {
+    .roomSchedule(
+      bookings: roomViewModel.currentRoomBookings,
+      selectedDate: dateSelect)
+  }
 
 }
 
 #Preview {
   let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
-    return VStack {
-        ScrollView(.vertical) {
-            Text("HI")
-            Spacer()
-            RoomBookingsListView(
-              room: Room.exampleOne,
-              dateSelect: .constant(Date()))
-              .environment(viewModel)
-              .defaultTheme()
-        }
+  return VStack {
+    ScrollView(.vertical) {
+      Text("HI")
+      Spacer()
+      RoomBookingsListView(
+        dateSelect: .constant(Date()))
+        .environment(viewModel)
+        .defaultTheme()
     }
+  }
 }

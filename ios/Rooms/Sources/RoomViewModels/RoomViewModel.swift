@@ -80,8 +80,6 @@ public protocol RoomViewModel: AnyObject {
   var scrollID: Int? { get set }
   var baseDate: Date { get set }
   var dateSelect: Date { get set }
-    
-  func getDisplayStartHour(for bookings: [RoomBooking], defaultStartHour: Int, calendar: Calendar) -> Int
 
   func resetBookingScrollState(initialDate: Date)
   func handleScrollIDChange(oldValue: Int?, newValue: Int?)
@@ -99,27 +97,6 @@ public protocol RoomViewModel: AnyObject {
 @MainActor
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
-    public func getDisplayStartHour(
-        for bookings: [RoomBooking],
-        defaultStartHour: Int,
-        calendar: Calendar = .current) -> Int
-    {
-        let earliestHour = bookings
-          .map { calendar.component(.hour, from: $0.start) }
-          .min()
-
-        guard let earliestHour else {
-          return defaultStartHour
-        }
-
-
-        print("earliestHour: \(earliestHour)")
-        
-        let minimu = min(earliestHour, defaultStartHour)
-        print("min: \(minimu)")
-        return min(earliestHour, defaultStartHour)
-    }
-    
 
   // MARK: Lifecycle
 
