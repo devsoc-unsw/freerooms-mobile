@@ -8,7 +8,7 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
   public static let operationName: String = "WeeklyBookings"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) { bookings( where: { _and: [{ start: { _lt: $weekEnd } }, { end: { _gt: $weekStart } }] } order_by: [{ start: asc }] ) { __typename name bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } } } }"#
+      #"query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) { bookings( where: { _and: [{ start: { _lt: $weekEnd } }, { end: { _gt: $weekStart } }] } order_by: [{ start: asc }] ) { __typename name bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } accessibility audiovisual infotechnology microphone service writingMedia } } }"#
     ))
 
   public var weekStart: Timestamptz
@@ -89,6 +89,12 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
           .field("usage", String.self),
           .field("capacity", Int.self),
           .field("building", Building.self),
+          .field("accessibility", [DevSocAPI._Text].self),
+          .field("audiovisual", [DevSocAPI._Text].self),
+          .field("infotechnology", [DevSocAPI._Text].self),
+          .field("microphone", [DevSocAPI._Text].self),
+          .field("service", [DevSocAPI._Text].self),
+          .field("writingMedia", [DevSocAPI._Text].self),
         ] }
         @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
           WeeklyBookingsQuery.Data.Booking.Room.self
@@ -100,6 +106,12 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
         public var capacity: Int { __data["capacity"] }
         /// An object relationship
         public var building: Building { __data["building"] }
+        public var accessibility: [DevSocAPI._Text] { __data["accessibility"] }
+        public var audiovisual: [DevSocAPI._Text] { __data["audiovisual"] }
+        public var infotechnology: [DevSocAPI._Text] { __data["infotechnology"] }
+        public var microphone: [DevSocAPI._Text] { __data["microphone"] }
+        public var service: [DevSocAPI._Text] { __data["service"] }
+        public var writingMedia: [DevSocAPI._Text] { __data["writingMedia"] }
 
         /// Booking.Room.Building
         ///
