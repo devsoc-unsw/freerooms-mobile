@@ -7,11 +7,8 @@
 
 public import Foundation
 
+#warning("TODO: Migrate to the new Foundation FormatStyle API")
 public struct RoomBooking: Equatable, Sendable, Hashable {
-
-  // MARK: Lifecycle
-
-  #warning("TODO: Migrate to the new Foundation FormatStyle API")
 
   // MARK: Lifecycle
 
