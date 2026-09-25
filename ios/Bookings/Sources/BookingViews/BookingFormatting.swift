@@ -10,15 +10,6 @@ import Foundation
 
 enum BookingFormatting {
 
-  // MARK: Internal
-
-  struct Facility: Identifiable {
-    let name: String
-    let symbol: String
-
-    var id: String { name }
-  }
-
   static func locationDescription(for booking: WeeklyBooking) -> (String, String) {
     guard let buildingName = booking.buildingName, !buildingName.isEmpty else {
       return (booking.roomName, "")
@@ -60,26 +51,7 @@ enum BookingFormatting {
     "\(label), \(value)"
   }
 
-  static func facilities(for booking: WeeklyBooking) -> [Facility] {
-    let groups: [(items: [String], symbol: String)] = [
-      (booking.writingMedia, "pencil.and.outline"),
-      (booking.audioVisual, "tv"),
-      (booking.infoTechnology, "desktopcomputer"),
-      (booking.microphone, "mic"),
-      (booking.accessibility, "figure.roll"),
-      (booking.service, "wrench.and.screwdriver"),
-    ]
-    return groups.flatMap { group in
-      group.items.compactMap { item in
-        let name = item.trimmingCharacters(in: .whitespacesAndNewlines)
-        return Facility(name: name, symbol: facilitySymbol(for: name, fallback: group.symbol))
-      }
-    }
-  }
-
-  // MARK: Private
-
-  private static func facilitySymbol(for name: String, fallback: String) -> String {
+  static func facilitySymbol(for name: String, fallback: String) -> String {
     let name = name.lowercased()
     if name.contains("air conditioning") { return "snowflake" }
     if name.contains("power") { return "powerplug" }
