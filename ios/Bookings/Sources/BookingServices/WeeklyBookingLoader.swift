@@ -113,8 +113,7 @@ nonisolated public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoad
         infoTechnology: graphQLBooking.room.infotechnology,
         microphone: graphQLBooking.room.microphone,
         service: graphQLBooking.room.service,
-        writingMedia: graphQLBooking.room.writingMedia,
-        ))
+        writingMedia: graphQLBooking.room.writingMedia))
     }
 
     return .success(bookings.sorted { $0.start < $1.start })

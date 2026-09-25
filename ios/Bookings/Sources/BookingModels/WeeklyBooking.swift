@@ -29,8 +29,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
     infoTechnology: [String],
     microphone: [String],
     service: [String],
-    writingMedia: [String],
-  )
+    writingMedia: [String])
   {
     self.title = title
     self.bookingType = bookingType
@@ -83,7 +82,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let microphone: [String]
   public let service: [String]
   public let writingMedia: [String]
-  
+
   public var id: ID {
     ID(roomID: roomID, start: start, end: end)
   }
