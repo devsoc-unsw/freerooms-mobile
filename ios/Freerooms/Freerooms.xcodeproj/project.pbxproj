@@ -666,8 +666,8 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -705,8 +705,8 @@
 				INFOPLIST_FILE = Freerooms/Resources/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocationUsageDescription = "Get directions for buildings";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Get directions for buildings";
+				INFOPLIST_KEY_NSLocationUsageDescription = "location for campus map";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "location for campus map";
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
