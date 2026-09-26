@@ -41,6 +41,16 @@ struct RoomBookingCardView: View {
       bookingSize: bookingSize,
       topRadius: topRadius,
       bottomRadius: bottomRadius)
+      .contextMenu {
+        ShareLink(item: booking.name) {
+          Label("Share booking", systemImage: "square.and.arrow.up")
+        }
+      } preview: {
+        RoomBookingPreviewView(
+          booking: booking,
+          time: time)
+          .environment(theme)
+      }
   }
 
   // MARK: Private
@@ -79,6 +89,9 @@ struct RoomBookingCardView: View {
             .font(.system(
               size: bookingSize == .small ? Self.smallNameFontSize : Self.mediumNameFontSize,
               weight: .medium))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .allowsTightening(true)
         }
         .padding(.vertical, verticalPadding)
         .padding(.horizontal, fullHorizontalPadding)
@@ -111,6 +124,41 @@ struct RoomBookingCardView: View {
     }
   }
 
+  private struct RoomBookingPreviewView: View {
+
+    // MARK: Internal
+
+    let booking: RoomBooking
+    let time: (String, String)
+
+    var body: some View {
+      VStack(alignment: .leading, spacing: Self.contentSpacing) {
+        Text("\(time.0) – \(time.1)")
+          .font(.subheadline.weight(.medium))
+
+        Text(booking.name)
+          .font(.title3.bold())
+          .fixedSize(horizontal: false, vertical: true)
+
+        Text(booking.bookingType)
+          .font(.caption)
+      }
+      .foregroundStyle(.white)
+      .padding()
+      .frame(width: Self.width, alignment: .leading)
+      .background(theme.accent.primary)
+      .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius))
+    }
+
+    // MARK: Private
+
+    private static let contentSpacing: CGFloat = 8
+    private static let cornerRadius: CGFloat = 12
+    private static let width: CGFloat = 320
+
+    @Environment(Theme.self) private var theme
+  }
+
   private enum BookingSize {
     case small, medium
   }
@@ -118,6 +166,8 @@ struct RoomBookingCardView: View {
   private static let mediumRadius: CGFloat = 10
 
   private static let smallRadius: CGFloat = 8
+
+  @Environment(Theme.self) private var theme
 
   private var time: (String, String) {
     (
