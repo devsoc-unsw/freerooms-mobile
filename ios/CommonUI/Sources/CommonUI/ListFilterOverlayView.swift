@@ -7,38 +7,45 @@
 
 public import SwiftUI
 
+// MARK: - ListFilterOverlayViewOption
+
 public protocol ListFilterOverlayViewOption: CaseIterable, Hashable where Self.AllCases: RandomAccessCollection<Self> {
   var title: String { get }
   var systemImage: String { get }
 }
 
+// MARK: - ListFilterOverlayView
+
 public struct ListFilterOverlayView<Option: ListFilterOverlayViewOption>: View {
-  @Binding private var selection: Option?
-  @Binding private var isPresented: Bool
-  
-  public init(selection: Binding<Option?>, isPresented: Binding<Bool>) {
-    _selection = selection
+
+  // MARK: Lifecycle
+
+  public init(
+    for _: Option.Type = Option.self,
+    isPresented: Binding<Bool>,
+    onSelection: @escaping (_ option: Option) -> Void,
+    onClear: @escaping () -> Void)
+  {
     _isPresented = isPresented
+    self.onSelection = onSelection
+    self.onClear = onClear
   }
-  
-  @Environment(Theme.self) private var theme
-  
+
+  // MARK: Public
+
   public var body: some View {
     VStack(alignment: .trailing, spacing: menuSpacing) {
-      
       // Menu Items
       if isPresented {
         ForEach(Option.allCases, id: \.self) { option in
           filterMenuAction(option.title, systemImage: option.systemImage) {
-            selection = option
+            onSelection(option)
           }
         }
-        
-        filterMenuAction("Delete All", systemImage: "xmark", role: .destructive) {
-          selection = nil
-        }
+
+        filterMenuAction("Delete All", systemImage: "xmark", role: .destructive, action: onClear)
       }
-      
+
       // Toggle Button
       Button(action: buttonAction) {
         Image(systemName: buttonImageSystemName)
@@ -59,16 +66,17 @@ public struct ListFilterOverlayView<Option: ListFilterOverlayViewOption>: View {
                 y: toggleShadowYOffset)
           }
       }
-      
     }
   }
-  
-  private func buttonAction() {
-    withAnimation(.spring) {
-      isPresented.toggle()
-    }
-  }
-  
+
+  // MARK: Private
+
+  @Binding private var isPresented: Bool
+  @Environment(Theme.self) private var theme
+
+  private let onSelection: (Option) -> Void
+  private let onClear: () -> Void
+
   private var buttonImageSystemName: String {
     if isPresented {
       "line.3.horizontal.decrease"
@@ -76,11 +84,17 @@ public struct ListFilterOverlayView<Option: ListFilterOverlayViewOption>: View {
       "xmark"
     }
   }
-  
+
   private var actionBorderColor: Color {
     theme.accent.primary.opacity(actionBorderOpacity)
   }
-  
+
+  private func buttonAction() {
+    withAnimation(.spring) {
+      isPresented.toggle()
+    }
+  }
+
   @ViewBuilder
   private func filterMenuAction(
     _ title: String,
@@ -114,7 +128,7 @@ public struct ListFilterOverlayView<Option: ListFilterOverlayViewOption>: View {
     }
     .buttonStyle(.plain)
   }
-  
+
 }
 
 // MARK: - Configuration
@@ -127,12 +141,10 @@ private let actionVerticalPadding: CGFloat = 10
 private let actionShadowOpacity = 0.32
 private let actionShadowRadius: CGFloat = 12
 private let actionShadowYOffset: CGFloat = 4
-private let animationDuration = 0.25
 private let destructiveBorderOpacity = 0.36
 private let toggleBorderOpacity = 0.24
 private let toggleBorderWidth: CGFloat = 1
 private let toggleButtonSize: CGFloat = 56
-private let toggleIconSize: CGFloat = 20
 private let toggleShadowOpacity = 0.34
 private let toggleShadowRadius: CGFloat = 14
 private let toggleShadowYOffset: CGFloat = 5
@@ -141,31 +153,35 @@ private let toggleShadowYOffset: CGFloat = 5
 private enum _PreviewOption: ListFilterOverlayViewOption {
   case foo
   case bar
-  
+
+  // MARK: Internal
+
   var title: String {
     switch self {
     case .foo:
-      return "Foo"
+      "Foo"
     case .bar:
-      return "Bar"
+      "Bar"
     }
   }
-  
+
   var systemImage: String {
     switch self {
     case .foo:
-      return "star.fill"
+      "star.fill"
     case .bar:
-      return "square.and.arrow.up"
+      "square.and.arrow.up"
     }
   }
 }
 
 #Preview {
-  @Previewable @State var selection: _PreviewOption?
-  @Previewable @State var isPresented: Bool = false
-  ListFilterOverlayView(selection: $selection, isPresented: $isPresented)
-    .defaultTheme()
+  @Previewable @State var isPresented = false
+  ListFilterOverlayView(for: _PreviewOption.self, isPresented: $isPresented) {
+    print("selected: \($0)")
+  } onClear: {
+    print("cleared")
+  }
+  .defaultTheme()
 }
 #endif
-
