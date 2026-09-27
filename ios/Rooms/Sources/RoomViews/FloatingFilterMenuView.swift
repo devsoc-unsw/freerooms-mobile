@@ -121,9 +121,11 @@ struct FloatingFilterMenuView: View {
 }
 
 #Preview {
+  @Previewable @State var activeFilterSheet: RoomFilterSheet?
+  @Previewable @State var showingFilterMenu: Bool = false
   FloatingFilterMenuView(
-    activeFilterSheet: .constant(nil),
-    showingFilterMenu: .constant(false))
+    activeFilterSheet: $activeFilterSheet,
+    showingFilterMenu: $showingFilterMenu)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
 }
