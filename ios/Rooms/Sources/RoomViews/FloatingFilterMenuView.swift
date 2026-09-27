@@ -9,6 +9,7 @@ import CommonUI
 import RoomViewModels
 import SwiftUI
 
+@available(*, deprecated, renamed: "CommonUI.ListFilterOverlayView", message: "Replace with CommonUI generic version")
 struct FloatingFilterMenuView: View {
 
   // MARK: Internal

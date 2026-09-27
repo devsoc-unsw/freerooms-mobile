@@ -118,6 +118,7 @@ public enum AvailabilityStatus: String, Sendable {
   // MARK: Lifecycle
 
   public init(_ rawValue: Int?) {
+    // Probably shouldn't appropriate the `RawRepresentable/init(_:)` requirement for this
     guard let rawValue else {
       self = .missing
       return

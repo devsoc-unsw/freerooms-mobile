@@ -8,6 +8,11 @@
 // MARK: - CampusSection
 
 /// Represents the vertical campus section based on building numbers.
+///
+/// They are compared as follows:
+/// ```swift
+/// CampusSection.lower < CampusSection.middle < CampusSection.upper
+/// ```
 public enum CampusSection: Int {
   case lower, middle, upper
 
@@ -26,6 +31,24 @@ public enum CampusSection: Int {
       self = .upper
     default:
       self = .upper
+    }
+  }
+
+}
+
+// MARK: Comparable
+
+extension CampusSection: Comparable {
+
+  public static func <(lhs: CampusSection, rhs: CampusSection) -> Bool {
+    guard lhs != rhs else { return false }
+    return switch (lhs, rhs) {
+    case (.lower, _): true
+    case (.middle, .upper): true
+    case (.middle, .lower): false
+    case (.upper, _): false
+    case (.middle, .middle):
+      preconditionFailure("Should have been handled by guard statement")
     }
   }
 
