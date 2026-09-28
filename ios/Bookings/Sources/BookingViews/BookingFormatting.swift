@@ -24,7 +24,7 @@ enum BookingFormatting {
   static func timeRange(for booking: WeeklyBooking, calendar _: Calendar = .current) -> String {
     let formatter = DateFormatter()
 
-    #warning(" New feature to allow user toggle different date format")
+    #warning(" New feature to allow user toggle different date format, also use Foundation.FormatStyle API instead")
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.dateFormat = "h:mm a"
     return "\(formatter.string(from: booking.start)) – \(formatter.string(from: booking.end))"

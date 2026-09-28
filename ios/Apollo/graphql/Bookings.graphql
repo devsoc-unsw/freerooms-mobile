@@ -1,0 +1,36 @@
+query Bookings(
+  $start: timestamptz!,
+  $end: timestamptz!,
+  $offset: Int!,
+  $limit: Int!
+) {
+  bookings(
+    where: {
+      _and: [
+        { start: { _lt: $end } },
+        { end: { _gt: $start } }
+      ]
+    },
+    order_by: [
+      { start: asc }
+    ],
+    offset: $offset,
+    limit: $limit
+  ) {
+    name
+    bookingType
+    roomId
+    start
+    end
+    room {
+      name
+      abbr
+      usage
+      capacity
+      building {
+        id
+        name
+      }
+    }
+  }
+}
