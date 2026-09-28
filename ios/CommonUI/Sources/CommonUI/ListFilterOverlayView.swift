@@ -178,8 +178,10 @@ private enum _PreviewOption: ListFilterOverlayViewOption {
 #Preview {
   @Previewable @State var isPresented = false
   ListFilterOverlayView(for: _PreviewOption.self, isPresented: $isPresented) {
+    // swiftlint:disable:next no_direct_standard_out_logs
     print("selected: \($0)")
   } onClear: {
+    // swiftlint:disable:next no_direct_standard_out_logs
     print("cleared")
   }
   .defaultTheme()

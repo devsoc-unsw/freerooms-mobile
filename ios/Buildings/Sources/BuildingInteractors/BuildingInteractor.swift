@@ -111,6 +111,7 @@ public class BuildingInteractor {
 
   // MARK: Package
 
+  @available(*, deprecated, message: "Use Building.SortOptions instead")
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -126,6 +127,7 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
+  @available(*, deprecated, message: "Use Building.SortOptions instead")
   func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -145,6 +147,7 @@ public class BuildingInteractor {
     }
   }
 
+  @available(*, deprecated, message: "Use Building.SortOptions instead")
   func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
