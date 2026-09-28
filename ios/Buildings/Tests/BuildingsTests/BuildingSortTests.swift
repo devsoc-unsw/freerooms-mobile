@@ -69,10 +69,10 @@ struct BuildingSortTests {
   }
 
   @Test("Can sort by name (reverse)", arguments: [
-    Building.SortOptions(from: [.reverseAlphabetical]),
-    [.reverseAlphabetical],
-    .reverseAlphabetical,
-    Building.SortOptions(.reverseAlphabetical),
+    Building.SortOptions(from: [.alphabetical.reversed()]),
+    [.alphabetical.reversed()],
+    .alphabetical.reversed(),
+    Building.SortOptions(.alphabetical.reversed()),
   ])
   func test_canSortByName_reverse(_ options: Building.SortOptions) {
     let buildings = Self.testBuildings.shuffled()
@@ -81,8 +81,8 @@ struct BuildingSortTests {
   }
 
   @Test("Can sort by distance", arguments: [
-    Building.SortOptions(from: [.nearest(.init(latitude: 0, longitude: 0)), .alphabetical]),
-    [.nearest(.init(latitude: 0, longitude: 0)), .alphabetical]
+    Building.SortOptions(from: [.nearest(to: .init(latitude: 0, longitude: 0)), .alphabetical]),
+    [.nearest(to: .init(latitude: 0, longitude: 0)), .alphabetical]
   ])
   func test_canSortByDistance(_ options: Building.SortOptions) {
     let buildings = Self.testBuildings.shuffled()

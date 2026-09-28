@@ -48,71 +48,87 @@ extension Building {
     // MARK: Public
 
     /// Options to sort a collection of buildings
-    public enum Option: Sendable {
+    public struct Option: Sendable {
+
+      // MARK: Lifecycle
+
+      private init(_ _case: _Case, isReversed: Bool = false) {
+        self._case = _case
+        self.isReversed = isReversed
+      }
+
+      // MARK: Public
+
       /// Buildings with more rooms are preferred
-      case mostAvailable
-      /// Buildings closest to the provided location
-      case nearest(CLLocationCoordinate2D)
+      public static var mostAvailable: Option { .init(.mostAvailable) }
       /// Buildings sorted in alphabetical order
-      case alphabetical
-      /// Buildings sorted in reverse alphabetical order
-      case reverseAlphabetical
+      public static var alphabetical: Option { .init(.alphabetical) }
       /// Buildings in lower campus are preferred
-      case lowerCampus
-      /// Buildings in upper campus are preferred
-      case upperCampus
+      public static var campus: Option { .init(.campus) }
+
+      /// Whether the option is treated as reversed
+      ///
+      /// For example when this is enabled, the ``alphabetical`` option will search in
+      /// reversed alpabetical order.
+      public var isReversed: Bool = false
+
+      /// Buildings closest to the provided location
+      public static func nearest(to location: CLLocationCoordinate2D) -> Option { .init(.nearest(location)) }
+
+      /// Returns a reversed version of the ``Option``
+      public func reversed() -> Option {
+        var copy = self
+        copy.isReversed.toggle()
+        return copy
+      }
+
+      /// Reverses the ``Option``
+      ///
+      /// Same as
+      /// ```swift
+      /// option.isReversed.toggle()
+      /// ```
+      mutating public func reverse() {
+        isReversed.toggle()
+      }
 
       // MARK: Internal
 
       /// Compares the provided buildings
       func compare(_ lhs: borrowing Building, _ rhs: borrowing Building) -> ComparisonResult {
-        switch self {
+        var result: ComparisonResult
+        switch _case {
         case .mostAvailable:
           switch (lhs.numberOfAvailableRooms, rhs.numberOfAvailableRooms) {
           case (.none, .none):
-            return .orderedSame
+            result = .orderedSame
           case (_, .none):
-            return .orderedAscending
+            result = .orderedAscending
           case (.none, _):
-            return .orderedDescending
+            result = .orderedDescending
           case (.some(let lhs), .some(let rhs)):
             if lhs == rhs {
-              return .orderedSame
+              result = .orderedSame
             } else if lhs < rhs {
-              return .orderedDescending
+              result = .orderedDescending
             } else {
-              return .orderedAscending
+              result = .orderedAscending
             }
           }
 
         case .alphabetical:
-          return lhs.name.localizedStandardCompare(rhs.name)
+          result = lhs.name.localizedStandardCompare(rhs.name)
 
-        case .reverseAlphabetical:
-          return reverse(lhs.name.localizedStandardCompare(rhs.name))
-
-        case .lowerCampus:
+        case .campus:
           let lhs = lhs.gridReference.campusSection
           let rhs = rhs.gridReference.campusSection
 
           if lhs == rhs {
-            return .orderedSame
+            result = .orderedSame
           } else if lhs == .lower {
-            return .orderedDescending
+            result = .orderedDescending
           } else {
-            return .orderedAscending
-          }
-
-        case .upperCampus:
-          let lhs = lhs.gridReference.campusSection
-          let rhs = rhs.gridReference.campusSection
-
-          if lhs == rhs {
-            return .orderedSame
-          } else if lhs == .upper {
-            return .orderedDescending
-          } else {
-            return .orderedAscending
+            result = .orderedAscending
           }
 
         case .nearest(let coordinates):
@@ -120,14 +136,27 @@ extension Building {
           let rhsDist = abs(coordinates.latitude - rhs.latitude) + abs(coordinates.longitude - rhs.longitude)
 
           if lhsDist == rhsDist {
-            return .orderedSame
+            result = .orderedSame
           } else if lhsDist < rhsDist {
-            return .orderedAscending
+            result = .orderedAscending
           } else {
-            return .orderedDescending
+            result = .orderedDescending
           }
         }
+
+        return isReversed ? reverseResult(result) : result
       }
+
+      // MARK: Private
+
+      private enum _Case {
+        case mostAvailable
+        case nearest(CLLocationCoordinate2D)
+        case alphabetical
+        case campus
+      }
+
+      private var _case: _Case
 
     }
 
@@ -135,16 +164,28 @@ extension Building {
     public static var mostAvailable: SortOptions { SortOptions(.mostAvailable) }
     /// Same as ``Option/alphabetical``
     public static var alphabetical: SortOptions { SortOptions(.alphabetical) }
-    /// Same as ``Option/reverseAlphabetical``
-    public static var reverseAlphabetical: SortOptions { SortOptions(.reverseAlphabetical) }
-    /// Same as ``Option/lowerCampus``
-    public static var lowerCampus: SortOptions { SortOptions(.lowerCampus) }
-    /// Same as ``Option/upperCampus``
-    public static var upperCampus: SortOptions { SortOptions(.upperCampus) }
+    /// Same as ``Option/campus``
+    public static var campus: SortOptions { SortOptions(.campus) }
 
-    /// Same as ``Option/nearest(_:)``
-    public static func nearest(_ coordinate: CLLocationCoordinate2D) -> SortOptions {
-      SortOptions(.nearest(coordinate))
+    /// Whether the option is treated as reversed
+    ///
+    /// For example when this is enabled, the ``alphabetical`` option will search in
+    /// reversed alpabetical order.
+    public var isReversed: Bool = false
+
+    /// Same as ``Option/nearest(to:)``
+    public static func nearest(to coordinate: CLLocationCoordinate2D) -> SortOptions {
+      SortOptions(.nearest(to: coordinate))
+    }
+
+    public func reversed() -> SortOptions {
+      var copy = self
+      copy.isReversed.toggle()
+      return copy
+    }
+
+    mutating public func reverse() {
+      isReversed.toggle()
     }
 
     /// Sort the provided buildings
@@ -157,8 +198,8 @@ extension Building {
         buildings.sorted {
           let result = option.compare($0, $1)
           switch result {
-          case .orderedDescending: return false
-          case .orderedAscending, .orderedSame: return true
+          case .orderedDescending: return isReversed
+          case .orderedAscending, .orderedSame: return !isReversed
           @unknown default:
             reportUnknownCase(result)
           }
@@ -169,14 +210,14 @@ extension Building {
           for option in options {
             let result = option.compare($0, $1)
             switch result {
-            case .orderedDescending: return false
-            case .orderedAscending: return true
+            case .orderedDescending: return isReversed
+            case .orderedAscending: return !isReversed
             case .orderedSame: continue
             @unknown default:
               reportUnknownCase(result)
             }
           }
-          return false
+          return isReversed
         }
       }
     }
@@ -197,7 +238,7 @@ extension Building {
   }
 }
 
-private func reverse(_ comparisonResult: ComparisonResult) -> ComparisonResult {
+private func reverseResult(_ comparisonResult: ComparisonResult) -> ComparisonResult {
   switch comparisonResult {
   case .orderedAscending:
     return .orderedDescending
