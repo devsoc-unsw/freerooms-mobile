@@ -94,6 +94,13 @@ extension Building {
 
       // MARK: Internal
 
+      enum _Case {
+        case mostAvailable
+        case nearest(CLLocationCoordinate2D)
+        case alphabetical
+        case campus
+      }
+
       /// Compares the provided buildings
       func compare(_ lhs: borrowing Building, _ rhs: borrowing Building) -> ComparisonResult {
         var result: ComparisonResult
@@ -144,17 +151,10 @@ extension Building {
           }
         }
 
-        return isReversed ? reverseResult(result) : result
+        return isReversed ? result.reversed() : result
       }
 
       // MARK: Private
-
-      private enum _Case {
-        case mostAvailable
-        case nearest(CLLocationCoordinate2D)
-        case alphabetical
-        case campus
-      }
 
       private var _case: _Case
 
@@ -167,10 +167,13 @@ extension Building {
     /// Same as ``Option/campus``
     public static var campus: SortOptions { SortOptions(.campus) }
 
-    /// Whether the option is treated as reversed
+    /// Whether the options are treated as reversed
     ///
     /// For example when this is enabled, the ``alphabetical`` option will search in
     /// reversed alpabetical order.
+    ///
+    /// > Important:
+    /// > The rules are still evaluated in the same order, only their comparison results are reversed
     public var isReversed: Bool = false
 
     /// Same as ``Option/nearest(to:)``
@@ -189,7 +192,8 @@ extension Building {
     }
 
     /// Sort the provided buildings
-    public func sort(_ buildings: some Sequence<Building>) -> [Building] {
+    public func sort(_ buildings: borrowing some Sequence<Building>) -> [Building] {
+      // Must be a strict weak order
       switch _storage {
       case .none:
         buildings.map(\.self)
@@ -201,7 +205,7 @@ extension Building {
           case .orderedDescending: return isReversed
           case .orderedAscending, .orderedSame: return !isReversed
           @unknown default:
-            reportUnknownCase(result)
+            result.reportUnknownCase()
           }
         }
 
@@ -214,7 +218,7 @@ extension Building {
             case .orderedAscending: return !isReversed
             case .orderedSame: continue
             @unknown default:
-              reportUnknownCase(result)
+              result.reportUnknownCase()
             }
           }
           return isReversed
@@ -222,41 +226,89 @@ extension Building {
       }
     }
 
-    // MARK: Private
+    // MARK: Internal
 
     /// The stored sorting option
     ///
     /// This is used as an optimisation, as a single sort option is the most common case.
-    private enum _Storage {
+    enum _Storage {
       case none
       case single(Option)
       case multiple([Option])
     }
+
+    // MARK: Private
 
     private var _storage: _Storage
 
   }
 }
 
-private func reverseResult(_ comparisonResult: ComparisonResult) -> ComparisonResult {
-  switch comparisonResult {
-  case .orderedAscending:
-    return .orderedDescending
-  case .orderedDescending:
-    return .orderedAscending
-  case .orderedSame:
-    return .orderedSame
-  @unknown default:
-    reportUnknownCase(comparisonResult)
+extension ComparisonResult {
+  fileprivate func reversed() -> ComparisonResult {
+    switch self {
+    case .orderedAscending:
+      return .orderedDescending
+    case .orderedDescending:
+      return .orderedAscending
+    case .orderedSame:
+      return .orderedSame
+    @unknown default:
+      reportUnknownCase()
+    }
+  }
+
+  fileprivate func reportUnknownCase(
+    file: StaticString = #file,
+    line: UInt = #line,
+    function: StaticString = #function)
+    -> Never
+  {
+    preconditionFailure("\(function): Unknown case for ComparisonResult: \(self)", file: file, line: line)
   }
 }
 
-private func reportUnknownCase(
-  _ comparisonResult: ComparisonResult,
-  file: StaticString = #file,
-  line: UInt = #line,
-  function: StaticString = #function)
-  -> Never
-{
-  preconditionFailure("\(function): Unknown case for ComparisonResult: \(comparisonResult)", file: file, line: line)
+// MARK: - Building.SortOptions.Option._Case + Equatable
+
+extension Building.SortOptions.Option._Case: Equatable {
+
+  static func ==(lhs: Self, rhs: Self) -> Bool {
+    switch (lhs, rhs) {
+    case (.mostAvailable, .mostAvailable), (.alphabetical, .alphabetical), (.campus, .campus):
+      true
+
+    case (.nearest(let lhs), .nearest(let rhs)):
+      lhs.latitude == rhs.latitude &&
+        lhs.longitude == rhs.longitude
+
+    default:
+      false
+    }
+  }
+
 }
+
+// MARK: - Building.SortOptions.Option._Case + Hashable
+
+extension Building.SortOptions.Option._Case: Hashable {
+
+  func hash(into hasher: inout Hasher) {
+    switch self {
+    case .alphabetical:
+      hasher.combine(0)
+    case .campus:
+      hasher.combine(1)
+    case .mostAvailable:
+      hasher.combine(2)
+    case .nearest(let coordinates):
+      hasher.combine(3)
+      hasher.combine(coordinates.latitude)
+      hasher.combine(coordinates.longitude)
+    }
+  }
+
+}
+
+// MARK: - Building.SortOptions.Option + Equatable, Hashable
+
+extension Building.SortOptions.Option: Equatable, Hashable { }
