@@ -38,7 +38,11 @@ public struct RoomsTabView<Destination: View>: View {
       mainContent
     }
     .tabItem {
-      Label("Rooms", systemImage: selectedTab == .rooms ? "door.left.hand.open" : "door.left.hand.closed")
+      Label(
+        "Rooms",
+        systemImage: selectedTab == .rooms
+          ? "door.left.hand.open"
+          : "door.left.hand.closed")
     }
     .tag(FreeroomsTab.rooms)
   }
@@ -58,39 +62,24 @@ public struct RoomsTabView<Destination: View>: View {
   {
     ForEach(buildings) { building in
       let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
       if rooms.isEmpty {
         EmptyView()
       } else {
         Section {
-          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
-            ForEach(rooms) { room in
-              GenericCardView(
-                path: $path,
-                cardWidth: $cardWidth,
-                room: room,
-                rooms: rooms,
-                isLoading: roomViewModel.isLoading,
-                isFavourite: Binding(
-                  get: {
-                    roomViewModel.isFavorite(roomID: room.id)
-                  },
-                  set: { _ in
-                    roomViewModel.toggleFavorite(roomID: room.id)
-                  }),
-                imageProvider: { roomID in
-                  RoomImage[roomID]
-                })
-            }
-          }
-          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          RoomCardGrid(
+            rooms: rooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            cardWidth: $cardWidth)
         } header: {
           HStack {
-            Text(buildingName)
+            Text(building.name)
               .textCase(.uppercase)
               .foregroundStyle(theme.label.primary)
-              .padding(.leading, RoomLayoutConstants.sectionHeaderLeadingPadding)
+              .padding(
+                .leading,
+                RoomLayoutConstants.sectionHeaderLeadingPadding)
             Spacer()
           }
           .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
@@ -106,26 +95,16 @@ public struct RoomsTabView<Destination: View>: View {
   {
     ForEach(buildings) { building in
       let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-      let buildingName = buildings.first(where: { $0.id == building.id })?.name ?? building.id
 
-      if rooms.isEmpty {
-        EmptyView()
-      } else {
+      if !rooms.isEmpty {
         Section {
-          ForEach(rooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: rooms,
-              isLoading: roomViewModel.isLoading,
-              imageProvider: { roomID in
-                RoomImage[roomID]
-              })
-              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-          }
+          RoomList(
+            rooms: rooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            rowHeight: $rowHeight)
         } header: {
-          Text(buildingName)
+          Text(building.name)
             .textCase(.uppercase)
             .foregroundStyle(theme.label.primary)
         }
@@ -139,16 +118,14 @@ public struct RoomsTabView<Destination: View>: View {
   @State private var showingFilterMenu = false
 
   @Environment(Theme.self) private var theme
-  @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
-  private let columns = [
-    GridItem(.flexible()),
-    GridItem(.flexible()),
-  ]
-
   private let roomDestinationBuilderView: (Room) -> Destination
+
+  private var favoriteRooms: [Room] {
+    roomViewModel.getAllFavoriteRooms()
+  }
 
   private var roomSectionBuildings: [Building] {
     let buildings = buildingViewModel.allBuildings
@@ -156,6 +133,7 @@ public struct RoomsTabView<Destination: View>: View {
       return buildings
     }
 
+    // Preserve room sections while building metadata is still unavailable.
     return roomViewModel.roomsByBuildingId.keys
       .sorted()
       .map { Self.placeholderBuilding(id: $0, name: $0) }
@@ -165,30 +143,6 @@ public struct RoomsTabView<Destination: View>: View {
     Binding(
       get: { roomViewModel.searchText },
       set: { roomViewModel.searchText = $0 })
-  }
-
-  private var selectedDateBinding: Binding<Date> {
-    Binding(
-      get: { roomViewModel.selectedDate },
-      set: { roomViewModel.selectedDate = $0 })
-  }
-
-  private var selectedRoomTypesBinding: Binding<Set<RoomType>> {
-    Binding(
-      get: { roomViewModel.selectedRoomTypes },
-      set: { roomViewModel.selectedRoomTypes = $0 })
-  }
-
-  private var selectedCampusLocationBinding: Binding<CampusLocation?> {
-    Binding(
-      get: { roomViewModel.selectedCampusLocation },
-      set: { roomViewModel.selectedCampusLocation = $0 })
-  }
-
-  private var selectedCapacityBinding: Binding<Int?> {
-    Binding(
-      get: { roomViewModel.selectedCapacity },
-      set: { roomViewModel.selectedCapacity = $0 })
   }
 
   @ViewBuilder
@@ -207,7 +161,10 @@ public struct RoomsTabView<Destination: View>: View {
             .ignoresSafeArea()
             .transition(.opacity)
             .onTapGesture {
-              withAnimation(.spring(duration: RoomLayoutConstants.filterMenuAnimationDuration)) {
+              withAnimation(
+                .spring(
+                  duration: RoomLayoutConstants.filterMenuAnimationDuration))
+              {
                 showingFilterMenu = false
               }
             }
@@ -223,13 +180,21 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .toolbar {
-        toolbarButtons
+        RoomToolBar(selectedView: $selectedView)
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
       .navigationDestination(for: Room.self) { room in
         roomDestinationBuilderView(room)
+      }
+      .navigationDestination(for: RoomsDestination.self) { destination in
+        switch destination {
+        case .favorites:
+          FavoriteRoomsView(
+            path: $path,
+            selectedView: $selectedView)
+        }
       }
       .task {
         if !buildingViewModel.hasLoaded {
@@ -240,9 +205,10 @@ public struct RoomsTabView<Destination: View>: View {
           await roomViewModel.onAppear()
         }
       }
-      .alert(item: Binding(
-        get: { roomViewModel.loadRoomErrorMessage },
-        set: { roomViewModel.loadRoomErrorMessage = $0 }))
+      .alert(
+        item: Binding(
+          get: { roomViewModel.loadRoomErrorMessage },
+          set: { roomViewModel.loadRoomErrorMessage = $0 }))
       { error in
         Alert(
           title: Text(error.title),
@@ -250,93 +216,32 @@ public struct RoomsTabView<Destination: View>: View {
           dismissButton: .default(Text("OK")))
       }
       .navigationTitle("Rooms")
-      .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search...")
-      .sheet(item: $activeFilterSheet) { sheet in
-        switch sheet {
-        case .date:
-          DateFilterView(selectedDate: selectedDateBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-            let vm = roomViewModel
-            Task { await vm.loadBookingsForFilteredRooms() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.dateDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .roomType:
-          RoomTypeFilterView(selectedRoomTypes: selectedRoomTypesBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.roomTypeDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .duration:
-          DurationFilterView(onSelect: {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          })
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.durationDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .campusLocation:
-          CampusLocationFilterView(selectedCampusLocation: selectedCampusLocationBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.campusLocationDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-
-        case .capacity:
-          CapacityFilterView(selectedCapacity: selectedCapacityBinding) {
-            activeFilterSheet = nil
-            Task { await roomViewModel.applyFilters() }
-          }
-          .environment(roomViewModel)
-          .environment(theme)
-          .presentationDetents([FilterSheetLayout.capacityDetent])
-          .presentationDragIndicator(.visible)
-          .presentationBackground(Color(.systemBackground))
-        }
-      }
+      .searchable(
+        text: searchTextBinding,
+        placement: .navigationBarDrawer(displayMode: .always),
+        prompt: "Search...")
+      .roomFilterSheets(activeFilterSheet: $activeFilterSheet)
   }
 
   @ViewBuilder
   private var roomView: some View {
     if selectedView == ViewOrientation.List {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
-        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(
+          for: "placeholder")
         List {
-          ForEach(placeholderRooms) { room in
-            GenericListRowView(
-              path: $path,
-              rowHeight: $rowHeight,
-              room: room,
-              rooms: placeholderRooms,
-              isLoading: true,
-              imageProvider: { roomID in
-                RoomImage[roomID]
-              })
-              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-          }
+          RoomList(
+            rooms: placeholderRooms,
+            isLoading: true,
+            path: $path,
+            rowHeight: $rowHeight)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
         .background(theme.background.primary)
       } else {
         List {
+          favoriteRoomsPreview
           roomsListView(roomSectionBuildings)
         }
         .listRowInsets(EdgeInsets())
@@ -345,72 +250,112 @@ public struct RoomsTabView<Destination: View>: View {
       }
     } else {
       if roomViewModel.isLoading, roomViewModel.roomsByBuildingId.isEmpty {
-        let placeholderRooms = roomViewModel.getPlaceHolderRooms(for: "placeholder")
+        let placeholderRooms = roomViewModel.getPlaceHolderRooms(
+          for: "placeholder")
         ScrollView {
-          LazyVGrid(columns: columns, spacing: RoomLayoutConstants.cardGridSpacing) {
-            ForEach(placeholderRooms) { room in
-              GenericCardView(
-                path: $path,
-                cardWidth: $cardWidth,
-                room: room,
-                rooms: placeholderRooms,
-                isLoading: true,
-                isFavourite: .constant(false),
-                imageProvider: { roomID in
-                  RoomImage[roomID]
-                })
-            }
-          }
-          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+          RoomCardGrid(
+            rooms: placeholderRooms,
+            isLoading: true,
+            path: $path,
+            cardWidth: $cardWidth)
         }
         .background(Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
         .shadow(
-          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          color: theme.label.primary.opacity(
+            RoomLayoutConstants.cardShadowOpacity),
           radius: RoomLayoutConstants.cardShadowRadius)
       } else {
         ScrollView {
+          favoriteRoomsPreview
           roomsCardView(roomSectionBuildings)
         }
         .background(theme.background.primary)
         .shadow(
-          color: theme.label.primary.opacity(RoomLayoutConstants.cardShadowOpacity),
+          color: theme.label.primary.opacity(
+            RoomLayoutConstants.cardShadowOpacity),
           radius: RoomLayoutConstants.cardShadowRadius)
       }
     }
   }
 
-  private var toolbarButtons: some View {
-    HStack {
-      Button {
-        theme.toggleColorScheme(from: colorScheme)
-      } label: {
-        Image(systemName: colorScheme == .dark ? "sun.max.fill" : "moon.fill")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-      }
+  @ViewBuilder
+  private var favoriteRoomsPreview: some View {
+    let favoriteRooms = roomViewModel.getAllFavoriteRooms()
+    // Keep the inline section compact; the full list lives at `.favorites`.
+    let previewRooms = Array(favoriteRooms.prefix(4))
 
-      Button {
-        roomViewModel.getRoomsInOrder()
-      } label: {
-        Image(systemName: "arrow.up.arrow.down")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-      }
-
-      Button {
-        if selectedView == ViewOrientation.Card {
-          selectedView = ViewOrientation.List
+    Section {
+      if favoriteRooms.isEmpty {
+        ContentUnavailableView(
+          "No Favorite Rooms",
+          systemImage: "heart.slash",
+          description: Text(
+            "Rooms you mark as favorites will appear here."))
+          .listRowInsets(EdgeInsets())
+          .listRowBackground(Color.clear)
+      } else {
+        if selectedView == ViewOrientation.List {
+          RoomList(
+            rooms: previewRooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            rowHeight: $rowHeight)
         } else {
-          selectedView = ViewOrientation.Card
+          RoomCardGrid(
+            rooms: previewRooms,
+            isLoading: roomViewModel.isLoading,
+            path: $path,
+            cardWidth: $cardWidth)
         }
-      } label: {
-        Image(systemName: selectedView == ViewOrientation.List ? "square.grid.2x2" : "list.bullet")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
+
+        if favoriteRooms.count > 4 {
+          Button {
+            path.append(RoomsDestination.favorites)
+          } label: {
+            HStack(spacing: 4) {
+              Text("See More")
+                .fontWeight(.semibold)
+
+              Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(theme.label.tertiary)
+            .padding(.vertical, 12)
+          }
+          .buttonStyle(.plain)
+          .padding(
+            .horizontal,
+            RoomLayoutConstants.contentHorizontalPadding)
+          .listRowInsets(EdgeInsets())
+          .listRowBackground(Color.clear)
+          .listRowSeparator(.hidden)
+        }
+      }
+    } header: {
+      if selectedView == ViewOrientation.List {
+        Text("Favorites")
+          .textCase(.uppercase)
+          .foregroundStyle(theme.label.primary)
+      } else {
+        HStack {
+          Text("Favorites")
+            .textCase(.uppercase)
+            .foregroundStyle(theme.label.primary)
+            .padding(
+              .leading,
+              RoomLayoutConstants.sectionHeaderLeadingPadding)
+
+          Spacer()
+        }
+        .padding(
+          .horizontal,
+          RoomLayoutConstants.contentHorizontalPadding)
+        .padding(
+          .top,
+          RoomLayoutConstants.sectionHeaderTopPadding)
       }
     }
-    .padding(RoomLayoutConstants.toolbarIconPadding)
-    .foregroundStyle(theme.accent.primary)
   }
 
   private static func placeholderBuilding(id: String, name: String) -> Building {
@@ -422,6 +367,12 @@ public struct RoomsTabView<Destination: View>: View {
       aliases: [],
       numberOfAvailableRooms: 0)
   }
+}
+
+// MARK: - RoomsDestination
+
+private enum RoomsDestination: Hashable {
+  case favorites
 }
 
 // MARK: - PreviewWrapper

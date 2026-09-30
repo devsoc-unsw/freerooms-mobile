@@ -1,5 +1,5 @@
 {
-  "originHash" : "6af1238e3c4ba8bc3869ac5ddddb508d0221f153bf1daaf2376cb3edb874e5e7",
+  "originHash" : "652ed08937e69f380f468f1ada0ca2d33bf30aaa6beb56b592bd7417555f7f1e",
   "pins" : [
     {
       "identity" : "apollo-ios",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/avdn-dev/VISOR.git",
       "state" : {
-        "revision" : "aa592708e9d5e6ed2552927f2924bcfa0e7c0ca5",
-        "version" : "13.2.2"
+        "revision" : "99850b30f35b23bae66e80648c67394aec76c0cc",
+        "version" : "13.2.3"
       }
     }
   ],

@@ -52,28 +52,41 @@ public struct RoomDetailsSheetView: View {
             .tint(theme.accent.primary)
         }
 
-        ScrollView(.vertical) {
-          ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: 0) {
-              ForEach(0..<Self.maxScrollID, id: \.self) { index in
-                RoomBookingsListView(
-                  room: room,
-                  dateSelect: bindingFor(index: index))
-                  .id(index)
-                  .containerRelativeFrame(.horizontal)
+        Group {
+          if roomViewModel.getBookingsIsLoading {
+            ScrollView(.vertical) {
+              RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius)
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: Self.loadingTimelineHeight)
+            }
+            .redacted(reason: .placeholder)
+            .accessibilityLabel("Loading room bookings")
+          } else {
+            ScrollView(.vertical) {
+              ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(alignment: .top, spacing: 0) {
+                  ForEach(0..<Self.maxScrollID, id: \.self) { index in
+                    RoomBookingsListView(dateSelect: bindingFor(index: index))
+                      .id(index)
+                      .containerRelativeFrame(.horizontal)
+                  }
+                }
+                .scrollTargetLayout()
+              }
+              .scrollClipDisabled()
+              .scrollTargetBehavior(.paging)
+              .scrollPosition(id: Binding(
+                get: { roomViewModel.scrollID },
+                set: { roomViewModel.scrollID = $0 }))
+              .frame(height: selectedTimelineHeight, alignment: .top)
+              .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
+                roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
+              }
+              .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
+                roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
               }
             }
-            .scrollTargetLayout()
-          }
-          .scrollTargetBehavior(.paging)
-          .scrollPosition(id: Binding(
-            get: { roomViewModel.scrollID },
-            set: { roomViewModel.scrollID = $0 }))
-          .onChange(of: roomViewModel.scrollID) { oldValue, newValue in
-            roomViewModel.handleScrollIDChange(oldValue: oldValue, newValue: newValue)
-          }
-          .onChange(of: roomViewModel.dateSelect) { oldValue, newValue in
-            roomViewModel.handleDateSelectChange(oldValue: oldValue, newValue: newValue)
+            .defaultScrollAnchor(.top)
           }
         }
         .clipShape(RoundedRectangle(cornerRadius: RoomLayoutConstants.bookingSectionCornerRadius))
@@ -129,6 +142,7 @@ public struct RoomDetailsSheetView: View {
   private static let bookingSectionBorderWidth: CGFloat = 1
   private static let bookingSectionSpacing: CGFloat = 16
   private static let contentSpacing: CGFloat = 10
+  private static let loadingTimelineHeight = RoomLayoutConstants.slotHeight * 6
 
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
@@ -137,6 +151,13 @@ public struct RoomDetailsSheetView: View {
 
   private let onDismiss: (() -> Void)?
   private let initialDate: Date
+
+  private var selectedTimelineHeight: CGFloat {
+    BookingTimelineLayout.roomSchedule(
+      bookings: roomViewModel.currentRoomBookings,
+      selectedDate: roomViewModel.dateSelect)
+      .totalHeight
+  }
 
 }
 
