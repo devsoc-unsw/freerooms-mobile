@@ -196,6 +196,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     }
   }
 
+  @ViewBuilder
   private var toolbarButtons: some View {
     HStack {
       Button {

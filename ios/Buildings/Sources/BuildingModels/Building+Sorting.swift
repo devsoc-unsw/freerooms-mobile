@@ -394,8 +394,8 @@ extension Building.SortOptions.Option: Codable {
 // MARK: - Building.SortOptions._Storage + Equatable
 
 extension Building.SortOptions._Storage: Equatable {
-  
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+
+  public static func ==(lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
     case (.none, .none):
       return true
@@ -414,15 +414,15 @@ extension Building.SortOptions._Storage: Equatable {
     case (.multiple(let lhs), .none):
       assert(lhs.count > 1)
       return lhs.isEmpty
-      
+
     case (.single(let lhs), .multiple(let rhs)):
       assert(rhs.count > 1)
       return lhs == rhs.first && rhs.count == 1
-      
+
     case (.none, .multiple(let rhs)):
       assert(rhs.count > 1)
       return rhs.isEmpty
-      
+
     case (.single, .none), (.none, .single):
       return false
     }

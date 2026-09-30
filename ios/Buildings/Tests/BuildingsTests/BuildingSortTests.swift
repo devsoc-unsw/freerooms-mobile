@@ -13,6 +13,37 @@ import Testing
 @Suite
 struct BuildingSortTests {
 
+  @Suite
+  struct SortOptionsTests {
+
+    static var identicalSortOptions0: [Building.SortOptions] {
+      [
+        [.alphabetical, .campus, .mostAvailable.reversed()],
+        Building.SortOptions(from: [.alphabetical, .campus, .mostAvailable.reversed()]),
+      ]
+    }
+
+    @Test("Identical sort options are equal", arguments: identicalSortOptions0, identicalSortOptions0)
+    func test_identicalSortOptionsAreEqual(_ lhs: Building.SortOptions, _ rhs: Building.SortOptions) {
+      #expect(lhs == rhs)
+    }
+
+  }
+
+  @Suite
+  struct SerializationTests {
+    static let decoder = JSONDecoder()
+    static let encoder = JSONEncoder()
+
+    @Test("Can round trip sort options", arguments: testSortOptions)
+    func test_canRoundTripSortOptions(_ sortOptions: Building.SortOptions) throws {
+      let data = try Self.encoder.encode(sortOptions)
+      let decoded = try Self.decoder.decode(Building.SortOptions.self, from: data)
+      #expect(decoded == sortOptions)
+    }
+
+  }
+
   static var testBuildings: [Building] {
     [
       Building(
@@ -45,7 +76,7 @@ struct BuildingSortTests {
         numberOfAvailableRooms: 3),
     ]
   }
-  
+
   static var testSortOptions: [Building.SortOptions] {
     [
       .init(from: [.alphabetical]),
@@ -113,37 +144,6 @@ struct BuildingSortTests {
     let buildings = Self.testBuildings.shuffled()
     let resultIDs = options.sort(buildings).map(\.id)
     #expect(resultIDs == ["ALICE", "JOE", "JANE", "JOHN"])
-  }
-  
-  @Suite
-  struct SortOptionsTests {
-    
-    static var identicalSortOptions0: [Building.SortOptions] {
-      [
-        [.alphabetical, .campus, .mostAvailable.reversed()],
-        Building.SortOptions(from: [.alphabetical, .campus, .mostAvailable.reversed()])
-      ]
-    }
-    
-    @Test("Identical sort options are equal", arguments: identicalSortOptions0, identicalSortOptions0)
-    func test_identicalSortOptionsAreEqual(_ lhs: Building.SortOptions, _ rhs: Building.SortOptions) {
-      #expect(lhs == rhs)
-    }
-    
-  }
-  
-  @Suite
-  struct SerializationTests {
-    static let decoder = JSONDecoder()
-    static let encoder = JSONEncoder()
-    
-    @Test("Can round trip sort options", arguments: testSortOptions)
-    func test_canRoundTripSortOptions(_ sortOptions: Building.SortOptions) throws {
-      let data = try Self.encoder.encode(sortOptions)
-      let decoded = try Self.decoder.decode(Building.SortOptions.self, from: data)
-      #expect(decoded == sortOptions)
-    }
-    
   }
 
 }

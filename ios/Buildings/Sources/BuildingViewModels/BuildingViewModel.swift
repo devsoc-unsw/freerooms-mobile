@@ -16,12 +16,12 @@ public import RoomModels
 // MARK: - BuildingViewModel
 
 @MainActor
-public protocol BuildingViewModel {
+public protocol BuildingViewModel: Observable {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }
   var displayedBuildings: CampusBuildings { get }
   var allBuildings: [Building] { get }
-  var buildingsInAscendingOrder: Bool { get }
+  var sortOptions: Building.SortOptions { get set }
   var isLoading: Bool { get }
   var hasLoaded: Bool { get }
   var loadBuildingErrorMessage: AlertError? { get set }
@@ -48,7 +48,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   // MARK: Public
 
   public var hasLoaded = false
-  public var buildingsInAscendingOrder = true
+  public var sortOptions = Building.SortOptions.alphabetical
   public var isLoading = false
   public var searchText = ""
   public var loadBuildingErrorMessage: AlertError?
@@ -102,7 +102,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
       switch selectedFilter {
       case .Alphabetical:
-        buildingResult = await interactor.getBuildingsSortedAlphabetically(inAscendingOrder: buildingsInAscendingOrder)
+        buildingResult = await interactor.getBuildings(sortedBy: .alphabetical)
       case .Location:
         // Not Implemented
         fatalError("Unreachable")
@@ -121,15 +121,9 @@ public class LiveBuildingViewModel: BuildingViewModel {
         let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
         let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
 
-        buildings.upper = interactor.getBuildingsSortedAlphabetically(
-          buildings: upper,
-          order: buildingsInAscendingOrder)
-        buildings.middle = interactor.getBuildingsSortedAlphabetically(
-          buildings: middle,
-          order: buildingsInAscendingOrder)
-        buildings.lower = interactor.getBuildingsSortedAlphabetically(
-          buildings: lower,
-          order: buildingsInAscendingOrder)
+        buildings.upper = sortOptions.sort(upper)
+        buildings.middle = sortOptions.sort(middle)
+        buildings.lower = sortOptions.sort(lower)
 
       case .failure(let error):
         loadBuildingErrorMessage = AlertError(message: error.clientMessage)
@@ -156,7 +150,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = true
 
     // Fetch all buildings once, then derive sections in-memory
-    let buildingResult = await interactor.getBuildingsSortedAlphabetically(inAscendingOrder: true)
+    let buildingResult = await interactor.getBuildings(sortedBy: .alphabetical)
 
     switch buildingResult {
     case .success(let fetchedBuildings):
@@ -166,15 +160,9 @@ public class LiveBuildingViewModel: BuildingViewModel {
       let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
       let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
 
-      buildings.upper = interactor.getBuildingsSortedAlphabetically(
-        buildings: upper,
-        order: buildingsInAscendingOrder)
-      buildings.middle = interactor.getBuildingsSortedAlphabetically(
-        buildings: middle,
-        order: buildingsInAscendingOrder)
-      buildings.lower = interactor.getBuildingsSortedAlphabetically(
-        buildings: lower,
-        order: buildingsInAscendingOrder)
+      buildings.upper = sortOptions.sort(upper)
+      buildings.lower = sortOptions.sort(lower)
+      buildings.middle = sortOptions.sort(middle)
 
     case .failure(let error):
       loadBuildingErrorMessage = AlertError(message: error.clientMessage)
@@ -186,17 +174,11 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public func getBuildingsInOrder() {
     guard !isLoading else { return }
     isLoading = true
-    buildingsInAscendingOrder.toggle()
+    sortOptions.reverse()
 
-    buildings.upper = interactor.getBuildingsSortedAlphabetically(
-      buildings: buildings.upper,
-      order: buildingsInAscendingOrder)
-    buildings.lower = interactor.getBuildingsSortedAlphabetically(
-      buildings: buildings.lower,
-      order: buildingsInAscendingOrder)
-    buildings.middle = interactor.getBuildingsSortedAlphabetically(
-      buildings: buildings.middle,
-      order: buildingsInAscendingOrder)
+    buildings.upper = sortOptions.sort(buildings.upper)
+    buildings.lower = sortOptions.sort(buildings.lower)
+    buildings.middle = sortOptions.sort(buildings.middle)
 
     isLoading = false
   }
@@ -209,6 +191,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
     var seen = Set<String>()
     return input.filter { seen.insert($0.id).inserted }
   }
+
 }
 
 // MARK: - PreviewBuildingViewModel
