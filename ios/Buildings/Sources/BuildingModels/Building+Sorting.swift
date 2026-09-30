@@ -37,6 +37,7 @@ extension Building {
       self.init(from: elements)
     }
 
+    /// Create ``SortOptions`` by copying the provided options
     public init(from options: some Collection<Option>) {
       guard !options.isEmpty else {
         _storage = .none
