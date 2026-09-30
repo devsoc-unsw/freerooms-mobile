@@ -15,6 +15,10 @@ extension Building {
   /// Options to sort a collection of buildings
   ///
   /// Options are evaulated in the order they are specified.
+  ///
+  /// > Important:
+  /// > A reversed ``SortOptions`` vs one that contains reversed rules are not equal to each other,
+  /// > even if they behave the same.
   public struct SortOptions: Sendable, ExpressibleByArrayLiteral {
 
     // MARK: Lifecycle
@@ -52,9 +56,9 @@ extension Building {
 
       // MARK: Lifecycle
 
-      private init(_ _case: _Case, isReversed: Bool = false) {
+      private init(_ _case: _Case, isAscending: Bool = true) {
         self._case = _case
-        self.isReversed = isReversed
+        self.isAscending = isAscending
       }
 
       // MARK: Public
@@ -66,11 +70,11 @@ extension Building {
       /// Buildings in lower campus are preferred
       public static var campus: Option { .init(.campus) }
 
-      /// Whether the option is treated as reversed
+      /// Whether the option is treated as ascending or descending
       ///
-      /// For example when this is enabled, the ``alphabetical`` option will search in
+      /// For example when this is disabled, the ``alphabetical`` option will search in
       /// reversed alpabetical order.
-      public var isReversed: Bool = false
+      public var isAscending: Bool = true
 
       /// Buildings closest to the provided location
       public static func nearest(to location: CLLocationCoordinate2D) -> Option { .init(.nearest(location)) }
@@ -78,7 +82,7 @@ extension Building {
       /// Returns a reversed version of the ``Option``
       public func reversed() -> Option {
         var copy = self
-        copy.isReversed.toggle()
+        copy.isAscending.toggle()
         return copy
       }
 
@@ -89,7 +93,7 @@ extension Building {
       /// option.isReversed.toggle()
       /// ```
       mutating public func reverse() {
-        isReversed.toggle()
+        isAscending.toggle()
       }
 
       // MARK: Internal
@@ -151,7 +155,7 @@ extension Building {
           }
         }
 
-        return isReversed ? result.reversed() : result
+        return isAscending ? result : result.reversed()
       }
 
       // MARK: Private
@@ -169,12 +173,12 @@ extension Building {
 
     /// Whether the options are treated as reversed
     ///
-    /// For example when this is enabled, the ``alphabetical`` option will search in
+    /// For example when this is disabled, the ``alphabetical`` option will search in
     /// reversed alpabetical order.
     ///
     /// > Important:
     /// > The rules are still evaluated in the same order, only their comparison results are reversed
-    public var isReversed: Bool = false
+    public var isAscending: Bool = true
 
     /// Same as ``Option/nearest(to:)``
     public static func nearest(to coordinate: CLLocationCoordinate2D) -> SortOptions {
@@ -183,12 +187,12 @@ extension Building {
 
     public func reversed() -> SortOptions {
       var copy = self
-      copy.isReversed.toggle()
+      copy.isAscending.toggle()
       return copy
     }
 
     mutating public func reverse() {
-      isReversed.toggle()
+      isAscending.toggle()
     }
 
     /// Sort the provided buildings
@@ -202,8 +206,9 @@ extension Building {
         buildings.sorted {
           let result = option.compare($0, $1)
           switch result {
-          case .orderedDescending: return isReversed
-          case .orderedAscending, .orderedSame: return !isReversed
+          case .orderedDescending: return !isAscending
+          case .orderedAscending: return isAscending
+          case .orderedSame: return false
           @unknown default:
             result.reportUnknownCase()
           }
@@ -214,14 +219,14 @@ extension Building {
           for option in options {
             let result = option.compare($0, $1)
             switch result {
-            case .orderedDescending: return isReversed
-            case .orderedAscending: return !isReversed
+            case .orderedDescending: return !isAscending
+            case .orderedAscending: return isAscending
             case .orderedSame: continue
             @unknown default:
               result.reportUnknownCase()
             }
           }
-          return isReversed
+          return false
         }
       }
     }
@@ -312,3 +317,165 @@ extension Building.SortOptions.Option._Case: Hashable {
 // MARK: - Building.SortOptions.Option + Equatable, Hashable
 
 extension Building.SortOptions.Option: Equatable, Hashable { }
+
+// MARK: - Building.SortOptions.Option + Codable
+
+extension Building.SortOptions.Option: Codable {
+
+  // MARK: Lifecycle
+
+  public init(from decoder: any Decoder) throws {
+    let keyedContainer = try decoder.container(keyedBy: CodingKeys.self)
+
+    let isAscending = try keyedContainer.decode(Bool.self, forKey: .isAscending)
+    let optionString = try keyedContainer.decode(String.self, forKey: .option)
+
+    switch optionString {
+    case Self.encodedValue(for: .alphabetical):
+      self.init(.alphabetical, isAscending: isAscending)
+
+    case Self.encodedValue(for: .campus):
+      self.init(.campus, isAscending: isAscending)
+
+    case Self.encodedValue(for: .mostAvailable):
+      self.init(.mostAvailable, isAscending: isAscending)
+
+    case Self.encodedValue(for: .nearest(.init())):
+      let latitude = try keyedContainer.decode(Double.self, forKey: .latitude)
+      let longitude = try keyedContainer.decode(Double.self, forKey: .longitude)
+      let coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+      self.init(.nearest(coordinates), isAscending: isAscending)
+
+    default:
+      throw DecodingError.dataCorrupted(.init(
+        codingPath: keyedContainer.codingPath,
+        debugDescription: "Invalid option: \(optionString)"))
+    }
+  }
+
+  // MARK: Public
+
+  public enum CodingKeys: String, CodingKey {
+    case isAscending
+    case option
+    case latitude
+    case longitude
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    var keyedContainer = encoder.container(keyedBy: CodingKeys.self)
+    try keyedContainer.encode(isAscending, forKey: .isAscending)
+    try keyedContainer.encode(Self.encodedValue(for: _case), forKey: .option)
+
+    // Encode latitiude and longitude if necessary
+    if case .nearest(let coordinates) = _case {
+      try keyedContainer.encode(coordinates.latitude, forKey: .latitude)
+      try keyedContainer.encode(coordinates.longitude, forKey: .longitude)
+    }
+  }
+
+  // MARK: Private
+
+  private static func encodedValue(for _case: borrowing _Case) -> String {
+    switch _case {
+    case .alphabetical:
+      "alphabetical"
+    case .campus:
+      "campus"
+    case .mostAvailable:
+      "mostAvailable"
+    case .nearest:
+      "nearest"
+    }
+  }
+
+}
+
+// MARK: - Building.SortOptions._Storage + Equatable
+
+extension Building.SortOptions._Storage: Equatable {
+  
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    switch (lhs, rhs) {
+    case (.none, .none):
+      return true
+
+    case (.single(let lhs), .single(let rhs)):
+      return lhs == rhs
+
+    case (.multiple(let lhs), .multiple(let rhs)):
+      assert(lhs.count > 1 && rhs.count > 1)
+      return lhs == rhs
+
+    case (.multiple(let lhs), .single(let rhs)):
+      assert(lhs.count > 1)
+      return lhs.first == rhs && lhs.count == 1
+
+    case (.multiple(let lhs), .none):
+      assert(lhs.count > 1)
+      return lhs.isEmpty
+      
+    case (.single(let lhs), .multiple(let rhs)):
+      assert(rhs.count > 1)
+      return lhs == rhs.first && rhs.count == 1
+      
+    case (.none, .multiple(let rhs)):
+      assert(rhs.count > 1)
+      return rhs.isEmpty
+      
+    case (.single, .none), (.none, .single):
+      return false
+    }
+  }
+
+}
+
+// MARK: - Building.SortOptions + Equatable
+
+extension Building.SortOptions: Equatable { }
+
+// MARK: - Building.SortOptions + Codable
+
+extension Building.SortOptions: Codable {
+
+  // MARK: Lifecycle
+
+  public init(from decoder: any Decoder) throws {
+    let keyedContainer = try decoder.container(keyedBy: CodingKeys.self)
+    isAscending = try keyedContainer.decode(Bool.self, forKey: .isAscending)
+
+    let options = try keyedContainer.decode([Option].self, forKey: .options)
+    switch options.count {
+    case 0:
+      _storage = .none
+    case 1:
+      _storage = .single(options.first!)
+    case 2...:
+      _storage = .multiple(options)
+    default:
+      preconditionFailure("\(#function): Received an invalid number of options: \(options.count).")
+    }
+  }
+
+  // MARK: Public
+
+  public enum CodingKeys: String, CodingKey {
+    case isAscending
+    case options
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    var keyedContainer = encoder.container(keyedBy: CodingKeys.self)
+    try keyedContainer.encode(isAscending, forKey: .isAscending)
+
+    switch _storage {
+    case .none:
+      try keyedContainer.encode([Option](), forKey: .options)
+    case .single(let option):
+      try keyedContainer.encode([option], forKey: .options)
+    case .multiple(let options):
+      try keyedContainer.encode(options, forKey: .options)
+    }
+  }
+
+}
