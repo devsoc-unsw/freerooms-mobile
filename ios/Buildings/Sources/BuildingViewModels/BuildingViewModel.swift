@@ -52,7 +52,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var isLoading = false
   public var searchText = ""
   public var loadBuildingErrorMessage: AlertError?
-  public var selectedFilter = BuildingFilterOptions.Alphabetical
 
   public var buildings: CampusBuildings = ([], [], [])
 
@@ -72,7 +71,8 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public var allBuildings: [Building] {
     let allBuildings = buildings.0 + buildings.1 + buildings.2
-    return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
+//    return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
+    return Building.SortOptions.alphabetical.sort(allBuildings)
   }
 
   public var placeHolderBuildings: CampusBuildings {
@@ -98,18 +98,9 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public func reloadBuildings() {
     Task {
       isLoading = true
+      defer { isLoading = false }
       let buildingResult: Result<[Building], FetchBuildingsError>
-
-      switch selectedFilter {
-      case .Alphabetical:
-        buildingResult = await interactor.getBuildings(sortedBy: .alphabetical)
-      case .Location:
-        // Not Implemented
-        fatalError("Unreachable")
-      case .CampusSection:
-        // Not Implemented
-        fatalError("Unreachable")
-      }
+      buildingResult = await interactor.getBuildings(sortedBy: sortOptions)
 
       // Fetch buildings with the determined sort order
 
@@ -128,8 +119,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
       case .failure(let error):
         loadBuildingErrorMessage = AlertError(message: error.clientMessage)
       }
-
-      isLoading = false
     }
   }
 
