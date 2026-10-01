@@ -90,6 +90,7 @@ public final class PreviewBookingService: BookingService {
     return .success([
       WeeklyBooking(
         title: "COMP1511 Lecture",
+        eventId: UUID(),
         bookingType: "BLOCK",
         roomID: "K17-LG01",
         roomName: "Ainsworth LG01",
@@ -102,6 +103,7 @@ public final class PreviewBookingService: BookingService {
         abbreviation: "AinsworthLG01"),
       WeeklyBooking(
         title: "CSE Society Workshop",
+        eventId: UUID(),
         bookingType: "BLOCK",
         roomID: "K17-G01",
         roomName: "Ainsworth G01",
@@ -125,6 +127,9 @@ extension FetchWeeklyBookingsError {
       self = .invalidResponse
     case .invalidDateFormat:
       self = .invalidDateFormat
+    case .invalidEventId:
+      // whatever ig
+      self = .invalidResponse
     case .invalidDateRange:
       self = .invalidDateRange
     case .cancelled:

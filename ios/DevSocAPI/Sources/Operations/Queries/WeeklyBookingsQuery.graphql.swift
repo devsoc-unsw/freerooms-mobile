@@ -8,7 +8,7 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
   public static let operationName: String = "WeeklyBookings"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) { bookings( where: { _and: [{ start: { _lt: $weekEnd } }, { end: { _gt: $weekStart } }] } order_by: [{ start: asc }] ) { __typename name bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } } } }"#
+      #"query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) { bookings( where: { _and: [{ start: { _lt: $weekEnd } }, { end: { _gt: $weekStart } }] } order_by: [{ start: asc }] ) { __typename name eventId bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } } } }"#
     ))
 
   public var weekStart: Timestamptz
@@ -56,6 +56,7 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
       @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
         .field("__typename", String.self),
         .field("name", String.self),
+        .field("eventId", String.self),
         .field("bookingType", DevSocAPI.Bookingtypeenum.self),
         .field("roomId", String.self),
         .field("start", DevSocAPI.Timestamptz.self),
@@ -67,6 +68,7 @@ nonisolated public struct WeeklyBookingsQuery: GraphQLQuery {
       ] }
 
       public var name: String { __data["name"] }
+      public var eventId: String { __data["eventId"] }
       public var bookingType: DevSocAPI.Bookingtypeenum { __data["bookingType"] }
       public var roomId: String { __data["roomId"] }
       public var start: DevSocAPI.Timestamptz { __data["start"] }

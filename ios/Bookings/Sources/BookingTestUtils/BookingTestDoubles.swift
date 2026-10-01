@@ -19,6 +19,7 @@ public enum BookingFixtures {
   {
     WeeklyBooking(
       title: title,
+      eventId: UUID(),
       bookingType: "EXAMS",
       roomID: "K-H6-LG03",
       roomName: "Tyree Energy Technology LG03",

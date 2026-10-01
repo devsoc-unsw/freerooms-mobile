@@ -22,6 +22,7 @@ public enum WeeklyBookingLoaderError: Error, Equatable, Sendable {
   case invalidResponse
   case invalidDateFormat
   case invalidDateRange
+  case invalidEventId
   case cancelled
 }
 
@@ -83,34 +84,19 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
       return .failure(.invalidResponse)
     }
 
-    var bookings = [WeeklyBooking]()
-    bookings.reserveCapacity(graphQLBookings.count)
-
-    for graphQLBooking in graphQLBookings {
-      guard
-        let start = Self.parse(graphQLBooking.start),
-        let end = Self.parse(graphQLBooking.end),
-        start < end
-      else {
+    do throws(BookingConversionError) {
+      return .success(try graphQLBookings.map(Booking.init(from:)))
+    } catch {
+      switch error {
+      case .invalidDateFormat:
         Self.logger.warning("Weekly booking contained an invalid date range")
         return .failure(.invalidDateFormat)
+
+      case .invalidEventId:
+        Self.logger.warning("Weekly booking contained an invalid event ID")
+        return .failure(.invalidEventId)
       }
-
-      bookings.append(WeeklyBooking(
-        title: graphQLBooking.name,
-        bookingType: graphQLBooking.bookingType,
-        roomID: graphQLBooking.roomId,
-        roomName: graphQLBooking.room.name,
-        buildingID: graphQLBooking.room.building.id,
-        buildingName: graphQLBooking.room.building.name,
-        start: start,
-        end: end,
-        usage: graphQLBooking.room.usage,
-        capacity: graphQLBooking.room.capacity,
-        abbreviation: graphQLBooking.room.abbr))
     }
-
-    return .success(bookings.sorted { $0.start < $1.start })
   }
 
   // MARK: Private
@@ -129,17 +115,4 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
     return formatter.string(from: date)
   }
 
-  /// The backend currently emits ISO-8601 timestamps both with and without fractional seconds.
-  private static func parse(_ value: String) -> Date? {
-    let fractionalFormatter = ISO8601DateFormatter()
-    fractionalFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-    if let date = fractionalFormatter.date(from: value) {
-      return date
-    }
-
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime]
-    return formatter.date(from: value)
-  }
 }

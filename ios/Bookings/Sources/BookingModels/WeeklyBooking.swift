@@ -5,7 +5,12 @@
 //  Created by Yanlin Li  on 7/8/2025.
 //
 
+public import DevSocAPI
 public import Foundation
+
+public typealias Booking = WeeklyBooking
+
+// MARK: - WeeklyBooking
 
 /// A booking prepared for display in the cross-room weekly discovery feed.
 public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
@@ -14,6 +19,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
 
   public init(
     title: String,
+    eventId: UUID,
     bookingType: String?,
     roomID: String,
     roomName: String,
@@ -26,6 +32,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
     abbreviation: String)
   {
     self.title = title
+    self.eventId = eventId
     self.bookingType = bookingType
     self.roomID = roomID
     self.roomName = roomName
@@ -40,22 +47,8 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
 
   // MARK: Public
 
-  /// The backend identifies a booking by its room and interval rather than a standalone identifier.
-  public struct ID: Equatable, Hashable, Sendable {
-    public init(title: String, roomID: String, start: Date, end: Date) {
-      self.title = title
-      self.roomID = roomID
-      self.start = start
-      self.end = end
-    }
-
-    public let title: String
-    public let roomID: String
-    public let start: Date
-    public let end: Date
-  }
-
   public let title: String
+  public let eventId: UUID
   public let bookingType: String?
   public let roomID: String
   public let roomName: String
@@ -67,7 +60,102 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let capacity: Int
   public let abbreviation: String
 
-  public var id: ID {
-    ID(title: title, roomID: roomID, start: start, end: end)
+  public var id: UUID {
+    eventId
   }
+}
+
+// MARK: - _GraphQLBookingProtocol
+
+@_documentation(visibility: internal)
+public protocol _GraphQLBookingProtocol {
+  associatedtype Room: _GraphQLBookingRoomProtocol
+  var name: String { get }
+  var eventId: String { get }
+  var bookingType: String { get }
+  var roomId: String { get }
+  var start: String { get }
+  var end: String { get }
+  var room: Room { get }
+}
+
+// MARK: - _GraphQLBookingRoomProtocol
+
+@_documentation(visibility: internal)
+public protocol _GraphQLBookingRoomProtocol {
+  associatedtype Building: _GraphQLBookingRoomBuildingProtocol
+  var name: String { get }
+  var abbr: String { get }
+  var usage: String { get }
+  var capacity: Int { get }
+  var building: Building { get }
+}
+
+// MARK: - _GraphQLBookingRoomBuildingProtocol
+
+@_documentation(visibility: internal)
+public protocol _GraphQLBookingRoomBuildingProtocol {
+  var id: String { get }
+  var name: String { get }
+}
+
+// MARK: - DevSocAPI.WeeklyBookingsQuery.Data.Booking + _GraphQLBookingProtocol
+
+extension DevSocAPI.WeeklyBookingsQuery.Data.Booking: _GraphQLBookingProtocol { }
+
+// MARK: - DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room + _GraphQLBookingRoomProtocol
+
+extension DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room: _GraphQLBookingRoomProtocol { }
+
+// MARK: - DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room.Building + _GraphQLBookingRoomBuildingProtocol
+
+extension DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room.Building: _GraphQLBookingRoomBuildingProtocol { }
+
+extension Booking {
+
+  /// Convert a
+  public init(from booking: some _GraphQLBookingProtocol) throws(BookingConversionError) {
+    // Used to parse start and end times
+    let dateFormatStyle = Date.ISO8601FormatStyle()
+
+    // Try to parse the start and end date
+    let startDate: Date
+    let endDate: Date
+    do {
+      startDate = try dateFormatStyle.parse(booking.start)
+      endDate = try dateFormatStyle.parse(booking.end)
+    } catch {
+      throw BookingConversionError.invalidDateFormat(error)
+    }
+
+    guard let eventId = UUID(uuidString: booking.eventId) else {
+      throw BookingConversionError.invalidEventId(booking.eventId)
+    }
+
+    self.init(
+      title: booking.name,
+      eventId: eventId,
+      bookingType: booking.bookingType,
+      roomID: booking.roomId,
+      roomName: booking.room.name,
+      buildingID: booking.room.building.id,
+      buildingName: booking.room.building.name,
+      start: startDate,
+      end: endDate,
+      usage: booking.room.usage,
+      capacity: booking.room.capacity,
+      abbreviation: booking.room.abbr)
+  }
+}
+
+// MARK: - BookingConversionError
+
+/// Possible errors that can occur when converting a **GraphQL** booking into
+/// a regular ``WeeklyBooking``
+public enum BookingConversionError: Error {
+  /// Either the start or end date could not be converted into a valid date
+  case invalidDateFormat(any Error)
+  /// The ``Booking/eventId`` was not a valid `UUID`
+  case invalidEventId(String)
+
 }

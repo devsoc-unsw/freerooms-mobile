@@ -122,6 +122,7 @@ private struct BookingDetailField: View {
   BookingDetailsSheet(
     booking: WeeklyBooking(
       title: "DevSoc Weekly Meeting",
+      eventId: UUID(),
       bookingType: "BLOCK",
       roomID: "K-H6-LG03",
       roomName: "Tyree Energy Technology LG03",

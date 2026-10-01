@@ -6,6 +6,7 @@ query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) {
     order_by: [{ start: asc }]
   ) {
     name
+    eventId
     bookingType
     roomId
     start
