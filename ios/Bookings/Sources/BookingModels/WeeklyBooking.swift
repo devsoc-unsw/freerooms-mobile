@@ -42,12 +42,14 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
 
   /// The backend identifies a booking by its room and interval rather than a standalone identifier.
   public struct ID: Equatable, Hashable, Sendable {
-    public init(roomID: String, start: Date, end: Date) {
+    public init(title: String, roomID: String, start: Date, end: Date) {
+      self.title = title
       self.roomID = roomID
       self.start = start
       self.end = end
     }
 
+    public let title: String
     public let roomID: String
     public let start: Date
     public let end: Date
@@ -66,6 +68,6 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let abbreviation: String
 
   public var id: ID {
-    ID(roomID: roomID, start: start, end: end)
+    ID(title: title, roomID: roomID, start: start, end: end)
   }
 }

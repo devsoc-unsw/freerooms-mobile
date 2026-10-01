@@ -31,7 +31,7 @@ public struct BookingPresentationError: Identifiable, Equatable, Sendable {
 // MARK: - BookingViewModel
 
 @MainActor
-public protocol BookingViewModel: AnyObject {
+public protocol BookingViewModel: Observable {
   var bookings: [WeeklyBooking] { get }
   var isLoading: Bool { get }
   var errorMessage: BookingPresentationError? { get set }

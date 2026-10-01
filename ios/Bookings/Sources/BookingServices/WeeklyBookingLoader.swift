@@ -30,13 +30,13 @@ public enum WeeklyBookingLoaderError: Error, Equatable, Sendable {
 /// Loads bookings that overlap a supplied calendar interval.
 @GenerateStub
 public protocol WeeklyBookingLoader {
-  nonisolated(nonsending) func fetch(in interval: DateInterval) async -> Result<[WeeklyBooking], WeeklyBookingLoaderError>
+  func fetch(in interval: DateInterval) async -> Result<[WeeklyBooking], WeeklyBookingLoaderError>
 }
 
 // MARK: - LiveGraphQLWeeklyBookingLoader
 
 /// Executes the generated weekly GraphQL operation and maps it into app-owned models.
-nonisolated public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable {
+public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable {
 
   // MARK: Lifecycle
 
