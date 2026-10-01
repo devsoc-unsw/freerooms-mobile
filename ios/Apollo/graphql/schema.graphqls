@@ -158,16 +158,348 @@ input _varchar_comparison_exp {
 }
 
 """
+columns and relationships of "bookingmodules"
+"""
+type bookingmodules {
+  """An object relationship"""
+  booking: bookings!
+  career: String
+  code: String!
+  moduleIndex: Int!
+  name: String!
+  occurrenceId: String!
+  roomId: String!
+  term: String
+}
+
+"""
+aggregated selection of "bookingmodules"
+"""
+type bookingmodules_aggregate {
+  aggregate: bookingmodules_aggregate_fields
+  nodes: [bookingmodules!]!
+}
+
+input bookingmodules_aggregate_bool_exp {
+  count: bookingmodules_aggregate_bool_exp_count
+}
+
+input bookingmodules_aggregate_bool_exp_count {
+  arguments: [bookingmodules_select_column!]
+  distinct: Boolean
+  filter: bookingmodules_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "bookingmodules"
+"""
+type bookingmodules_aggregate_fields {
+  avg: bookingmodules_avg_fields
+  count(columns: [bookingmodules_select_column!], distinct: Boolean): Int!
+  max: bookingmodules_max_fields
+  min: bookingmodules_min_fields
+  stddev: bookingmodules_stddev_fields
+  stddev_pop: bookingmodules_stddev_pop_fields
+  stddev_samp: bookingmodules_stddev_samp_fields
+  sum: bookingmodules_sum_fields
+  var_pop: bookingmodules_var_pop_fields
+  var_samp: bookingmodules_var_samp_fields
+  variance: bookingmodules_variance_fields
+}
+
+"""
+order by aggregate values of table "bookingmodules"
+"""
+input bookingmodules_aggregate_order_by {
+  avg: bookingmodules_avg_order_by
+  count: order_by
+  max: bookingmodules_max_order_by
+  min: bookingmodules_min_order_by
+  stddev: bookingmodules_stddev_order_by
+  stddev_pop: bookingmodules_stddev_pop_order_by
+  stddev_samp: bookingmodules_stddev_samp_order_by
+  sum: bookingmodules_sum_order_by
+  var_pop: bookingmodules_var_pop_order_by
+  var_samp: bookingmodules_var_samp_order_by
+  variance: bookingmodules_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type bookingmodules_avg_fields {
+  moduleIndex: Float
+}
+
+"""
+order by avg() on columns of table "bookingmodules"
+"""
+input bookingmodules_avg_order_by {
+  moduleIndex: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "bookingmodules". All fields are combined with a logical 'AND'.
+"""
+input bookingmodules_bool_exp {
+  _and: [bookingmodules_bool_exp!]
+  _not: bookingmodules_bool_exp
+  _or: [bookingmodules_bool_exp!]
+  booking: bookings_bool_exp
+  career: String_comparison_exp
+  code: String_comparison_exp
+  moduleIndex: Int_comparison_exp
+  name: String_comparison_exp
+  occurrenceId: String_comparison_exp
+  roomId: String_comparison_exp
+  term: String_comparison_exp
+}
+
+"""aggregate max on columns"""
+type bookingmodules_max_fields {
+  career: String
+  code: String
+  moduleIndex: Int
+  name: String
+  occurrenceId: String
+  roomId: String
+  term: String
+}
+
+"""
+order by max() on columns of table "bookingmodules"
+"""
+input bookingmodules_max_order_by {
+  career: order_by
+  code: order_by
+  moduleIndex: order_by
+  name: order_by
+  occurrenceId: order_by
+  roomId: order_by
+  term: order_by
+}
+
+"""aggregate min on columns"""
+type bookingmodules_min_fields {
+  career: String
+  code: String
+  moduleIndex: Int
+  name: String
+  occurrenceId: String
+  roomId: String
+  term: String
+}
+
+"""
+order by min() on columns of table "bookingmodules"
+"""
+input bookingmodules_min_order_by {
+  career: order_by
+  code: order_by
+  moduleIndex: order_by
+  name: order_by
+  occurrenceId: order_by
+  roomId: order_by
+  term: order_by
+}
+
+"""Ordering options when selecting data from "bookingmodules"."""
+input bookingmodules_order_by {
+  booking: bookings_order_by
+  career: order_by
+  code: order_by
+  moduleIndex: order_by
+  name: order_by
+  occurrenceId: order_by
+  roomId: order_by
+  term: order_by
+}
+
+"""
+select columns of table "bookingmodules"
+"""
+enum bookingmodules_select_column {
+  """column name"""
+  career
+
+  """column name"""
+  code
+
+  """column name"""
+  moduleIndex
+
+  """column name"""
+  name
+
+  """column name"""
+  occurrenceId
+
+  """column name"""
+  roomId
+
+  """column name"""
+  term
+}
+
+"""aggregate stddev on columns"""
+type bookingmodules_stddev_fields {
+  moduleIndex: Float
+}
+
+"""
+order by stddev() on columns of table "bookingmodules"
+"""
+input bookingmodules_stddev_order_by {
+  moduleIndex: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type bookingmodules_stddev_pop_fields {
+  moduleIndex: Float
+}
+
+"""
+order by stddev_pop() on columns of table "bookingmodules"
+"""
+input bookingmodules_stddev_pop_order_by {
+  moduleIndex: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type bookingmodules_stddev_samp_fields {
+  moduleIndex: Float
+}
+
+"""
+order by stddev_samp() on columns of table "bookingmodules"
+"""
+input bookingmodules_stddev_samp_order_by {
+  moduleIndex: order_by
+}
+
+"""
+Streaming cursor of the table "bookingmodules"
+"""
+input bookingmodules_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: bookingmodules_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input bookingmodules_stream_cursor_value_input {
+  career: String
+  code: String
+  moduleIndex: Int
+  name: String
+  occurrenceId: String
+  roomId: String
+  term: String
+}
+
+"""aggregate sum on columns"""
+type bookingmodules_sum_fields {
+  moduleIndex: Int
+}
+
+"""
+order by sum() on columns of table "bookingmodules"
+"""
+input bookingmodules_sum_order_by {
+  moduleIndex: order_by
+}
+
+"""aggregate var_pop on columns"""
+type bookingmodules_var_pop_fields {
+  moduleIndex: Float
+}
+
+"""
+order by var_pop() on columns of table "bookingmodules"
+"""
+input bookingmodules_var_pop_order_by {
+  moduleIndex: order_by
+}
+
+"""aggregate var_samp on columns"""
+type bookingmodules_var_samp_fields {
+  moduleIndex: Float
+}
+
+"""
+order by var_samp() on columns of table "bookingmodules"
+"""
+input bookingmodules_var_samp_order_by {
+  moduleIndex: order_by
+}
+
+"""aggregate variance on columns"""
+type bookingmodules_variance_fields {
+  moduleIndex: Float
+}
+
+"""
+order by variance() on columns of table "bookingmodules"
+"""
+input bookingmodules_variance_order_by {
+  moduleIndex: order_by
+}
+
+"""
 columns and relationships of "bookings"
 """
 type bookings {
-  bookingType: bookingtypeenum
+  bookingType: bookingtypeenum!
+
+  """An array relationship"""
+  bookingmodules(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): [bookingmodules!]!
+
+  """An aggregate relationship"""
+  bookingmodules_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): bookingmodules_aggregate!
   end: timestamptz!
+  eventId: String!
+  eventType: String!
+  lastModified: timestamptz
   name: String!
+  occurrenceId: String!
+  plannedSize: Int
+  rawName: String!
 
   """An object relationship"""
   room: rooms!
   roomId: String!
+  source: String
   start: timestamptz!
 }
 
@@ -194,18 +526,46 @@ input bookings_aggregate_bool_exp_count {
 aggregate fields of "bookings"
 """
 type bookings_aggregate_fields {
+  avg: bookings_avg_fields
   count(columns: [bookings_select_column!], distinct: Boolean): Int!
   max: bookings_max_fields
   min: bookings_min_fields
+  stddev: bookings_stddev_fields
+  stddev_pop: bookings_stddev_pop_fields
+  stddev_samp: bookings_stddev_samp_fields
+  sum: bookings_sum_fields
+  var_pop: bookings_var_pop_fields
+  var_samp: bookings_var_samp_fields
+  variance: bookings_variance_fields
 }
 
 """
 order by aggregate values of table "bookings"
 """
 input bookings_aggregate_order_by {
+  avg: bookings_avg_order_by
   count: order_by
   max: bookings_max_order_by
   min: bookings_min_order_by
+  stddev: bookings_stddev_order_by
+  stddev_pop: bookings_stddev_pop_order_by
+  stddev_samp: bookings_stddev_samp_order_by
+  sum: bookings_sum_order_by
+  var_pop: bookings_var_pop_order_by
+  var_samp: bookings_var_samp_order_by
+  variance: bookings_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type bookings_avg_fields {
+  plannedSize: Float
+}
+
+"""
+order by avg() on columns of table "bookings"
+"""
+input bookings_avg_order_by {
+  plannedSize: order_by
 }
 
 """
@@ -216,10 +576,19 @@ input bookings_bool_exp {
   _not: bookings_bool_exp
   _or: [bookings_bool_exp!]
   bookingType: bookingtypeenum_comparison_exp
+  bookingmodules: bookingmodules_bool_exp
+  bookingmodules_aggregate: bookingmodules_aggregate_bool_exp
   end: timestamptz_comparison_exp
+  eventId: String_comparison_exp
+  eventType: String_comparison_exp
+  lastModified: timestamptz_comparison_exp
   name: String_comparison_exp
+  occurrenceId: String_comparison_exp
+  plannedSize: Int_comparison_exp
+  rawName: String_comparison_exp
   room: rooms_bool_exp
   roomId: String_comparison_exp
+  source: String_comparison_exp
   start: timestamptz_comparison_exp
 }
 
@@ -227,8 +596,15 @@ input bookings_bool_exp {
 type bookings_max_fields {
   bookingType: bookingtypeenum
   end: timestamptz
+  eventId: String
+  eventType: String
+  lastModified: timestamptz
   name: String
+  occurrenceId: String
+  plannedSize: Int
+  rawName: String
   roomId: String
+  source: String
   start: timestamptz
 }
 
@@ -238,8 +614,15 @@ order by max() on columns of table "bookings"
 input bookings_max_order_by {
   bookingType: order_by
   end: order_by
+  eventId: order_by
+  eventType: order_by
+  lastModified: order_by
   name: order_by
+  occurrenceId: order_by
+  plannedSize: order_by
+  rawName: order_by
   roomId: order_by
+  source: order_by
   start: order_by
 }
 
@@ -247,8 +630,15 @@ input bookings_max_order_by {
 type bookings_min_fields {
   bookingType: bookingtypeenum
   end: timestamptz
+  eventId: String
+  eventType: String
+  lastModified: timestamptz
   name: String
+  occurrenceId: String
+  plannedSize: Int
+  rawName: String
   roomId: String
+  source: String
   start: timestamptz
 }
 
@@ -258,18 +648,33 @@ order by min() on columns of table "bookings"
 input bookings_min_order_by {
   bookingType: order_by
   end: order_by
+  eventId: order_by
+  eventType: order_by
+  lastModified: order_by
   name: order_by
+  occurrenceId: order_by
+  plannedSize: order_by
+  rawName: order_by
   roomId: order_by
+  source: order_by
   start: order_by
 }
 
 """Ordering options when selecting data from "bookings"."""
 input bookings_order_by {
   bookingType: order_by
+  bookingmodules_aggregate: bookingmodules_aggregate_order_by
   end: order_by
+  eventId: order_by
+  eventType: order_by
+  lastModified: order_by
   name: order_by
+  occurrenceId: order_by
+  plannedSize: order_by
+  rawName: order_by
   room: rooms_order_by
   roomId: order_by
+  source: order_by
   start: order_by
 }
 
@@ -284,13 +689,70 @@ enum bookings_select_column {
   end
 
   """column name"""
+  eventId
+
+  """column name"""
+  eventType
+
+  """column name"""
+  lastModified
+
+  """column name"""
   name
+
+  """column name"""
+  occurrenceId
+
+  """column name"""
+  plannedSize
+
+  """column name"""
+  rawName
 
   """column name"""
   roomId
 
   """column name"""
+  source
+
+  """column name"""
   start
+}
+
+"""aggregate stddev on columns"""
+type bookings_stddev_fields {
+  plannedSize: Float
+}
+
+"""
+order by stddev() on columns of table "bookings"
+"""
+input bookings_stddev_order_by {
+  plannedSize: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type bookings_stddev_pop_fields {
+  plannedSize: Float
+}
+
+"""
+order by stddev_pop() on columns of table "bookings"
+"""
+input bookings_stddev_pop_order_by {
+  plannedSize: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type bookings_stddev_samp_fields {
+  plannedSize: Float
+}
+
+"""
+order by stddev_samp() on columns of table "bookings"
+"""
+input bookings_stddev_samp_order_by {
+  plannedSize: order_by
 }
 
 """
@@ -308,9 +770,64 @@ input bookings_stream_cursor_input {
 input bookings_stream_cursor_value_input {
   bookingType: bookingtypeenum
   end: timestamptz
+  eventId: String
+  eventType: String
+  lastModified: timestamptz
   name: String
+  occurrenceId: String
+  plannedSize: Int
+  rawName: String
   roomId: String
+  source: String
   start: timestamptz
+}
+
+"""aggregate sum on columns"""
+type bookings_sum_fields {
+  plannedSize: Int
+}
+
+"""
+order by sum() on columns of table "bookings"
+"""
+input bookings_sum_order_by {
+  plannedSize: order_by
+}
+
+"""aggregate var_pop on columns"""
+type bookings_var_pop_fields {
+  plannedSize: Float
+}
+
+"""
+order by var_pop() on columns of table "bookings"
+"""
+input bookings_var_pop_order_by {
+  plannedSize: order_by
+}
+
+"""aggregate var_samp on columns"""
+type bookings_var_samp_fields {
+  plannedSize: Float
+}
+
+"""
+order by var_samp() on columns of table "bookings"
+"""
+input bookings_var_samp_order_by {
+  plannedSize: order_by
+}
+
+"""aggregate variance on columns"""
+type bookings_variance_fields {
+  plannedSize: Float
+}
+
+"""
+order by variance() on columns of table "bookings"
+"""
+input bookings_variance_order_by {
+  plannedSize: order_by
 }
 
 scalar bookingtypeenum
@@ -1280,6 +1797,45 @@ enum order_by {
 
 type query_root {
   """An array relationship"""
+  bookingmodules(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): [bookingmodules!]!
+
+  """An aggregate relationship"""
+  bookingmodules_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): bookingmodules_aggregate!
+
+  """fetch data from the table: "bookingmodules" using primary key columns"""
+  bookingmodules_by_pk(moduleIndex: Int!, occurrenceId: String!, roomId: String!): bookingmodules
+
+  """An array relationship"""
   bookings(
     """distinct select on columns"""
     distinct_on: [bookings_select_column!]
@@ -1316,7 +1872,7 @@ type query_root {
   ): bookings_aggregate!
 
   """fetch data from the table: "bookings" using primary key columns"""
-  bookings_by_pk(end: timestamptz!, roomId: String!, start: timestamptz!): bookings
+  bookings_by_pk(occurrenceId: String!, roomId: String!): bookings
 
   """
   fetch data from the table: "buildings"
@@ -1572,6 +2128,7 @@ type rooms {
   capacity: Int!
   floor: floortypeenum
   id: String!
+  imageUrl: String
   infotechnology: [_text!]!
   lat: float8!
   long: float8!
@@ -1744,6 +2301,7 @@ input rooms_bool_exp {
   capacity: Int_comparison_exp
   floor: floortypeenum_comparison_exp
   id: String_comparison_exp
+  imageUrl: String_comparison_exp
   infotechnology: _text_comparison_exp
   lat: float8_comparison_exp
   long: float8_comparison_exp
@@ -1763,6 +2321,7 @@ type rooms_max_fields {
   capacity: Int
   floor: floortypeenum
   id: String
+  imageUrl: String
   lat: float8
   long: float8
   name: String
@@ -1780,6 +2339,7 @@ input rooms_max_order_by {
   capacity: order_by
   floor: order_by
   id: order_by
+  imageUrl: order_by
   lat: order_by
   long: order_by
   name: order_by
@@ -1795,6 +2355,7 @@ type rooms_min_fields {
   capacity: Int
   floor: floortypeenum
   id: String
+  imageUrl: String
   lat: float8
   long: float8
   name: String
@@ -1812,6 +2373,7 @@ input rooms_min_order_by {
   capacity: order_by
   floor: order_by
   id: order_by
+  imageUrl: order_by
   lat: order_by
   long: order_by
   name: order_by
@@ -1831,6 +2393,7 @@ input rooms_order_by {
   capacity: order_by
   floor: order_by
   id: order_by
+  imageUrl: order_by
   infotechnology: order_by
   lat: order_by
   long: order_by
@@ -1867,6 +2430,9 @@ enum rooms_select_column {
 
   """column name"""
   id
+
+  """column name"""
+  imageUrl
 
   """column name"""
   infotechnology
@@ -2055,6 +2621,7 @@ input rooms_stream_cursor_value_input {
   capacity: Int
   floor: floortypeenum
   id: String
+  imageUrl: String
   infotechnology: _text
   lat: float8
   long: float8
@@ -2167,6 +2734,59 @@ input status_enum_comparison_exp {
 
 type subscription_root {
   """An array relationship"""
+  bookingmodules(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): [bookingmodules!]!
+
+  """An aggregate relationship"""
+  bookingmodules_aggregate(
+    """distinct select on columns"""
+    distinct_on: [bookingmodules_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [bookingmodules_order_by!]
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): bookingmodules_aggregate!
+
+  """fetch data from the table: "bookingmodules" using primary key columns"""
+  bookingmodules_by_pk(moduleIndex: Int!, occurrenceId: String!, roomId: String!): bookingmodules
+
+  """
+  fetch data from the table in a streaming manner: "bookingmodules"
+  """
+  bookingmodules_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [bookingmodules_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: bookingmodules_bool_exp
+  ): [bookingmodules!]!
+
+  """An array relationship"""
   bookings(
     """distinct select on columns"""
     distinct_on: [bookings_select_column!]
@@ -2203,7 +2823,7 @@ type subscription_root {
   ): bookings_aggregate!
 
   """fetch data from the table: "bookings" using primary key columns"""
-  bookings_by_pk(end: timestamptz!, roomId: String!, start: timestamptz!): bookings
+  bookings_by_pk(occurrenceId: String!, roomId: String!): bookings
 
   """
   fetch data from the table in a streaming manner: "bookings"

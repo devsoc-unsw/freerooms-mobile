@@ -254,7 +254,7 @@ public struct Room: Equatable, Identifiable, Hashable, Sendable {
 
 // MARK: - GraphQLRoomProtocol
 
-public nonisolated protocol GraphQLRoomProtocol {
+public protocol GraphQLRoomProtocol {
   var abbr: String { get }
   var accessibility: [String] { get }
   var audiovisual: [String] { get }
@@ -276,7 +276,7 @@ public nonisolated protocol GraphQLRoomProtocol {
 
 extension Room {
 
-  public nonisolated init?(from graphQLRoom: some GraphQLRoomProtocol) {
+  public init?(from graphQLRoom: some GraphQLRoomProtocol) {
     guard
       let lat = Double(graphQLRoom.lat),
       let long = Double(graphQLRoom.long)
@@ -310,11 +310,11 @@ extension Room {
 
 // MARK: - DevSocAPI.AllRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-nonisolated extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+extension DevSocAPI.AllRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - DevSocAPI.BuildingRoomsQuery.Data.Room + GraphQLRoomProtocol
 
-nonisolated extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
+extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtocol { }
 
 // MARK: - Testing
 
