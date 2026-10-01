@@ -85,7 +85,19 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
     }
 
     do throws(BookingConversionError) {
-      return .success(try graphQLBookings.map(Booking.init(from:)))
+      let bookings = try graphQLBookings.map(Booking.init(from:))
+
+      // FIXME: Problem with duplicate ids?
+      assert({
+        var seenIds = Set<UUID>()
+        for b in bookings {
+          guard !seenIds.contains(b.id) else { return false }
+          seenIds.insert(b.id)
+        }
+        return true
+      }(), "Duplicate eventIds detected for bookings")
+
+      return .success(bookings)
     } catch {
       switch error {
       case .invalidDateFormat:
