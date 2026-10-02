@@ -18,15 +18,35 @@ public protocol IncrementalBookingsViewModel: AnyObject {
   var isFetching: Bool { get }
 
   /// The currently fetched list of bookings
-  var bookings: [WeeklyBooking] { get }
+  var bookings: [WeeklyBooking.ID : WeeklyBooking] { get }
 
   /// If there are more bookings to fetch
   var hasMoreBookings: Bool { get }
 
   /// Fetch the next page of bookings
-  func fetchNextPage() async -> [WeeklyBooking]
+  @discardableResult
+  func fetchNextPage() async throws -> [WeeklyBooking.ID]
 
   /// Fetches all remaining bookings
-  func fetchRemainingBookings() async -> [WeeklyBooking]
+  @discardableResult
+  func fetchRemainingBookings() async throws -> [WeeklyBooking.ID]
 
+}
+
+@MainActor
+@Observable
+public final class ListIncrementalBookingsViewModel {
+  public private(set) var isFetching: Bool = false
+  public private(set) var bookings: [WeeklyBooking.ID : WeeklyBooking] = [:]
+  public private(set) var hasMoreBookings: Bool = false
+  
+  public func fetchNextPage() async throws -> [WeeklyBooking.ID] {
+    fatalError()
+    
+  }
+  
+  public func fetchRemainingBookings() async throws -> [WeeklyBooking.ID] {
+    fatalError()
+  }
+  
 }
