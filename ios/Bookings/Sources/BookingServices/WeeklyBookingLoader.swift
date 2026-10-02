@@ -88,8 +88,7 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
 
       // FIXME: Problem with duplicate ids?
       assert({
-        var seenIds = Set<Booking.ID>()
-        seenIds.reserveCapacity(seenIds.count)
+        var seenIds = Set<Booking.ID>(minimumCapacity: bookings.count)
         for b in bookings {
           guard !seenIds.contains(b.id) else { return false }
           seenIds.insert(b.id)
