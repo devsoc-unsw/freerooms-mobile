@@ -22,7 +22,6 @@ public enum WeeklyBookingLoaderError: Error, Equatable, Sendable {
   case invalidResponse
   case invalidDateFormat
   case invalidDateRange
-  case invalidEventId
   case cancelled
 }
 
@@ -89,13 +88,14 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
 
       // FIXME: Problem with duplicate ids?
       assert({
-        var seenIds = Set<UUID>()
+        var seenIds = Set<Booking.ID>()
+        seenIds.reserveCapacity(seenIds.count)
         for b in bookings {
           guard !seenIds.contains(b.id) else { return false }
           seenIds.insert(b.id)
         }
         return true
-      }(), "Duplicate eventIds detected for bookings")
+      }(), "Duplicate id detected for bookings")
 
       return .success(bookings)
     } catch {
@@ -106,7 +106,11 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
 
       case .invalidEventId:
         Self.logger.warning("Weekly booking contained an invalid event ID")
-        return .failure(.invalidEventId)
+        return .failure(.invalidResponse)
+
+      case .invalidOccurrenceId:
+        Self.logger.warning("Weekly booking contained an invalid occurrence ID")
+        return .failure(.invalidResponse)
       }
     }
   }

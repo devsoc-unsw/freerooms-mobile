@@ -18,6 +18,8 @@ query Bookings(
     limit: $limit
   ) {
     name
+    eventId
+    occurrenceId
     bookingType
     roomId
     start

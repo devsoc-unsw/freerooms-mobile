@@ -7,6 +7,7 @@ query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) {
   ) {
     name
     eventId
+    occurrenceId
     bookingType
     roomId
     start

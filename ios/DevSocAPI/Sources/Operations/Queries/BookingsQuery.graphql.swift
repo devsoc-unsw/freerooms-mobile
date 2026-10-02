@@ -8,7 +8,7 @@ nonisolated public struct BookingsQuery: GraphQLQuery {
   public static let operationName: String = "Bookings"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query Bookings($start: timestamptz!, $end: timestamptz!, $offset: Int!, $limit: Int!) { bookings( where: { _and: [{ start: { _lt: $end } }, { end: { _gt: $start } }] } order_by: [{ start: asc }] offset: $offset limit: $limit ) { __typename name bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } } } }"#
+      #"query Bookings($start: timestamptz!, $end: timestamptz!, $offset: Int!, $limit: Int!) { bookings( where: { _and: [{ start: { _lt: $end } }, { end: { _gt: $start } }] } order_by: [{ start: asc }] offset: $offset limit: $limit ) { __typename name eventId occurrenceId bookingType roomId start end room { __typename name abbr usage capacity building { __typename id name } } } }"#
     ))
 
   public var start: Timestamptz
@@ -66,6 +66,8 @@ nonisolated public struct BookingsQuery: GraphQLQuery {
       @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
         .field("__typename", String.self),
         .field("name", String.self),
+        .field("eventId", String.self),
+        .field("occurrenceId", String.self),
         .field("bookingType", DevSocAPI.Bookingtypeenum.self),
         .field("roomId", String.self),
         .field("start", DevSocAPI.Timestamptz.self),
@@ -77,6 +79,8 @@ nonisolated public struct BookingsQuery: GraphQLQuery {
       ] }
 
       public var name: String { __data["name"] }
+      public var eventId: String { __data["eventId"] }
+      public var occurrenceId: String { __data["occurrenceId"] }
       public var bookingType: DevSocAPI.Bookingtypeenum { __data["bookingType"] }
       public var roomId: String { __data["roomId"] }
       public var start: DevSocAPI.Timestamptz { __data["start"] }

@@ -33,6 +33,9 @@ let package = Package(
   targets: [
     .target(
       name: "BookingModels",
+      dependencies: [
+        .product(name: "DevSocAPI", package: "DevSocAPI"),
+      ],
       swiftSettings: swiftSettings),
     .target(
       name: "BookingServices",

@@ -20,6 +20,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public init(
     title: String,
     eventId: UUID,
+    occurrenceId: UUID,
     bookingType: String?,
     roomID: String,
     roomName: String,
@@ -33,6 +34,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   {
     self.title = title
     self.eventId = eventId
+    self.occurrenceId = occurrenceId
     self.bookingType = bookingType
     self.roomID = roomID
     self.roomName = roomName
@@ -49,6 +51,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
 
   public let title: String
   public let eventId: UUID
+  public let occurrenceId: UUID
   public let bookingType: String?
   public let roomID: String
   public let roomName: String
@@ -61,7 +64,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let abbreviation: String
 
   public var id: UUID {
-    eventId
+    occurrenceId
   }
 }
 
@@ -72,6 +75,7 @@ public protocol _GraphQLBookingProtocol {
   associatedtype Room: _GraphQLBookingRoomProtocol
   var name: String { get }
   var eventId: String { get }
+  var occurrenceId: String { get }
   var bookingType: String { get }
   var roomId: String { get }
   var start: String { get }
@@ -111,6 +115,18 @@ extension DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room: _GraphQLBookingRoomPr
 
 extension DevSocAPI.WeeklyBookingsQuery.Data.Booking.Room.Building: _GraphQLBookingRoomBuildingProtocol { }
 
+// MARK: - DevSocAPI.BookingsQuery.Data.Booking + _GraphQLBookingProtocol
+
+extension DevSocAPI.BookingsQuery.Data.Booking: _GraphQLBookingProtocol { }
+
+// MARK: - DevSocAPI.BookingsQuery.Data.Booking.Room + _GraphQLBookingRoomProtocol
+
+extension DevSocAPI.BookingsQuery.Data.Booking.Room: _GraphQLBookingRoomProtocol { }
+
+// MARK: - DevSocAPI.BookingsQuery.Data.Booking.Room.Building + _GraphQLBookingRoomBuildingProtocol
+
+extension DevSocAPI.BookingsQuery.Data.Booking.Room.Building: _GraphQLBookingRoomBuildingProtocol { }
+
 extension Booking {
 
   /// Convert a
@@ -131,10 +147,14 @@ extension Booking {
     guard let eventId = UUID(uuidString: booking.eventId) else {
       throw BookingConversionError.invalidEventId(booking.eventId)
     }
+    guard let occurrenceId = UUID(uuidString: booking.occurrenceId) else {
+      throw BookingConversionError.invalidOccurrenceId(booking.occurrenceId)
+    }
 
     self.init(
       title: booking.name,
       eventId: eventId,
+      occurrenceId: occurrenceId,
       bookingType: booking.bookingType,
       roomID: booking.roomId,
       roomName: booking.room.name,
@@ -157,5 +177,6 @@ public enum BookingConversionError: Error {
   case invalidDateFormat(any Error)
   /// The ``Booking/eventId`` was not a valid `UUID`
   case invalidEventId(String)
-
+  /// The ``Booking/occurrenceId`` was not a valid `UUID`
+  case invalidOccurrenceId(String)
 }

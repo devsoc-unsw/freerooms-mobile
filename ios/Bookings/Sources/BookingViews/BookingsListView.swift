@@ -76,6 +76,7 @@ struct BookingsListView: View {
       WeeklyBooking(
         title: "DevSoc Weekly Meeting",
         eventId: UUID(),
+        occurrenceId: UUID(),
         bookingType: "BLOCK",
         roomID: "K-H6-LG03",
         roomName: "Tyree Energy Technology LG03",
@@ -89,6 +90,7 @@ struct BookingsListView: View {
       WeeklyBooking(
         title: "DevSoc Weekly Meeting",
         eventId: UUID(),
+        occurrenceId: UUID(),
         bookingType: "BLOCK",
         roomID: "K-H6-LG02",
         roomName: "Tyree Energy Technology LG03",
@@ -102,6 +104,7 @@ struct BookingsListView: View {
       WeeklyBooking(
         title: "DevSoc Weekly Meeting",
         eventId: UUID(),
+        occurrenceId: UUID(),
         bookingType: "BLOCK",
         roomID: "K-H6-LG04",
         roomName: "Tyree Energy Technology LG03",
