@@ -34,7 +34,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   {
     self.title = title
     self.eventId = eventId
-    self.occurrenceId = occurrenceId
+    self.occurrenceID = occurrenceId
     self.bookingType = bookingType
     self.roomID = roomID
     self.roomName = roomName
@@ -51,7 +51,7 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
 
   public let title: String
   public let eventId: UUID
-  public let occurrenceId: UUID
+  public let occurrenceID: UUID
   public let bookingType: String?
   public let roomID: String
   public let roomName: String
@@ -63,8 +63,23 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let capacity: Int
   public let abbreviation: String
 
-  public var id: UUID {
-    occurrenceId
+  public var id: ID {
+    ID(occurrenceID: occurrenceID, roomID: roomID)
+  }
+  
+  /// A unique identifier for a ``WeeklyBooking``
+  ///
+  /// The unique identifier is generated from a ``WeeklyBooking/occurrenceID`` and ``WeeklyBooking/roomID``.
+  /// See [**database constraints**](https://github.com/devsoc-unsw/freerooms-scrapers/blob/main/publish-scraper/sql/bookings/up.sql).
+  public struct ID: Hashable {
+    public let occurrenceID: UUID
+    public let roomID: String
+    
+    public init(occurrenceID: UUID, roomID: String) {
+      self.occurrenceID = occurrenceID
+      self.roomID = roomID
+    }
+    
   }
 }
 

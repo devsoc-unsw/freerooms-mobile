@@ -89,10 +89,25 @@ public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoader, Sendable
       // FIXME: Problem with duplicate ids?
       assert({
         var seenIds = Set<Booking.ID>(minimumCapacity: bookings.count)
+        var duplicates = Set<Booking.ID>()
+        
         for b in bookings {
-          guard !seenIds.contains(b.id) else { return false }
+          guard !seenIds.contains(b.id) else {
+            duplicates.insert(b.id)
+            continue
+          }
           seenIds.insert(b.id)
         }
+        
+        guard duplicates.isEmpty else {
+          Self.logger.fault(
+            """
+            \(#function): Duplicate IDs found for Bookings!
+            \(duplicates)
+            """)
+          return false
+        }
+        
         return true
       }(), "Duplicate id detected for bookings")
 
