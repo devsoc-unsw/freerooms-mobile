@@ -13,7 +13,7 @@ public typealias Booking = WeeklyBooking
 // MARK: - WeeklyBooking
 
 /// A booking prepared for display in the cross-room weekly discovery feed.
-public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
+public final class WeeklyBooking: Identifiable, Sendable {
 
   // MARK: Lifecycle
 
@@ -83,6 +83,19 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   }
 }
 
+// This will be fine as long as we don't create bookings clientside, which will probably never happen
+extension WeeklyBooking: Equatable, Hashable {
+  
+  public static func ==(lhs: WeeklyBooking, rhs: WeeklyBooking) -> Bool {
+    lhs.id == rhs.id
+  }
+  
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(id)
+  }
+  
+}
+
 // MARK: - _GraphQLBookingProtocol
 
 @_documentation(visibility: internal)
@@ -144,8 +157,8 @@ extension DevSocAPI.BookingsQuery.Data.Booking.Room.Building: _GraphQLBookingRoo
 
 extension Booking {
 
-  /// Convert a
-  public init(from booking: some _GraphQLBookingProtocol) throws(BookingConversionError) {
+  /// Convert a GraphQL booking into a
+  public convenience init(from booking: some _GraphQLBookingProtocol) throws(BookingConversionError) {
     // Used to parse start and end times
     let dateFormatStyle = Date.ISO8601FormatStyle()
 

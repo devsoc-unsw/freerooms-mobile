@@ -18,7 +18,7 @@ public protocol IncrementalBookingsViewModel: AnyObject {
   var isFetching: Bool { get }
 
   /// The currently fetched list of bookings
-  var bookings: [WeeklyBooking.ID : WeeklyBooking] { get }
+  var bookings: [WeeklyBooking] { get }
 
   /// If there are more bookings to fetch
   var hasMoreBookings: Bool { get }
@@ -30,23 +30,39 @@ public protocol IncrementalBookingsViewModel: AnyObject {
   /// Fetches all remaining bookings
   @discardableResult
   func fetchRemainingBookings() async throws -> [WeeklyBooking.ID]
-
+  
+  /// Get a booking matching the provided id
+  ///
+  /// This is provided as a customization point to allow fater performance
+  /// to get a booking for a given id. The default implementation does a linear search
+  /// over ``bookings`` in order to find a matching booking.
+  func booking(for id: WeeklyBooking.ID) -> WeeklyBooking?
 }
 
-@MainActor
+extension IncrementalBookingsViewModel {
+  func booking(for id: WeeklyBooking.ID) -> WeeklyBooking? {
+    bookings.first { $0.id == id }
+  }
+}
+
 @Observable
 public final class ListIncrementalBookingsViewModel {
   public private(set) var isFetching: Bool = false
-  public private(set) var bookings: [WeeklyBooking.ID : WeeklyBooking] = [:]
+  public private(set) var bookings: [WeeklyBooking] = []
   public private(set) var hasMoreBookings: Bool = false
+  
+  private var _bookingsMap: [WeeklyBooking.ID: WeeklyBooking] = [:]
   
   public func fetchNextPage() async throws -> [WeeklyBooking.ID] {
     fatalError()
-    
   }
   
   public func fetchRemainingBookings() async throws -> [WeeklyBooking.ID] {
     fatalError()
+  }
+  
+  public func booking(for id: WeeklyBooking.ID) -> WeeklyBooking? {
+    _bookingsMap[id]
   }
   
 }
