@@ -9,7 +9,7 @@ import CommonUI
 import SwiftUI
 
 struct BookingToolBar: View {
-  
+
   var body: some View {
     HStack {
       Button {
@@ -23,7 +23,7 @@ struct BookingToolBar: View {
     .padding(BookingViewLayout.toolbarIconPadding)
     .foregroundStyle(theme.accent.primary)
   }
-  
+
   @Environment(Theme.self) private var theme
   @Environment(\.colorScheme) private var colorScheme
 }
