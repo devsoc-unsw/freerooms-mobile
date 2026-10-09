@@ -150,9 +150,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       }
       .redacted(reason: buildingViewModel.isLoading ? .placeholder : [])
       .toolbar {
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-          toolbarButtons
-        }
+        toolbarButtons
       }
       .navigationDestination(for: Building.self) { building in
         roomsDestinationBuilderView(building)
@@ -196,8 +194,9 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     }
   }
 
+  @ViewBuilder
   private var toolbarButtons: some View {
-    HStack {
+    Group {
       Button {
         theme.toggleColorScheme(from: colorScheme)
       } label: {
@@ -206,8 +205,18 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
       }
 
-      Button {
-        buildingViewModel.getBuildingsInOrder()
+      Menu {
+        Button("Reverse", systemImage: "arrow.up.arrow.down") {
+          buildingViewModel.getBuildingsInOrder()
+        }
+        Button("Alphabetical", systemImage: "character") {
+          buildingViewModel.sortOptions = .alphabetical
+          buildingViewModel.reloadBuildings()
+        }
+        Button("Availability", systemImage: "calendar") {
+          buildingViewModel.sortOptions = .mostAvailable
+          buildingViewModel.reloadBuildings()
+        }
       } label: {
         Image(systemName: "arrow.up.arrow.down")
           .resizable()
@@ -226,7 +235,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
       }
     }
-    .padding(BuildingsTabLayout.toolbarIconPadding)
     .foregroundStyle(theme.accent.primary)
   }
 

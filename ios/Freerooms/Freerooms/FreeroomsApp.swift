@@ -347,7 +347,7 @@ struct FreeroomsApp: App {
   private static func makeTabController() -> TabController {
     let controller = TabController()
 
-    let dependencyManager = AppDependencyManager.shared
+    let dependencyManager = unsafe AppDependencyManager.shared
     dependencyManager.add(dependency: controller)
 
     return controller

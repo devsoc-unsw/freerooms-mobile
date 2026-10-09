@@ -94,7 +94,6 @@ public protocol RoomViewModel: AnyObject {
 
 // MARK: - LiveRoomViewModel
 
-@MainActor
 @Observable
 public class LiveRoomViewModel: RoomViewModel {
 
