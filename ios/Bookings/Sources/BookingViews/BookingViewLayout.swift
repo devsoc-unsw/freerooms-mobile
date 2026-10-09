@@ -53,6 +53,12 @@ enum BookingViewLayout {
   static func detailColumns(for dynamicTypeSize: DynamicTypeSize) -> [GridItem] {
     Array(
       repeating: GridItem(.flexible(), alignment: .topLeading),
-      count: dynamicTypeSize.isAccessibilitySize ? detailsAccessibilityColumnCount : detailsColumnCount)
+      count: dynamicTypeSize.isAccessibilitySize
+        ? detailsAccessibilityColumnCount : detailsColumnCount)
   }
+
+  // Constants for BookingToolbar
+  static let toolbarIconHeight: CGFloat = 20
+  static let toolbarViewToggleIconWidth: CGFloat = 22
+  static let toolbarIconPadding: CGFloat = 5
 }
