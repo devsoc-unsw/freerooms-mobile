@@ -30,7 +30,7 @@ struct RoomBookingInformationView: View {
         Text(room.name)
           .font(.title)
           .bold()
-          .foregroundStyle(.primary)
+          .foregroundStyle(theme.label.primary)
 
         Spacer()
 
