@@ -141,7 +141,36 @@ struct BookingListRowContentView: View {
       end: Date(timeIntervalSince1970: 1_798_135_200),
       usage: "TUSM",
       capacity: 50,
-      abbreviation: "TETBLG03"))
-    .padding()
-    .defaultTheme()
+      abbreviation: "TETBLG03",
+      accessibility: [
+        "Ventilation - Air conditioning",
+        "Weekend Access",
+        "Wheelchair access - teaching",
+        "Wheelchair access - student",
+        "Power at Wall",
+      ],
+      audioVisual: [
+        "Document camera",
+      ],
+      infoTechnology: [
+        "Hybrid Teaching Space",
+        "Lecture capture venue",
+        "Lecture capture with video feed",
+        "Interactive Learning Space (High Tech)",
+        "IT laptop connection",
+        "IT Lectern",
+        "Video data projector",
+      ],
+      microphone: [
+        "Dual Radio Microphones",
+        "Lectern (fixed)",
+        "Radio microphone",
+      ],
+      service: [],
+      writingMedia: [
+        "Blackboard",
+        "Whiteboard",
+      ]))
+      .padding()
+      .defaultTheme()
 }

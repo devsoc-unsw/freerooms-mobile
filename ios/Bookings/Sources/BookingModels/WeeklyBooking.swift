@@ -23,7 +23,13 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
     end: Date,
     usage: String,
     capacity: Int,
-    abbreviation: String)
+    abbreviation: String,
+    accessibility: [String],
+    audioVisual: [String],
+    infoTechnology: [String],
+    microphone: [String],
+    service: [String],
+    writingMedia: [String])
   {
     self.title = title
     self.bookingType = bookingType
@@ -36,6 +42,12 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
     self.usage = usage
     self.capacity = capacity
     self.abbreviation = abbreviation
+    self.accessibility = accessibility
+    self.audioVisual = audioVisual
+    self.infoTechnology = infoTechnology
+    self.microphone = microphone
+    self.service = service
+    self.writingMedia = writingMedia
   }
 
   // MARK: Public
@@ -64,6 +76,12 @@ public struct WeeklyBooking: Identifiable, Equatable, Hashable, Sendable {
   public let usage: String
   public let capacity: Int
   public let abbreviation: String
+  public let accessibility: [String]
+  public let audioVisual: [String]
+  public let infoTechnology: [String]
+  public let microphone: [String]
+  public let service: [String]
+  public let writingMedia: [String]
 
   public var id: ID {
     ID(roomID: roomID, start: start, end: end)
