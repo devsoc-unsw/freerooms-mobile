@@ -7,7 +7,7 @@
 
 import AppIntents
 import CommonUI
-import FreeroomsIntents
+import FreeroomsWidgetIntents
 import SwiftUI
 import WidgetKit
 
@@ -22,7 +22,7 @@ struct OpenTabWidget: Widget {
       _View()
     }
     .configurationDisplayName("Open Tab")
-    .description("Convenient way to open a tab")
+    .description("Opens a tab in the Freerooms app")
     .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
   }
 

@@ -17,6 +17,8 @@ import BuildingViewModels
 import BuildingViews
 import CommonUI
 import Foundation
+import FreeroomsEntities
+import FreeroomsWidgetIntents
 import Location
 import LocationInteractors
 import Networking
@@ -147,19 +149,18 @@ struct FreeroomsApp: App {
     let locationManager = LiveLocationManager()
     let locationService = LiveLocationService(locationManager: locationManager)
 
-    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
+//    let JSONRoomLoader = LiveJSONRoomLoader(using: LiveJSONLoader<[DecodableRoom]>())
 
     do {
       // TODO: ignore unused warning, swiftDataStore is not implemented
-      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
-      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
+//      let swiftDataStore = try SwiftDataStore<SwiftDataRoom>(modelContext: FreeroomsApp.sharedContainer.mainContext)
+//      let swiftDataRoomLoader = LiveSwiftDataRoomLoader(swiftDataStore: swiftDataStore)
 
       let (roomStatusLoader, _, remoteBookingLoader, roomRatingLoader, roomFilterLoader) = makeRemoteLoaders()
 
-      let roomLoader = LiveRoomLoader(
-        JSONRoomLoader: JSONRoomLoader,
-        roomStatusLoader: roomStatusLoader,
-        swiftDataRoomLoader: swiftDataRoomLoader)
+      let roomLoader = LiveGraphQLRoomLoader(
+        client: makeApolloClient(),
+        roomStatusLoader: roomStatusLoader)
 
       let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader)
 
@@ -208,14 +209,9 @@ struct FreeroomsApp: App {
     return URLSessionHTTPClient(session: URLSession(configuration: configuration))
   }
 
+  @available(*, deprecated, message: "Use constants defined in Networking.DevSoc instead")
   private static func makeBaseURLs() -> (staging: URL, production: URL) {
-    guard let staging = URL(string: "https://freeroomsstaging.devsoc.app") else {
-      fatalError("Invalid staging base URL")
-    }
-    guard let production = URL(string: "https://freerooms.devsoc.app/") else {
-      fatalError("Invalid production base URL")
-    }
-    return (staging, production)
+    (DevSoc.stagingBackendURL, DevSoc.defaultBackendURL)
   }
 
   private static func makeRemoteLoaders()
