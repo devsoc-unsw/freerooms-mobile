@@ -44,7 +44,7 @@ fun RoomDetailsScreen(
         mutableStateOf(room?.id?.let(favoriteStore::isFavorite) == true)
     }
     val configuration = LocalConfiguration.current
-    val sheetPeekHeight = (configuration.screenHeightDp * 0.62f).dp
+    val sheetPeekHeight = (configuration.screenHeightDp * 0.58f).dp
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
             initialValue = SheetValue.PartiallyExpanded,
