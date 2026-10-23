@@ -42,7 +42,3 @@ internal fun String?.toFreeroomsPage(): FreeroomsPage {
 internal fun String?.hidesBottomBar(): Boolean {
     return this == FreeroomsRoute.BuildingRooms || this == FreeroomsRoute.RoomDetails
 }
-
-internal fun String?.isRoomDetailsRoute(): Boolean {
-    return this == FreeroomsRoute.RoomDetails
-}

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -92,7 +91,6 @@ fun RoomDetailsScreen(
                     onBack = onBack,
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .statusBarsPadding()
                         .padding(start = 16.dp, top = 8.dp),
                 )
 
@@ -101,7 +99,6 @@ fun RoomDetailsScreen(
                         capacity = room.capacity,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .statusBarsPadding()
                             .padding(end = 16.dp, top = 8.dp),
                     )
                 }

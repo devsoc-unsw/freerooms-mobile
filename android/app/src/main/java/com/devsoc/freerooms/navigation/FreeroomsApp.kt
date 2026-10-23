@@ -53,19 +53,12 @@ internal fun FreeroomsApp(
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedPage = currentRoute.toFreeroomsPage()
     val showBottomBar = !currentRoute.hidesBottomBar()
-    val isRoomDetails = currentRoute.isRoomDetailsRoute()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .then(
-                if (isRoomDetails) {
-                    Modifier
-                } else {
-                    Modifier.statusBarsPadding()
-                },
-            )
+            .statusBarsPadding()
             .then(
                 if (showBottomBar) {
                     Modifier
