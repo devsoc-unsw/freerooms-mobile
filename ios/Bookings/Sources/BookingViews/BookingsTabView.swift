@@ -29,6 +29,9 @@ public struct BookingsTabView: View {
           text: $searchText,
           placement: .navigationBarDrawer(displayMode: .always),
           prompt: "Search events")
+        .toolbar {
+          BookingToolBar()
+        }
     }
     .task {
       await bookingViewModel.loadCurrentWeekBookings(

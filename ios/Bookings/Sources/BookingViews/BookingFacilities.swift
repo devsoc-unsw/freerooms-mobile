@@ -39,7 +39,7 @@ struct BookingFacilities: View {
                     .accessibilityHidden(true)
                   Text(facility.name)
                     .font(.subheadline)
-                    .foregroundStyle(theme.label.primary)
+                    .foregroundStyle(theme.label.secondary)
                     .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity, alignment: .top)

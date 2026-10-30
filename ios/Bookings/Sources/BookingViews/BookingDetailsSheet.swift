@@ -37,6 +37,7 @@ struct BookingDetailsSheet: View {
           Button("Done") {
             dismiss()
           }
+          .foregroundStyle(theme.label.secondary)
           .accessibilityHint("Closes booking details")
         }
       }

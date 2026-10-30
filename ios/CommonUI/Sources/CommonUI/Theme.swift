@@ -145,6 +145,7 @@ struct DefaultTheme: ViewModifier {
   func body(content: Content) -> some View {
     content
       .environment(Theme.default)
+      .preferredColorScheme(Theme.default.preferredColorScheme)
       .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
   }
 }
