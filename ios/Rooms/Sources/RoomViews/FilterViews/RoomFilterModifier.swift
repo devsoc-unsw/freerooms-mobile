@@ -85,6 +85,17 @@ struct RoomFilterModifier: ViewModifier {
           .presentationDragIndicator(.visible)
           .presentationBackground(Color(.systemBackground))
 
+        case .amenities:
+          AmenityFilterView(selectedAmenities: Binding(
+            get: { roomViewModel.selectedAmenities },
+            set: { roomViewModel.selectedAmenities = $0 }))
+          {
+            activeFilterSheet = nil
+          }
+          .presentationDetents([FilterSheetLayout.amenityDetent])
+          .presentationDragIndicator(.visible)
+          .presentationBackground(Color(.systemBackground))
+
         case .capacity:
           CapacityFilterView(
             selectedCapacity: selectedCapacityBinding)
