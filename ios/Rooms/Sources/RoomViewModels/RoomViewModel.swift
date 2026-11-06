@@ -399,8 +399,8 @@ public class LiveRoomViewModel: RoomViewModel {
   public func getAllFavoriteRooms() -> [Room] {
     let roomIds = interactor.getAllFavoriteRoomIds()
 
-    let favoriteRooms = rooms.filter {
-      roomIds.contains($0.id)
+    let favoriteRooms = rooms.filter { room in
+      roomIds.contains(room.id) && selectedAmenities.allSatisfy { $0.isAvailable(in: room) }
     }
 
     return interactor.getRoomsSortedAlphabetically(
