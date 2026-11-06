@@ -9,6 +9,7 @@ import BookingModels
 import Foundation
 
 enum BookingFormatting {
+
   static func locationDescription(for booking: WeeklyBooking) -> (String, String) {
     guard let buildingName = booking.buildingName, !buildingName.isEmpty else {
       return (booking.roomName, "")
@@ -32,5 +33,31 @@ enum BookingFormatting {
 
   static func fullDate(for date: Date) -> String {
     date.formatted(.dateTime.weekday(.wide).day().month(.wide).year())
+  }
+
+  static func capacity(for booking: WeeklyBooking) -> String {
+    "\(booking.capacity) people"
+  }
+
+  static func spansMultipleDays(_ booking: WeeklyBooking, calendar: Calendar = .current) -> Bool {
+    !calendar.isDate(booking.start, inSameDayAs: booking.end)
+  }
+
+  static func fieldLabel(_ label: String) -> String {
+    label.uppercased()
+  }
+
+  static func fieldAccessibilityLabel(label: String, value: String) -> String {
+    "\(label), \(value)"
+  }
+
+  static func facilitySymbol(for name: String, fallback: String) -> String {
+    let name = name.lowercased()
+    if name.contains("air conditioning") { return "snowflake" }
+    if name.contains("power") { return "powerplug" }
+    if name.contains("weekend") { return "calendar" }
+    if name.contains("camera") { return "video" }
+    if name.contains("projector") { return "videoprojector" }
+    return fallback
   }
 }

@@ -99,7 +99,36 @@ public final class PreviewBookingService: BookingService {
         end: firstStart.addingTimeInterval(2 * 60 * 60),
         usage: "LCTR",
         capacity: 472,
-        abbreviation: "AinsworthLG01"),
+        abbreviation: "AinsworthLG01",
+        accessibility: [
+          "Ventilation - Air conditioning",
+          "Weekend Access",
+          "Wheelchair access - teaching",
+          "Wheelchair access - student",
+          "Power at Wall",
+        ],
+        audioVisual: [
+          "Document camera",
+        ],
+        infoTechnology: [
+          "Hybrid Teaching Space",
+          "Lecture capture venue",
+          "Lecture capture with video feed",
+          "Interactive Learning Space (High Tech)",
+          "IT laptop connection",
+          "IT Lectern",
+          "Video data projector",
+        ],
+        microphone: [
+          "Dual Radio Microphones",
+          "Lectern (fixed)",
+          "Radio microphone",
+        ],
+        service: [],
+        writingMedia: [
+          "Blackboard",
+          "Whiteboard",
+        ]),
       WeeklyBooking(
         title: "CSE Society Workshop",
         bookingType: "BLOCK",
@@ -111,7 +140,31 @@ public final class PreviewBookingService: BookingService {
         end: secondStart.addingTimeInterval(90 * 60),
         usage: "TUSM",
         capacity: 50,
-        abbreviation: "AinsworthG01"),
+        abbreviation: "AinsworthG01",
+        accessibility: [
+          "Ventilation - Air conditioning",
+          "Wheelchair access - teaching",
+          "Wheelchair access - student",
+        ],
+        audioVisual: [
+          "Document camera",
+        ],
+        infoTechnology: [
+          "IT laptop connection",
+          "IT Lectern",
+          "Video data projector",
+          "Web Camera with Microphone",
+        ],
+        microphone: [
+          "IT laptop connection",
+          "IT Lectern",
+          "Video data projector",
+          "Web Camera with Microphone",
+        ],
+        service: [],
+        writingMedia: [
+          "Whiteboard",
+        ]),
     ])
   }
 }

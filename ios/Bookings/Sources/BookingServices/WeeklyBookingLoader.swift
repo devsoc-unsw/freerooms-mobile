@@ -107,7 +107,13 @@ nonisolated public final class LiveGraphQLWeeklyBookingLoader: WeeklyBookingLoad
         end: end,
         usage: graphQLBooking.room.usage,
         capacity: graphQLBooking.room.capacity,
-        abbreviation: graphQLBooking.room.abbr))
+        abbreviation: graphQLBooking.room.abbr,
+        accessibility: graphQLBooking.room.accessibility,
+        audioVisual: graphQLBooking.room.audiovisual,
+        infoTechnology: graphQLBooking.room.infotechnology,
+        microphone: graphQLBooking.room.microphone,
+        service: graphQLBooking.room.service,
+        writingMedia: graphQLBooking.room.writingMedia))
     }
 
     return .success(bookings.sorted { $0.start < $1.start })

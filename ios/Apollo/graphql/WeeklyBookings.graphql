@@ -19,6 +19,12 @@ query WeeklyBookings($weekStart: timestamptz!, $weekEnd: timestamptz!) {
         id
         name
       }
+      accessibility
+      audiovisual
+      infotechnology
+      microphone
+      service
+      writingMedia
     }
   }
 }

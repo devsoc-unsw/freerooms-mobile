@@ -206,6 +206,35 @@ struct WeeklyBookingLoaderTests {
         "usage": "TUSM",
         "capacity": 120,
         "abbr": "TETBLG03",
+        "accessibility": [
+          "Ventilation - Air conditioning",
+          "Weekend Access",
+          "Wheelchair access - teaching",
+          "Wheelchair access - student",
+          "Power at Wall",
+        ],
+        "audiovisual": [
+          "Document camera",
+        ],
+        "infotechnology": [
+          "Hybrid Teaching Space",
+          "Lecture capture venue",
+          "Lecture capture with video feed",
+          "Interactive Learning Space (High Tech)",
+          "IT laptop connection",
+          "IT Lectern",
+          "Video data projector",
+        ],
+        "microphone": [
+          "Dual Radio Microphones",
+          "Lectern (fixed)",
+          "Radio microphone",
+        ],
+        "service": [],
+        "writingMedia": [
+          "Blackboard",
+          "Whiteboard",
+        ],
       ],
     ]
   }
