@@ -254,11 +254,11 @@ extension ComparisonResult {
   fileprivate func reversed() -> ComparisonResult {
     switch self {
     case .orderedAscending:
-      return .orderedDescending
+      .orderedDescending
     case .orderedDescending:
-      return .orderedAscending
+      .orderedAscending
     case .orderedSame:
-      return .orderedSame
+      .orderedSame
     @unknown default:
       reportUnknownCase()
     }
