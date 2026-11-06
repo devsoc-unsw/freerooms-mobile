@@ -20,7 +20,7 @@ public enum RoomAmenity: String, CaseIterable, Identifiable, Sendable {
 
   public var displayName: String {
     switch self {
-    case .whiteboard: "Whiteboard"
+    case .whiteboard: "Writing board"
     case .charging: "Charging / power"
     case .microphone: "Microphone"
     case .projector: "Projector"
@@ -32,7 +32,7 @@ public enum RoomAmenity: String, CaseIterable, Identifiable, Sendable {
   public func isAvailable(in room: Room) -> Bool {
     switch self {
     case .whiteboard:
-      room.writingMedia.contains { $0.lowercased().contains("whiteboard") }
+      room.writingMedia.contains { $0.lowercased().contains("whiteboard") || $0.lowercased().contains("blackboard") }
 
     case .charging:
       room.accessibility.contains {
