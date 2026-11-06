@@ -14,6 +14,7 @@ enum RoomFilterSheet: String, Identifiable {
   case roomType
   case duration
   case campusLocation
+  case amenities
   case capacity
 
   var id: String { rawValue }
@@ -26,6 +27,7 @@ enum FilterMenuItem: CaseIterable, Identifiable {
   case duration
   case roomType
   case campusLocation
+  case amenities
   case capacity
 
   // MARK: Internal
@@ -42,6 +44,8 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       "Room Type"
     case .campusLocation:
       "Campus"
+    case .amenities:
+      "Amenities"
     case .capacity:
       "Capacity"
     }
@@ -57,6 +61,8 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       "square.grid.2x2"
     case .campusLocation:
       "building.2"
+    case .amenities:
+      "checklist"
     case .capacity:
       "person.2"
     }
@@ -72,6 +78,8 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       .roomType
     case .campusLocation:
       .campusLocation
+    case .amenities:
+      .amenities
     case .capacity:
       .capacity
     }
