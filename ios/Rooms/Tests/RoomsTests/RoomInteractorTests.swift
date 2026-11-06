@@ -297,6 +297,80 @@ enum RoomInteractorTests {
     }
   }
 
+  struct AmenityFiltering {
+    @Test("Returns all rooms unchanged when no amenities are selected")
+    func returnsAllRoomsWhenAmenitiesAreEmpty() {
+      // Given
+      let allRooms = createDifferentRooms() + [Room.exampleOne]
+      let sut = makeRoomSUT(expect: allRooms)
+
+      // When
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: nil, amenities: [])
+
+      // Then
+      #expect(result == allRooms)
+    }
+
+    @Test("Keeps only rooms with the selected amenity", arguments: RoomAmenity.allCases)
+    func keepsOnlyRoomsWithSelectedAmenity(amenity: RoomAmenity) {
+      // Given
+      let matchingRoom = createRoomWithAmenities()
+      let allRooms = createDifferentRooms() + [matchingRoom]
+      let sut = makeRoomSUT(expect: allRooms)
+
+      // When
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: nil, amenities: [amenity])
+
+      // Then
+      let expectedRooms = amenity == .projector || amenity == .airConditioning
+        ? [allRooms[0], matchingRoom]
+        : [matchingRoom]
+      #expect(result == expectedRooms)
+    }
+
+    @Test("Keeps only rooms with all selected amenities")
+    func keepsOnlyRoomsWithAllSelectedAmenities() {
+      // Given
+      let allRooms = createDifferentRooms() + [Room.exampleOne]
+      let sut = makeRoomSUT(expect: allRooms)
+
+      // When
+      let result = sut.applyClientSideFilters(
+        rooms: allRooms, campusLocation: nil, amenities: [.whiteboard, .charging, .microphone, .projector])
+
+      // Then
+      #expect(result == [.exampleOne])
+    }
+
+    @Test("Returns no rooms when the selected amenity is missing")
+    func returnsNoRoomsWhenAmenityIsMissing() {
+      // Given
+      let allRooms = createDifferentRooms() + [Room.exampleOne]
+      let sut = makeRoomSUT(expect: allRooms)
+
+      // When
+      let result = sut.applyClientSideFilters(rooms: allRooms, campusLocation: nil, amenities: [.audioLoop])
+
+      // Then
+      #expect(result.isEmpty)
+    }
+
+    @Test("Applies campus and amenity filters together")
+    func appliesCampusAndAmenityFiltersTogether() {
+      // Given
+      let matchingRoom = createRoomWithAmenities()
+      let allRooms = createDifferentRooms() + [Room.exampleOne, matchingRoom]
+      let sut = makeRoomSUT(expect: allRooms)
+
+      // When
+      let result = sut.applyClientSideFilters(
+        rooms: allRooms, campusLocation: .upper, amenities: [.whiteboard, .charging])
+
+      // Then
+      #expect(result == [matchingRoom])
+    }
+  }
+
   struct FilterRoomOptionsMapping {
     @Test("Maps the selected date to an ISO8601 dateTime string with fractional seconds")
     func mapsSelectedDateToISO8601WithFractionalSeconds() {
@@ -566,4 +640,25 @@ func createDifferentRooms() -> [Room] {
       service: [],
       writingMedia: []),
   ]
+}
+
+func createRoomWithAmenities() -> Room {
+  Room(
+    abbreviation: "CivEng 103",
+    accessibility: ["POWER AT SEAT", "Audio loop", "Ventilation - Air conditioning"],
+    audioVisual: ["Video data projector"],
+    buildingId: "K-H20",
+    capacity: 40,
+    floor: "1",
+    id: "K-H20-103",
+    infoTechnology: [],
+    latitude: -33.918793948030846,
+    longitude: 151.23134411127646,
+    microphone: ["Neck (lavalier)"],
+    name: "Civil Engineering 103",
+    school: "UNSW",
+    seating: "Movable",
+    usage: "TUSM",
+    service: [],
+    writingMedia: [" whiteBOARD "])
 }
