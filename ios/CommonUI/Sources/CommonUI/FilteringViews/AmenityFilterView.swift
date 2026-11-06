@@ -113,6 +113,6 @@ private struct AmenityButton: View {
 // MARK: - Preview
 
 #Preview {
-  AmenityFilterView(selectedAmenities: .constant([.whiteboard]), onSelect: { })
+  AmenityFilterView(selectedAmenities: .constant([.writingBoard]), onSelect: { })
     .defaultTheme()
 }

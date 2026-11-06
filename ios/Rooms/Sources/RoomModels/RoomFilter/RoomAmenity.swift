@@ -7,7 +7,7 @@
 
 /// Amenities backed by the room's facility metadata.
 public enum RoomAmenity: String, CaseIterable, Identifiable, Sendable {
-  case whiteboard
+  case writingBoard
   case charging
   case microphone
   case projector
@@ -20,7 +20,7 @@ public enum RoomAmenity: String, CaseIterable, Identifiable, Sendable {
 
   public var displayName: String {
     switch self {
-    case .whiteboard: "Writing board"
+    case .writingBoard: "Writing board"
     case .charging: "Charging / power"
     case .microphone: "Microphone"
     case .projector: "Projector"
@@ -31,7 +31,7 @@ public enum RoomAmenity: String, CaseIterable, Identifiable, Sendable {
 
   public func isAvailable(in room: Room) -> Bool {
     switch self {
-    case .whiteboard:
+    case .writingBoard:
       room.writingMedia.contains { $0.lowercased().contains("whiteboard") || $0.lowercased().contains("blackboard") }
 
     case .charging:

@@ -336,7 +336,7 @@ enum RoomInteractorTests {
 
       // When
       let result = sut.applyClientSideFilters(
-        rooms: allRooms, campusLocation: nil, amenities: [.whiteboard, .charging, .microphone, .projector])
+        rooms: allRooms, campusLocation: nil, amenities: [.writingBoard, .charging, .microphone, .projector])
 
       // Then
       #expect(result == [.exampleOne])
@@ -364,7 +364,7 @@ enum RoomInteractorTests {
 
       // When
       let result = sut.applyClientSideFilters(
-        rooms: allRooms, campusLocation: .upper, amenities: [.whiteboard, .charging])
+        rooms: allRooms, campusLocation: .upper, amenities: [.writingBoard, .charging])
 
       // Then
       #expect(result == [matchingRoom])
