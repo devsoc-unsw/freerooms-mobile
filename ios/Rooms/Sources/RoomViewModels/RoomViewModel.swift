@@ -40,6 +40,7 @@ public protocol RoomViewModel: AnyObject {
   var selectedDuration: Duration? { get set }
   var selectedCampusLocation: CampusLocation? { get set }
   var selectedCapacity: Int? { get set }
+  var selectedAmenities: Set<RoomAmenity> { get set }
   var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
@@ -140,12 +141,13 @@ public class LiveRoomViewModel: RoomViewModel {
   public var selectedRoomTypes: Set<RoomType> = []
   public var selectedDuration: Duration?
   public var selectedCampusLocation: CampusLocation?
+  public var selectedAmenities: Set<RoomAmenity> = []
   public var selectedCapacity: Int?
 
   public var hasActiveFilters: Bool {
     selectedDate != DateDefaults.selectedDate || !selectedRoomTypes.isEmpty
       || selectedDuration != nil || selectedCampusLocation != nil
-      || selectedCapacity != nil
+      || selectedCapacity != nil || !selectedAmenities.isEmpty
   }
 
   public var filteredRoomsByBuildingId: [String: [Room]] {
@@ -153,7 +155,8 @@ public class LiveRoomViewModel: RoomViewModel {
     for (buildingId, rooms) in roomsByBuildingId {
       let filteredRooms = interactor.applyClientSideFilters(
         rooms: rooms,
-        campusLocation: selectedCampusLocation)
+        campusLocation: selectedCampusLocation,
+        amenities: selectedAmenities)
 
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
@@ -327,6 +330,7 @@ public class LiveRoomViewModel: RoomViewModel {
     DateDefaults.selectedDate = Date()
     selectedDate = DateDefaults.selectedDate
     selectedRoomTypes.removeAll()
+    selectedAmenities.removeAll()
     selectedDuration = nil
     selectedCampusLocation = nil
     selectedCapacity = nil
