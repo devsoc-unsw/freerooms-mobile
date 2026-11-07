@@ -24,6 +24,7 @@ public enum FilterSheetLayout {
 
   // MARK: - Sheet Detents
 
+  public static let amenityDetent = PresentationDetent.fraction(0.52)
   public static let capacityDetent = PresentationDetent.fraction(0.47)
   public static let campusLocationDetent = PresentationDetent.fraction(0.44)
   public static let dateDetent = PresentationDetent.fraction(0.8)
