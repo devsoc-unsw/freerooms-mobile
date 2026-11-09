@@ -9,6 +9,7 @@ import CommonUI
 import RoomViewModels
 import SwiftUI
 
+@available(*, deprecated, renamed: "CommonUI.ListFilterOverlayView", message: "Replace with CommonUI generic version")
 struct FloatingFilterMenuView: View {
 
   // MARK: Internal
@@ -121,9 +122,11 @@ struct FloatingFilterMenuView: View {
 }
 
 #Preview {
+  @Previewable @State var activeFilterSheet: RoomFilterSheet?
+  @Previewable @State var showingFilterMenu: Bool = false
   FloatingFilterMenuView(
-    activeFilterSheet: .constant(nil),
-    showingFilterMenu: .constant(false))
+    activeFilterSheet: $activeFilterSheet,
+    showingFilterMenu: $showingFilterMenu)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
 }
