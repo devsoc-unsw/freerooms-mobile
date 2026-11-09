@@ -120,12 +120,15 @@ public class RoomInteractor {
     }
   }
 
-  public func applyClientSideFilters(rooms: [Room], campusLocation: CampusLocation?) -> [Room] {
-    guard let campusLocation else {
-      return rooms
-    }
-
-    return rooms.filter { room in
+  public func applyClientSideFilters(
+    rooms: [Room],
+    campusLocation: CampusLocation?,
+    amenities: Set<RoomAmenity> = [])
+    -> [Room]
+  {
+    rooms.filter { room in
+      guard amenities.allSatisfy({ $0.isAvailable(in: room) }) else { return false }
+      guard let campusLocation else { return true }
       let gridReference = GridReference.fromBuildingID(buildingID: room.buildingId)
       switch campusLocation {
       case .upper:

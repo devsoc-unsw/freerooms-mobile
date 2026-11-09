@@ -98,7 +98,7 @@ struct FloatingFilterMenuView: View {
     } label: {
       Label(title, systemImage: systemImage)
         .font(.subheadline.weight(.semibold))
-        .foregroundStyle(role == .destructive ? theme.list.red : theme.accent.primary)
+        .foregroundStyle(role == .destructive ? theme.list.red : theme.label.primary)
         .padding(.horizontal, Self.actionHorizontalPadding)
         .padding(.vertical, Self.actionVerticalPadding)
         .background {
