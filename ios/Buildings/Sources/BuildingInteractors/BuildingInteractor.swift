@@ -7,6 +7,7 @@
 
 public import BuildingModels
 public import BuildingServices
+import CoreLocation
 import Foundation
 public import Location
 import RoomModels
@@ -68,6 +69,29 @@ public class BuildingInteractor {
       } catch {
         return .failure(error)
       }
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  public func getNearestBuildings(limit: Int) async -> Result<[NearbyBuilding], any Error> {
+    let currentLocation: Location
+    do {
+      currentLocation = try locationService.getCurrentLocation()
+    } catch {
+      return .failure(error)
+    }
+
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      var seenIDs = Set<String>()
+      let nearest = buildings
+        .filter { seenIDs.insert($0.id).inserted }
+        .map { NearbyBuilding(building: $0, distanceInMetres: calculateDistance(from: currentLocation, to: $0)) }
+        .sorted { $0.distanceInMetres < $1.distanceInMetres }
+        .prefix(max(limit, 0))
+      return .success(Array(nearest))
 
     case .failure(let error):
       return .failure(error)
@@ -168,16 +192,13 @@ public class BuildingInteractor {
   private let buildingService: any BuildingService
   private let locationService: any LocationService
 
-  /// Calculates the squared distance between a location and a building.
-  /// Uses squared distance for performance (avoiding square root calculation).
+  /// Calculates the straight-line distance between a location and a building.
   /// - Parameters:
   ///   - location: Starting location
   ///   - building: Target building
-  /// - Returns: Squared distance value
+  /// - Returns: Distance in metres
   private func calculateDistance(from location: Location, to building: Building) -> Double {
-    let dlat = building.latitude - location.latitude
-    let dlon = building.longitude - location.longitude
-    return dlat * dlat + dlon * dlon
+    location.clLocation.distance(from: CLLocation(latitude: building.latitude, longitude: building.longitude))
   }
 
 }
