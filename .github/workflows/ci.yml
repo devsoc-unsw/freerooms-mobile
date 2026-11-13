@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+# env:
+#   DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,7 +24,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@v7
       - name: Run formatter check
         run: swiftformat --lint .
   lint:
@@ -32,20 +32,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@v7
       - name: GitHub Action for SwiftLint
-        uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684
-        env:
-          WORKING_DIRECTORY: ios
-        with:
-          args: --strict --config .swiftlint.yml
+        run: |
+          brew install swiftlint
+          swiftlint --strict --config .swiftlint.yml
   tests:
     name: Tests
     needs: ["build"]
     runs-on: macos-26
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@v7
       - name: Cache Xcode build data
         uses: irgaly/xcode-cache@v1
         with:
