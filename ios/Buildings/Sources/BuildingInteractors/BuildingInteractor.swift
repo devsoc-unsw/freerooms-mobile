@@ -7,7 +7,6 @@
 
 public import BuildingModels
 public import BuildingServices
-import CoreLocation
 import Foundation
 public import Location
 import RoomModels
@@ -61,7 +60,7 @@ public class BuildingInteractor {
         // Compute each building's distance once, then sort
         let sorted = buildings
           .map { (building: Building) -> (Building, Double) in
-            (building, calculateDistance(from: currentLocation, to: building))
+            (building, currentLocation.distance(to: building.location))
           }
           .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
           .map(\.0)
@@ -96,7 +95,7 @@ public class BuildingInteractor {
       let nearest = buildings
         .filter { seenIDs.insert($0.id).inserted }
         .filter { $0.numberOfAvailableRooms != 0 }
-        .map { NearbyBuilding(building: $0, distanceInMetres: calculateDistance(from: currentLocation, to: $0)) }
+        .map { NearbyBuilding(building: $0, distanceInMetres: currentLocation.distance(to: $0.location)) }
         .sorted { $0.distanceInMetres < $1.distanceInMetres }
         .prefix(max(limit, 0))
       return .success(Array(nearest))
@@ -199,14 +198,5 @@ public class BuildingInteractor {
 
   private let buildingService: any BuildingService
   private let locationService: any LocationService
-
-  /// Calculates the haversine distance between a location and a building.
-  /// - Parameters:
-  ///   - location: Starting location
-  ///   - building: Target building
-  /// - Returns: Distance in metres
-  private func calculateDistance(from location: Location, to building: Building) -> Double {
-    location.clLocation.distance(from: CLLocation(latitude: building.latitude, longitude: building.longitude))
-  }
 
 }
