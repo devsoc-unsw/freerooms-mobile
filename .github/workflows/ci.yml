@@ -52,7 +52,8 @@ jobs:
           restore-keys:
             xcode-deriveddata-${{ runner.os }}-${{ github.workflow }}-
           path:
-            DerivedData
+            ios/DerivedData
+      
       # - name: Cache Xcode build data
       #   uses: irgaly/xcode-cache@v1
       #   with:
@@ -63,6 +64,7 @@ jobs:
       #     swiftpm-package-resolved-file: |
       #       ios/**/Package.resolved
       #     swiftpm-cache-key: xcode-sourcepackages-${{ runner.os }}-${{ hashFiles('ios/**/Package.resolved') }}
+      
       - name: Run tests
         run: "xcodebuild test-without-building -skipMacroValidation -workspace FreeroomsApple.xcworkspace -scheme Tests -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath DerivedData -parallel-testing-enabled YES -parallel-testing-worker-count 3"
   build:
@@ -73,6 +75,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Restore Xcode build data
+        uses: actions/cache/restore@v6
+        with:
+          restore-keys:
+            xcode-deriveddata-${{ runner.os }}-${{ github.workflow }}-
+          path:
+            ios/DerivedData
 
       # - name: Cache Xcode build data
       #   uses: irgaly/xcode-cache@v1
@@ -94,4 +104,4 @@ jobs:
           key: 
             docc-deriveddata-${{ runner.os }}-${{ github.workflow }}-${{ github.sha }}
           path:
-            DerivedData
+            ios/DerivedData
