@@ -95,6 +95,7 @@ public class BuildingInteractor {
       var seenIDs = Set<String>()
       let nearest = buildings
         .filter { seenIDs.insert($0.id).inserted }
+        .filter { $0.numberOfAvailableRooms != 0 }
         .map { NearbyBuilding(building: $0, distanceInMetres: calculateDistance(from: currentLocation, to: $0)) }
         .sorted { $0.distanceInMetres < $1.distanceInMetres }
         .prefix(max(limit, 0))
@@ -199,7 +200,7 @@ public class BuildingInteractor {
   private let buildingService: any BuildingService
   private let locationService: any LocationService
 
-  /// Calculates the straight-line distance between a location and a building.
+  /// Calculates the haversine distance between a location and a building.
   /// - Parameters:
   ///   - location: Starting location
   ///   - building: Target building

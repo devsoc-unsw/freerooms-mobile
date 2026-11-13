@@ -98,6 +98,50 @@ struct NearestBuildingsTests {
     #expect(nearest.map(\.building.name) == ["Closest", "Further"])
   }
 
+  @Test("Skips buildings with no available rooms and fills the limit with the next nearest")
+  func skipsBuildingsWithNoAvailableRooms() async {
+    // Given
+    let buildings = [
+      building("Closest but full", latitudeOffset: 0.0002, availableRooms: 0),
+      building("Second", latitudeOffset: 0.0004, availableRooms: 3),
+      building("Third but full", latitudeOffset: 0.0006, availableRooms: 0),
+      building("Fourth", latitudeOffset: 0.0008, availableRooms: 1),
+      building("Fifth", latitudeOffset: 0.0010, availableRooms: 8),
+    ]
+    let sut = makeNearestSUT(buildings: buildings, userLocation: userLocation)
+
+    // When
+    let result = await sut.getNearestBuildings(limit: 3)
+
+    // Then
+    guard case .success(let nearest) = result else {
+      Issue.record("Expected success but got failure")
+      return
+    }
+    #expect(nearest.map(\.building.name) == ["Second", "Fourth", "Fifth"])
+  }
+
+  @Test("Keeps buildings whose availability is unknown")
+  func keepsBuildingsWithUnknownAvailability() async {
+    // Given: nil means room statuses didn't load, not that the building is full.
+    let buildings = [
+      building("Unknown", latitudeOffset: 0.0002, availableRooms: nil),
+      building("Full", latitudeOffset: 0.0004, availableRooms: 0),
+      building("Has rooms", latitudeOffset: 0.0006, availableRooms: 2),
+    ]
+    let sut = makeNearestSUT(buildings: buildings, userLocation: userLocation)
+
+    // When
+    let result = await sut.getNearestBuildings(limit: 3)
+
+    // Then
+    guard case .success(let nearest) = result else {
+      Issue.record("Expected success but got failure")
+      return
+    }
+    #expect(nearest.map(\.building.name) == ["Unknown", "Has rooms"])
+  }
+
   @Test("Fails when location permission is denied")
   func failsWhenPermissionDenied() async {
     // Given
@@ -156,13 +200,20 @@ struct NearestBuildingsTests {
   private let userLocation = Location(latitude: -33.9173, longitude: 151.2312)
 
   /// A building offset from `userLocation` by the given number of degrees.
-  private func building(_ name: String, latitudeOffset: Double = 0, longitudeOffset: Double = 0) -> Building {
+  private func building(
+    _ name: String,
+    latitudeOffset: Double = 0,
+    longitudeOffset: Double = 0,
+    availableRooms: Int? = nil)
+    -> Building
+  {
     Building(
       name: name,
       id: "K-\(name)",
       latitude: userLocation.latitude + latitudeOffset,
       longitude: userLocation.longitude + longitudeOffset,
-      aliases: [])
+      aliases: [],
+      numberOfAvailableRooms: availableRooms)
   }
 
   private func makeNearestSUT(

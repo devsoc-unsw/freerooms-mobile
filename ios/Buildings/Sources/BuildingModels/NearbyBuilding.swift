@@ -21,7 +21,6 @@ struct NearbyBuilding: Equatable, Identifiable, Hashable, Sendable {
   // MARK: Public
 
   public let building: Building
-  /// Straight-line distance from the user, in metres.
   public let distanceInMetres: Double
 
   public var id: String {
