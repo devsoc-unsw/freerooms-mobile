@@ -54,6 +54,8 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   @State var rowHeight: CGFloat?
   @Binding var selectedView: ViewOrientation
   @State var cardWidth: CGFloat?
+  /// Kept separate from `rowHeight` because nearest rows have different content.
+  @State var nearestRowHeight: CGFloat?
 
   let roomsDestinationBuilderView: (Building) -> BuildingDestination
   let roomDestinationBuilderView: (Room) -> RoomDestination
@@ -116,9 +118,82 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     }
   }
 
+  @ViewBuilder
+  func nearestBuildingsCardSegment() -> some View {
+    if showsNearestBuildings {
+      let nearest = buildingViewModel.nearestBuildings
+      let nearestBuildings = nearest.map(\.building)
+
+      Section {
+        LazyVGrid(columns: columns, spacing: BuildingsTabLayout.cardGridSpacing) {
+          ForEach(nearest) { nearbyBuilding in
+            GenericCardView(
+              path: $path,
+              cardWidth: $cardWidth,
+              item: nearbyBuilding.building,
+              items: nearestBuildings,
+              isLoading: false,
+              isFavourite: .constant(false),
+              imageProvider: { buildingID in
+                BuildingImage[buildingID]
+              })
+              .overlay(alignment: .topTrailing) {
+                NearbyBuildingDistanceBadge(nearbyBuilding: nearbyBuilding)
+                  .padding(NearbyBuildingLayout.badgeInset)
+              }
+          }
+        }
+        .padding(.horizontal, BuildingsTabLayout.cardGridHorizontalPadding)
+      } header: {
+        HStack {
+          Text(Self.nearestSectionTitle)
+            .textCase(.uppercase)
+            .foregroundStyle(theme.label.primary)
+            .padding(.leading, BuildingsTabLayout.sectionLabelLeadingPadding)
+          Spacer()
+        }
+        .padding(.top, BuildingsTabLayout.sectionHeaderTopPadding)
+      }
+    }
+  }
+
+  @ViewBuilder
+  func nearestBuildingsListSegment() -> some View {
+    if showsNearestBuildings {
+      let nearest = buildingViewModel.nearestBuildings
+
+      Section {
+        ForEach(nearest) { nearbyBuilding in
+          GenericListRowView(
+            rowHeight: $nearestRowHeight,
+            item: nearbyBuilding,
+            items: nearest,
+            isLoading: false,
+            onSelect: { path.append($0.building) },
+            imageProvider: { buildingID in
+              BuildingImage[buildingID]
+            },
+            content: { nearbyBuilding in
+              NearbyBuildingRowContent(nearbyBuilding: nearbyBuilding)
+            })
+            .padding(.vertical, BuildingsTabLayout.listRowVerticalPadding)
+        }
+      } header: {
+        Text(Self.nearestSectionTitle)
+          .textCase(.uppercase)
+          .foregroundStyle(theme.label.primary)
+      }
+    }
+  }
+
   // MARK: Private
 
+  private static var nearestSectionTitle: String {
+    "Nearest to you"
+  }
+
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
+  @Environment(\.scenePhase) private var scenePhase
 
   @Environment(Theme.self) private var theme
   @Environment(\.colorScheme) private var colorScheme
@@ -127,6 +202,11 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     GridItem(.flexible()),
     GridItem(.flexible()),
   ]
+
+  /// Only show nearest buildings when we have some and the user isn't searching.
+  private var showsNearestBuildings: Bool {
+    !buildingViewModel.nearestBuildings.isEmpty && buildingViewModel.searchText.isEmpty
+  }
 
   private var searchTextBinding: Binding<String> {
     Binding(
@@ -165,6 +245,16 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .task {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
+        } else {
+          // Refresh on every return to the tab, e.g. after granting location on the Map tab.
+          await buildingViewModel.loadNearestBuildings()
+        }
+      }
+      .onChange(of: scenePhase) { _, newPhase in
+        // The location permission prompt makes the app inactive; reload once it's answered.
+        guard newPhase == .active else { return }
+        Task {
+          await buildingViewModel.loadNearestBuildings()
         }
       }
       .navigationTitle("Buildings")
@@ -175,6 +265,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   private var buildingsView: some View {
     if selectedView == ViewOrientation.List {
       List {
+        nearestBuildingsListSegment()
         buildingsListSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
         buildingsListSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
         buildingsListSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
@@ -184,6 +275,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .background(theme.background.primary)
     } else {
       ScrollView {
+        nearestBuildingsCardSegment()
         buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
         buildingsCardSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
         buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)

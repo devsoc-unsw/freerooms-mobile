@@ -75,6 +75,13 @@ public class BuildingInteractor {
     }
   }
 
+  /// Asks the user for location permission if they haven't been asked yet.
+  /// - Returns: `true` if the permission prompt was shown, `false` if it was already answered or pending.
+  /// - Throws: `LocationServiceError.locationPermissionsDenied` if the user has denied permission.
+  public func requestLocationPermission() throws -> Bool {
+    try locationService.requestLocationPermissions()
+  }
+
   public func getNearestBuildings(limit: Int) async -> Result<[NearbyBuilding], any Error> {
     let currentLocation: Location
     do {

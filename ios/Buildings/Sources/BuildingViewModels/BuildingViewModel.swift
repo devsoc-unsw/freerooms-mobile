@@ -21,6 +21,7 @@ public protocol BuildingViewModel {
   var filteredBuildings: CampusBuildings { get }
   var displayedBuildings: CampusBuildings { get }
   var allBuildings: [Building] { get }
+  var nearestBuildings: [NearbyBuilding] { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
   var hasLoaded: Bool { get }
@@ -32,6 +33,7 @@ public protocol BuildingViewModel {
   func onAppear()
   func loadBuildings() async
   func reloadBuildings() async
+  func loadNearestBuildings() async
 }
 
 // MARK: - LiveBuildingViewModel
@@ -51,6 +53,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var buildingsInAscendingOrder = true
   public var isLoading = false
   public var searchText = ""
+  public var nearestBuildings: [NearbyBuilding] = []
   public var loadBuildingErrorMessage: AlertError?
   public var selectedFilter = BuildingFilterOptions.Alphabetical
 
@@ -136,6 +139,8 @@ public class LiveBuildingViewModel: BuildingViewModel {
       }
 
       isLoading = false
+
+      await loadNearestBuildings()
     }
   }
 
@@ -144,9 +149,14 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   public func onAppear() {
+    // Ask for location up front so the "Nearest to you" section can appear. A denied
+    // permission isn't an error here: the section just stays hidden.
+    _ = try? interactor.requestLocationPermission()
+
     // Load buildings once when the view appears
     Task {
       await loadBuildings()
+      await loadNearestBuildings()
     }
 
     hasLoaded = true
@@ -201,7 +211,21 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
+  /// Loads the buildings closest to the user. Clears the list (hiding the section) when
+  /// there's no location permission or GPS fix yet, rather than showing an error.
+  public func loadNearestBuildings() async {
+    switch await interactor.getNearestBuildings(limit: Self.nearestBuildingsLimit) {
+    case .success(let nearest):
+      nearestBuildings = nearest
+    case .failure:
+      nearestBuildings = []
+    }
+  }
+
   // MARK: Private
+
+  /// How many buildings the "Nearest to you" section shows.
+  private static let nearestBuildingsLimit = 4
 
   private var interactor: BuildingInteractor
 
