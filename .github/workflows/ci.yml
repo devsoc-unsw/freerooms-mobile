@@ -29,7 +29,7 @@ jobs:
         run: swiftformat --lint .
   lint:
     name: Lint
-    runs-on: ubuntu-24.04
+    runs-on: macos-26
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
