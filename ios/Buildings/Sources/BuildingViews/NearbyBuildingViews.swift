@@ -34,12 +34,23 @@ public struct NearbyBuildingRowContent: View {
           .truncationMode(.tail)
 
         HStack(spacing: NearbyBuildingLayout.detailSpacing) {
-          Text(nearbyBuilding.formattedDistance)
-            .fontWeight(.semibold)
-            .foregroundStyle(theme.accent.primary)
+          // The location arrow marks this as a distance, so "80 m" isn't read as minutes.
+          // A plain HStack rather than a Label, whose icon-to-title gap is too wide here.
+          HStack(spacing: NearbyBuildingLayout.distanceIconSpacing) {
+            Image(systemName: "location.fill")
+              .imageScale(.small)
+              .accessibilityHidden(true)
+            Text(nearbyBuilding.formattedDistance)
+          }
+          .fontWeight(.semibold)
+          .foregroundStyle(theme.accent.primary)
           if let count = building.numberOfAvailableRooms {
             Text("·")
-            Text("^[\(count) room](inflect: true) available")
+            // Uses the first one that fits: two-digit counts don't fit in full next to the distance.
+            ViewThatFits(in: .horizontal) {
+              Text("^[\(count) room](inflect: true) available")
+              Text("\(count) available")
+            }
           }
         }
         .lineLimit(1)
@@ -81,7 +92,7 @@ struct NearbyBuildingDistanceBadge: View {
   let nearbyBuilding: NearbyBuilding
 
   var body: some View {
-    Label(nearbyBuilding.formattedDistance, systemImage: "location.fill")
+    Label("\(nearbyBuilding.formattedDistance) away", systemImage: "location.fill")
       .labelStyle(.titleAndIcon)
       .font(.caption.weight(.semibold))
       .foregroundStyle(theme.label.primary)
@@ -114,4 +125,5 @@ enum NearbyBuildingLayout {
   static let badgeVerticalPadding: CGFloat = 4
   static let contentSpacing: CGFloat = 5
   static let detailSpacing: CGFloat = 4
+  static let distanceIconSpacing: CGFloat = 3
 }
