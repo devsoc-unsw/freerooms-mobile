@@ -77,10 +77,12 @@ public struct RoomsListView: View {
       }
     }
     .refreshable {
-      await roomViewModel.reloadRooms()
+      async let roomsReloaded: Void = roomViewModel.reloadRooms()
+      await loadNearbyBuildings()
+      await roomsReloaded
     }
     .task(id: building.id) {
-      nearbyBuildings = await buildingViewModel.nearbyBuildings(to: building)
+      await loadNearbyBuildings()
     }
     .background(InteractivePopGestureEnabler())
     .navigationBarBackButtonHidden(true)
@@ -144,6 +146,11 @@ public struct RoomsListView: View {
   @State private var nearbyBuildings: [NearbyBuilding] = []
 
   private var building: Building
+
+  /// Fetches this building's nearby buildings. Availability is fetched fresh each time.
+  private func loadNearbyBuildings() async {
+    nearbyBuildings = await buildingViewModel.nearbyBuildings(to: building)
+  }
 
 }
 
