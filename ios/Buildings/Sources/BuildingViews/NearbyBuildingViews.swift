@@ -5,22 +5,26 @@
 //  Created by Eric Wong on 13/11/2026.
 //
 
-import BuildingModels
+public import BuildingModels
 import CommonUI
 import Foundation
-import SwiftUI
+public import SwiftUI
 
 // MARK: - NearbyBuildingRowContent
 
-/// Row content for the "Nearest to you" list: the usual building row, with the distance
-/// shown in front of the available-rooms count.
-struct NearbyBuildingRowContent: View {
+/// Row content for nearby-building lists ("Nearest to you" and a building's "Nearby buildings"):
+/// the usual building row, with the distance shown in front of the available-rooms count.
+public struct NearbyBuildingRowContent: View {
 
-  // MARK: Internal
+  // MARK: Lifecycle
 
-  let nearbyBuilding: NearbyBuilding
+  public init(nearbyBuilding: NearbyBuilding) {
+    self.nearbyBuilding = nearbyBuilding
+  }
 
-  var body: some View {
+  // MARK: Public
+
+  public var body: some View {
     HStack(spacing: 0) {
       VStack(alignment: .leading, spacing: NearbyBuildingLayout.contentSpacing) {
         Text(building.name)
@@ -51,6 +55,10 @@ struct NearbyBuildingRowContent: View {
     }
     .accessibilityElement(children: .combine)
   }
+
+  // MARK: Internal
+
+  let nearbyBuilding: NearbyBuilding
 
   // MARK: Private
 
