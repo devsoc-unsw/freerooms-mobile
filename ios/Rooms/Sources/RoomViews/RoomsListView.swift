@@ -6,6 +6,8 @@
 //
 
 public import BuildingModels
+import BuildingViewModels
+import BuildingViews
 public import CommonUI
 import RoomModels
 import RoomViewModels
@@ -49,9 +51,36 @@ public struct RoomsListView: View {
         isLoading: roomViewModel.isLoading,
         path: $path,
         rowHeight: $rowHeight)
+
+      if !nearbyBuildings.isEmpty {
+        Section {
+          ForEach(nearbyBuildings) { nearbyBuilding in
+            GenericListRowView(
+              rowHeight: $nearbyRowHeight,
+              item: nearbyBuilding,
+              items: nearbyBuildings,
+              isLoading: false,
+              onSelect: { path.append($0.building) },
+              imageProvider: { buildingID in
+                BuildingImage[buildingID]
+              },
+              content: { nearbyBuilding in
+                NearbyBuildingRowContent(nearbyBuilding: nearbyBuilding)
+              })
+              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
+          }
+        } header: {
+          Text("Nearby buildings")
+            .textCase(.uppercase)
+            .foregroundStyle(theme.label.primary)
+        }
+      }
     }
     .refreshable {
       await roomViewModel.reloadRooms()
+    }
+    .task(id: building.id) {
+      nearbyBuildings = await buildingViewModel.nearbyBuildings(to: building)
     }
     .background(InteractivePopGestureEnabler())
     .navigationBarBackButtonHidden(true)
@@ -100,6 +129,7 @@ public struct RoomsListView: View {
 
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
+  @State var nearbyRowHeight: CGFloat?
 
   let screenHeight = UIScreen.main.bounds.height
 
@@ -110,6 +140,8 @@ public struct RoomsListView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(LiveBuildingViewModel.self) private var buildingViewModel
+  @State private var nearbyBuildings: [NearbyBuilding] = []
 
   private var building: Building
 
@@ -153,6 +185,7 @@ private struct PreviewWrapper: View {
         RoomImage[$0] // This closure captures BuildingImage
       })
       .environment(viewModel)
+      .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
       .defaultTheme()
   }
 }

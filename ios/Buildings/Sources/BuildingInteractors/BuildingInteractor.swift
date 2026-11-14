@@ -205,7 +205,8 @@ public class BuildingInteractor {
   private let buildingService: any BuildingService
   private let locationService: any LocationService
 
-  /// Given an origin Location, find the nearest building
+  /// Returns buildings by distance from origin ranked by closeness
+  /// Skips duplicate buildings and buildings at full capacity
   private func nearestBuildings(_ buildings: [Building], from origin: Location, limit: Int) -> [NearbyBuilding] {
     var seenIDs = Set<String>()
     let nearest = buildings

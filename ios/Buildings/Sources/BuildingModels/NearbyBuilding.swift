@@ -7,7 +7,7 @@
 
 // MARK: - NearbyBuilding
 
-/// A building paired with how far it is from the user.
+/// A building paired with how far it is from a given point (user or building)
 public nonisolated
 struct NearbyBuilding: Equatable, Identifiable, Hashable, Sendable {
 
