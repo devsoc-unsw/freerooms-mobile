@@ -63,6 +63,10 @@ struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
     GridReference.fromBuildingID(buildingID: id)
   }
 
+  public var location: Location {
+    Location(latitude: latitude, longitude: longitude)
+  }
+
   public var availabilityStatus: AvailabilityStatus {
     AvailabilityStatus(numberOfAvailableRooms)
   }

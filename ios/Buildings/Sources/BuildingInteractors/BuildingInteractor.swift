@@ -60,7 +60,7 @@ public class BuildingInteractor {
         // Compute each building's distance once, then sort
         let sorted = buildings
           .map { (building: Building) -> (Building, Double) in
-            (building, calculateDistance(from: currentLocation, to: building))
+            (building, currentLocation.distance(to: building.location))
           }
           .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
           .map(\.0)
@@ -68,6 +68,43 @@ public class BuildingInteractor {
       } catch {
         return .failure(error)
       }
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  /// Asks the user for location permission if they haven't been asked yet.
+  /// - Returns: `true` if the permission prompt was shown, `false` if it was already answered or pending.
+  /// - Throws: `LocationServiceError.locationPermissionsDenied` if the user has denied permission.
+  public func requestLocationPermission() throws -> Bool {
+    try locationService.requestLocationPermissions()
+  }
+
+  /// Retrieves buildings closest to the user
+  public func getNearestBuildings(limit: Int) async -> Result<[NearbyBuilding], any Error> {
+    let currentLocation: Location
+    do {
+      currentLocation = try locationService.getCurrentLocation()
+    } catch {
+      return .failure(error)
+    }
+
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      return .success(nearestBuildings(buildings, from: currentLocation, limit: limit))
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  /// Retrieves buildings closest to the given building
+  public func getBuildingsNearest(from building: Building, limit: Int) async -> Result<[NearbyBuilding], FetchBuildingsError> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let otherBuildings = buildings.filter { $0.id != building.id }
+      return .success(nearestBuildings(otherBuildings, from: building.location, limit: limit))
 
     case .failure(let error):
       return .failure(error)
@@ -168,16 +205,17 @@ public class BuildingInteractor {
   private let buildingService: any BuildingService
   private let locationService: any LocationService
 
-  /// Calculates the squared distance between a location and a building.
-  /// Uses squared distance for performance (avoiding square root calculation).
-  /// - Parameters:
-  ///   - location: Starting location
-  ///   - building: Target building
-  /// - Returns: Squared distance value
-  private func calculateDistance(from location: Location, to building: Building) -> Double {
-    let dlat = building.latitude - location.latitude
-    let dlon = building.longitude - location.longitude
-    return dlat * dlat + dlon * dlon
+  /// Returns buildings by distance from origin ranked by closeness
+  /// Skips duplicate buildings and buildings at full capacity
+  private func nearestBuildings(_ buildings: [Building], from origin: Location, limit: Int) -> [NearbyBuilding] {
+    var seenIDs = Set<String>()
+    let nearest = buildings
+      .filter { seenIDs.insert($0.id).inserted }
+      .filter { $0.numberOfAvailableRooms != 0 }
+      .map { NearbyBuilding(building: $0, distanceInMetres: origin.distance(to: $0.location)) }
+      .sorted { $0.distanceInMetres < $1.distanceInMetres }
+      .prefix(max(limit, 0))
+    return Array(nearest)
   }
 
 }
