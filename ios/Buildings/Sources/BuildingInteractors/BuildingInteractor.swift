@@ -81,6 +81,7 @@ public class BuildingInteractor {
     try locationService.requestLocationPermissions()
   }
 
+  /// Retrieves buildings closest to the user
   public func getNearestBuildings(limit: Int) async -> Result<[NearbyBuilding], any Error> {
     let currentLocation: Location
     do {
@@ -91,14 +92,19 @@ public class BuildingInteractor {
 
     switch await buildingService.getBuildings() {
     case .success(let buildings):
-      var seenIDs = Set<String>()
-      let nearest = buildings
-        .filter { seenIDs.insert($0.id).inserted }
-        .filter { $0.numberOfAvailableRooms != 0 }
-        .map { NearbyBuilding(building: $0, distanceInMetres: currentLocation.distance(to: $0.location)) }
-        .sorted { $0.distanceInMetres < $1.distanceInMetres }
-        .prefix(max(limit, 0))
-      return .success(Array(nearest))
+      return .success(nearestBuildings(buildings, from: currentLocation, limit: limit))
+
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+
+  /// Retrieves buildings closest to the given building
+  public func getBuildingsNearest(from building: Building, limit: Int) async -> Result<[NearbyBuilding], FetchBuildingsError> {
+    switch await buildingService.getBuildings() {
+    case .success(let buildings):
+      let otherBuildings = buildings.filter { $0.id != building.id }
+      return .success(nearestBuildings(otherBuildings, from: building.location, limit: limit))
 
     case .failure(let error):
       return .failure(error)
@@ -198,5 +204,17 @@ public class BuildingInteractor {
 
   private let buildingService: any BuildingService
   private let locationService: any LocationService
+
+  /// Given an origin Location, find the nearest building
+  private func nearestBuildings(_ buildings: [Building], from origin: Location, limit: Int) -> [NearbyBuilding] {
+    var seenIDs = Set<String>()
+    let nearest = buildings
+      .filter { seenIDs.insert($0.id).inserted }
+      .filter { $0.numberOfAvailableRooms != 0 }
+      .map { NearbyBuilding(building: $0, distanceInMetres: origin.distance(to: $0.location)) }
+      .sorted { $0.distanceInMetres < $1.distanceInMetres }
+      .prefix(max(limit, 0))
+    return Array(nearest)
+  }
 
 }

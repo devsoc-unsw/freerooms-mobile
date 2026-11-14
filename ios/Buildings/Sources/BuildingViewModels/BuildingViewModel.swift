@@ -34,6 +34,7 @@ public protocol BuildingViewModel {
   func loadBuildings() async
   func reloadBuildings() async
   func loadNearestBuildings() async
+  func nearbyBuildings(to building: Building) async -> [NearbyBuilding]
 }
 
 // MARK: - LiveBuildingViewModel
@@ -212,7 +213,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   /// Loads the buildings closest to the user. Clears the list (hiding the section) when
-  /// there's no location permission or GPS fix yet, rather than showing an error.
+  /// there's no location permission or GPS fix yet.
   public func loadNearestBuildings() async {
     switch await interactor.getNearestBuildings(limit: Self.nearestBuildingsLimit) {
     case .success(let nearest):
@@ -222,10 +223,24 @@ public class LiveBuildingViewModel: BuildingViewModel {
     }
   }
 
+  /// The buildings closest to `building`, nearest first. Returns an empty list if buildings
+  /// can't be loaded, so the section just stays hidden. Each screen keeps its own copy.
+  public func nearbyBuildings(to building: Building) async -> [NearbyBuilding] {
+    switch await interactor.getBuildingsNearest(from: building, limit: Self.nearbyBuildingsLimit) {
+    case .success(let nearby):
+      nearby
+    case .failure:
+      []
+    }
+  }
+
   // MARK: Private
 
-  /// How many buildings the "Nearest to you" section shows.
+  /// How many buildings the "Nearest to you" section shows
   private static let nearestBuildingsLimit = 4
+
+  /// How many buildings a building screen's "Nearby buildings" section shows
+  private static let nearbyBuildingsLimit = 3
 
   private var interactor: BuildingInteractor
 
