@@ -6,8 +6,6 @@
 //
 
 public import BuildingModels
-import BuildingViewModels
-import BuildingViews
 public import CommonUI
 import RoomModels
 import RoomViewModels
@@ -15,18 +13,22 @@ public import SwiftUI
 
 // MARK: - RoomsListView
 
-public struct RoomsListView: View {
+public struct RoomsListView<Footer: View>: View {
 
   // MARK: Lifecycle
 
   public init(
     building: Building,
     path: Binding<NavigationPath>,
-    imageProvider: @escaping (String) -> CachedImage)
+    imageProvider: @escaping (String) -> CachedImage,
+    onRefresh: @escaping () async -> Void = { },
+    @ViewBuilder footer: () -> Footer)
   {
     self.building = building
     _path = path
     self.imageProvider = imageProvider
+    self.onRefresh = onRefresh
+    self.footer = footer()
   }
 
   // MARK: Public
@@ -52,37 +54,12 @@ public struct RoomsListView: View {
         path: $path,
         rowHeight: $rowHeight)
 
-      if !nearbyBuildings.isEmpty {
-        Section {
-          ForEach(nearbyBuildings) { nearbyBuilding in
-            GenericListRowView(
-              rowHeight: $nearbyRowHeight,
-              item: nearbyBuilding,
-              items: nearbyBuildings,
-              isLoading: false,
-              onSelect: { path.append($0.building) },
-              imageProvider: { buildingID in
-                BuildingImage[buildingID]
-              },
-              content: { nearbyBuilding in
-                NearbyBuildingRowContent(nearbyBuilding: nearbyBuilding)
-              })
-              .padding(.vertical, RoomLayoutConstants.listRowVerticalPadding)
-          }
-        } header: {
-          Text("Nearby buildings")
-            .textCase(.uppercase)
-            .foregroundStyle(theme.label.primary)
-        }
-      }
+      footer
     }
     .refreshable {
       async let roomsReloaded: Void = roomViewModel.reloadRooms()
-      await loadNearbyBuildings()
+      await onRefresh()
       await roomsReloaded
-    }
-    .task(id: building.id) {
-      await loadNearbyBuildings()
     }
     .background(InteractivePopGestureEnabler())
     .navigationBarBackButtonHidden(true)
@@ -131,27 +108,34 @@ public struct RoomsListView: View {
 
   @Binding var path: NavigationPath
   @State var rowHeight: CGFloat?
-  @State var nearbyRowHeight: CGFloat?
 
   let screenHeight = UIScreen.main.bounds.height
 
   let imageProvider: (String) -> CachedImage
+  let onRefresh: () async -> Void
+  let footer: Footer
 
   // MARK: Private
 
   @Environment(\.dismiss) private var dismiss
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
-  @Environment(LiveBuildingViewModel.self) private var buildingViewModel
-  @State private var nearbyBuildings: [NearbyBuilding] = []
 
   private var building: Building
+}
 
-  /// Fetches this building's nearby buildings. Availability is fetched fresh each time.
-  private func loadNearbyBuildings() async {
-    nearbyBuildings = await buildingViewModel.nearbyBuildings(to: building)
+// MARK: - RoomsListView + no footer
+
+extension RoomsListView where Footer == EmptyView {
+  public init(
+    building: Building,
+    path: Binding<NavigationPath>,
+    imageProvider: @escaping (String) -> CachedImage)
+  {
+    self.init(building: building, path: path, imageProvider: imageProvider) {
+      EmptyView()
+    }
   }
-
 }
 
 // MARK: - InteractivePopGestureEnabler
@@ -192,7 +176,6 @@ private struct PreviewWrapper: View {
         RoomImage[$0] // This closure captures BuildingImage
       })
       .environment(viewModel)
-      .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
       .defaultTheme()
   }
 }

@@ -22,6 +22,7 @@ public protocol BuildingViewModel {
   var displayedBuildings: CampusBuildings { get }
   var allBuildings: [Building] { get }
   var nearestBuildings: [NearbyBuilding] { get }
+  var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
   var hasLoaded: Bool { get }
@@ -34,7 +35,7 @@ public protocol BuildingViewModel {
   func loadBuildings() async
   func reloadBuildings() async
   func loadNearestBuildings() async
-  func nearbyBuildings(to building: Building) async -> [NearbyBuilding]
+  func loadNearbyBuildings(to building: Building) async
 }
 
 // MARK: - LiveBuildingViewModel
@@ -55,6 +56,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var isLoading = false
   public var searchText = ""
   public var nearestBuildings: [NearbyBuilding] = []
+  public var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] = [:]
   public var loadBuildingErrorMessage: AlertError?
   public var selectedFilter = BuildingFilterOptions.Alphabetical
 
@@ -223,14 +225,14 @@ public class LiveBuildingViewModel: BuildingViewModel {
     }
   }
 
-  /// The buildings closest to `building`, nearest first. Returns an empty list if buildings
-  /// can't be loaded, so the section just stays hidden. Each screen keeps its own copy.
-  public func nearbyBuildings(to building: Building) async -> [NearbyBuilding] {
+  /// Loads the buildings closest to `building`, nearest first, stored under its ID so each
+  /// building screen keeps its own list. Stores an empty list on failure, hiding the section.
+  public func loadNearbyBuildings(to building: Building) async {
     switch await interactor.getBuildingsNearest(from: building, limit: Self.nearbyBuildingsLimit) {
     case .success(let nearby):
-      nearby
+      nearbyBuildingsByBuildingID[building.id] = nearby
     case .failure:
-      []
+      nearbyBuildingsByBuildingID[building.id] = []
     }
   }
 

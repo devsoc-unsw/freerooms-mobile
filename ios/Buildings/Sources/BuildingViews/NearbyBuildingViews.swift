@@ -82,6 +82,59 @@ public struct NearbyBuildingRowContent: View {
   }
 }
 
+// MARK: - NearbyBuildingsSection
+
+/// The "Nearby buildings" section at the bottom of a building's screen. Shows nothing when
+/// the list is empty. Tapping a building pushes it onto `path`.
+public struct NearbyBuildingsSection: View {
+
+  // MARK: Lifecycle
+
+  public init(nearbyBuildings: [NearbyBuilding], path: Binding<NavigationPath>) {
+    self.nearbyBuildings = nearbyBuildings
+    _path = path
+  }
+
+  // MARK: Public
+
+  public var body: some View {
+    if !nearbyBuildings.isEmpty {
+      Section {
+        ForEach(nearbyBuildings) { nearbyBuilding in
+          GenericListRowView(
+            rowHeight: $rowHeight,
+            item: nearbyBuilding,
+            items: nearbyBuildings,
+            isLoading: false,
+            onSelect: { path.append($0.building) },
+            imageProvider: { buildingID in
+              BuildingImage[buildingID]
+            },
+            content: { nearbyBuilding in
+              NearbyBuildingRowContent(nearbyBuilding: nearbyBuilding)
+            })
+            .padding(.vertical, NearbyBuildingLayout.listRowVerticalPadding)
+        }
+      } header: {
+        Text("Nearby buildings")
+          .textCase(.uppercase)
+          .foregroundStyle(theme.label.primary)
+      }
+    }
+  }
+
+  // MARK: Internal
+
+  @Binding var path: NavigationPath
+  @State var rowHeight: CGFloat?
+
+  let nearbyBuildings: [NearbyBuilding]
+
+  // MARK: Private
+
+  @Environment(Theme.self) private var theme
+}
+
 // MARK: - NearbyBuildingDistanceBadge
 
 /// A small distance label laid over a building card's image.
@@ -126,4 +179,5 @@ enum NearbyBuildingLayout {
   static let contentSpacing: CGFloat = 5
   static let detailSpacing: CGFloat = 4
   static let distanceIconSpacing: CGFloat = 3
+  static let listRowVerticalPadding: CGFloat = 5
 }
