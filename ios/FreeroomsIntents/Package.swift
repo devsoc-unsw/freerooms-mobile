@@ -18,18 +18,37 @@ let package = Package(
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(
       name: "FreeroomsIntents",
-      targets: ["FreeroomsIntents"]),
+      targets: [
+        "FreeroomsEntities",
+        "FreeroomsWidgetIntents",
+      ]),
+    .library(
+      name: "FreeroomsEntities",
+      targets: ["FreeroomsEntities"]),
+    .library(
+      name: "FreeroomsWidgetIntents",
+      targets: ["FreeroomsWidgetIntents"]),
   ],
   dependencies: [
     .package(name: "CommonUI", path: "../CommonUI"),
+    .package(name: "Buildings", path: "../Buildings"),
+    .package(name: "Networking", path: "../Networking"),
     .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
-      name: "FreeroomsIntents",
+      name: "FreeroomsEntities",
       dependencies: [
+        .product(name: "Buildings", package: "Buildings"),
+        .product(name: "Networking", package: "Networking"),
+      ],
+      swiftSettings: swiftSettings),
+    .target(
+      name: "FreeroomsWidgetIntents",
+      dependencies: [
+        .target(name: "FreeroomsEntities"),
         .target(name: "FreeroomsIntentsMacros"),
         .product(name: "CommonUI", package: "CommonUI"),
       ],
