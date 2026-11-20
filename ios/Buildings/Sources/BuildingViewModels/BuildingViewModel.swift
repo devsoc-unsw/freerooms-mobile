@@ -71,7 +71,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public var allBuildings: [Building] {
     let allBuildings = buildings.0 + buildings.1 + buildings.2
-//    return interactor.getBuildingsSortedAlphabetically(buildings: allBuildings, order: true)
     return Building.SortOptions.alphabetical.sort(allBuildings)
   }
 
