@@ -5,6 +5,7 @@
 //  Created by Nicole Xie on 2026/9/11.
 //
 
+import BuildingModels
 import BuildingViewModels
 import CommonUI
 import RoomModels
@@ -42,7 +43,8 @@ struct FavoriteRoomsView: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu)
+            showingFilterMenu: $showingFilterMenu,
+            canSortByDistance: !buildingViewModel.buildingsByDistance.isEmpty)
             .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
             .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
@@ -93,7 +95,16 @@ struct FavoriteRoomsView: View {
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms()
+    roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
+  }
+
+  /// The building order favourites follow: nearest first when sorting by distance, otherwise
+  /// `nil` for A–Z.
+  private var favoriteBuildingOrder: [String]? {
+    guard roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty else {
+      return nil
+    }
+    return buildingViewModel.buildingsByDistance.map(\.id)
   }
 
   private var searchTextBinding: Binding<String> {

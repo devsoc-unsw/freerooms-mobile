@@ -41,6 +41,7 @@ public protocol RoomViewModel: AnyObject {
   var selectedCampusLocation: CampusLocation? { get set }
   var selectedCapacity: Int? { get set }
   var selectedAmenities: Set<RoomAmenity> { get set }
+  var sortsByDistance: Bool { get set }
   var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
@@ -90,7 +91,7 @@ public protocol RoomViewModel: AnyObject {
 
   func isFavorite(roomID: Room.ID) -> Bool
 
-  func getAllFavoriteRooms() -> [Room]
+  func getAllFavoriteRooms(buildingOrder: [String]?) -> [Room]
 }
 
 // MARK: - LiveRoomViewModel
@@ -143,6 +144,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var selectedCampusLocation: CampusLocation?
   public var selectedAmenities: Set<RoomAmenity> = []
   public var selectedCapacity: Int?
+  public var sortsByDistance = false
 
   public var hasActiveFilters: Bool {
     selectedDate != DateDefaults.selectedDate || !selectedRoomTypes.isEmpty
@@ -334,6 +336,7 @@ public class LiveRoomViewModel: RoomViewModel {
     selectedDuration = nil
     selectedCampusLocation = nil
     selectedCapacity = nil
+    sortsByDistance = false
     bookingsByRoomId = [:]
     currentRoomBookings = []
   }
@@ -396,15 +399,23 @@ public class LiveRoomViewModel: RoomViewModel {
     interactor.isFavorite(roomID: roomID)
   }
 
-  public func getAllFavoriteRooms() -> [Room] {
+  /// Favourite rooms, A–Z or Z–A. Given a `buildingOrder` (e.g. nearest building first),
+  /// they're ordered by building first.
+  public func getAllFavoriteRooms(buildingOrder: [String]?) -> [Room] {
     let roomIds = interactor.getAllFavoriteRoomIds()
 
     let favoriteRooms = rooms.filter { room in
       roomIds.contains(room.id) && selectedAmenities.allSatisfy { $0.isAvailable(in: room) }
     }
 
-    return interactor.getRoomsSortedAlphabetically(
+    guard let buildingOrder else {
+      return interactor.getRoomsSortedAlphabetically(
+        rooms: favoriteRooms,
+        inAscendingOrder: roomsInAscendingOrder)
+    }
+    return interactor.getRoomsSortedByBuildingOrder(
       rooms: favoriteRooms,
+      buildingOrder: buildingOrder,
       inAscendingOrder: roomsInAscendingOrder)
   }
 

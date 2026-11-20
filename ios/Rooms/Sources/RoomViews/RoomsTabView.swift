@@ -120,14 +120,27 @@ public struct RoomsTabView<Destination: View>: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(\.scenePhase) private var scenePhase
 
   private let roomDestinationBuilderView: (Room) -> Destination
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms()
+    roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
+  }
+
+  /// The building order favourites follow: nearest first when sorting by distance, otherwise
+  /// `nil` for A–Z.
+  private var favoriteBuildingOrder: [String]? {
+    guard roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty else {
+      return nil
+    }
+    return buildingViewModel.buildingsByDistance.map(\.id)
   }
 
   private var roomSectionBuildings: [Building] {
+    if roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty {
+      return buildingViewModel.buildingsByDistance
+    }
     let buildings = buildingViewModel.allBuildings
     if !buildings.isEmpty {
       return buildings
@@ -151,6 +164,7 @@ public struct RoomsTabView<Destination: View>: View {
       .refreshable {
         Task {
           await roomViewModel.reloadRooms()
+          await buildingViewModel.loadBuildingsByDistance()
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
@@ -174,7 +188,8 @@ public struct RoomsTabView<Destination: View>: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu)
+            showingFilterMenu: $showingFilterMenu,
+            canSortByDistance: !buildingViewModel.buildingsByDistance.isEmpty)
             .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
             .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
@@ -199,10 +214,20 @@ public struct RoomsTabView<Destination: View>: View {
       .task {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
+        } else {
+          // Refresh on every return to the tab, e.g. after granting location on another tab.
+          await buildingViewModel.loadBuildingsByDistance()
         }
-
         if !roomViewModel.hasLoaded {
           await roomViewModel.onAppear()
+        }
+      }
+      .onChange(of: scenePhase) { _, newPhase in
+        // The location permission prompt makes the app inactive.
+        // Reload once it's answered.
+        guard newPhase == .active else { return }
+        Task {
+          await buildingViewModel.loadBuildingsByDistance()
         }
       }
       .alert(
@@ -280,7 +305,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   @ViewBuilder
   private var favoriteRoomsPreview: some View {
-    let favoriteRooms = roomViewModel.getAllFavoriteRooms()
+    let favoriteRooms = roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
     // Keep the inline section compact; the full list lives at `.favorites`.
     let previewRooms = Array(favoriteRooms.prefix(4))
 

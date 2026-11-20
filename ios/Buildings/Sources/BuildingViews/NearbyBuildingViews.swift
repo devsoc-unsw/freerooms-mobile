@@ -12,19 +12,21 @@ public import SwiftUI
 
 // MARK: - NearbyBuildingRowContent
 
-/// Row content for nearby-building lists ("Nearest to you" and a building's "Nearby buildings"):
+/// Row content for a building screen's "Nearby buildings" list:
 /// the usual building row, with the distance shown in front of the available-rooms count.
-public struct NearbyBuildingRowContent: View {
+struct NearbyBuildingRowContent: View {
 
   // MARK: Lifecycle
 
-  public init(nearbyBuilding: NearbyBuilding) {
+  init(nearbyBuilding: NearbyBuilding) {
     self.nearbyBuilding = nearbyBuilding
   }
 
-  // MARK: Public
+  // MARK: Internal
 
-  public var body: some View {
+  let nearbyBuilding: NearbyBuilding
+
+  var body: some View {
     HStack(spacing: 0) {
       VStack(alignment: .leading, spacing: NearbyBuildingLayout.contentSpacing) {
         Text(building.name)
@@ -68,10 +70,6 @@ public struct NearbyBuildingRowContent: View {
     }
     .accessibilityElement(children: .combine)
   }
-
-  // MARK: Internal
-
-  let nearbyBuilding: NearbyBuilding
 
   // MARK: Private
 
@@ -135,31 +133,6 @@ public struct NearbyBuildingsSection: View {
   @Environment(Theme.self) private var theme
 }
 
-// MARK: - NearbyBuildingDistanceBadge
-
-/// A small distance label laid over a building card's image.
-struct NearbyBuildingDistanceBadge: View {
-
-  // MARK: Internal
-
-  let nearbyBuilding: NearbyBuilding
-
-  var body: some View {
-    Label("\(nearbyBuilding.formattedDistance) away", systemImage: "location.fill")
-      .labelStyle(.titleAndIcon)
-      .font(.caption.weight(.semibold))
-      .foregroundStyle(theme.label.primary)
-      .padding(.vertical, NearbyBuildingLayout.badgeVerticalPadding)
-      .padding(.horizontal, NearbyBuildingLayout.badgeHorizontalPadding)
-      .background(.thinMaterial, in: Capsule())
-      .accessibilityLabel("\(nearbyBuilding.formattedDistance) away")
-  }
-
-  // MARK: Private
-
-  @Environment(Theme.self) private var theme
-}
-
 // MARK: - Distance formatting
 
 extension NearbyBuilding {
@@ -173,9 +146,6 @@ extension NearbyBuilding {
 // MARK: - NearbyBuildingLayout
 
 enum NearbyBuildingLayout {
-  static let badgeHorizontalPadding: CGFloat = 8
-  static let badgeInset: CGFloat = 10
-  static let badgeVerticalPadding: CGFloat = 4
   static let contentSpacing: CGFloat = 5
   static let detailSpacing: CGFloat = 4
   static let distanceIconSpacing: CGFloat = 3

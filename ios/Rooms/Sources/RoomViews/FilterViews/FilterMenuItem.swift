@@ -29,6 +29,7 @@ enum FilterMenuItem: CaseIterable, Identifiable {
   case campusLocation
   case amenities
   case capacity
+  case distance
 
   // MARK: Internal
 
@@ -48,6 +49,8 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       "Amenities"
     case .capacity:
       "Capacity"
+    case .distance:
+      "Distance"
     }
   }
 
@@ -65,10 +68,12 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       "checklist"
     case .capacity:
       "person.2"
+    case .distance:
+      "location.fill"
     }
   }
 
-  var sheet: RoomFilterSheet {
+  var sheet: RoomFilterSheet? {
     switch self {
     case .date:
       .date
@@ -82,6 +87,8 @@ enum FilterMenuItem: CaseIterable, Identifiable {
       .amenities
     case .capacity:
       .capacity
+    case .distance:
+      nil
     }
   }
 }

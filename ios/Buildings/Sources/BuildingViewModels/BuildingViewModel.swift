@@ -21,7 +21,7 @@ public protocol BuildingViewModel {
   var filteredBuildings: CampusBuildings { get }
   var displayedBuildings: CampusBuildings { get }
   var allBuildings: [Building] { get }
-  var nearestBuildings: [NearbyBuilding] { get }
+  var buildingsByDistance: [Building] { get }
   var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] { get }
   var buildingsInAscendingOrder: Bool { get }
   var isLoading: Bool { get }
@@ -34,7 +34,7 @@ public protocol BuildingViewModel {
   func onAppear()
   func loadBuildings() async
   func reloadBuildings() async
-  func loadNearestBuildings() async
+  func loadBuildingsByDistance() async
   func loadNearbyBuildings(to building: Building) async
 }
 
@@ -55,7 +55,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var buildingsInAscendingOrder = true
   public var isLoading = false
   public var searchText = ""
-  public var nearestBuildings: [NearbyBuilding] = []
+  public var buildingsByDistance: [Building] = []
   public var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] = [:]
   public var loadBuildingErrorMessage: AlertError?
   public var selectedFilter = BuildingFilterOptions.Alphabetical
@@ -143,7 +143,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
       isLoading = false
 
-      await loadNearestBuildings()
+      await loadBuildingsByDistance()
     }
   }
 
@@ -152,14 +152,13 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   public func onAppear() {
-    // Ask for location up front so the "Nearest to you" section can appear. A denied
-    // permission isn't an error here: the section just stays hidden.
+    // Ask for location up front so the Rooms tab can sort by distance.
     _ = try? interactor.requestLocationPermission()
 
     // Load buildings once when the view appears
     Task {
       await loadBuildings()
-      await loadNearestBuildings()
+      await loadBuildingsByDistance()
     }
 
     hasLoaded = true
@@ -214,14 +213,14 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
-  /// Loads the buildings closest to the user. Clears the list (hiding the section) when
-  /// there's no location permission or GPS fix yet.
-  public func loadNearestBuildings() async {
-    switch await interactor.getNearestBuildings(limit: Self.nearestBuildingsLimit) {
-    case .success(let nearest):
-      nearestBuildings = nearest
+  /// Loads every building, nearest to the user first, so the Rooms tab can sort by distance.
+  /// Clears the list when there's no location permission or GPS fix yet.
+  public func loadBuildingsByDistance() async {
+    switch await interactor.getBuildingsSortedByDistance(inAscendingOrder: true) {
+    case .success(let sorted):
+      buildingsByDistance = uniqueById(sorted)
     case .failure:
-      nearestBuildings = []
+      buildingsByDistance = []
     }
   }
 
@@ -237,9 +236,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   // MARK: Private
-
-  /// How many buildings the "Nearest to you" section shows
-  private static let nearestBuildingsLimit = 4
 
   /// How many buildings a building screen's "Nearby buildings" section shows
   private static let nearbyBuildingsLimit = 3

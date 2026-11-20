@@ -8,6 +8,7 @@
 import CommonUI
 import RoomViewModels
 import SwiftUI
+import UIKit
 
 struct FloatingFilterMenuView: View {
 
@@ -16,13 +17,35 @@ struct FloatingFilterMenuView: View {
   @Binding var activeFilterSheet: RoomFilterSheet?
   @Binding var showingFilterMenu: Bool
 
+  /// Whether buildings can be ordered by distance yet (needs location permission and a fix).
+  let canSortByDistance: Bool
+
   var body: some View {
     VStack(alignment: .trailing, spacing: Self.menuSpacing) {
       if showingFilterMenu {
         ForEach(FilterMenuItem.allCases) { item in
-          filterMenuAction(item.title, systemImage: item.systemImage) {
-            activeFilterSheet = item.sheet
+          let isOn = item == .distance && roomViewModel.sortsByDistance
+          // Faded (but still tappable, to explain why) when there's no location to sort by.
+          let isAvailable = item != .distance || canSortByDistance || isOn
+
+          filterMenuAction(
+            item.title,
+            systemImage: isOn ? "checkmark" : item.systemImage,
+            isDimmed: !isAvailable)
+          {
+            if let sheet = item.sheet {
+              activeFilterSheet = sheet
+            } else if !isAvailable {
+              showingLocationAlert = true
+            } else {
+              roomViewModel.sortsByDistance.toggle()
+              withAnimation(.spring(duration: Self.animationDuration)) {
+                showingFilterMenu = false
+              }
+            }
           }
+          .accessibilityAddTraits(isOn ? .isSelected : [])
+          .accessibilityHint(isAvailable ? "" : "Needs your location")
         }
         filterMenuAction("Reset all", systemImage: "arrow.counterclockwise", role: .destructive) {
           roomViewModel.clearAllFilters()
@@ -56,6 +79,17 @@ struct FloatingFilterMenuView: View {
       .accessibilityHint("Shows filter options near the tab bar")
     }
     .animation(.spring(duration: Self.animationDuration), value: showingFilterMenu)
+    // iOS never shows the permission prompt again after "Don't Allow", so point to Settings.
+    .alert("Can't find your location", isPresented: $showingLocationAlert) {
+      Button("Open Settings") {
+        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+          openURL(settingsURL)
+        }
+      }
+      Button("Cancel", role: .cancel) { }
+    } message: {
+      Text("Check that location is on for Freerooms in Settings to sort buildings by distance.")
+    }
   }
 
   // MARK: Private
@@ -77,7 +111,11 @@ struct FloatingFilterMenuView: View {
   private static let toggleShadowOpacity = 0.34
   private static let toggleShadowRadius: CGFloat = 14
   private static let toggleShadowYOffset: CGFloat = 5
+  private static let unavailableOpacity = 0.4
 
+  @State private var showingLocationAlert = false
+
+  @Environment(\.openURL) private var openURL
   @Environment(LiveRoomViewModel.self) private var roomViewModel
   @Environment(Theme.self) private var theme
 
@@ -89,6 +127,7 @@ struct FloatingFilterMenuView: View {
     _ title: String,
     systemImage: String,
     role: ButtonRole? = nil,
+    isDimmed: Bool = false,
     action: @escaping () -> Void)
     -> some View
   {
@@ -98,6 +137,9 @@ struct FloatingFilterMenuView: View {
       Label(title, systemImage: systemImage)
         .font(.subheadline.weight(.semibold))
         .foregroundStyle(role == .destructive ? theme.list.red : theme.label.primary)
+        // Fade only the text and icon: fading the whole pill made it see-through and let
+        // taps fall through to the scrim behind it.
+        .opacity(isDimmed ? Self.unavailableOpacity : 1)
         .padding(.horizontal, Self.actionHorizontalPadding)
         .padding(.vertical, Self.actionVerticalPadding)
         .background {
@@ -123,7 +165,8 @@ struct FloatingFilterMenuView: View {
 #Preview {
   FloatingFilterMenuView(
     activeFilterSheet: .constant(nil),
-    showingFilterMenu: .constant(false))
+    showingFilterMenu: .constant(false),
+    canSortByDistance: true)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
     .defaultTheme()
 }

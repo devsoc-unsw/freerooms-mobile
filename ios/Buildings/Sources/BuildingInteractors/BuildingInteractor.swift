@@ -81,24 +81,6 @@ public class BuildingInteractor {
     try locationService.requestLocationPermissions()
   }
 
-  /// Retrieves buildings closest to the user
-  public func getNearestBuildings(limit: Int) async -> Result<[NearbyBuilding], any Error> {
-    let currentLocation: Location
-    do {
-      currentLocation = try locationService.getCurrentLocation()
-    } catch {
-      return .failure(error)
-    }
-
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      return .success(nearestBuildings(buildings, from: currentLocation, limit: limit))
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   /// Retrieves buildings closest to the given building
   public func getBuildingsNearest(from building: Building, limit: Int) async -> Result<[NearbyBuilding], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
