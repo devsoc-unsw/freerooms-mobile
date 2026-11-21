@@ -77,8 +77,10 @@ public class LiveDistanceViewModel {
     updateDistances()
   }
 
-  /// Recomputes distances for a new list of rooms.
+  /// Recomputes distances for a new list of rooms. Does nothing when only their order changed
+  /// (for example after Reverse), as no room has moved.
   public func update(rooms: [Room]) {
+    guard Set(rooms.map(\.id)) != Set(self.rooms.map(\.id)) else { return }
     self.rooms = rooms
     updateDistances()
   }
@@ -117,14 +119,12 @@ public class LiveDistanceViewModel {
 public class PreviewDistanceViewModel: LiveDistanceViewModel {
 
   public init() {
-    let locationService = LiveLocationService(locationManager: LiveLocationManager())
     super.init(
       buildingInteractor: BuildingInteractor(
         buildingService: PreviewBuildingService(),
-        locationService: locationService),
+        locationService: LiveLocationService(locationManager: LiveLocationManager())),
       roomInteractor: RoomInteractor(
         roomService: PreviewRoomService(),
-        locationService: locationService,
         favouriteService: PreviewFavoriteRoomService()))
   }
 }

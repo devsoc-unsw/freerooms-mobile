@@ -38,19 +38,6 @@ public class BuildingInteractor {
     buildings.filter { $0.gridReference.campusSection == campusSection }
   }
 
-  public func getBuildingsFilteredByCampusSection(_ campusSection: CampusSection) async
-    -> Result<[Building], FetchBuildingsError>
-  {
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      let filtered = buildings.filter { $0.gridReference.campusSection == campusSection }
-      return .success(filtered)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
   /// The user's current location, or `nil` without location permission or a GPS fix.
   public func getUserLocation() -> Location? {
     try? locationService.getCurrentLocation()
@@ -73,20 +60,13 @@ public class BuildingInteractor {
 
   /// Retrieves buildings closest to the given building
   public func getBuildingsNearest(from building: Building, limit: Int) async -> Result<[NearbyBuilding], FetchBuildingsError> {
-    switch await buildingService.getBuildings() {
+    switch await getBuildings() {
     case .success(let buildings):
       let otherBuildings = buildings.filter { $0.id != building.id }
       return .success(nearestBuildings(otherBuildings, from: building.location, limit: limit))
 
     case .failure(let error):
       return .failure(error)
-    }
-  }
-
-  @available(*, deprecated, renamed: "Building.SortOptions.sort(_:)")
-  public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) -> [Building] {
-    buildings.sorted { a, b in
-      order ? a.name < b.name : a.name > b.name
     }
   }
 
@@ -119,69 +99,17 @@ public class BuildingInteractor {
     }
   }
 
+  /// Every building, each listed once, in the order the service returns them. The one place
+  /// duplicate buildings are removed.
+  public func getBuildings() async -> Result<[Building], FetchBuildingsError> {
+    await buildingService.getBuildings().map { buildings in
+      var seenIDs = Set<String>()
+      return buildings.filter { seenIDs.insert($0.id).inserted }
+    }
+  }
+
   public func getBuildings(sortedBy sortOptions: Building.SortOptions) async -> Result<[Building], FetchBuildingsError> {
-    do throws(FetchBuildingsError) {
-      let buildings = try await buildingService.getBuildings().get()
-      return .success(sortOptions.sort(buildings))
-    } catch {
-      return .failure(error)
-    }
-  }
-
-  // MARK: Package
-
-  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
-  package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      let sorted = buildings.sorted { a, b in
-        inAscendingOrder ? a.name < b.name : a.name > b.name
-      }
-      return .success(sorted)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  // MARK: Internal
-
-  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
-  func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      // no valid data, return as is
-      guard buildings.contains(where: { $0.numberOfAvailableRooms != nil }) else {
-        return .success(buildings)
-      }
-      let sorted = buildings.sorted { (a: Building, b: Building) in
-        inAscendingOrder
-          ? (a.numberOfAvailableRooms ?? 0) < (b.numberOfAvailableRooms ?? 0)
-          : (a.numberOfAvailableRooms ?? 0) > (b.numberOfAvailableRooms ?? 0)
-      }
-      return .success(sorted)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
-  func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      var sorted = buildings
-      if inAscendingOrder {
-        sorted = buildings.sorted { $0.gridReference.campusSection.rawValue < $1.gridReference.campusSection.rawValue }
-      } else {
-        sorted = buildings.sorted { $0.gridReference.campusSection.rawValue > $1.gridReference.campusSection.rawValue }
-      }
-
-      return .success(sorted)
-
-    case .failure(let error):
-      return .failure(error)
-    }
+    await getBuildings().map { sortOptions.sort($0) }
   }
 
   // MARK: Private
@@ -190,10 +118,8 @@ public class BuildingInteractor {
   private let locationService: any LocationService
 
   /// The closest `limit` buildings to `origin`, skipping buildings with no free rooms.
-  /// Each building is listed once.
   private func nearestBuildings(_ buildings: [Building], from origin: Location, limit: Int) -> [NearbyBuilding] {
-    var seenIDs = Set<String>()
-    let withFreeRooms = buildings.filter { seenIDs.insert($0.id).inserted && $0.numberOfAvailableRooms != 0 }
+    let withFreeRooms = buildings.filter { $0.numberOfAvailableRooms != 0 }
     return Building.SortOptions.nearest(to: origin.coordinate)
       .sort(withFreeRooms)
       .prefix(max(limit, 0))
