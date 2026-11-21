@@ -59,7 +59,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   let roomDestinationBuilderView: (Room) -> RoomDestination
 
   @ViewBuilder
-  func buildingsCardSegment(for campus: String, from buildings: [Building]) -> some View {
+  func buildingsCardSegment(for title: String, from buildings: [Building]) -> some View {
     Section {
       LazyVGrid(columns: columns, spacing: BuildingsTabLayout.cardGridSpacing) {
         ForEach(buildings) { building in
@@ -80,7 +80,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       // .listRowBackground(Color.clear)
     } header: {
       HStack {
-        Text(campus)
+        Text(title)
           .textCase(.uppercase)
           .foregroundStyle(theme.label.primary)
           .padding(.leading, BuildingsTabLayout.sectionLabelLeadingPadding)
@@ -91,7 +91,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   }
 
   @ViewBuilder
-  func buildingsListSegment(for campus: String, from buildings: [Building]) -> some View {
+  func buildingsListSegment(for title: String, from buildings: [Building]) -> some View {
     if buildings.isEmpty {
       EmptyView()
     } else {
@@ -109,7 +109,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
             .padding(.vertical, BuildingsTabLayout.listRowVerticalPadding)
         }
       } header: {
-        Text(campus)
+        Text(title)
           .textCase(.uppercase)
           .foregroundStyle(theme.label.primary)
       }
@@ -171,22 +171,36 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .searchable(text: searchTextBinding, placement: .navigationBarDrawer(displayMode: .always), prompt: "K17")
   }
 
+  /// One section per campus, or, when sorting by distance, a single section of every building
+  /// nearest first, whatever campus it's on. The same logic as the Rooms tab.
+  private var buildingSections: [BuildingSection] {
+    if let byDistance = buildingViewModel.displayedBuildingsByDistance {
+      return [BuildingSection(title: "All buildings", buildings: byDistance)]
+    }
+    let shown = buildingViewModel.displayedBuildings
+    return [
+      BuildingSection(title: "Upper campus", buildings: shown.upper),
+      BuildingSection(title: "Middle campus", buildings: shown.middle),
+      BuildingSection(title: "Lower campus", buildings: shown.lower),
+    ]
+  }
+
   @ViewBuilder
   private var buildingsView: some View {
     if selectedView == ViewOrientation.List {
       List {
-        buildingsListSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
-        buildingsListSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
-        buildingsListSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
+        ForEach(buildingSections) { section in
+          buildingsListSegment(for: section.title, from: section.buildings)
+        }
       }
       .listRowInsets(EdgeInsets())
       .scrollContentBackground(.hidden)
       .background(theme.background.primary)
     } else {
       ScrollView {
-        buildingsCardSegment(for: "Upper campus", from: buildingViewModel.displayedBuildings.upper)
-        buildingsCardSegment(for: "Middle campus", from: buildingViewModel.displayedBuildings.middle)
-        buildingsCardSegment(for: "Lower campus", from: buildingViewModel.displayedBuildings.lower)
+        ForEach(buildingSections) { section in
+          buildingsCardSegment(for: section.title, from: section.buildings)
+        }
       }
       // .padding(.horizontal)
       .background(theme.background.primary.opacity(BuildingsTabLayout.backgroundOpacity))
@@ -230,6 +244,18 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     .foregroundStyle(theme.accent.primary)
   }
 
+}
+
+// MARK: - BuildingSection
+
+/// A titled group of buildings in the Buildings tab.
+private struct BuildingSection: Identifiable {
+  let title: String
+  let buildings: [Building]
+
+  var id: String {
+    title
+  }
 }
 
 // MARK: - BuildingsTabLayout

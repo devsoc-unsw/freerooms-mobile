@@ -20,6 +20,7 @@ public protocol BuildingViewModel: Observable {
   var buildings: CampusBuildings { get }
   var filteredBuildings: CampusBuildings { get }
   var displayedBuildings: CampusBuildings { get }
+  var displayedBuildingsByDistance: [Building]? { get }
   var allBuildings: [Building] { get }
   var sortOptions: Building.SortOptions { get set }
   var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] { get }
@@ -75,6 +76,17 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public var filteredBuildings: CampusBuildings {
     interactor.filterBuildingsByQueryString(buildings, by: searchText)
+  }
+
+  /// When sorting by distance, every displayed building in one list, nearest first (or furthest
+  /// first after Reverse), whatever campus it's on. `nil` otherwise, when the tab shows one
+  /// section per campus.
+  public var displayedBuildingsByDistance: [Building]? {
+    guard sortOptions.kind == .nearest else { return nil }
+    let shown = displayedBuildings
+    let shownIDs = Set((shown.upper + shown.middle + shown.lower).map(\.id))
+    // `sortedBuildings` is already in distance order, so filtering keeps it.
+    return sortedBuildings.filter { shownIDs.contains($0.id) }
   }
 
   public var placeHolderBuildings: CampusBuildings {
@@ -172,11 +184,13 @@ public class LiveBuildingViewModel: BuildingViewModel {
   /// Whether the user picked Distance, which stays true while there's no location to sort by.
   private var prefersNearestSort = false
 
-  /// Stores fetched buildings split by campus, and every building A–Z.
+  /// Every building in `sortOptions` order. The campus lists and the distance list are both
+  /// taken from it, so buildings are sorted once.
+  private var sortedBuildings: [Building] = []
+
+  /// Stores fetched buildings and every building A–Z. Call `applySortOptions()` next.
   private func store(_ fetchedBuildings: [Building]) {
-    buildings.upper = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .upper)
-    buildings.middle = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .middle)
-    buildings.lower = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .lower)
+    sortedBuildings = fetchedBuildings
     allBuildings = Building.SortOptions.alphabetical.sort(fetchedBuildings)
   }
 
@@ -195,11 +209,13 @@ public class LiveBuildingViewModel: BuildingViewModel {
     return true
   }
 
-  /// Re-sorts the buildings already loaded, without fetching them again.
+  /// Re-sorts the buildings already loaded, without fetching them again, then splits them by
+  /// campus. Splitting keeps the order.
   private func applySortOptions() {
-    buildings.upper = sortOptions.sort(buildings.upper)
-    buildings.middle = sortOptions.sort(buildings.middle)
-    buildings.lower = sortOptions.sort(buildings.lower)
+    sortedBuildings = sortOptions.sort(sortedBuildings)
+    buildings.upper = interactor.getBuildingsFilteredByCampusSection(buildings: sortedBuildings, .upper)
+    buildings.middle = interactor.getBuildingsFilteredByCampusSection(buildings: sortedBuildings, .middle)
+    buildings.lower = interactor.getBuildingsFilteredByCampusSection(buildings: sortedBuildings, .lower)
   }
 
 }
