@@ -74,6 +74,7 @@ public class BuildingInteractor {
     }
   }
 
+  @available(*, deprecated, renamed: "Building.SortOptions.sort(_:)")
   public func getBuildingsSortedAlphabetically(buildings: [Building], order: Bool) -> [Building] {
     buildings.sorted { a, b in
       order ? a.name < b.name : a.name > b.name
@@ -109,9 +110,18 @@ public class BuildingInteractor {
     }
   }
 
+  public func getBuildings(sortedBy sortOptions: Building.SortOptions) async -> Result<[Building], FetchBuildingsError> {
+    do throws(FetchBuildingsError) {
+      let buildings = try await buildingService.getBuildings().get()
+      return .success(sortOptions.sort(buildings))
+    } catch {
+      return .failure(error)
+    }
+  }
+
   // MARK: Package
 
-  nonisolated(nonsending)
+  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
   package func getBuildingsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -127,6 +137,7 @@ public class BuildingInteractor {
 
   // MARK: Internal
 
+  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
   func getBuildingsSortedByAvailableRooms(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
@@ -146,6 +157,7 @@ public class BuildingInteractor {
     }
   }
 
+  @available(*, deprecated, renamed: "getBuildings(sortedBy:)")
   func getBuildingSortedByCampusSection(inAscendingOrder: Bool) async -> Result<[Building], FetchBuildingsError> {
     switch await buildingService.getBuildings() {
     case .success(let buildings):
