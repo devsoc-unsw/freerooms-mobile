@@ -88,7 +88,6 @@ struct RoomDistanceTests {
   }
 
   private func makeSUT() -> RoomInteractor {
-    let locationService = LiveLocationService(locationManager: SpyLocationManager())
     let roomService = LiveRoomService(
       roomLoader: StubRoomLoader(),
       roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: StubRemoteRoomBookingLoader()),
@@ -96,7 +95,6 @@ struct RoomDistanceTests {
       roomFilterService: StubFilterRoomService())
     return RoomInteractor(
       roomService: roomService,
-      locationService: locationService,
       favouriteService: PreviewFavoriteRoomService())
   }
 }

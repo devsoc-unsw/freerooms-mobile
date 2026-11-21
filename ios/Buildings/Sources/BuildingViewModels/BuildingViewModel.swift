@@ -58,7 +58,10 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] = [:]
   public var loadBuildingErrorMessage: AlertError?
 
-  public var buildings: CampusBuildings = ([], [], [])
+  public private(set) var buildings: CampusBuildings = ([], [], [])
+
+  /// Every building, A–Z, whatever the tab's sort. Worked out once per load.
+  public private(set) var allBuildings: [Building] = []
 
   public var displayedBuildings: CampusBuildings {
     let isEmpty = buildings.upper.isEmpty && buildings.middle.isEmpty && buildings.lower.isEmpty
@@ -72,11 +75,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public var filteredBuildings: CampusBuildings {
     interactor.filterBuildingsByQueryString(buildings, by: searchText)
-  }
-
-  public var allBuildings: [Building] {
-    let allBuildings = buildings.0 + buildings.1 + buildings.2
-    return Building.SortOptions.alphabetical.sort(allBuildings)
   }
 
   public var placeHolderBuildings: CampusBuildings {
@@ -101,33 +99,8 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   public func reloadBuildings() {
     Task {
-      isLoading = true
-      defer { isLoading = false }
-      let buildingResult: Result<[Building], FetchBuildingsError>
-      buildingResult = await interactor.getBuildings(sortedBy: sortOptions)
-
-      // Fetch buildings with the determined sort order
-
-      switch buildingResult {
-      case .success(let fetchedBuildings):
-        let uniqueBuildings = uniqueById(fetchedBuildings)
-
-        let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
-        let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
-        let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
-
-        buildings.upper = sortOptions.sort(upper)
-        buildings.middle = sortOptions.sort(middle)
-        buildings.lower = sortOptions.sort(lower)
-
-      case .failure(let error):
-        loadBuildingErrorMessage = AlertError(message: error.clientMessage)
-      }
+      await loadBuildings()
     }
-  }
-
-  public func getLoadingStatus() -> Bool {
-    isLoading
   }
 
   public func onAppear() {
@@ -142,20 +115,11 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public func loadBuildings() async {
     isLoading = true
 
-    // Fetch all buildings once, then derive sections in-memory
-    let buildingResult = await interactor.getBuildings(sortedBy: .alphabetical)
-
-    switch buildingResult {
+    switch await interactor.getBuildings() {
     case .success(let fetchedBuildings):
-      let uniqueBuildings = uniqueById(fetchedBuildings)
-
-      let upper = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .upper)
-      let middle = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .middle)
-      let lower = interactor.getBuildingsFilteredByCampusSection(buildings: uniqueBuildings, .lower)
-
-      buildings.upper = sortOptions.sort(upper)
-      buildings.lower = sortOptions.sort(lower)
-      buildings.middle = sortOptions.sort(middle)
+      store(fetchedBuildings)
+      // Sorts after the fetch, so a sort picked while it was loading still applies.
+      applySortOptions()
 
     case .failure(let error):
       loadBuildingErrorMessage = AlertError(message: error.clientMessage)
@@ -164,22 +128,19 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
-  /// Sorts by `kind`, keeping Reverse as it is. Does nothing for nearest without a location.
+  /// Sorts by the kind the user picked, keeping Reverse as it is. Does nothing for nearest
+  /// without a location.
   public func sort(by kind: Building.SortOptions.Kind, near userLocation: Location?) {
-    guard
-      let newSortOptions = Building.SortOptions.sorting(
-        by: kind,
-        isAscending: sortOptions.isAscending,
-        near: userLocation?.coordinate)
-    else { return }
-    sortOptions = newSortOptions
-    applySortOptions()
+    guard apply(kind, near: userLocation) else { return }
+    prefersNearestSort = kind == .nearest
   }
 
-  /// When sorting by distance, re-sorts from `userLocation` so the order follows the user.
+  /// While the user wants Distance, re-sorts from `userLocation` so the order follows them.
+  /// Without a location it shows A–Z, and goes back to Distance when the location returns, as
+  /// the Rooms tab does.
   public func updateNearestSort(near userLocation: Location?) {
-    guard sortOptions.kind == .nearest else { return }
-    sort(by: .nearest, near: userLocation)
+    guard prefersNearestSort else { return }
+    apply(userLocation == nil ? .alphabetical : .nearest, near: userLocation)
   }
 
   public func getBuildingsInOrder() {
@@ -208,16 +169,37 @@ public class LiveBuildingViewModel: BuildingViewModel {
 
   private var interactor: BuildingInteractor
 
+  /// Whether the user picked Distance, which stays true while there's no location to sort by.
+  private var prefersNearestSort = false
+
+  /// Stores fetched buildings split by campus, and every building A–Z.
+  private func store(_ fetchedBuildings: [Building]) {
+    buildings.upper = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .upper)
+    buildings.middle = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .middle)
+    buildings.lower = interactor.getBuildingsFilteredByCampusSection(buildings: fetchedBuildings, .lower)
+    allBuildings = Building.SortOptions.alphabetical.sort(fetchedBuildings)
+  }
+
+  /// Switches to `kind` and re-sorts. Returns `false`, changing nothing, for nearest without a
+  /// location.
+  @discardableResult
+  private func apply(_ kind: Building.SortOptions.Kind, near userLocation: Location?) -> Bool {
+    guard
+      let newSortOptions = Building.SortOptions.sorting(
+        by: kind,
+        isAscending: sortOptions.isAscending,
+        near: userLocation?.coordinate)
+    else { return false }
+    sortOptions = newSortOptions
+    applySortOptions()
+    return true
+  }
+
   /// Re-sorts the buildings already loaded, without fetching them again.
   private func applySortOptions() {
     buildings.upper = sortOptions.sort(buildings.upper)
     buildings.middle = sortOptions.sort(buildings.middle)
     buildings.lower = sortOptions.sort(buildings.lower)
-  }
-
-  private func uniqueById(_ input: [Building]) -> [Building] {
-    var seen = Set<String>()
-    return input.filter { seen.insert($0.id).inserted }
   }
 
 }

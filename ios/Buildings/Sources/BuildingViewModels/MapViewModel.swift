@@ -489,7 +489,7 @@ public class LiveMapViewModel: MapViewModel {
       isLoading = false
     }
 
-    switch await buildingInteractor.getBuildingsSortedAlphabetically(inAscendingOrder: true) {
+    switch await buildingInteractor.getBuildings(sortedBy: .alphabetical) {
     case .success(let buildings):
       self.buildings = buildings
     case .failure:
@@ -555,7 +555,6 @@ public class PreviewMapViewModel: LiveMapViewModel {
       navigationInteractor: PreviewNavigationInteractor(),
       roomInteractor: RoomInteractor(
         roomService: PreviewRoomService(),
-        locationService: LiveLocationService(locationManager: LiveLocationManager()),
         favouriteService: PreviewFavoriteRoomService()))
 
     buildings = [

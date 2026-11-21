@@ -95,12 +95,9 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
                     bookings: bookings)))
           }
         } else if let building = item as? Building {
-          let count = building.numberOfAvailableRooms ?? 0
-          if let distanceInMetres {
-            DistanceAndAvailableRooms(metres: distanceInMetres, availableRooms: count)
-          } else {
-            Text("^[\(count) room](inflect: true) available")
-          }
+          DistanceAndAvailableRooms(
+            metres: distanceInMetres,
+            availableRooms: building.numberOfAvailableRooms)
         }
       }
 

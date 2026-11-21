@@ -132,15 +132,16 @@ extension Building {
           result = lhs.name.localizedStandardCompare(rhs.name)
 
         case .campus:
-          let lhs = lhs.gridReference.campusSection
-          let rhs = rhs.gridReference.campusSection
+          // Lower, then middle, then upper campus. `CampusSection`'s raw values are in that order.
+          let lhs = lhs.gridReference.campusSection.rawValue
+          let rhs = rhs.gridReference.campusSection.rawValue
 
           if lhs == rhs {
             result = .orderedSame
-          } else if lhs == .lower {
-            result = .orderedDescending
-          } else {
+          } else if lhs < rhs {
             result = .orderedAscending
+          } else {
+            result = .orderedDescending
           }
 
         case .nearest(let coordinates):
@@ -206,14 +207,18 @@ extension Building {
         buildings.map(\.self)
 
       case .single(let option):
-        buildings.sorted {
-          let result = option.compare($0, $1)
-          switch result {
-          case .orderedDescending: return !isAscending
-          case .orderedAscending: return isAscending
-          case .orderedSame: return false
-          @unknown default:
-            result.reportUnknownCase()
+        if let origin = option.nearestOrigin {
+          sortedByDistance(buildings, from: origin, nearestFirst: option.isAscending == isAscending)
+        } else {
+          buildings.sorted {
+            let result = option.compare($0, $1)
+            switch result {
+            case .orderedDescending: return !isAscending
+            case .orderedAscending: return isAscending
+            case .orderedSame: return false
+            @unknown default:
+              result.reportUnknownCase()
+            }
           }
         }
 
@@ -488,6 +493,18 @@ extension Building.SortOptions {
     case campus
   }
 
+  /// The kind of the first (main) rule, or `nil` when these options don't sort.
+  public var kind: Kind? {
+    switch _storage {
+    case .none:
+      nil
+    case .single(let option):
+      option.kind
+    case .multiple(let options):
+      options.first?.kind
+    }
+  }
+
   /// Sort options that sort by `kind` in the given direction. `nil` for ``Kind/nearest``
   /// without a `coordinate` to measure from.
   public static func sorting(
@@ -512,22 +529,33 @@ extension Building.SortOptions {
     return options
   }
 
-  /// The kind of the first (main) rule, or `nil` when these options don't sort.
-  public var kind: Kind? {
-    switch _storage {
-    case .none:
-      nil
-    case .single(let option):
-      option.kind
-    case .multiple(let options):
-      options.first?.kind
-    }
+}
+
+extension Building.SortOptions {
+  /// Nearest first, or furthest first. Works out each building's distance once, rather than twice
+  /// in every comparison as ``Option/compare(_:_:)`` does.
+  fileprivate func sortedByDistance(
+    _ buildings: some Sequence<Building>,
+    from coordinate: CLLocationCoordinate2D,
+    nearestFirst: Bool)
+    -> [Building]
+  {
+    let origin = Location(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    return buildings
+      .map { (building: $0, distance: origin.distance(to: $0.location)) }
+      .sorted { nearestFirst ? $0.distance < $1.distance : $0.distance > $1.distance }
+      .map(\.building)
   }
 }
 
 extension Building.SortOptions.Option {
   fileprivate var kind: Building.SortOptions.Kind {
     _case.kind
+  }
+
+  /// Where this option measures from, when it sorts by distance.
+  fileprivate var nearestOrigin: CLLocationCoordinate2D? {
+    if case .nearest(let coordinate) = _case { coordinate } else { nil }
   }
 }
 

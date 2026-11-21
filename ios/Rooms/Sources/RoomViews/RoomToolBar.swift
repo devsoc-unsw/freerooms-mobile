@@ -10,6 +10,8 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+// MARK: - RoomToolBar
+
 struct RoomToolBar: View {
 
   // MARK: Internal
@@ -19,8 +21,8 @@ struct RoomToolBar: View {
   /// Whether rooms can be sorted by distance (needs location permission and a GPS fix).
   let canSortByDistance: Bool
 
-  // A Group, as in the Buildings tab, so each button is its own toolbar item.
   var body: some View {
+    // A Group, as in the Buildings tab, so each button is its own toolbar item.
     Group {
       Button {
         theme.toggleColorScheme(from: colorScheme)
@@ -33,9 +35,13 @@ struct RoomToolBar: View {
       SortMenu(
         options: [.alphabetical, .distance],
         selection: selectedSort,
-        isReversed: !roomViewModel.roomsInAscendingOrder,
+        isReversed: !roomViewModel.sortOptions.isAscending,
         canSortByDistance: canSortByDistance,
-        onSelect: { roomViewModel.sortOption = $0 == .distance ? .distance : .alphabetical },
+        onSelect: { option in
+          if let kind = RoomSortOptions.Kind(option) {
+            roomViewModel.sort(by: kind)
+          }
+        },
         onReverse: { roomViewModel.getRoomsInOrder() })
 
       Button {
@@ -61,7 +67,30 @@ struct RoomToolBar: View {
 
   /// The sort to tick. Alphabetical while there's no location, as that's the order on screen.
   private var selectedSort: SortMenuOption {
-    canSortByDistance && roomViewModel.sortOption == .distance ? .distance : .alphabetical
+    canSortByDistance ? SortMenuOption(roomViewModel.sortOptions.kind) : .alphabetical
   }
 
+}
+
+// MARK: - Sort menu translation
+
+/// The menu's options are a CommonUI type, so `RoomViewModels` can't name them. This is the one
+/// place the two are matched up, as `BuildingsTabView` does for buildings.
+extension SortMenuOption {
+  fileprivate init(_ kind: RoomSortOptions.Kind) {
+    switch kind {
+    case .alphabetical: self = .alphabetical
+    case .distance: self = .distance
+    }
+  }
+}
+
+extension RoomSortOptions.Kind {
+  fileprivate init?(_ option: SortMenuOption) {
+    switch option {
+    case .alphabetical: self = .alphabetical
+    case .distance: self = .distance
+    case .availability: return nil
+    }
+  }
 }

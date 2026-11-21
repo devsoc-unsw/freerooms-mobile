@@ -97,9 +97,7 @@ struct FavoriteRoomsView: View {
   @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms(
-      buildings: buildingViewModel.allBuildings,
-      userLocation: distanceViewModel.userLocation)
+    roomViewModel.getAllFavoriteRooms(roomDistances: distanceViewModel.distanceFromUserByRoomID)
   }
 
   private var searchTextBinding: Binding<String> {

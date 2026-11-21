@@ -24,7 +24,7 @@ struct GetBuildingByCampusSectionTest {
     let sut = BuildingInteractor(buildingService: stubBuildingService, locationService: locationService)
 
     // When
-    let buildings = await sut.getBuildingSortedByCampusSection(inAscendingOrder: true)
+    let buildings = await sut.getBuildings(sortedBy: .campus)
     guard case .success(let buildings) = buildings else {
       Issue.record("get building should not fail")
       return
@@ -53,7 +53,7 @@ struct GetBuildingByCampusSectionTest {
     let sut = BuildingInteractor(buildingService: stubBuildingService, locationService: locationService)
 
     // When
-    let buildings = await sut.getBuildingSortedByCampusSection(inAscendingOrder: false)
+    let buildings = await sut.getBuildings(sortedBy: .campus.reversed())
     guard case .success(let buildings) = buildings else {
       Issue.record("get building should not fail")
       return

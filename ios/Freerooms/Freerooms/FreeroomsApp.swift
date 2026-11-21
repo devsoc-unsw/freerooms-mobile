@@ -55,7 +55,6 @@ struct FreeroomsApp: App {
       roomStatusLoader: roomStatusLoader,
       buildingRatingLoader: buildingRatingLoader)
     let roomInteractor = FreeroomsApp.makeRoomInteractor(
-      locationService: locationService,
       roomStatusLoader: roomStatusLoader,
       remoteBookingLoader: remoteBookingLoader,
       roomRatingLoader: roomRatingLoader,
@@ -134,7 +133,6 @@ struct FreeroomsApp: App {
     let navigationService = LiveNavigationService()
     let navigationInteractor = LiveNavigationInteractor(nagivationService: navigationService)
     let roomInteractor = makeRoomInteractor(
-      locationService: locationService,
       roomStatusLoader: roomStatusLoader,
       remoteBookingLoader: remoteBookingLoader,
       roomRatingLoader: roomRatingLoader,
@@ -177,7 +175,6 @@ struct FreeroomsApp: App {
 
       let interactor = RoomInteractor(
         roomService: roomService,
-        locationService: locationService,
         favouriteService: favouriteService)
 
       return LiveRoomViewModel(interactor: interactor)
@@ -260,7 +257,6 @@ struct FreeroomsApp: App {
   }
 
   private static func makeRoomInteractor(
-    locationService: LiveLocationService,
     roomStatusLoader: LiveRoomStatusLoader,
     remoteBookingLoader: LiveRemoteRoomBookingLoader,
     roomRatingLoader: LiveRoomRatingLoader,
@@ -283,7 +279,6 @@ struct FreeroomsApp: App {
           roomBookingLoader: LiveRoomBookingLoader(remoteRoomBookingLoader: remoteBookingLoader),
           roomRatingLoader: roomRatingLoader,
           roomFilterService: roomFilterLoader),
-        locationService: locationService,
         favouriteService: favouriteService)
     } catch {
       fatalError("Failed to create RoomInteractor: \(error)")

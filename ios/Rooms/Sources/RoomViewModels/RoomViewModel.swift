@@ -5,9 +5,9 @@
 //  Created by Yanlin Li  on 6/8/2025.
 //
 
-public import BuildingModels
+import BuildingModels
 public import Foundation
-public import Location
+import Location
 import Observation
 public import RoomInteractors
 public import RoomModels
@@ -23,7 +23,7 @@ public protocol RoomViewModel: AnyObject {
 
   var filteredRoomsByBuildingId: [String: [Room]] { get }
 
-  var roomsInAscendingOrder: Bool { get }
+  var sortOptions: RoomSortOptions { get }
 
   var currentRoomBookings: [RoomBooking] { get }
 
@@ -41,17 +41,19 @@ public protocol RoomViewModel: AnyObject {
   var selectedCampusLocation: CampusLocation? { get set }
   var selectedCapacity: Int? { get set }
   var selectedAmenities: Set<RoomAmenity> { get set }
-  var sortOption: RoomSortOption { get set }
   var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
   var loadRoomErrorMessage: AlertError? { get set }
 
   func getDisplayedRooms(for buildingId: String) -> [Room]
+  func getDisplayedRooms(for buildingId: String, from filteredRooms: [String: [Room]]) -> [Room]
 
   func getPlaceHolderRooms(for buildingId: String) -> [Room]
 
   func getRoomsInOrder()
+
+  func sort(by kind: RoomSortOptions.Kind)
 
   func onAppear() async
 
@@ -91,15 +93,29 @@ public protocol RoomViewModel: AnyObject {
 
   func isFavorite(roomID: Room.ID) -> Bool
 
-  func getAllFavoriteRooms(buildings: [Building], userLocation: Location?) -> [Room]
-  func distanceOrder(of buildings: [Building], from userLocation: Location?) -> [Building]?
+  func getAllFavoriteRooms(roomDistances: [String: Double]) -> [Room]
+  func distanceOrder(of rooms: [Room], roomDistances: [String: Double]) -> [Room]?
 }
 
-// MARK: - RoomSortOption
+// MARK: - RoomSortOptions
 
-public enum RoomSortOption: Hashable, Sendable {
-  case alphabetical
-  case distance
+/// How rooms are sorted: by name or by distance, in either direction. The room counterpart of
+/// `Building.SortOptions`.
+public struct RoomSortOptions: Equatable, Sendable {
+
+  // MARK: Public
+
+  public enum Kind: Hashable, Sendable {
+    case alphabetical
+    case distance
+  }
+
+  public var kind = Kind.alphabetical
+  public var isAscending = true
+
+  public mutating func reverse() {
+    isAscending.toggle()
+  }
 }
 
 // MARK: - LiveRoomViewModel
@@ -139,8 +155,6 @@ public class LiveRoomViewModel: RoomViewModel {
 
   public var rooms = [Room]()
 
-  public var roomsInAscendingOrder = true
-
   public var isLoading = false
 
   public var searchText = ""
@@ -151,7 +165,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var selectedCampusLocation: CampusLocation?
   public var selectedAmenities: Set<RoomAmenity> = []
   public var selectedCapacity: Int?
-  public var sortOption = RoomSortOption.alphabetical
+  public private(set) var sortOptions = RoomSortOptions()
 
   public var hasActiveFilters: Bool {
     selectedDate != DateDefaults.selectedDate || !selectedRoomTypes.isEmpty
@@ -167,11 +181,8 @@ public class LiveRoomViewModel: RoomViewModel {
         campusLocation: selectedCampusLocation,
         amenities: selectedAmenities)
 
-      let sortedRooms = interactor.getRoomsSortedAlphabetically(
-        rooms: filteredRooms,
-        inAscendingOrder: roomNamesInAscendingOrder)
       let searchedRooms = interactor.filterRoomsByQueryString(
-        sortedRooms,
+        filteredRooms,
         by: searchText)
 
       if !searchedRooms.isEmpty {
@@ -208,21 +219,23 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func getDisplayedRooms(for buildingId: String) -> [Room] {
+    getDisplayedRooms(for: buildingId, from: filteredRoomsByBuildingId)
+  }
+
+  /// Same as `getDisplayedRooms(for:)`, reusing `filteredRoomsByBuildingId` worked out once, for
+  /// screens that show many buildings.
+  public func getDisplayedRooms(for buildingId: String, from filteredRooms: [String: [Room]]) -> [Room] {
     // If loading and this building has no rooms yet, show placeholders
     if isLoading, roomsByBuildingId[buildingId]?.isEmpty ?? true {
       return getPlaceHolderRooms(for: buildingId)
     }
 
     // Otherwise show filtered rooms (or empty array if none)
-    return filteredRoomsByBuildingId[buildingId] ?? []
+    return filteredRooms[buildingId] ?? []
   }
 
   public func clearRoomBookings() {
     currentRoomBookings = []
-  }
-
-  public func getLoadingStatus() -> Bool {
-    isLoading
   }
 
   public func onAppear() async {
@@ -237,19 +250,9 @@ public class LiveRoomViewModel: RoomViewModel {
     isLoading = true
     defer { isLoading = false }
 
-    switch await interactor.getRoomsSortedAlphabetically(
-      inAscendingOrder: roomsInAscendingOrder)
-    {
-    case .success(let roomsData):
-      rooms = interactor.getRoomsSortedAlphabetically(
-        rooms: roomsData,
-        inAscendingOrder: roomsInAscendingOrder)
-      roomsByBuildingId = Dictionary(grouping: roomsData, by: \.buildingId)
-      for key in roomsByBuildingId.keys {
-        roomsByBuildingId[key] = interactor.getRoomsSortedAlphabetically(
-          rooms: roomsByBuildingId[key] ?? [Room.exampleOne],
-          inAscendingOrder: roomsInAscendingOrder)
-      }
+    switch await interactor.getRooms() {
+    case .success(let loadedRooms):
+      store(loadedRooms)
 
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
@@ -259,7 +262,13 @@ public class LiveRoomViewModel: RoomViewModel {
   }
 
   public func getRoomsInOrder() {
-    roomsInAscendingOrder.toggle()
+    sortOptions.reverse()
+    store(rooms)
+  }
+
+  /// Sorts by `kind`, keeping Reverse as it is.
+  public func sort(by kind: RoomSortOptions.Kind) {
+    sortOptions.kind = kind
   }
 
   public func getRoomBookings(roomId: String) async {
@@ -308,9 +317,8 @@ public class LiveRoomViewModel: RoomViewModel {
     defer { isLoading = false }
 
     switch await interactor.getFilteredRooms(options: currentFilterOptions) {
-    case .success(let rooms):
-      self.rooms = rooms
-      roomsByBuildingId = Dictionary(grouping: rooms, by: \.buildingId)
+    case .success(let filteredRooms):
+      store(filteredRooms)
 
     case .failure(let error):
       loadRoomErrorMessage = AlertError(message: error.clientMessage)
@@ -405,42 +413,29 @@ public class LiveRoomViewModel: RoomViewModel {
     interactor.isFavorite(roomID: roomID)
   }
 
-  /// Favourite rooms, A–Z or Z–A. When sorting by distance, they follow
-  /// `distanceOrder(of:from:)` instead, with rooms A–Z within each building.
-  public func getAllFavoriteRooms(buildings: [Building], userLocation: Location?) -> [Room] {
+  /// Favourite rooms in the same order as `rooms`, or in `distanceOrder(of:roomDistances:)` when
+  /// sorting by distance.
+  public func getAllFavoriteRooms(roomDistances: [String: Double]) -> [Room] {
     let roomIds = interactor.getAllFavoriteRoomIds()
 
     let favoriteRooms = rooms.filter { room in
       roomIds.contains(room.id) && selectedAmenities.allSatisfy { $0.isAvailable(in: room) }
     }
 
-    guard let buildingOrder = distanceOrder(of: buildings, from: userLocation)?.map(\.id) else {
-      return interactor.getRoomsSortedAlphabetically(
-        rooms: favoriteRooms,
-        inAscendingOrder: roomsInAscendingOrder)
-    }
-    return interactor.getRoomsSortedByBuildingOrder(
-      rooms: favoriteRooms,
-      buildingOrder: buildingOrder,
-      inAscendingOrder: roomNamesInAscendingOrder)
+    return distanceOrder(of: favoriteRooms, roomDistances: roomDistances) ?? favoriteRooms
   }
 
-  /// The building order rooms follow when sorting by distance: nearest first, or furthest first
-  /// after Reverse. `nil` when sorting alphabetically or there's no location.
-  public func distanceOrder(of buildings: [Building], from userLocation: Location?) -> [Building]? {
-    guard sortOption == .distance, let userLocation, !buildings.isEmpty else { return nil }
-    var options = Building.SortOptions.nearest(to: userLocation.coordinate)
-    options.isAscending = roomsInAscendingOrder
-    return options.sort(buildings)
+  /// Rooms nearest first, or furthest first after Reverse, each by its own distance.
+  /// `nil` when sorting alphabetically or there are no distances.
+  public func distanceOrder(of rooms: [Room], roomDistances: [String: Double]) -> [Room]? {
+    guard sortOptions.kind == .distance, !roomDistances.isEmpty else { return nil }
+    return interactor.getRoomsSortedByDistance(
+      rooms,
+      distanceByRoomID: roomDistances,
+      inAscendingOrder: sortOptions.isAscending)
   }
 
   // MARK: Private
-
-  /// Rooms within a building go A–Z when sorting by distance, so only one sort applies at a time.
-  /// `roomsInAscendingOrder` then flips the building order instead (nearest or furthest first).
-  private var roomNamesInAscendingOrder: Bool {
-    sortOption == .distance || roomsInAscendingOrder
-  }
 
   private let interactor: RoomInteractor
 
@@ -450,6 +445,14 @@ public class LiveRoomViewModel: RoomViewModel {
       selectedRoomTypes: selectedRoomTypes,
       selectedDuration: selectedDuration,
       selectedCapacity: selectedCapacity)
+  }
+
+  /// Stores rooms A–Z, or Z–A after Reverse, and groups them by building. The one place rooms
+  /// are sorted by name: everything that reads `rooms` or `roomsByBuildingId` only filters, which
+  /// keeps this order.
+  private func store(_ newRooms: [Room]) {
+    rooms = interactor.getRoomsSortedAlphabetically(rooms: newRooms, inAscendingOrder: sortOptions.isAscending)
+    roomsByBuildingId = Dictionary(grouping: rooms, by: \.buildingId)
   }
 }
 
@@ -461,8 +464,6 @@ public class PreviewRoomViewModel: LiveRoomViewModel {
     super.init(
       interactor: RoomInteractor(
         roomService: PreviewRoomService(),
-        locationService: LiveLocationService(
-          locationManager: LiveLocationManager()),
         favouriteService: PreviewFavoriteRoomService()))
 
     currentRoomBookings = [

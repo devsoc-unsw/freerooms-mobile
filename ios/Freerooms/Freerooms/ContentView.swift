@@ -41,19 +41,18 @@ struct ContentView: View {
           onRefresh: {
             await buildingViewModel.loadNearbyBuildings(to: building)
             await distanceViewModel.reload()
-          })
-        {
-          NearbyBuildingsSection(
-            nearbyBuildings: buildingViewModel.nearbyBuildingsByBuildingID[building.id] ?? [],
-            path: $buildingPath)
-        }
-        .task { await roomViewModel.onAppear() }
-        .task(id: building.id) {
-          await buildingViewModel.loadNearbyBuildings(to: building)
-          // Refreshes the distances on the room tiles, in case the GPS fix arrived after launch.
-          await distanceViewModel.reload()
-        }
-        .environment(roomViewModel)
+          }) {
+            NearbyBuildingsSection(
+              nearbyBuildings: buildingViewModel.nearbyBuildingsByBuildingID[building.id] ?? [],
+              path: $buildingPath)
+          }
+          .task { await roomViewModel.onAppear() }
+          .task(id: building.id) {
+            await buildingViewModel.loadNearbyBuildings(to: building)
+            // Refreshes the distances on the room tiles, in case the GPS fix arrived after launch.
+            await distanceViewModel.reload()
+          }
+          .environment(roomViewModel)
       } _: { room in
         roomDetailsView(for: room)
       }

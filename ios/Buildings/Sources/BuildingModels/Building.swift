@@ -147,13 +147,6 @@ public enum AvailabilityStatus: String, Sendable {
   private static let noAvailableRooms = 0
 }
 
-// MARK: - BuildingFilterOptions
-
-@available(*, deprecated)
-public enum BuildingFilterOptions: Sendable {
-  case Alphabetical, Location, CampusSection
-}
-
 // MARK: - Conversion from GraphQL Building
 
 extension Building {

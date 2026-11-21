@@ -120,12 +120,13 @@ public struct DistanceSortLabel: View {
 // MARK: - DistanceAndAvailableRooms
 
 /// A building's distance and free rooms, e.g. "➤ 120 m · 9 rooms available", shortened to
-/// "9 available" when space is short. Leaves out the count when it isn't known.
+/// "9 available" when space is short. Leaves out the distance when there's no location, and the
+/// count when it isn't known, rather than showing 0.
 public struct DistanceAndAvailableRooms: View {
 
   // MARK: Lifecycle
 
-  public init(metres: Double, availableRooms: Int?) {
+  public init(metres: Double?, availableRooms: Int?) {
     self.metres = metres
     self.availableRooms = availableRooms
   }
@@ -134,9 +135,13 @@ public struct DistanceAndAvailableRooms: View {
 
   public var body: some View {
     HStack(spacing: DistanceLabelLayout.detailSpacing) {
-      DistanceLabel(metres: metres)
+      if let metres {
+        DistanceLabel(metres: metres)
+      }
       if let availableRooms {
-        Text("·")
+        if metres != nil {
+          Text("·")
+        }
         // Uses the first one that fits: two-digit counts don't fit in full next to the distance.
         ViewThatFits(in: .horizontal) {
           Text("^[\(availableRooms) room](inflect: true) available")
@@ -149,7 +154,7 @@ public struct DistanceAndAvailableRooms: View {
 
   // MARK: Private
 
-  private let metres: Double
+  private let metres: Double?
   private let availableRooms: Int?
 
 }
