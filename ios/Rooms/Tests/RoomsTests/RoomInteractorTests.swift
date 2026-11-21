@@ -26,7 +26,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsSortedAlphabetically(inAscendingOrder: true)
+      let result = await sut.getRooms().map { sut.getRoomsSortedAlphabetically(rooms: $0, inAscendingOrder: true) }
 
       // Then
       let expectResult = expectedRooms.sorted { $0.name < $1.name }
@@ -46,7 +46,7 @@ enum RoomInteractorTests {
       let sut = makeRoomSUT(expect: expectedRooms)
 
       // When
-      let result = await sut.getRoomsSortedAlphabetically(inAscendingOrder: false)
+      let result = await sut.getRooms().map { sut.getRoomsSortedAlphabetically(rooms: $0, inAscendingOrder: false) }
 
       // Then
       let expectResult = expectedRooms.sorted { $0.name > $1.name }
@@ -60,58 +60,61 @@ enum RoomInteractorTests {
     }
   }
 
-  struct RoomBuildingOrdering {
-    @Test("Orders rooms by their building's position, then by name")
-    func ordersByBuildingThenName() {
+  struct RoomDistanceOrdering {
+    @Test("Orders rooms nearest first, each by its own distance")
+    func ordersNearestFirst() {
       // Given
-      let rooms = [
-        makeRoom("A101", in: "K-FAR"),
-        makeRoom("Z9", in: "K-NEAR"),
-        makeRoom("M1", in: "K-MID"),
-        makeRoom("B2", in: "K-NEAR"),
-      ]
+      let far = makeRoom("A101", in: "K-QUAD")
+      let near = makeRoom("Z9", in: "K-QUAD")
+      let middle = makeRoom("M1", in: "K-MAIN")
+      let rooms = [far, near, middle]
       let sut = makeRoomSUT(expect: rooms)
 
       // When
-      let sorted = sut.getRoomsSortedByBuildingOrder(
-        rooms: rooms,
-        buildingOrder: ["K-NEAR", "K-MID", "K-FAR"],
+      let sorted = sut.getRoomsSortedByDistance(
+        rooms,
+        distanceByRoomID: [far.id: 90, near.id: 3, middle.id: 50],
         inAscendingOrder: true)
 
       // Then
-      #expect(sorted.map(\.name) == ["B2", "Z9", "M1", "A101"])
+      #expect(sorted.map(\.name) == ["Z9", "M1", "A101"])
     }
 
-    @Test("Sorts rooms in the same building Z–A when descending")
-    func sortsWithinBuildingDescending() {
+    @Test("Orders rooms furthest first when descending")
+    func ordersFurthestFirstWhenDescending() {
       // Given
-      let rooms = [makeRoom("B2", in: "K-NEAR"), makeRoom("Z9", in: "K-NEAR"), makeRoom("M1", in: "K-MID")]
+      let far = makeRoom("A101", in: "K-QUAD")
+      let near = makeRoom("Z9", in: "K-QUAD")
+      let rooms = [near, far]
       let sut = makeRoomSUT(expect: rooms)
 
       // When
-      let sorted = sut.getRoomsSortedByBuildingOrder(
-        rooms: rooms,
-        buildingOrder: ["K-NEAR", "K-MID"],
+      let sorted = sut.getRoomsSortedByDistance(
+        rooms,
+        distanceByRoomID: [far.id: 90, near.id: 3],
         inAscendingOrder: false)
 
       // Then
-      #expect(sorted.map(\.name) == ["Z9", "B2", "M1"])
+      #expect(sorted.map(\.name) == ["A101", "Z9"])
     }
 
-    @Test("Puts rooms whose building isn't in the order last")
-    func putsUnknownBuildingsLast() {
+    @Test("Orders rooms the same distance away A–Z, and rooms without a distance last")
+    func breaksTiesByNameAndPutsUnknownLast() {
       // Given
-      let rooms = [makeRoom("A0", in: "K-UNKNOWN"), makeRoom("Z9", in: "K-NEAR")]
+      let unknown = makeRoom("A0", in: "K-QUAD")
+      let b = makeRoom("B2", in: "K-QUAD")
+      let a = makeRoom("A1", in: "K-QUAD")
+      let rooms = [unknown, b, a]
       let sut = makeRoomSUT(expect: rooms)
 
       // When
-      let sorted = sut.getRoomsSortedByBuildingOrder(
-        rooms: rooms,
-        buildingOrder: ["K-NEAR"],
-        inAscendingOrder: true)
+      let sorted = sut.getRoomsSortedByDistance(
+        rooms,
+        distanceByRoomID: [a.id: 50, b.id: 50],
+        inAscendingOrder: false)
 
       // Then
-      #expect(sorted.map(\.name) == ["Z9", "A0"])
+      #expect(sorted.map(\.name) == ["A1", "B2", "A0"])
     }
   }
 
@@ -159,73 +162,6 @@ enum RoomInteractorTests {
       case .success(let actualResult):
         #expect(actualResult == expectResult)
 
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
-    }
-
-    @Test("Returns all rooms filtered by all builingId matching")
-    func returnsAllRoomsFilteredByAllBuildingIdMatching() async {
-      // Given
-      let expectedRooms = createDifferentRooms()
-      let sut = makeRoomSUT(expect: expectedRooms)
-
-      // When
-      let result = await sut.getRoomsFilteredByAllBuildingId()
-
-      // Then
-      var expectResult = [String: [Room]]()
-      for room in expectedRooms {
-        expectResult[room.buildingId, default: []].append(room)
-      }
-
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectResult)
-        #expect(actualResult["K-H20"]!.count == 2)
-
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
-    }
-  }
-
-  struct RoomTypeFiltering {
-    @Test("Returns rooms filtered by room type (usage) matching")
-    func returnsRoomsFilteredByRoomTypeMatching() async {
-      // Given
-      let expectedRooms = createRooms(1)
-      let sut = makeRoomSUT(expect: expectedRooms)
-
-      // When
-      let result = await sut.getRoomsFilteredByRoomType(usage: "LCTR")
-
-      // Then
-      let expectResult = createRooms(1)
-
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectResult)
-      case .failure:
-        Issue.record("Expected success, got failure")
-      }
-    }
-
-    @Test("Returns rooms filtered by room type (usage) not matching")
-    func returnsRoomsFilteredByRoomTypeNotMatching() async {
-      // Given
-      let expectedRooms = createRooms(1)
-      let sut = makeRoomSUT(expect: expectedRooms)
-
-      // When
-      let result = await sut.getRoomsFilteredByRoomType(usage: "LAB")
-
-      // Then
-      let expectResult = createRooms(0)
-
-      switch result {
-      case .success(let actualResult):
-        #expect(actualResult == expectResult)
       case .failure:
         Issue.record("Expected success, got failure")
       }
@@ -537,9 +473,6 @@ func makeRoomSUT(
   expect rooms: [Room], for buildingId: String? = nil, throw roomError: RoomLoaderError? = nil)
   -> RoomInteractor
 {
-  let spyLocationManager = SpyLocationManager()
-  let locationService = LiveLocationService(locationManager: spyLocationManager)
-
   let stubLoader = StubRoomLoader()
   if let roomError {
     stubLoader.fetchBuildingIdReturnValue = .failure(roomError)
@@ -560,13 +493,10 @@ func makeRoomSUT(
 
   return RoomInteractor(
     roomService: roomService,
-    locationService: locationService,
     favouriteService: PreviewFavoriteRoomService())
 }
 
 func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
-  let spyLocationManager = SpyLocationManager()
-  let locationService = LiveLocationService(locationManager: spyLocationManager)
   let stubRemoteBookingLoader = StubRemoteRoomBookingLoader()
   let roomBookingLoader = LiveRoomBookingLoader(remoteRoomBookingLoader: stubRemoteBookingLoader)
   let roomService = LiveRoomService(
@@ -576,7 +506,6 @@ func makeRoomSUT(stubLoader: StubRoomLoader) -> RoomInteractor {
     roomFilterService: StubFilterRoomService())
   return RoomInteractor(
     roomService: roomService,
-    locationService: locationService,
     favouriteService: PreviewFavoriteRoomService())
 }
 
@@ -587,9 +516,6 @@ func makeRoomSUT(
   filterResult: Result<[String], FilterRoomServiceError>)
   -> RoomInteractor
 {
-  let spyLocationManager = SpyLocationManager()
-  let locationService = LiveLocationService(locationManager: spyLocationManager)
-
   let stubLoader = StubRoomLoader()
   stubLoader.fetchReturnValue = .success(allRooms)
 
@@ -606,7 +532,6 @@ func makeRoomSUT(
 
   return RoomInteractor(
     roomService: roomService,
-    locationService: locationService,
     favouriteService: PreviewFavoriteRoomService())
 }
 
