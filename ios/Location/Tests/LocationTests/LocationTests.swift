@@ -251,3 +251,44 @@ struct LocationDistanceTests {
   /// Roughly the middle of UNSW Kensington.
   private let unswCentre = Location(latitude: -33.9173, longitude: 151.2312)
 }
+
+// MARK: - LocationChangeTests
+
+struct LocationChangeTests {
+
+  // MARK: Internal
+
+  @Test("No location before or after isn't a change")
+  func noLocationIsNotAChange() {
+    #expect(!Location.hasChanged(from: nil, to: nil, byAtLeast: 25))
+  }
+
+  @Test("A location appearing or disappearing is a change")
+  func appearingOrDisappearingIsAChange() {
+    #expect(Location.hasChanged(from: nil, to: unswCentre, byAtLeast: 25))
+    #expect(Location.hasChanged(from: unswCentre, to: nil, byAtLeast: 25))
+  }
+
+  @Test("Moving less than the threshold isn't a change")
+  func smallMoveIsNotAChange() {
+    // Given: 0.0001° of latitude is about 11 m.
+    let nearby = Location(latitude: unswCentre.latitude + 0.0001, longitude: unswCentre.longitude)
+
+    // Then
+    #expect(!Location.hasChanged(from: unswCentre, to: nearby, byAtLeast: 25))
+  }
+
+  @Test("Moving at least the threshold is a change")
+  func largeMoveIsAChange() {
+    // Given: 0.0003° of latitude is about 33 m.
+    let further = Location(latitude: unswCentre.latitude + 0.0003, longitude: unswCentre.longitude)
+
+    // Then
+    #expect(Location.hasChanged(from: unswCentre, to: further, byAtLeast: 25))
+  }
+
+  // MARK: Private
+
+  /// Roughly the middle of UNSW Kensington.
+  private let unswCentre = Location(latitude: -33.9173, longitude: 151.2312)
+}

@@ -28,6 +28,26 @@ public class RoomInteractor {
     }
   }
 
+  /// How far `userLocation` is from each room, in metres, keyed by room ID. A room without
+  /// coordinates uses its building's distance from `buildingDistances` (keyed by building ID),
+  /// or is left out.
+  public func getRoomDistances(
+    _ rooms: [Room],
+    from userLocation: Location,
+    buildingDistances: [String: Double])
+    -> [String: Double]
+  {
+    var distances = [String: Double]()
+    for room in rooms {
+      if let roomLocation = room.location {
+        distances[room.id] = userLocation.distance(to: roomLocation)
+      } else if let buildingDistance = buildingDistances[room.buildingId] {
+        distances[room.id] = buildingDistance
+      }
+    }
+    return distances
+  }
+
   /// Sorts rooms by their building's position in `buildingOrder` (e.g. nearest building first),
   /// then by name. Rooms whose building isn't in the list go last.
   public func getRoomsSortedByBuildingOrder(

@@ -7,7 +7,6 @@
 
 public import BuildingModels
 import CommonUI
-import Foundation
 public import SwiftUI
 
 // MARK: - NearbyBuildingRowContent
@@ -35,27 +34,9 @@ struct NearbyBuildingRowContent: View {
           .lineLimit(1)
           .truncationMode(.tail)
 
-        HStack(spacing: NearbyBuildingLayout.detailSpacing) {
-          // The location arrow marks this as a distance, so "80 m" isn't read as minutes.
-          // A plain HStack rather than a Label, whose icon-to-title gap is too wide here.
-          HStack(spacing: NearbyBuildingLayout.distanceIconSpacing) {
-            Image(systemName: "location.fill")
-              .imageScale(.small)
-              .accessibilityHidden(true)
-            Text(nearbyBuilding.formattedDistance)
-          }
-          .fontWeight(.semibold)
-          .foregroundStyle(theme.accent.primary)
-          if let count = building.numberOfAvailableRooms {
-            Text("·")
-            // Uses the first one that fits: two-digit counts don't fit in full next to the distance.
-            ViewThatFits(in: .horizontal) {
-              Text("^[\(count) room](inflect: true) available")
-              Text("\(count) available")
-            }
-          }
-        }
-        .lineLimit(1)
+        DistanceAndAvailableRooms(
+          metres: nearbyBuilding.distanceInMetres,
+          availableRooms: building.numberOfAvailableRooms)
       }
 
       Spacer()
@@ -133,21 +114,9 @@ public struct NearbyBuildingsSection: View {
   @Environment(Theme.self) private var theme
 }
 
-// MARK: - Distance formatting
-
-extension NearbyBuilding {
-  /// The distance for display, e.g. "120 m" or "1.2 km", in the user's local units.
-  var formattedDistance: String {
-    Measurement(value: distanceInMetres, unit: UnitLength.meters)
-      .formatted(.measurement(width: .abbreviated, usage: .road))
-  }
-}
-
 // MARK: - NearbyBuildingLayout
 
 enum NearbyBuildingLayout {
   static let contentSpacing: CGFloat = 5
-  static let detailSpacing: CGFloat = 4
-  static let distanceIconSpacing: CGFloat = 3
   static let listRowVerticalPadding: CGFloat = 5
 }

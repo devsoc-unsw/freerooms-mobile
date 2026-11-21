@@ -5,7 +5,6 @@
 //  Created by Nicole Xie on 2026/9/11.
 //
 
-import BuildingModels
 import BuildingViewModels
 import CommonUI
 import RoomModels
@@ -36,6 +35,7 @@ struct FavoriteRoomsView: View {
       .refreshable {
         Task {
           await roomViewModel.reloadRooms()
+          await distanceViewModel.reload()
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
@@ -43,14 +43,15 @@ struct FavoriteRoomsView: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu,
-            canSortByDistance: !buildingViewModel.buildingsByDistance.isEmpty)
+            showingFilterMenu: $showingFilterMenu)
             .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
             .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
       }
       .toolbar {
-        RoomToolBar(selectedView: $selectedView)
+        RoomToolBar(
+          selectedView: $selectedView,
+          canSortByDistance: distanceViewModel.canSortByDistance)
       }
       .background(
         Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
@@ -93,18 +94,12 @@ struct FavoriteRoomsView: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
-  }
-
-  /// The building order favourites follow: nearest first when sorting by distance, otherwise
-  /// `nil` for A–Z.
-  private var favoriteBuildingOrder: [String]? {
-    guard roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty else {
-      return nil
-    }
-    return buildingViewModel.buildingsByDistance.map(\.id)
+    roomViewModel.getAllFavoriteRooms(
+      buildings: buildingViewModel.allBuildings,
+      userLocation: distanceViewModel.userLocation)
   }
 
   private var searchTextBinding: Binding<String> {

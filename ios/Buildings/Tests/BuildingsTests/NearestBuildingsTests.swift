@@ -19,97 +19,84 @@ struct NearestBuildingsTests {
 
   // MARK: Internal
 
-  @Test("Returns buildings ordered from closest to furthest")
-  func returnsClosestBuildingFirst() async {
-    // Given
-    let buildings = [
-      building("Far", latitudeOffset: 0.003),
-      building("Closest", latitudeOffset: 0.0005),
-      building("Middle", latitudeOffset: 0.0015),
-    ]
-    let sut = makeNearestSUT(buildings: buildings, userLocation: userLocation)
+  @Test("Gives each building's distance from the origin in metres")
+  func givesDistancesInMetres() {
+    // Given: 0.001° of latitude is about 111 m.
+    let hundred = building("One hundred", latitudeOffset: 0.001)
+    let twoHundred = building("Two hundred", latitudeOffset: 0.002)
+    let sut = makeNearestSUT(buildings: [], userLocation: userLocation)
 
-    let result = await sut.getBuildingsSortedByDistance(inAscendingOrder: true)
+    // When
+    let distances = sut.getDistances(to: [twoHundred, hundred], from: userLocation)
 
     // Then
-    guard case .success(let sorted) = result else {
-      Issue.record("Expected success but got failure")
-      return
-    }
-    #expect(sorted.map(\.name) == ["Closest", "Middle", "Far"])
+    #expect(distances.count == 2)
+    #expect(abs((distances[hundred.id] ?? .nan) - 111) < 2)
+    #expect(abs((distances[twoHundred.id] ?? .nan) - 222) < 3)
   }
 
-  @Test("Orders by real distance, not raw degrees")
-  func ordersByRealDistanceNotRawDegrees() async {
+  @Test("Measures real distance, not raw degrees")
+  func measuresRealDistanceNotRawDegrees() {
     // Given: at UNSW a degree of longitude is ~17% shorter than a degree of latitude, so
     // 0.0012° east (~111 m) is closer than 0.0011° north (~122 m), even though 0.0012 > 0.0011.
-    let buildings = [
-      building("North", latitudeOffset: 0.0011),
-      building("East", longitudeOffset: 0.0012),
-    ]
-    let sut = makeNearestSUT(buildings: buildings, userLocation: userLocation)
+    let north = building("North", latitudeOffset: 0.0011)
+    let east = building("East", longitudeOffset: 0.0012)
+    let sut = makeNearestSUT(buildings: [], userLocation: userLocation)
 
     // When
-    let result = await sut.getBuildingsSortedByDistance(inAscendingOrder: true)
+    let distances = sut.getDistances(to: [north, east], from: userLocation)
 
     // Then
-    guard case .success(let sorted) = result else {
-      Issue.record("Expected success but got failure")
+    guard let northDistance = distances[north.id], let eastDistance = distances[east.id] else {
+      Issue.record("Expected a distance for both buildings")
       return
     }
-    #expect(sorted.map(\.name) == ["East", "North"])
+    #expect(eastDistance < northDistance)
   }
 
-  @Test("Fails when location permission is denied")
-  func failsWhenPermissionDenied() async {
-    // Given
-    let sut = makeNearestSUT(
-      buildings: [building("Closest", latitudeOffset: 0.0005)],
-      userLocation: userLocation,
-      authorizationStatus: .denied)
+  @Test("Keeps the first entry when a building ID appears twice")
+  func keepsFirstEntryForDuplicateBuilding() {
+    // Given: two buildings share an ID but sit at different distances.
+    let first = building("Twice", latitudeOffset: 0.001)
+    let second = Building(
+      name: "Twice again",
+      id: first.id,
+      latitude: userLocation.latitude + 0.002,
+      longitude: userLocation.longitude,
+      aliases: [],
+      numberOfAvailableRooms: nil)
+    let sut = makeNearestSUT(buildings: [], userLocation: userLocation)
 
     // When
-    let result = await sut.getBuildingsSortedByDistance(inAscendingOrder: true)
+    let distances = sut.getDistances(to: [first, second], from: userLocation)
 
     // Then
-    guard case .failure = result else {
-      Issue.record("Expected failure but got success")
-      return
-    }
+    #expect(distances.count == 1)
+    #expect(abs((distances[first.id] ?? .nan) - 111) < 2)
   }
 
-  @Test("Fails when there is no location fix yet")
-  func failsWhenNoLocationFix() async {
+  @Test("Gives the user's location when there's permission and a fix")
+  func givesUserLocation() {
     // Given
-    let sut = makeNearestSUT(
-      buildings: [building("Closest", latitudeOffset: 0.0005)],
-      userLocation: nil)
+    let sut = makeNearestSUT(buildings: [], userLocation: userLocation)
 
     // When
-    let result = await sut.getBuildingsSortedByDistance(inAscendingOrder: true)
+    let location = sut.getUserLocation()
 
     // Then
-    guard case .failure = result else {
-      Issue.record("Expected failure but got success")
-      return
-    }
+    #expect(location == userLocation)
   }
 
-  @Test("Fails when buildings can't be loaded")
-  func failsWhenBuildingsFailToLoad() async {
+  @Test("Gives no user location without permission")
+  func givesNoUserLocationWithoutPermission() {
     // Given
-    let stubLoader = StubBuildingLoader()
-    stubLoader.fetchReturnValue = .failure(.connectivity)
-    let sut = makeNearestSUT(loader: stubLoader, userLocation: userLocation)
+    let sut = makeNearestSUT(buildings: [], userLocation: userLocation, authorizationStatus: .denied)
 
     // When
-    let result = await sut.getBuildingsSortedByDistance(inAscendingOrder: true)
+    let location = sut.getUserLocation()
 
     // Then
-    guard case .failure = result else {
-      Issue.record("Expected failure but got success")
-      return
-    }
+    #expect(location == nil)
   }
 
   // Nearest to a building (getBuildingsNearest)

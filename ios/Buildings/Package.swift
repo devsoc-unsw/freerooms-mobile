@@ -50,6 +50,7 @@ let package = Package(
         "BuildingModels",
         "CommonUI",
         .product(name: "RoomInteractors", package: "Rooms"),
+        .product(name: "RoomServices", package: "Rooms"),
         .product(name: "BottomSheet", package: "BottomSheet"),
       ],
       swiftSettings: swiftSettings),

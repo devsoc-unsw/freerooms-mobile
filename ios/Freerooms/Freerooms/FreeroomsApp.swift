@@ -64,6 +64,9 @@ struct FreeroomsApp: App {
 
     _buildingViewModel = State(initialValue: LiveBuildingViewModel(interactor: buildingInteractor))
     _roomViewModel = State(initialValue: LiveRoomViewModel(interactor: roomInteractor))
+    _distanceViewModel = State(initialValue: LiveDistanceViewModel(
+      buildingInteractor: buildingInteractor,
+      roomInteractor: roomInteractor))
     _bookingViewModel = State(initialValue: LiveBookingViewModel(interactor: bookingInteractor))
     _mapViewModel = State(initialValue: FreeroomsApp.makeMapViewModel(
       buildingInteractor: buildingInteractor,
@@ -93,6 +96,7 @@ struct FreeroomsApp: App {
         .environment(buildingViewModel)
         .environment(mapViewModel)
         .environment(roomViewModel)
+        .environment(distanceViewModel)
         .environment(bookingViewModel)
         .environment(tabController)
     }
@@ -189,6 +193,7 @@ struct FreeroomsApp: App {
   private static let httpResourceTimeout: TimeInterval = 5
 
   @State private var buildingViewModel: LiveBuildingViewModel
+  @State private var distanceViewModel: LiveDistanceViewModel
   @State private var bookingViewModel: LiveBookingViewModel
   @State private var mapViewModel: LiveMapViewModel
   @State private var roomViewModel: LiveRoomViewModel

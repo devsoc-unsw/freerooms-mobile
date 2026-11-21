@@ -9,7 +9,7 @@ public import BuildingInteractors
 public import BuildingModels
 import BuildingServices
 import Foundation
-import Location
+public import Location
 public import Observation
 public import RoomModels
 
@@ -22,7 +22,6 @@ public protocol BuildingViewModel: Observable {
   var displayedBuildings: CampusBuildings { get }
   var allBuildings: [Building] { get }
   var sortOptions: Building.SortOptions { get set }
-  var buildingsByDistance: [Building] { get }
   var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] { get }
   var isLoading: Bool { get }
   var hasLoaded: Bool { get }
@@ -31,10 +30,11 @@ public protocol BuildingViewModel: Observable {
   var placeHolderBuildings: CampusBuildings { get }
 
   func getBuildingsInOrder()
+  func sort(by kind: Building.SortOptions.Kind, near userLocation: Location?)
+  func updateNearestSort(near userLocation: Location?)
   func onAppear()
   func loadBuildings() async
   func reloadBuildings() async
-  func loadBuildingsByDistance() async
   func loadNearbyBuildings(to building: Building) async
 }
 
@@ -55,7 +55,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var sortOptions = Building.SortOptions.alphabetical
   public var isLoading = false
   public var searchText = ""
-  public var buildingsByDistance: [Building] = []
   public var nearbyBuildingsByBuildingID: [String: [NearbyBuilding]] = [:]
   public var loadBuildingErrorMessage: AlertError?
 
@@ -124,8 +123,6 @@ public class LiveBuildingViewModel: BuildingViewModel {
       case .failure(let error):
         loadBuildingErrorMessage = AlertError(message: error.clientMessage)
       }
-
-      await loadBuildingsByDistance()
     }
   }
 
@@ -134,13 +131,9 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   public func onAppear() {
-    // Ask for location up front so the Rooms tab can sort by distance.
-    _ = try? interactor.requestLocationPermission()
-
     // Load buildings once when the view appears
     Task {
       await loadBuildings()
-      await loadBuildingsByDistance()
     }
 
     hasLoaded = true
@@ -171,27 +164,30 @@ public class LiveBuildingViewModel: BuildingViewModel {
     isLoading = false
   }
 
+  /// Sorts by `kind`, keeping Reverse as it is. Does nothing for nearest without a location.
+  public func sort(by kind: Building.SortOptions.Kind, near userLocation: Location?) {
+    guard
+      let newSortOptions = Building.SortOptions.sorting(
+        by: kind,
+        isAscending: sortOptions.isAscending,
+        near: userLocation?.coordinate)
+    else { return }
+    sortOptions = newSortOptions
+    applySortOptions()
+  }
+
+  /// When sorting by distance, re-sorts from `userLocation` so the order follows the user.
+  public func updateNearestSort(near userLocation: Location?) {
+    guard sortOptions.kind == .nearest else { return }
+    sort(by: .nearest, near: userLocation)
+  }
+
   public func getBuildingsInOrder() {
     guard !isLoading else { return }
     isLoading = true
     sortOptions.reverse()
-
-    buildings.upper = sortOptions.sort(buildings.upper)
-    buildings.lower = sortOptions.sort(buildings.lower)
-    buildings.middle = sortOptions.sort(buildings.middle)
-
+    applySortOptions()
     isLoading = false
-  }
-
-  /// Loads every building, nearest to the user first, so the Rooms tab can sort by distance.
-  /// Clears the list when there's no location permission or GPS fix yet.
-  public func loadBuildingsByDistance() async {
-    switch await interactor.getBuildingsSortedByDistance(inAscendingOrder: true) {
-    case .success(let sorted):
-      buildingsByDistance = uniqueById(sorted)
-    case .failure:
-      buildingsByDistance = []
-    }
   }
 
   /// Loads the buildings closest to `building`, nearest first, stored under its ID so each
@@ -211,6 +207,13 @@ public class LiveBuildingViewModel: BuildingViewModel {
   private static let nearbyBuildingsLimit = 3
 
   private var interactor: BuildingInteractor
+
+  /// Re-sorts the buildings already loaded, without fetching them again.
+  private func applySortOptions() {
+    buildings.upper = sortOptions.sort(buildings.upper)
+    buildings.middle = sortOptions.sort(buildings.middle)
+    buildings.lower = sortOptions.sort(buildings.lower)
+  }
 
   private func uniqueById(_ input: [Building]) -> [Building] {
     var seen = Set<String>()

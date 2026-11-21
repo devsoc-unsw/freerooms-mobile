@@ -16,8 +16,12 @@ struct RoomToolBar: View {
 
   @Binding var selectedView: ViewOrientation
 
+  /// Whether rooms can be sorted by distance (needs location permission and a GPS fix).
+  let canSortByDistance: Bool
+
+  // A Group, as in the Buildings tab, so each button is its own toolbar item.
   var body: some View {
-    HStack {
+    Group {
       Button {
         theme.toggleColorScheme(from: colorScheme)
       } label: {
@@ -26,13 +30,13 @@ struct RoomToolBar: View {
           .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }
 
-      Button {
-        roomViewModel.getRoomsInOrder()
-      } label: {
-        Image(systemName: "arrow.up.arrow.down")
-          .resizable()
-          .frame(width: RoomLayoutConstants.toolbarSortIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
-      }
+      SortMenu(
+        options: [.alphabetical, .distance],
+        selection: selectedSort,
+        isReversed: !roomViewModel.roomsInAscendingOrder,
+        canSortByDistance: canSortByDistance,
+        onSelect: { roomViewModel.sortOption = $0 == .distance ? .distance : .alphabetical },
+        onReverse: { roomViewModel.getRoomsInOrder() })
 
       Button {
         if selectedView == ViewOrientation.Card {
@@ -46,7 +50,6 @@ struct RoomToolBar: View {
           .frame(width: RoomLayoutConstants.toolbarViewToggleIconWidth, height: RoomLayoutConstants.toolbarIconHeight)
       }
     }
-    .padding(RoomLayoutConstants.toolbarIconPadding)
     .foregroundStyle(theme.accent.primary)
   }
 
@@ -55,5 +58,10 @@ struct RoomToolBar: View {
   @Environment(Theme.self) private var theme
   @Environment(\.colorScheme) private var colorScheme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+
+  /// The sort to tick. Alphabetical while there's no location, as that's the order on screen.
+  private var selectedSort: SortMenuOption {
+    canSortByDistance && roomViewModel.sortOption == .distance ? .distance : .alphabetical
+  }
 
 }

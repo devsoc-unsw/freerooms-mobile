@@ -5,9 +5,9 @@
 //  Created by Yanlin Li  on 6/8/2025.
 //
 
-import BuildingModels
+public import BuildingModels
 public import Foundation
-import Location
+public import Location
 import Observation
 public import RoomInteractors
 public import RoomModels
@@ -41,7 +41,7 @@ public protocol RoomViewModel: AnyObject {
   var selectedCampusLocation: CampusLocation? { get set }
   var selectedCapacity: Int? { get set }
   var selectedAmenities: Set<RoomAmenity> { get set }
-  var sortsByDistance: Bool { get set }
+  var sortOption: RoomSortOption { get set }
   var hasActiveFilters: Bool { get }
   var searchText: String { get set }
 
@@ -91,7 +91,15 @@ public protocol RoomViewModel: AnyObject {
 
   func isFavorite(roomID: Room.ID) -> Bool
 
-  func getAllFavoriteRooms(buildingOrder: [String]?) -> [Room]
+  func getAllFavoriteRooms(buildings: [Building], userLocation: Location?) -> [Room]
+  func distanceOrder(of buildings: [Building], from userLocation: Location?) -> [Building]?
+}
+
+// MARK: - RoomSortOption
+
+public enum RoomSortOption: Hashable, Sendable {
+  case alphabetical
+  case distance
 }
 
 // MARK: - LiveRoomViewModel
@@ -143,7 +151,7 @@ public class LiveRoomViewModel: RoomViewModel {
   public var selectedCampusLocation: CampusLocation?
   public var selectedAmenities: Set<RoomAmenity> = []
   public var selectedCapacity: Int?
-  public var sortsByDistance = false
+  public var sortOption = RoomSortOption.alphabetical
 
   public var hasActiveFilters: Bool {
     selectedDate != DateDefaults.selectedDate || !selectedRoomTypes.isEmpty
@@ -161,7 +169,7 @@ public class LiveRoomViewModel: RoomViewModel {
 
       let sortedRooms = interactor.getRoomsSortedAlphabetically(
         rooms: filteredRooms,
-        inAscendingOrder: roomsInAscendingOrder)
+        inAscendingOrder: roomNamesInAscendingOrder)
       let searchedRooms = interactor.filterRoomsByQueryString(
         sortedRooms,
         by: searchText)
@@ -335,7 +343,6 @@ public class LiveRoomViewModel: RoomViewModel {
     selectedDuration = nil
     selectedCampusLocation = nil
     selectedCapacity = nil
-    sortsByDistance = false
     bookingsByRoomId = [:]
     currentRoomBookings = []
   }
@@ -398,16 +405,16 @@ public class LiveRoomViewModel: RoomViewModel {
     interactor.isFavorite(roomID: roomID)
   }
 
-  /// Favourite rooms, A–Z or Z–A. Given a `buildingOrder` (e.g. nearest building first),
-  /// they're ordered by building first.
-  public func getAllFavoriteRooms(buildingOrder: [String]?) -> [Room] {
+  /// Favourite rooms, A–Z or Z–A. When sorting by distance, they follow
+  /// `distanceOrder(of:from:)` instead, with rooms A–Z within each building.
+  public func getAllFavoriteRooms(buildings: [Building], userLocation: Location?) -> [Room] {
     let roomIds = interactor.getAllFavoriteRoomIds()
 
     let favoriteRooms = rooms.filter { room in
       roomIds.contains(room.id) && selectedAmenities.allSatisfy { $0.isAvailable(in: room) }
     }
 
-    guard let buildingOrder else {
+    guard let buildingOrder = distanceOrder(of: buildings, from: userLocation)?.map(\.id) else {
       return interactor.getRoomsSortedAlphabetically(
         rooms: favoriteRooms,
         inAscendingOrder: roomsInAscendingOrder)
@@ -415,10 +422,25 @@ public class LiveRoomViewModel: RoomViewModel {
     return interactor.getRoomsSortedByBuildingOrder(
       rooms: favoriteRooms,
       buildingOrder: buildingOrder,
-      inAscendingOrder: roomsInAscendingOrder)
+      inAscendingOrder: roomNamesInAscendingOrder)
+  }
+
+  /// The building order rooms follow when sorting by distance: nearest first, or furthest first
+  /// after Reverse. `nil` when sorting alphabetically or there's no location.
+  public func distanceOrder(of buildings: [Building], from userLocation: Location?) -> [Building]? {
+    guard sortOption == .distance, let userLocation, !buildings.isEmpty else { return nil }
+    var options = Building.SortOptions.nearest(to: userLocation.coordinate)
+    options.isAscending = roomsInAscendingOrder
+    return options.sort(buildings)
   }
 
   // MARK: Private
+
+  /// Rooms within a building go A–Z when sorting by distance, so only one sort applies at a time.
+  /// `roomsInAscendingOrder` then flips the building order instead (nearest or furthest first).
+  private var roomNamesInAscendingOrder: Bool {
+    sortOption == .distance || roomsInAscendingOrder
+  }
 
   private let interactor: RoomInteractor
 

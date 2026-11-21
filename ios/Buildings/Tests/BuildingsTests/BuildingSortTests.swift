@@ -31,6 +31,57 @@ struct BuildingSortTests {
   }
 
   @Suite
+  struct SortingByKindTests {
+
+    @Test("Sorting by a kind gives options of that kind, in the given direction")
+    func test_sortingByKindKeepsKindAndDirection() {
+      // When
+      let options = Building.SortOptions.sorting(by: .mostAvailable, isAscending: false, near: nil)
+
+      // Then
+      #expect(options?.kind == .mostAvailable)
+      #expect(options?.isAscending == false)
+    }
+
+    @Test("Sorting by nearest needs a coordinate")
+    func test_sortingByNearestNeedsCoordinate() {
+      // Given
+      let coordinate = CLLocationCoordinate2D(latitude: -33.9173, longitude: 151.2312)
+
+      // When
+      let withoutCoordinate = Building.SortOptions.sorting(by: .nearest, isAscending: true, near: nil)
+      let withCoordinate = Building.SortOptions.sorting(by: .nearest, isAscending: true, near: coordinate)
+
+      // Then
+      #expect(withoutCoordinate == nil)
+      #expect(withCoordinate?.kind == .nearest)
+    }
+  }
+
+  @Suite
+  struct NearestTests {
+
+    @Test("Nearest orders by real distance, not raw degrees")
+    func test_nearestOrdersByRealDistance() {
+      // Given: at UNSW a degree of longitude is ~17% shorter than a degree of latitude, so
+      // 0.0012° east (~111 m) is closer than 0.0011° north (~122 m), even though 0.0012 > 0.0011.
+      let origin = CLLocationCoordinate2D(latitude: -33.9173, longitude: 151.2312)
+      let north = building("North", latitude: origin.latitude + 0.0011, longitude: origin.longitude)
+      let east = building("East", latitude: origin.latitude, longitude: origin.longitude + 0.0012)
+
+      // When
+      let sorted = Building.SortOptions.nearest(to: origin).sort([north, east])
+
+      // Then
+      #expect(sorted.map(\.name) == ["East", "North"])
+    }
+
+    private func building(_ name: String, latitude: Double, longitude: Double) -> Building {
+      Building(name: name, id: "K-\(name)", latitude: latitude, longitude: longitude, aliases: [], numberOfAvailableRooms: nil)
+    }
+  }
+
+  @Suite
   struct SerializationTests {
     static let decoder = JSONDecoder()
     static let encoder = JSONEncoder()

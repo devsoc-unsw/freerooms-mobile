@@ -69,25 +69,38 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
         if let room = item as? Room {
           let isFilterActive = roomViewModel.selectedDate != DateDefaults.selectedDate
           let bookings = roomViewModel.bookingsByRoomId[room.id]
-          Text(room.statusTextWhenFiltering(
-            referenceInstant: roomViewModel.selectedDate,
-            isCustomFilterActive: isFilterActive,
-            bookings: bookings))
-            .fontWeight(.semibold)
-            .foregroundStyle(room.contextualStatusTextColour(
+          HStack(spacing: DistanceLabelLayout.detailSpacing) {
+            if let distanceInMetres {
+              DistanceLabel(metres: distanceInMetres)
+              Text("·")
+            }
+
+            Text(room.statusTextWhenFiltering(
               referenceInstant: roomViewModel.selectedDate,
               isCustomFilterActive: isFilterActive,
               bookings: bookings))
-            .padding(.vertical, GenericItemDataRowLayout.statusBadgeVerticalPadding)
-            .padding(.horizontal, GenericItemDataRowLayout.statusBadgeHorizontalPadding)
-            .background(
-              RoundedRectangle(cornerRadius: GenericItemDataRowLayout.statusBadgeCornerRadius)
-                .fill(room.contextualStatusBackgroundColor(
-                  referenceInstant: roomViewModel.selectedDate,
-                  isCustomFilterActive: isFilterActive,
-                  bookings: bookings)))
+              .fontWeight(.semibold)
+              .lineLimit(1)
+              .foregroundStyle(room.contextualStatusTextColour(
+                referenceInstant: roomViewModel.selectedDate,
+                isCustomFilterActive: isFilterActive,
+                bookings: bookings))
+              .padding(.vertical, GenericItemDataRowLayout.statusBadgeVerticalPadding)
+              .padding(.horizontal, GenericItemDataRowLayout.statusBadgeHorizontalPadding)
+              .background(
+                RoundedRectangle(cornerRadius: GenericItemDataRowLayout.statusBadgeCornerRadius)
+                  .fill(room.contextualStatusBackgroundColor(
+                    referenceInstant: roomViewModel.selectedDate,
+                    isCustomFilterActive: isFilterActive,
+                    bookings: bookings)))
+          }
         } else if let building = item as? Building {
-          Text("^[\(building.numberOfAvailableRooms ?? 0) room](inflect: true) available")
+          let count = building.numberOfAvailableRooms ?? 0
+          if let distanceInMetres {
+            DistanceAndAvailableRooms(metres: distanceInMetres, availableRooms: count)
+          } else {
+            Text("^[\(count) room](inflect: true) available")
+          }
         }
       }
 
@@ -106,10 +119,19 @@ public struct GenericItemDataRow<T: Equatable & Hashable & Identifiable & HasNam
 
   @Environment(Theme.self) private var theme
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(\.distanceFromUserByBuildingID) private var distanceFromUserByBuildingID
+  @Environment(\.distanceFromUserByRoomID) private var distanceFromUserByRoomID
 
   @Binding private var rowHeight: CGFloat?
 
   private let item: T
+
+  private var distanceInMetres: Double? {
+    distanceFromUser(
+      to: item,
+      roomDistances: distanceFromUserByRoomID,
+      buildingDistances: distanceFromUserByBuildingID)
+  }
 
 }
 

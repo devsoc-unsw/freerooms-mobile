@@ -51,27 +51,17 @@ public class BuildingInteractor {
     }
   }
 
-  public func getBuildingsSortedByDistance(inAscendingOrder: Bool) async -> Result<[Building], any Error> {
-    switch await buildingService.getBuildings() {
-    case .success(let buildings):
-      do {
-        let currentLocation = try locationService.getCurrentLocation()
+  /// The user's current location, or `nil` without location permission or a GPS fix.
+  public func getUserLocation() -> Location? {
+    try? locationService.getCurrentLocation()
+  }
 
-        // Compute each building's distance once, then sort
-        let sorted = buildings
-          .map { (building: Building) -> (Building, Double) in
-            (building, currentLocation.distance(to: building.location))
-          }
-          .sorted { inAscendingOrder ? $0.1 < $1.1 : $0.1 > $1.1 }
-          .map(\.0)
-        return .success(sorted)
-      } catch {
-        return .failure(error)
-      }
-
-    case .failure(let error):
-      return .failure(error)
-    }
+  /// How far `origin` is from each building, in metres, keyed by building ID. Doesn't fetch or
+  /// read the location: pass in the buildings the app already has and the user's location.
+  public func getDistances(to buildings: [Building], from origin: Location) -> [String: Double] {
+    Dictionary(
+      buildings.map { ($0.id, origin.distance(to: $0.location)) },
+      uniquingKeysWith: { first, _ in first })
   }
 
   /// Asks the user for location permission if they haven't been asked yet.
@@ -199,17 +189,15 @@ public class BuildingInteractor {
   private let buildingService: any BuildingService
   private let locationService: any LocationService
 
-  /// Returns buildings by distance from origin ranked by closeness
-  /// Skips duplicate buildings and buildings at full capacity
+  /// The closest `limit` buildings to `origin`, skipping buildings with no free rooms.
+  /// Each building is listed once.
   private func nearestBuildings(_ buildings: [Building], from origin: Location, limit: Int) -> [NearbyBuilding] {
     var seenIDs = Set<String>()
-    let nearest = buildings
-      .filter { seenIDs.insert($0.id).inserted }
-      .filter { $0.numberOfAvailableRooms != 0 }
-      .map { NearbyBuilding(building: $0, distanceInMetres: origin.distance(to: $0.location)) }
-      .sorted { $0.distanceInMetres < $1.distanceInMetres }
+    let withFreeRooms = buildings.filter { seenIDs.insert($0.id).inserted && $0.numberOfAvailableRooms != 0 }
+    return Building.SortOptions.nearest(to: origin.coordinate)
+      .sort(withFreeRooms)
       .prefix(max(limit, 0))
-    return Array(nearest)
+      .map { NearbyBuilding(building: $0, distanceInMetres: origin.distance(to: $0.location)) }
   }
 
 }

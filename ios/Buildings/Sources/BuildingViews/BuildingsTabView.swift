@@ -119,6 +119,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
   // MARK: Private
 
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   @Environment(Theme.self) private var theme
   @Environment(\.colorScheme) private var colorScheme
@@ -146,6 +147,7 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
       .refreshable {
         Task {
           buildingViewModel.reloadBuildings()
+          await distanceViewModel.reload()
         }
       }
       .redacted(reason: buildingViewModel.isLoading ? .placeholder : [])
@@ -205,23 +207,13 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
           .frame(width: BuildingsTabLayout.toolbarViewToggleIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
       }
 
-      Menu {
-        Button("Reverse", systemImage: "arrow.up.arrow.down") {
-          buildingViewModel.getBuildingsInOrder()
-        }
-        Button("Alphabetical", systemImage: "character") {
-          buildingViewModel.sortOptions = .alphabetical
-          buildingViewModel.reloadBuildings()
-        }
-        Button("Availability", systemImage: "calendar") {
-          buildingViewModel.sortOptions = .mostAvailable
-          buildingViewModel.reloadBuildings()
-        }
-      } label: {
-        Image(systemName: "arrow.up.arrow.down")
-          .resizable()
-          .frame(width: BuildingsTabLayout.toolbarSortIconWidth, height: BuildingsTabLayout.toolbarIconHeight)
-      }
+      SortMenu(
+        options: [.alphabetical, .availability, .distance],
+        selection: SortMenuOption(buildingViewModel.sortOptions.kind),
+        isReversed: !buildingViewModel.sortOptions.isAscending,
+        canSortByDistance: distanceViewModel.canSortByDistance,
+        onSelect: { buildingViewModel.sort(by: Building.SortOptions.Kind($0), near: distanceViewModel.userLocation) },
+        onReverse: { buildingViewModel.getBuildingsInOrder() })
 
       Button {
         if selectedView == ViewOrientation.Card {
@@ -253,7 +245,6 @@ private enum BuildingsTabLayout {
   static let sectionLabelLeadingPadding: CGFloat = 10
   static let toolbarIconHeight: CGFloat = 20
   static let toolbarIconPadding: CGFloat = 5
-  static let toolbarSortIconWidth: CGFloat = 25
   static let toolbarViewToggleIconWidth: CGFloat = 22
 }
 
@@ -275,10 +266,36 @@ private struct PreviewWrapper: View {
     }
     .environment(viewModel)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+    .environment(PreviewDistanceViewModel() as LiveDistanceViewModel)
     .defaultTheme()
   }
 }
 
 #Preview {
   PreviewWrapper()
+}
+
+// MARK: - Sort menu translation
+
+/// The menu's options are a CommonUI type, so `BuildingModels` can't name them. This is the one
+/// place the two are matched up.
+extension SortMenuOption {
+  fileprivate init?(_ kind: Building.SortOptions.Kind?) {
+    switch kind {
+    case .alphabetical: self = .alphabetical
+    case .mostAvailable: self = .availability
+    case .nearest: self = .distance
+    case .campus, nil: return nil
+    }
+  }
+}
+
+extension Building.SortOptions.Kind {
+  fileprivate init(_ option: SortMenuOption) {
+    switch option {
+    case .alphabetical: self = .alphabetical
+    case .availability: self = .mostAvailable
+    case .distance: self = .nearest
+    }
+  }
 }

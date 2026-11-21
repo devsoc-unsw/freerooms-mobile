@@ -323,6 +323,16 @@ nonisolated extension DevSocAPI.BuildingRoomsQuery.Data.Room: GraphQLRoomProtoco
 // import Networking
 // import Playgrounds
 //
+// MARK: - Room + location
+
+extension Room {
+  /// Where the room is, or `nil` when the data has no coordinates for it (stored as 0, 0).
+  public var location: Location? {
+    guard latitude != 0 || longitude != 0 else { return nil }
+    return Location(latitude: latitude, longitude: longitude)
+  }
+}
+
 // #Playground {
 //  let client = DevSoc.createLiveApolloClient(using: ApolloStore())
 //  let result = try await client.fetch(query: AllRoomsQuery())

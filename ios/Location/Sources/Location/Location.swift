@@ -32,4 +32,17 @@ extension Location {
   public func distance(to other: Location) -> Double {
     clLocation.distance(from: other.clLocation)
   }
+
+  /// Whether going from `old` to `new` is worth reacting to: a location appeared or disappeared,
+  /// or it moved at least `metres`. Smaller moves are treated as GPS jitter.
+  public static func hasChanged(from old: Location?, to new: Location?, byAtLeast metres: Double) -> Bool {
+    switch (old, new) {
+    case (nil, nil):
+      false
+    case (let old?, let new?):
+      old.distance(to: new) >= metres
+    default:
+      true
+    }
+  }
 }

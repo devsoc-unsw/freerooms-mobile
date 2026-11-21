@@ -120,26 +120,22 @@ public struct RoomsTabView<Destination: View>: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
-  @Environment(\.scenePhase) private var scenePhase
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   private let roomDestinationBuilderView: (Room) -> Destination
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
-  }
-
-  /// The building order favourites follow: nearest first when sorting by distance, otherwise
-  /// `nil` for A–Z.
-  private var favoriteBuildingOrder: [String]? {
-    guard roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty else {
-      return nil
-    }
-    return buildingViewModel.buildingsByDistance.map(\.id)
+    roomViewModel.getAllFavoriteRooms(
+      buildings: buildingViewModel.allBuildings,
+      userLocation: distanceViewModel.userLocation)
   }
 
   private var roomSectionBuildings: [Building] {
-    if roomViewModel.sortsByDistance, !buildingViewModel.buildingsByDistance.isEmpty {
-      return buildingViewModel.buildingsByDistance
+    if let byDistance = roomViewModel.distanceOrder(
+      of: buildingViewModel.allBuildings,
+      from: distanceViewModel.userLocation)
+    {
+      return byDistance
     }
     let buildings = buildingViewModel.allBuildings
     if !buildings.isEmpty {
@@ -164,7 +160,7 @@ public struct RoomsTabView<Destination: View>: View {
       .refreshable {
         Task {
           await roomViewModel.reloadRooms()
-          await buildingViewModel.loadBuildingsByDistance()
+          await distanceViewModel.reload()
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
@@ -188,14 +184,15 @@ public struct RoomsTabView<Destination: View>: View {
         if !roomViewModel.isLoading {
           FloatingFilterMenuView(
             activeFilterSheet: $activeFilterSheet,
-            showingFilterMenu: $showingFilterMenu,
-            canSortByDistance: !buildingViewModel.buildingsByDistance.isEmpty)
+            showingFilterMenu: $showingFilterMenu)
             .padding(.trailing, RoomLayoutConstants.filterMenuTrailingPadding)
             .padding(.bottom, RoomLayoutConstants.filterMenuBottomPadding)
         }
       }
       .toolbar {
-        RoomToolBar(selectedView: $selectedView)
+        RoomToolBar(
+          selectedView: $selectedView,
+          canSortByDistance: distanceViewModel.canSortByDistance)
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets())
@@ -214,20 +211,9 @@ public struct RoomsTabView<Destination: View>: View {
       .task {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
-        } else {
-          // Refresh on every return to the tab, e.g. after granting location on another tab.
-          await buildingViewModel.loadBuildingsByDistance()
         }
         if !roomViewModel.hasLoaded {
           await roomViewModel.onAppear()
-        }
-      }
-      .onChange(of: scenePhase) { _, newPhase in
-        // The location permission prompt makes the app inactive.
-        // Reload once it's answered.
-        guard newPhase == .active else { return }
-        Task {
-          await buildingViewModel.loadBuildingsByDistance()
         }
       }
       .alert(
@@ -305,7 +291,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   @ViewBuilder
   private var favoriteRoomsPreview: some View {
-    let favoriteRooms = roomViewModel.getAllFavoriteRooms(buildingOrder: favoriteBuildingOrder)
+    let favoriteRooms = self.favoriteRooms
     // Keep the inline section compact; the full list lives at `.favorites`.
     let previewRooms = Array(favoriteRooms.prefix(4))
 
@@ -416,6 +402,7 @@ private struct PreviewWrapper: View {
     }
     .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+    .environment(PreviewDistanceViewModel() as LiveDistanceViewModel)
     .defaultTheme()
   }
 }
