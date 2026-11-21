@@ -57,57 +57,47 @@ public struct RoomsTabView<Destination: View>: View {
   @State var rowHeight: CGFloat?
 
   func roomsCardView(
-    _ buildings: [Building])
+    _ sections: [RoomSection])
     -> some View
   {
-    ForEach(buildings) { building in
-      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-
-      if rooms.isEmpty {
-        EmptyView()
-      } else {
-        Section {
-          RoomCardGrid(
-            rooms: rooms,
-            isLoading: roomViewModel.isLoading,
-            path: $path,
-            cardWidth: $cardWidth)
-        } header: {
-          HStack {
-            Text(building.name)
-              .textCase(.uppercase)
-              .foregroundStyle(theme.label.primary)
-              .padding(
-                .leading,
-                RoomLayoutConstants.sectionHeaderLeadingPadding)
-            Spacer()
-          }
-          .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
-          .padding(.top, RoomLayoutConstants.sectionHeaderTopPadding)
+    ForEach(sections) { section in
+      Section {
+        RoomCardGrid(
+          rooms: section.rooms,
+          isLoading: roomViewModel.isLoading,
+          path: $path,
+          cardWidth: $cardWidth)
+      } header: {
+        HStack {
+          Text(section.title)
+            .textCase(.uppercase)
+            .foregroundStyle(theme.label.primary)
+            .padding(
+              .leading,
+              RoomLayoutConstants.sectionHeaderLeadingPadding)
+          Spacer()
         }
+        .padding(.horizontal, RoomLayoutConstants.contentHorizontalPadding)
+        .padding(.top, RoomLayoutConstants.sectionHeaderTopPadding)
       }
     }
   }
 
   func roomsListView(
-    _ buildings: [Building])
+    _ sections: [RoomSection])
     -> some View
   {
-    ForEach(buildings) { building in
-      let rooms = roomViewModel.getDisplayedRooms(for: building.id)
-
-      if !rooms.isEmpty {
-        Section {
-          RoomList(
-            rooms: rooms,
-            isLoading: roomViewModel.isLoading,
-            path: $path,
-            rowHeight: $rowHeight)
-        } header: {
-          Text(building.name)
-            .textCase(.uppercase)
-            .foregroundStyle(theme.label.primary)
-        }
+    ForEach(sections) { section in
+      Section {
+        RoomList(
+          rooms: section.rooms,
+          isLoading: roomViewModel.isLoading,
+          path: $path,
+          rowHeight: $rowHeight)
+      } header: {
+        Text(section.title)
+          .textCase(.uppercase)
+          .foregroundStyle(theme.label.primary)
       }
     }
   }
@@ -120,11 +110,31 @@ public struct RoomsTabView<Destination: View>: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   private let roomDestinationBuilderView: (Room) -> Destination
 
-  private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms()
+  /// One section per building, or, when sorting by distance, a single section of every room
+  /// nearest first, whatever building it's in.
+  private var roomSections: [RoomSection] {
+    let filteredRooms = roomViewModel.filteredRoomsByBuildingId
+    let buildingSections = roomSectionBuildings.map { building in
+      RoomSection(
+        id: building.id,
+        title: building.name,
+        rooms: roomViewModel.getDisplayedRooms(for: building.id, from: filteredRooms))
+    }
+    let sections: [RoomSection] =
+      if
+        let byDistance = roomViewModel.distanceOrder(
+          of: buildingSections.flatMap(\.rooms),
+          roomDistances: distanceViewModel.distanceFromUserByRoomID)
+      {
+        [RoomSection(id: RoomSection.allRoomsID, title: "All rooms", rooms: byDistance)]
+      } else {
+        buildingSections
+      }
+    return sections.filter { !$0.rooms.isEmpty }
   }
 
   private var roomSectionBuildings: [Building] {
@@ -151,6 +161,7 @@ public struct RoomsTabView<Destination: View>: View {
       .refreshable {
         Task {
           await roomViewModel.reloadRooms()
+          await distanceViewModel.reload()
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
@@ -180,7 +191,9 @@ public struct RoomsTabView<Destination: View>: View {
         }
       }
       .toolbar {
-        RoomToolBar(selectedView: $selectedView)
+        RoomToolBar(
+          selectedView: $selectedView,
+          canSortByDistance: distanceViewModel.canSortByDistance)
       }
       .background(Color.gray.opacity(0.1))
       .listRowInsets(EdgeInsets())
@@ -200,7 +213,6 @@ public struct RoomsTabView<Destination: View>: View {
         if !buildingViewModel.hasLoaded {
           buildingViewModel.onAppear()
         }
-
         if !roomViewModel.hasLoaded {
           await roomViewModel.onAppear()
         }
@@ -242,7 +254,7 @@ public struct RoomsTabView<Destination: View>: View {
       } else {
         List {
           favoriteRoomsPreview
-          roomsListView(roomSectionBuildings)
+          roomsListView(roomSections)
         }
         .listRowInsets(EdgeInsets())
         .scrollContentBackground(.hidden)
@@ -267,7 +279,7 @@ public struct RoomsTabView<Destination: View>: View {
       } else {
         ScrollView {
           favoriteRoomsPreview
-          roomsCardView(roomSectionBuildings)
+          roomsCardView(roomSections)
         }
         .background(theme.background.primary)
         .shadow(
@@ -280,7 +292,7 @@ public struct RoomsTabView<Destination: View>: View {
 
   @ViewBuilder
   private var favoriteRoomsPreview: some View {
-    let favoriteRooms = roomViewModel.getAllFavoriteRooms()
+    let favoriteRooms = roomViewModel.getAllFavoriteRooms(roomDistances: distanceViewModel.distanceFromUserByRoomID)
     // Keep the inline section compact; the full list lives at `.favorites`.
     let previewRooms = Array(favoriteRooms.prefix(4))
 
@@ -367,6 +379,19 @@ public struct RoomsTabView<Destination: View>: View {
       aliases: [],
       numberOfAvailableRooms: 0)
   }
+
+}
+
+// MARK: - RoomSection
+
+/// A titled group of rooms in the Rooms tab.
+struct RoomSection: Identifiable {
+  /// The single section used when sorting by distance.
+  static let allRoomsID = "all-rooms"
+
+  let id: String
+  let title: String
+  let rooms: [Room]
 }
 
 // MARK: - RoomsDestination
@@ -391,6 +416,7 @@ private struct PreviewWrapper: View {
     }
     .environment(PreviewBuildingViewModel() as LiveBuildingViewModel)
     .environment(PreviewRoomViewModel() as LiveRoomViewModel)
+    .environment(PreviewDistanceViewModel() as LiveDistanceViewModel)
     .defaultTheme()
   }
 }

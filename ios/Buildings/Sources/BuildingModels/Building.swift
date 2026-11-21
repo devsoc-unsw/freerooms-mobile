@@ -63,6 +63,10 @@ struct Building: Equatable, Identifiable, Hashable, Sendable, Codable {
     GridReference.fromBuildingID(buildingID: id)
   }
 
+  public var location: Location {
+    Location(latitude: latitude, longitude: longitude)
+  }
+
   public var availabilityStatus: AvailabilityStatus {
     AvailabilityStatus(numberOfAvailableRooms)
   }
@@ -118,6 +122,7 @@ public enum AvailabilityStatus: String, Sendable {
   // MARK: Lifecycle
 
   public init(_ rawValue: Int?) {
+    // Probably shouldn't appropriate the `RawRepresentable/init(_:)` requirement for this
     guard let rawValue else {
       self = .missing
       return
@@ -140,12 +145,6 @@ public enum AvailabilityStatus: String, Sendable {
   private static let availableRoomThreshold = 5
   private static let crowdedRoomRange = 1...4
   private static let noAvailableRooms = 0
-}
-
-// MARK: - BuildingFilterOptions
-
-public enum BuildingFilterOptions: Sendable {
-  case Alphabetical, Location, CampusSection
 }
 
 // MARK: - Conversion from GraphQL Building

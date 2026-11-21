@@ -35,6 +35,7 @@ struct FavoriteRoomsView: View {
       .refreshable {
         Task {
           await roomViewModel.reloadRooms()
+          await distanceViewModel.reload()
         }
       }
       .redacted(reason: roomViewModel.isLoading ? .placeholder : [])
@@ -48,7 +49,9 @@ struct FavoriteRoomsView: View {
         }
       }
       .toolbar {
-        RoomToolBar(selectedView: $selectedView)
+        RoomToolBar(
+          selectedView: $selectedView,
+          canSortByDistance: distanceViewModel.canSortByDistance)
       }
       .background(
         Color.gray.opacity(RoomLayoutConstants.backgroundOpacity))
@@ -91,9 +94,10 @@ struct FavoriteRoomsView: View {
   @Environment(Theme.self) private var theme
   @Environment(LiveBuildingViewModel.self) private var buildingViewModel
   @Environment(LiveRoomViewModel.self) private var roomViewModel
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
 
   private var favoriteRooms: [Room] {
-    roomViewModel.getAllFavoriteRooms()
+    roomViewModel.getAllFavoriteRooms(roomDistances: distanceViewModel.distanceFromUserByRoomID)
   }
 
   private var searchTextBinding: Binding<String> {

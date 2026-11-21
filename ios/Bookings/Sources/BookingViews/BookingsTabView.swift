@@ -30,7 +30,20 @@ public struct BookingsTabView: View {
           placement: .navigationBarDrawer(displayMode: .always),
           prompt: "Search events")
         .toolbar {
-          BookingToolBar()
+          if #available(iOS 26.0, *) {
+            // Invisible filler that makes this toolbar as wide as the Buildings and Rooms ones.
+            // iOS moves the collapsed title to the left when the toolbar is that wide, so all three
+            // tabs match. Remove it if the other tabs' toolbars change.
+            ToolbarItem(placement: .topBarTrailing) {
+              Color.clear
+                .frame(width: BookingViewLayout.toolbarTitleAlignmentFillerWidth, height: 1)
+                .accessibilityHidden(true)
+            }
+            .sharedBackgroundVisibility(.hidden)
+          }
+          ToolbarItem(placement: .topBarTrailing) {
+            BookingToolBar()
+          }
         }
     }
     .task {

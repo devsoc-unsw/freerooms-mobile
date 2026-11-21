@@ -34,7 +34,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = await sut.getBuildings(sortedBy: .mostAvailable)
 
       // Then
       let expectedOrder = ["Patricia O Shane", "Quadrangle", "Law Library"]
@@ -47,7 +47,7 @@ enum BuildingInteractorTests {
       #expect(actualOrder == expectedOrder)
     }
 
-    @Test("Zero and null treated the same, still in descending order")
+    @Test("Unknown availability goes after zero rooms, in descending order")
     func returnsBuildingsZeroAndNullSortedByAvaliableRoomsDescending() async {
       // Given
       let buildings = [
@@ -73,11 +73,11 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = await sut.getBuildings(sortedBy: .mostAvailable)
 
       // Then
 
-      let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Quadrangle", "Law Library"]
+      let expectedOrder = ["Main Library", "Patricia O Shane", "McGill Library", "Law Library", "Quadrangle"]
       guard case .success(let buildings) = result else {
         Issue.record("Failure, but expected success")
         return
@@ -87,7 +87,7 @@ enum BuildingInteractorTests {
       #expect(actualOrder == expectedOrder)
     }
 
-    @Test("Zero and null treated the same, still in ascending order")
+    @Test("Unknown availability goes before zero rooms, in ascending order")
     func returnsBuildingsZeroAndNullSortedByAvaliableRoomsAscending() async {
       // Given
       let buildings = [
@@ -113,7 +113,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
+      let result = await sut.getBuildings(sortedBy: .mostAvailable.reversed())
 
       // Then
 
@@ -133,7 +133,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: false)
+      let result = await sut.getBuildings(sortedBy: .mostAvailable)
 
       // Then
       guard case .success(let buildings) = result else {
@@ -170,7 +170,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedByAvailableRooms(inAscendingOrder: true)
+      let result = await sut.getBuildings(sortedBy: .mostAvailable.reversed())
 
       // Then
       let expectedOrder = ["Law Library", "Quadrangle", "McGill Library", "Main Library", "Patricia O Shane"]
@@ -191,7 +191,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
+      let result = await sut.getBuildings(sortedBy: .alphabetical.reversed())
 
       // Then
       guard case .success(let buildings) = result else {
@@ -239,7 +239,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: false)
+      let result = await sut.getBuildings(sortedBy: .alphabetical.reversed())
 
       // Then
       let expectedOrder = [
@@ -297,7 +297,7 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsSortedAlphabetically(inAscendingOrder: true)
+      let result = await sut.getBuildings(sortedBy: .alphabetical)
 
       // Then
       let expectedOrder = [
@@ -342,14 +342,9 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let filteredBuildings = sut.getBuildingsFilteredByCampusSection(buildings: buildings, .lower)
 
       // Then
-      guard case .success(let filteredBuildings) = result else {
-        Issue.record("Expected success but got failure")
-        return
-      }
-
       #expect(filteredBuildings.count == 2)
       #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.lower })
 
@@ -374,14 +369,9 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.upper)
+      let filteredBuildings = sut.getBuildingsFilteredByCampusSection(buildings: buildings, .upper)
 
       // Then
-      guard case .success(let filteredBuildings) = result else {
-        Issue.record("Expected success but got failure")
-        return
-      }
-
       #expect(filteredBuildings.count == 2)
       #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.upper })
 
@@ -411,14 +401,9 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.middle)
+      let filteredBuildings = sut.getBuildingsFilteredByCampusSection(buildings: buildings, .middle)
 
       // Then
-      guard case .success(let filteredBuildings) = result else {
-        Issue.record("Expected success but got failure")
-        return
-      }
-
       #expect(filteredBuildings.count == 2)
       #expect(filteredBuildings.allSatisfy { $0.gridReference.campusSection == CampusSection.middle })
 
@@ -438,14 +423,9 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: buildings)
 
       // When - filter for lower campus
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let filteredBuildings = sut.getBuildingsFilteredByCampusSection(buildings: buildings, .lower)
 
       // Then
-      guard case .success(let filteredBuildings) = result else {
-        Issue.record("Expected success but got failure")
-        return
-      }
-
       #expect(filteredBuildings.isEmpty)
     }
 
@@ -455,19 +435,14 @@ enum BuildingInteractorTests {
       let sut = makeSUT(loadBuildings: [])
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let filteredBuildings = sut.getBuildingsFilteredByCampusSection(buildings: [], .lower)
 
       // Then
-      guard case .success(let filteredBuildings) = result else {
-        Issue.record("Expected success but got failure")
-        return
-      }
-
       #expect(filteredBuildings.isEmpty)
     }
 
-    @Test("Filter buildings propagates service error")
-    func getBuildingsFilteredPropagatesServiceError() async {
+    @Test("Fetching buildings propagates service error")
+    func getBuildingsPropagatesServiceError() async {
       // Given
       let stubLoader = StubBuildingLoader()
       stubLoader.fetchReturnValue = .failure(.connectivity)
@@ -477,15 +452,13 @@ enum BuildingInteractorTests {
       let sut = BuildingInteractor(buildingService: buildingService, locationService: locationService)
 
       // When
-      let result = await sut.getBuildingsFilteredByCampusSection(CampusSection.lower)
+      let result = await sut.getBuildings()
 
       // Then
       guard case .failure = result else {
         Issue.record("Expected failure but got success")
         return
       }
-
-      // Test passes if we get here (failure case)
     }
   }
 }

@@ -54,6 +54,9 @@ enum BookingViewLayout {
   static let toolbarIconHeight: CGFloat = 20
   static let toolbarViewToggleIconWidth: CGFloat = 22
   static let toolbarIconPadding: CGFloat = 5
+  /// Width of the invisible toolbar filler, which brings this toolbar up to the width of the
+  /// Buildings and Rooms ones (three buttons) so the collapsed title sits on the left there too.
+  static let toolbarTitleAlignmentFillerWidth: CGFloat = 104
 
   static func detailColumns(for dynamicTypeSize: DynamicTypeSize) -> [GridItem] {
     Array(

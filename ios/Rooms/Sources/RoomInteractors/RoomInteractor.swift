@@ -14,17 +14,56 @@ public class RoomInteractor {
 
   // MARK: Lifecycle
 
-  public init(roomService: any RoomService, locationService: any LocationService, favouriteService: any FavoriteRoomService) {
+  public init(roomService: any RoomService, favouriteService: any FavoriteRoomService) {
     self.roomService = roomService
-    self.locationService = locationService
     self.favouriteService = favouriteService
   }
 
   // MARK: Public
 
   public func getRoomsSortedAlphabetically(rooms: [Room], inAscendingOrder: Bool) -> [Room] {
+    rooms.sorted { Self.isOrderedByName($0, $1, inAscendingOrder: inAscendingOrder) }
+  }
+
+  /// How far `userLocation` is from each room, in metres, keyed by room ID. A room without
+  /// coordinates uses its building's distance from `buildingDistances` (keyed by building ID),
+  /// or is left out.
+  public func getRoomDistances(
+    _ rooms: [Room],
+    from userLocation: Location,
+    buildingDistances: [String: Double])
+    -> [String: Double]
+  {
+    var distances = [String: Double]()
+    for room in rooms {
+      if let roomLocation = room.location {
+        distances[room.id] = userLocation.distance(to: roomLocation)
+      } else if let buildingDistance = buildingDistances[room.buildingId] {
+        distances[room.id] = buildingDistance
+      }
+    }
+    return distances
+  }
+
+  /// Sorts rooms nearest first, or furthest first when not ascending. Rooms the same distance
+  /// away go A–Z, and rooms without a distance go last.
+  public func getRoomsSortedByDistance(
+    _ rooms: [Room],
+    distanceByRoomID: [String: Double],
+    inAscendingOrder: Bool)
+    -> [Room]
+  {
     rooms.sorted { a, b in
-      inAscendingOrder ? a.name < b.name : a.name > b.name
+      switch (distanceByRoomID[a.id], distanceByRoomID[b.id]) {
+      case (let aDistance?, let bDistance?) where aDistance != bDistance:
+        inAscendingOrder ? aDistance < bDistance : aDistance > bDistance
+      case (_?, nil):
+        true
+      case (nil, _?):
+        false
+      default:
+        Self.isOrderedByName(a, b, inAscendingOrder: true)
+      }
     }
   }
 
@@ -37,15 +76,9 @@ public class RoomInteractor {
     }
   }
 
-  public func getRoomsSortedAlphabetically(inAscendingOrder: Bool) async -> Result<[Room], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      let sorted = getRoomsSortedAlphabetically(rooms: rooms, inAscendingOrder: inAscendingOrder)
-      return .success(sorted)
-
-    case .failure(let error):
-      return .failure(error)
-    }
+  /// Every room, in the order the service returns them.
+  public func getRooms() async -> GetRoomResult {
+    await roomService.getRooms()
   }
 
   public func getRoomsFilteredAlphabeticallyByBuildingId(
@@ -55,38 +88,8 @@ public class RoomInteractor {
   {
     switch await roomService.getRooms(buildingId: buildingId) {
     case .success(let rooms):
-      let result =
-        rooms
-          .filter { $0.buildingId == buildingId }
-          .sorted { a, b in
-            inAscendingOrder ? a.name < b.name : a.name > b.name
-          }
-      return .success(result)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  public func getRoomsFilteredByRoomType(usage roomType: String) async -> Result<[Room], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      let filtered = rooms.filter { $0.usage == roomType }
-      return .success(filtered)
-
-    case .failure(let error):
-      return .failure(error)
-    }
-  }
-
-  public func getRoomsFilteredByAllBuildingId() async -> Result<[String: [Room]], FetchRoomError> {
-    switch await roomService.getRooms() {
-    case .success(let rooms):
-      var result = [String: [Room]]()
-      for room in rooms {
-        result[room.buildingId, default: []].append(room)
-      }
-      return .success(result)
+      let roomsInBuilding = rooms.filter { $0.buildingId == buildingId }
+      return .success(getRoomsSortedAlphabetically(rooms: roomsInBuilding, inAscendingOrder: inAscendingOrder))
 
     case .failure(let error):
       return .failure(error)
@@ -160,6 +163,12 @@ public class RoomInteractor {
   // MARK: Private
 
   private let roomService: any RoomService
-  private let locationService: any LocationService
   private let favouriteService: any FavoriteRoomService
+
+  /// Whether `a` comes before `b` by name, A–Z or Z–A. The one place rooms are compared by name.
+  /// Uses the same natural order as buildings (`Building.SortOptions.alphabetical`), so G9 comes
+  /// before G10.
+  private static func isOrderedByName(_ a: Room, _ b: Room, inAscendingOrder: Bool) -> Bool {
+    a.name.localizedStandardCompare(b.name) == (inAscendingOrder ? .orderedAscending : .orderedDescending)
+  }
 }
