@@ -34,10 +34,18 @@ struct ContentView: View {
     @Bindable var tabController = tabController
     TabView(selection: $tabController.currentTab) {
       BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
-        RoomsListView(building: building, path: $buildingPath, imageProvider: {
-          BuildingImage[$0]
-        })
+        RoomsListView(
+          building: building,
+          path: $buildingPath,
+          imageProvider: { BuildingImage[$0] },
+          onRefresh: { await buildingViewModel.loadNearbyBuildings(to: building) })
+        {
+          NearbyBuildingsSection(
+            nearbyBuildings: buildingViewModel.nearbyBuildingsByBuildingID[building.id] ?? [],
+            path: $buildingPath)
+        }
         .task { await roomViewModel.onAppear() }
+        .task(id: building.id) { await buildingViewModel.loadNearbyBuildings(to: building) }
         .environment(roomViewModel)
       } _: { room in
         roomDetailsView(for: room)

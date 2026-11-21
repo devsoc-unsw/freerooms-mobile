@@ -60,6 +60,61 @@ enum RoomInteractorTests {
     }
   }
 
+  struct RoomBuildingOrdering {
+    @Test("Orders rooms by their building's position, then by name")
+    func ordersByBuildingThenName() {
+      // Given
+      let rooms = [
+        makeRoom("A101", in: "K-FAR"),
+        makeRoom("Z9", in: "K-NEAR"),
+        makeRoom("M1", in: "K-MID"),
+        makeRoom("B2", in: "K-NEAR"),
+      ]
+      let sut = makeRoomSUT(expect: rooms)
+
+      // When
+      let sorted = sut.getRoomsSortedByBuildingOrder(
+        rooms: rooms,
+        buildingOrder: ["K-NEAR", "K-MID", "K-FAR"],
+        inAscendingOrder: true)
+
+      // Then
+      #expect(sorted.map(\.name) == ["B2", "Z9", "M1", "A101"])
+    }
+
+    @Test("Sorts rooms in the same building Z–A when descending")
+    func sortsWithinBuildingDescending() {
+      // Given
+      let rooms = [makeRoom("B2", in: "K-NEAR"), makeRoom("Z9", in: "K-NEAR"), makeRoom("M1", in: "K-MID")]
+      let sut = makeRoomSUT(expect: rooms)
+
+      // When
+      let sorted = sut.getRoomsSortedByBuildingOrder(
+        rooms: rooms,
+        buildingOrder: ["K-NEAR", "K-MID"],
+        inAscendingOrder: false)
+
+      // Then
+      #expect(sorted.map(\.name) == ["Z9", "B2", "M1"])
+    }
+
+    @Test("Puts rooms whose building isn't in the order last")
+    func putsUnknownBuildingsLast() {
+      // Given
+      let rooms = [makeRoom("A0", in: "K-UNKNOWN"), makeRoom("Z9", in: "K-NEAR")]
+      let sut = makeRoomSUT(expect: rooms)
+
+      // When
+      let sorted = sut.getRoomsSortedByBuildingOrder(
+        rooms: rooms,
+        buildingOrder: ["K-NEAR"],
+        inAscendingOrder: true)
+
+      // Then
+      #expect(sorted.map(\.name) == ["Z9", "A0"])
+    }
+  }
+
   struct RoomFilteringByBuildingId {
     @Test("Returns rooms filtered by building id matching")
     func returnsRoomsFilteredByBuildingIdMatching() async {
@@ -553,6 +608,28 @@ func makeRoomSUT(
     roomService: roomService,
     locationService: locationService,
     favouriteService: PreviewFavoriteRoomService())
+}
+
+/// A room where only the name and building matter.
+func makeRoom(_ name: String, in buildingId: String) -> Room {
+  Room(
+    abbreviation: name,
+    accessibility: [],
+    audioVisual: [],
+    buildingId: buildingId,
+    capacity: 10,
+    floor: "",
+    id: "\(buildingId)-\(name)",
+    infoTechnology: [],
+    latitude: 0,
+    longitude: 0,
+    microphone: [],
+    name: name,
+    school: "",
+    seating: "",
+    usage: "TUSM",
+    service: [],
+    writingMedia: [])
 }
 
 func createDifferentRooms() -> [Room] {

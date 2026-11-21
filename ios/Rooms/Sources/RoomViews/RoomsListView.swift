@@ -13,18 +13,22 @@ public import SwiftUI
 
 // MARK: - RoomsListView
 
-public struct RoomsListView: View {
+public struct RoomsListView<Footer: View>: View {
 
   // MARK: Lifecycle
 
   public init(
     building: Building,
     path: Binding<NavigationPath>,
-    imageProvider: @escaping (String) -> CachedImage)
+    imageProvider: @escaping (String) -> CachedImage,
+    onRefresh: @escaping () async -> Void = { },
+    @ViewBuilder footer: () -> Footer)
   {
     self.building = building
     _path = path
     self.imageProvider = imageProvider
+    self.onRefresh = onRefresh
+    self.footer = footer()
   }
 
   // MARK: Public
@@ -49,9 +53,13 @@ public struct RoomsListView: View {
         isLoading: roomViewModel.isLoading,
         path: $path,
         rowHeight: $rowHeight)
+
+      footer
     }
     .refreshable {
-      await roomViewModel.reloadRooms()
+      async let roomsReloaded: Void = roomViewModel.reloadRooms()
+      await onRefresh()
+      await roomsReloaded
     }
     .background(InteractivePopGestureEnabler())
     .navigationBarBackButtonHidden(true)
@@ -104,6 +112,8 @@ public struct RoomsListView: View {
   let screenHeight = UIScreen.main.bounds.height
 
   let imageProvider: (String) -> CachedImage
+  let onRefresh: () async -> Void
+  let footer: Footer
 
   // MARK: Private
 
@@ -112,7 +122,20 @@ public struct RoomsListView: View {
   @Environment(LiveRoomViewModel.self) private var roomViewModel
 
   private var building: Building
+}
 
+// MARK: - RoomsListView + no footer
+
+extension RoomsListView where Footer == EmptyView {
+  public init(
+    building: Building,
+    path: Binding<NavigationPath>,
+    imageProvider: @escaping (String) -> CachedImage)
+  {
+    self.init(building: building, path: path, imageProvider: imageProvider) {
+      EmptyView()
+    }
+  }
 }
 
 // MARK: - InteractivePopGestureEnabler

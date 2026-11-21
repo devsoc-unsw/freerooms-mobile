@@ -28,6 +28,28 @@ public class RoomInteractor {
     }
   }
 
+  /// Sorts rooms by their building's position in `buildingOrder` (e.g. nearest building first),
+  /// then by name. Rooms whose building isn't in the list go last.
+  public func getRoomsSortedByBuildingOrder(
+    rooms: [Room],
+    buildingOrder: [String],
+    inAscendingOrder: Bool)
+    -> [Room]
+  {
+    let rankByBuildingID = Dictionary(
+      buildingOrder.enumerated().map { ($1, $0) },
+      uniquingKeysWith: { first, _ in first })
+
+    return rooms.sorted { a, b in
+      let aRank = rankByBuildingID[a.buildingId] ?? .max
+      let bRank = rankByBuildingID[b.buildingId] ?? .max
+      if aRank != bRank {
+        return aRank < bRank
+      }
+      return inAscendingOrder ? a.name < b.name : a.name > b.name
+    }
+  }
+
   public func filterRoomsByQueryString(_ rooms: [Room], by searchText: String) -> [Room] {
     guard !searchText.isEmpty else { return rooms }
     let loweredQuery = searchText.lowercased()

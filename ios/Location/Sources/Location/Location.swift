@@ -29,4 +29,7 @@ extension Location {
     CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
   }
 
+  public func distance(to other: Location) -> Double {
+    clLocation.distance(from: other.clLocation)
+  }
 }
