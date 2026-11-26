@@ -17,7 +17,6 @@
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
 		5454D04130B83ABD005F6638 /* FreeroomsNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 5454D04030B83ABD005F6638 /* FreeroomsNavigation */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
-		546D1A982F7AACB9000667BC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
 		546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA72F7AAD87000667BC /* RoomViews */; };
 /* End PBXBuildFile section */
@@ -138,7 +137,6 @@
 				546D1AA82F7AAD87000667BC /* RoomViews in Frameworks */,
 				546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */,
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
-				546D1A982F7AACB9000667BC /* (null) in Frameworks */,
 				541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */,
 				5454D04130B83ABD005F6638 /* FreeroomsNavigation in Frameworks */,
 				5417827630418382005BCD5E /* FreeroomsIntents in Frameworks */,
