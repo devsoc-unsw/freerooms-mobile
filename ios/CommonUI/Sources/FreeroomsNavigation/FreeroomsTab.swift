@@ -7,10 +7,11 @@
 
 public import AppIntents
 public import Observation
+public import VISOR
 
 // MARK: - FreeroomsTab
 
-public nonisolated enum FreeroomsTab: String, CaseIterable {
+public nonisolated enum FreeroomsTab: String, CaseIterable, RootDestination {
   case buildings = "Buildings"
   case map = "Map"
   case rooms = "Rooms"
