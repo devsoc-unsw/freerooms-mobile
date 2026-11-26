@@ -36,6 +36,7 @@ nonisolated extension FreeroomsTab: AppEnum {
 // MARK: - TabController
 
 @Observable @MainActor
+@available(*, deprecated, renamed: "FreeroomsNavigationScene.Router", message: "Use Router instead")
 public final class TabController {
 
   // MARK: Lifecycle

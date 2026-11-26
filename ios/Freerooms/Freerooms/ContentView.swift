@@ -18,111 +18,165 @@ import RoomViews
 import SwiftUI
 import VISOR
 
-// MARK: - ContentView
-
-/// No logic, only UI
 struct ContentView: View {
 
   // MARK: Internal
 
-  @Environment(\.buildingViewModel) var buildingViewModel
-  @Environment(\.mapViewModel) var mapViewModel
-  @Environment(\.roomViewModel) var roomViewModel
-  @Environment(TabController.self) var tabController
-  @State var selectedRoomsView = ViewOrientation.List
-  @State var selectedBuildingsView = ViewOrientation.List
-
   var body: some View {
-    @Bindable var tabController = tabController
-    TabView(selection: $tabController.currentTab) {
-      BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
-        RoomsListView(building: building, path: $buildingPath, imageProvider: {
-          BuildingImage[$0]
-        })
-        .task { await roomViewModel.onAppear() }
-        .environment(roomViewModel)
-      } _: { room in
-        roomDetailsView(for: room)
-      }
-      .tag(FreeroomsTab.buildings)
-      MapTabView(
-        path: $mapPath,
-        mapViewModel: mapViewModel,
-        roomImageProvider: { roomID in
-          RoomImage[roomID]
-        },
-        roomDestinationBuilder: { room in
-          roomDetailsView(for: room)
-        })
-        .tag(FreeroomsTab.map)
-      RoomsTabView(
-        path: $roomPath,
-        selectedTab: $tabController.currentTab,
-        selectedView: $selectedRoomsView)
-      { room in
-        roomDetailsView(for: room)
-      }
-      .tag(FreeroomsTab.rooms)
-      BookingsTabView()
-        .tag(FreeroomsTab.bookings)
+    RouterHost(
+      router: router,
+      pushContent: pushContent(for:),
+      sheetContent: sheetContent(for:),
+      fullScreenContent: fullScreenContent(for:))
+    {
+      EmptyView()
     }
-    .environment(roomViewModel)
-    .environment(buildingViewModel)
-    .tint(theme.accent.primary)
-    .preferredColorScheme(theme.preferredColorScheme)
-  }
-
-  func roomDetailsView(for room: Room) -> some View {
-    RoomDetailsView(room: room)
-      .environment(roomViewModel)
-      .task(roomViewModel.onAppear)
-      .task {
-        roomViewModel.clearRoomBookings()
-        await roomViewModel.getRoomBookings(roomId: room.id)
-      }
   }
 
   // MARK: Private
 
-  @State private var buildingPath = NavigationPath()
-  @State private var mapPath = NavigationPath()
-  @State private var roomPath = NavigationPath()
+  // MARK: Content Handlers
 
-  @Environment(Theme.self) private var theme
-}
+  private typealias Scene = FreeroomsNavigationScene
 
-extension LiveBuildingViewModel {
-  static let preview = PreviewBuildingViewModel()
-}
+  private let router = FreeroomsNavigationScene.Router()
 
-extension LiveBookingViewModel {
-  static let preview = PreviewBookingViewModel()
-}
+  @ViewBuilder
+  private func pushContent(for _: Scene.Push) -> some View {
+    sceneNotImplemented(forType: "Push")
+  }
 
-extension LiveRoomViewModel {
-  static let preview = PreviewRoomViewModel()
-}
+  @ViewBuilder
+  private func sheetContent(for _: Scene.Sheet) -> some View {
+    sceneNotImplemented(forType: "Sheet")
+  }
 
-extension LiveMapViewModel {
-  static let preview = PreviewMapViewModel()
-}
+  @ViewBuilder
+  private func fullScreenContent(for _: Scene.FullScreen) -> some View {
+    sceneNotImplemented(forType: "FullScreen")
+  }
 
-extension EnvironmentValues {
-  @Entry var buildingViewModel: LiveBuildingViewModel = MainActor.assumeIsolated { .preview }
-  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated { .preview }
-  @Entry var roomViewModel: LiveRoomViewModel = MainActor.assumeIsolated { .preview }
+  private func sceneNotImplemented(
+    forType type: StaticString,
+    file: StaticString = #file,
+    line: UInt = #line)
+    -> Never
+  {
+    preconditionFailure("Scene type \(type) not implemented.", file: file, line: line)
+  }
+
 }
 
 #Preview {
   ContentView()
-    .defaultTheme()
-    .environment(TabController())
-    .environment(PreviewBookingViewModel() as LiveBookingViewModel)
-    .environment(\.buildingViewModel, PreviewBuildingViewModel())
-    .environment(
-      \.mapViewModel,
-      MainActor.assumeIsolated {
-        PreviewMapViewModel()
-      })
-    .environment(\.roomViewModel, PreviewRoomViewModel())
 }
+
+// // MARK: - ContentView
+//
+// /// No logic, only UI
+// struct ContentView: View {
+//
+//  // MARK: Internal
+//
+//  @Environment(\.buildingViewModel) var buildingViewModel
+//  @Environment(\.mapViewModel) var mapViewModel
+//  @Environment(\.roomViewModel) var roomViewModel
+//  @Environment(TabController.self) var tabController
+//  @State var selectedRoomsView = ViewOrientation.List
+//  @State var selectedBuildingsView = ViewOrientation.List
+//
+//  var body: some View {
+//    @Bindable var tabController = tabController
+//    TabView(selection: $tabController.currentTab) {
+//      BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
+//        RoomsListView(building: building, path: $buildingPath, imageProvider: {
+//          BuildingImage[$0]
+//        })
+//        .task { await roomViewModel.onAppear() }
+//        .environment(roomViewModel)
+//      } _: { room in
+//        roomDetailsView(for: room)
+//      }
+//      .tag(FreeroomsTab.buildings)
+//      MapTabView(
+//        path: $mapPath,
+//        mapViewModel: mapViewModel,
+//        roomImageProvider: { roomID in
+//          RoomImage[roomID]
+//        },
+//        roomDestinationBuilder: { room in
+//          roomDetailsView(for: room)
+//        })
+//        .tag(FreeroomsTab.map)
+//      RoomsTabView(
+//        path: $roomPath,
+//        selectedTab: $tabController.currentTab,
+//        selectedView: $selectedRoomsView)
+//      { room in
+//        roomDetailsView(for: room)
+//      }
+//      .tag(FreeroomsTab.rooms)
+//      BookingsTabView()
+//        .tag(FreeroomsTab.bookings)
+//    }
+//    .environment(roomViewModel)
+//    .environment(buildingViewModel)
+//    .tint(theme.accent.primary)
+//    .preferredColorScheme(theme.preferredColorScheme)
+//  }
+//
+//  func roomDetailsView(for room: Room) -> some View {
+//    RoomDetailsView(room: room)
+//      .environment(roomViewModel)
+//      .task(roomViewModel.onAppear)
+//      .task {
+//        roomViewModel.clearRoomBookings()
+//        await roomViewModel.getRoomBookings(roomId: room.id)
+//      }
+//  }
+//
+//  // MARK: Private
+//
+//  @State private var buildingPath = NavigationPath()
+//  @State private var mapPath = NavigationPath()
+//  @State private var roomPath = NavigationPath()
+//
+//  @Environment(Theme.self) private var theme
+// }
+//
+// extension LiveBuildingViewModel {
+//  static let preview = PreviewBuildingViewModel()
+// }
+//
+// extension LiveBookingViewModel {
+//  static let preview = PreviewBookingViewModel()
+// }
+//
+// extension LiveRoomViewModel {
+//  static let preview = PreviewRoomViewModel()
+// }
+//
+// extension LiveMapViewModel {
+//  static let preview = PreviewMapViewModel()
+// }
+//
+// extension EnvironmentValues {
+//  @Entry var buildingViewModel: LiveBuildingViewModel = MainActor.assumeIsolated { .preview }
+//  @Entry var mapViewModel: LiveMapViewModel = MainActor.assumeIsolated { .preview }
+//  @Entry var roomViewModel: LiveRoomViewModel = MainActor.assumeIsolated { .preview }
+// }
+//
+// #Preview {
+//  ContentView()
+//    .defaultTheme()
+//    .environment(TabController())
+//    .environment(PreviewBookingViewModel() as LiveBookingViewModel)
+//    .environment(\.buildingViewModel, PreviewBuildingViewModel())
+//    .environment(
+//      \.mapViewModel,
+//      MainActor.assumeIsolated {
+//        PreviewMapViewModel()
+//      })
+//    .environment(\.roomViewModel, PreviewRoomViewModel())
+// }
+//
