@@ -53,7 +53,6 @@ public struct BookingsTabView: View {
     .tabItem {
       Label("Bookings", systemImage: "book.pages")
     }
-    .tag(FreeroomsTab.bookings)
   }
 
   // MARK: Private

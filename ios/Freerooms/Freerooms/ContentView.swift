@@ -11,10 +11,12 @@ import BuildingModels
 import BuildingViewModels
 import BuildingViews
 import CommonUI
+import FreeroomsNavigation
 import RoomModels
 import RoomViewModels
 import RoomViews
 import SwiftUI
+import VISOR
 
 // MARK: - ContentView
 
@@ -42,6 +44,7 @@ struct ContentView: View {
       } _: { room in
         roomDetailsView(for: room)
       }
+      .tag(FreeroomsTab.buildings)
       MapTabView(
         path: $mapPath,
         mapViewModel: mapViewModel,
@@ -51,6 +54,7 @@ struct ContentView: View {
         roomDestinationBuilder: { room in
           roomDetailsView(for: room)
         })
+        .tag(FreeroomsTab.map)
       RoomsTabView(
         path: $roomPath,
         selectedTab: $tabController.currentTab,
@@ -58,7 +62,9 @@ struct ContentView: View {
       { room in
         roomDetailsView(for: room)
       }
+      .tag(FreeroomsTab.rooms)
       BookingsTabView()
+        .tag(FreeroomsTab.bookings)
     }
     .environment(roomViewModel)
     .environment(buildingViewModel)

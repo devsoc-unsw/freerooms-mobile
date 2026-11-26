@@ -8,6 +8,7 @@
 import BuildingModels
 import BuildingViewModels
 public import CommonUI
+public import FreeroomsNavigation
 public import RoomModels
 import RoomViewModels
 public import SwiftUI
@@ -44,7 +45,6 @@ public struct RoomsTabView<Destination: View>: View {
           ? "door.left.hand.open"
           : "door.left.hand.closed")
     }
-    .tag(FreeroomsTab.rooms)
   }
 
   // MARK: Internal

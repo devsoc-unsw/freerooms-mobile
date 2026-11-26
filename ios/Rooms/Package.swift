@@ -30,6 +30,7 @@ let package = Package(
       dependencies: [
         "RoomModels", "RoomViewModels", "Buildings",
         .product(name: "CommonUI", package: "CommonUI"),
+        .product(name: "FreeroomsNavigation", package: "CommonUI"),
       ],
       resources: [.process("Resources")],
       swiftSettings: swiftSettings),

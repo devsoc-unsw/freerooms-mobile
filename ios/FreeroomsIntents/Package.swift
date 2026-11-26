@@ -32,6 +32,7 @@ let package = Package(
       dependencies: [
         .target(name: "FreeroomsIntentsMacros"),
         .product(name: "CommonUI", package: "CommonUI"),
+        .product(name: "FreeroomsNavigation", package: "CommonUI"),
       ],
       swiftSettings: swiftSettings),
     .macro(

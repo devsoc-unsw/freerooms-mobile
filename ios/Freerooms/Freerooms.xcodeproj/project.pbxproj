@@ -15,6 +15,7 @@
 		54179CD73041512F0078709A /* FreeroomsWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 54179CC030414C4F0078709A /* FreeroomsWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		541DCFCB2FD2A5150040EB0F /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCA2FD2A5150040EB0F /* Apollo */; };
 		541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 541DCFCD2FD2A5420040EB0F /* DevSocAPI */; };
+		5454D04130B83ABD005F6638 /* FreeroomsNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = 5454D04030B83ABD005F6638 /* FreeroomsNavigation */; };
 		546D1A952F7AACA2000667BC /* VISOR in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1A942F7AACA2000667BC /* VISOR */; };
 		546D1A982F7AACB9000667BC /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		546D1AA62F7AAD87000667BC /* RoomViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 546D1AA52F7AAD87000667BC /* RoomViewModels */; };
@@ -139,6 +140,7 @@
 				546D1A952F7AACA2000667BC /* VISOR in Frameworks */,
 				546D1A982F7AACB9000667BC /* (null) in Frameworks */,
 				541DCFCE2FD2A5420040EB0F /* DevSocAPI in Frameworks */,
+				5454D04130B83ABD005F6638 /* FreeroomsNavigation in Frameworks */,
 				5417827630418382005BCD5E /* FreeroomsIntents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +260,7 @@
 				541DCFCD2FD2A5420040EB0F /* DevSocAPI */,
 				2D7043052FF7AD02006BF888 /* Bookings */,
 				5417827530418382005BCD5E /* FreeroomsIntents */,
+				5454D04030B83ABD005F6638 /* FreeroomsNavigation */,
 			);
 			productName = Freerooms;
 			productReference = 96F9AFCA2D9BCC1200671174 /* Freerooms.app */;
@@ -830,6 +833,10 @@
 		541DCFCD2FD2A5420040EB0F /* DevSocAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DevSocAPI;
+		};
+		5454D04030B83ABD005F6638 /* FreeroomsNavigation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FreeroomsNavigation;
 		};
 		546D1A942F7AACA2000667BC /* VISOR */ = {
 			isa = XCSwiftPackageProductDependency;

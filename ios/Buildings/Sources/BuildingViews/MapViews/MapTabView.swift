@@ -171,7 +171,6 @@ public struct MapTabView<RoomDestination: View>: View {
     .tabItem {
       Label("Map", systemImage: "map")
     }
-    .tag(FreeroomsTab.map)
   }
 
   // MARK: Internal

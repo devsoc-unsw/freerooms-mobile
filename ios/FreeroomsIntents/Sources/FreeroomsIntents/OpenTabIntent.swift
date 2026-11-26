@@ -5,11 +5,11 @@
 //  Created by Matthew Yuen on 28/8/2026.
 //
 
-#if swift(>=6.4)
+#if hasAttribute(diagnose)
 @diagnose(UnusedImportAccess, as: ignored)
 #endif
 public import AppIntents
-import CommonUI
+public import FreeroomsNavigation
 
 @freestanding(declaration, names: arbitrary)
 macro createOpenTabIntent(for tab: FreeroomsTab) = #externalMacro(

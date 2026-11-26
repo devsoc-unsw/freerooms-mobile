@@ -17,6 +17,7 @@ import BuildingViewModels
 import BuildingViews
 import CommonUI
 import Foundation
+import FreeroomsNavigation
 import Location
 import LocationInteractors
 import Networking

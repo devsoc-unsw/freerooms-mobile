@@ -11,10 +11,14 @@ let package = Package(
     .library(
       name: "CommonUI",
       targets: ["CommonUI"]),
+    .library(
+      name: "FreeroomsNavigation",
+      targets: ["FreeroomsNavigation"]),
   ],
   dependencies: [
     .package(name: "Rooms", path: "../Rooms"),
     .package(name: "Buildings", path: "../Buildings"),
+    .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -28,6 +32,12 @@ let package = Package(
         .product(name: "RoomViewModels", package: "Rooms"),
       ],
       resources: [.process("Resources")],
+      swiftSettings: swiftSettings),
+    .target(
+      name: "FreeroomsNavigation",
+      dependencies: [
+        .product(name: "VISOR", package: "VISOR"),
+      ],
       swiftSettings: swiftSettings),
   ])
 

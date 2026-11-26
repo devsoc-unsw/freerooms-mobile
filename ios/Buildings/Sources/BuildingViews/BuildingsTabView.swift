@@ -45,7 +45,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
     .tabItem {
       Label("Buildings", systemImage: "building")
     }
-    .tag(FreeroomsTab.buildings)
   }
 
   // MARK: Internal
