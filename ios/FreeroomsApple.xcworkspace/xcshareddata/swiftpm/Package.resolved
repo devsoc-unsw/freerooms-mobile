@@ -1,13 +1,13 @@
 {
-  "originHash" : "652ed08937e69f380f468f1ada0ca2d33bf30aaa6beb56b592bd7417555f7f1e",
+  "originHash" : "6af1238e3c4ba8bc3869ac5ddddb508d0221f153bf1daaf2376cb3edb874e5e7",
   "pins" : [
     {
       "identity" : "apollo-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apollographql/apollo-ios",
       "state" : {
-        "revision" : "fe14c216aaea3d25274343e80ccb3015fc3fb0b0",
-        "version" : "2.4.0"
+        "revision" : "fea2613e7d69dbf532b5aad897722be638f345be",
+        "version" : "2.5.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
-        "version" : "603.0.2"
+        "revision" : "050f1a346fbbac0ca2cfb15a95274f7bd1cf0ccf",
+        "version" : "604.0.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/avdn-dev/VISOR.git",
       "state" : {
-        "revision" : "99850b30f35b23bae66e80648c67394aec76c0cc",
-        "version" : "13.2.3"
+        "revision" : "6227205f6aabbc2648559ae0b88fce9cdaf18b48",
+        "version" : "13.3.0"
       }
     }
   ],
