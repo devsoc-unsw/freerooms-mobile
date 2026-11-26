@@ -9,9 +9,28 @@ public import DevSocAPI
 import Foundation
 public import Location
 
-// MARK: - Building
+// MARK: - CampusBuildings
 
-public typealias CampusBuildings = (upper: [Building], middle: [Building], lower: [Building])
+public struct CampusBuildings {
+  public var upper: [Building]
+  public var middle: [Building]
+  public var lower: [Building]
+
+  public init(upper: [Building] = [], middle: [Building] = [], lower: [Building] = []) {
+    self.upper = upper
+    self.middle = middle
+    self.lower = lower
+  }
+
+  public var all: [Building] {
+    var allBuildings = [Building]()
+    allBuildings.reserveCapacity(upper.count + middle.count + lower.count)
+    allBuildings.append(contentsOf: upper)
+    allBuildings.append(contentsOf: middle)
+    allBuildings.append(contentsOf: lower)
+    return allBuildings
+  }
+}
 
 // MARK: - Building
 

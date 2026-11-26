@@ -53,7 +53,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   public var searchText = ""
   public var loadBuildingErrorMessage: AlertError?
 
-  public var buildings: CampusBuildings = ([], [], [])
+  public var buildings: CampusBuildings = CampusBuildings()
 
   public var displayedBuildings: CampusBuildings {
     let isEmpty = buildings.upper.isEmpty && buildings.middle.isEmpty && buildings.lower.isEmpty
@@ -70,8 +70,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
   }
 
   public var allBuildings: [Building] {
-    let allBuildings = buildings.0 + buildings.1 + buildings.2
-    return Building.SortOptions.alphabetical.sort(allBuildings)
+    Building.SortOptions.alphabetical.sort(buildings.all)
   }
 
   public var placeHolderBuildings: CampusBuildings {
@@ -91,7 +90,7 @@ public class LiveBuildingViewModel: BuildingViewModel {
     let middlePlaceholders = (2..<12).map(createPlaceholder)
     let lowerPlaceholders = (4..<18).map(createPlaceholder)
 
-    return (upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
+    return CampusBuildings(upper: upperPlaceholders, middle: middlePlaceholders, lower: lowerPlaceholders)
   }
 
   public func reloadBuildings() {
