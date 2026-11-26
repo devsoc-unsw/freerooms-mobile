@@ -42,9 +42,6 @@ public struct BuildingsTabView<BuildingDestination: View, RoomDestination: View>
         message: Text(error.message),
         dismissButton: .default(Text("OK")))
     }
-    .tabItem {
-      Label("Buildings", systemImage: "building")
-    }
   }
 
   // MARK: Internal

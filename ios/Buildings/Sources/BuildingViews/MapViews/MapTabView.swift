@@ -168,9 +168,6 @@ public struct MapTabView<RoomDestination: View>: View {
         roomDestinationBuilder(room)
       }
     }
-    .tabItem {
-      Label("Map", systemImage: "map")
-    }
   }
 
   // MARK: Internal

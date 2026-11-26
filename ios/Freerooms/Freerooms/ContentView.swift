@@ -12,11 +12,13 @@ import BuildingViewModels
 import BuildingViews
 import CommonUI
 import FreeroomsNavigation
+import OSLog
 import RoomModels
 import RoomViewModels
 import RoomViews
 import SwiftUI
 import VISOR
+import VISORObservation
 
 struct ContentView: View {
 
@@ -29,7 +31,32 @@ struct ContentView: View {
       sheetContent: sheetContent(for:),
       fullScreenContent: fullScreenContent(for:))
     {
-      EmptyView()
+      TabView(selection: $router.selectedRoot) {
+        Text("Buildings")
+          .tabItem {
+            Label("Buildings", systemImage: "building")
+          }
+          .tag(FreeroomsTab.buildings)
+        Text("Map")
+          .tabItem {
+            Label("Map", systemImage: "map")
+          }
+          .tag(FreeroomsTab.map)
+        Text("Rooms")
+          .tabItem {
+            Label(
+              "Rooms",
+              systemImage: router.selectedRoot == .rooms
+                ? "door.left.hand.open"
+                : "door.left.hand.closed")
+          }
+          .tag(FreeroomsTab.rooms)
+        Text("Bookings")
+          .tabItem {
+            Label("Bookings", systemImage: "book.pages")
+          }
+          .tag(FreeroomsTab.bookings)
+      }
     }
   }
 
@@ -39,7 +66,8 @@ struct ContentView: View {
 
   private typealias Scene = FreeroomsNavigationScene
 
-  private let router = FreeroomsNavigationScene.Router()
+  @State private var router = FreeroomsNavigationScene.Router(
+    logger: Logger(subsystem: "app.devsoc.Freerooms", category: "Router"))
 
   @ViewBuilder
   private func pushContent(for _: Scene.Push) -> some View {

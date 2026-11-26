@@ -50,9 +50,6 @@ public struct BookingsTabView: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
-    .tabItem {
-      Label("Bookings", systemImage: "book.pages")
-    }
   }
 
   // MARK: Private
