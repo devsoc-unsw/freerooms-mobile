@@ -18,6 +18,7 @@ let package = Package(
   dependencies: [
     .package(name: "Rooms", path: "../Rooms"),
     .package(name: "Buildings", path: "../Buildings"),
+    .package(name: "Bookings", path: "../Bookings"),
     .package(url: "https://github.com/avdn-dev/VISOR.git", from: "13.0.0"),
   ],
   targets: [
@@ -36,6 +37,9 @@ let package = Package(
     .target(
       name: "FreeroomsNavigation",
       dependencies: [
+        .product(name: "RoomModels", package: "Rooms"),
+        .product(name: "BuildingModels", package: "Buildings"),
+        .product(name: "BookingModels", package: "Bookings"),
         .product(name: "VISOR", package: "VISOR"),
       ],
       swiftSettings: swiftSettings),
