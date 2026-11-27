@@ -23,6 +23,12 @@ import VISORObservation
 struct ContentView: View {
 
   // MARK: Internal
+  
+  init() {
+    bookingViewModelFactory = .routed { (router: Scene.Router) in
+      return BookingViewModel(router: router)
+    }
+  }
 
   var body: some View {
     RouterHost(
@@ -51,13 +57,14 @@ struct ContentView: View {
                 : "door.left.hand.closed")
           }
           .tag(FreeroomsTab.rooms)
-        Text("Bookings")
+        BookingsTabView()
           .tabItem {
             Label("Bookings", systemImage: "book.pages")
           }
           .tag(FreeroomsTab.bookings)
       }
     }
+    .environment(bookingViewModelFactory)
   }
 
   // MARK: Private
@@ -92,6 +99,9 @@ struct ContentView: View {
   {
     preconditionFailure("Scene type \(type) not implemented.", file: file, line: line)
   }
+  
+  // MARK: ViewModel Factories
+  let bookingViewModelFactory: BookingViewModel.Factory
 
 }
 

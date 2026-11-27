@@ -9,6 +9,29 @@ import BookingModels
 import BookingViewModels
 import CommonUI
 public import SwiftUI
+import FreeroomsNavigation
+import VISOR
+
+@LazyViewModel(BookingViewModel.self)
+public struct BookingsTabView: View {
+  
+  public init() {
+    
+  }
+  
+  @ViewBuilder
+  func readyContent(viewModel: BookingViewModel, state: BookingViewModel.State) -> some View {
+    RouterStack(parentRouter: viewModel.router, root: .bookings, pushContent: { _ in }) {
+      if state.isLoading, state.bookings.isEmpty {
+        ProgressView("Loading this week's bookings…")
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+      }
+    }
+  }
+  
+}
+
+/*
 
 // MARK: - BookingsTabView
 
@@ -119,3 +142,5 @@ public struct BookingsTabView: View {
     .defaultTheme()
     .environment(PreviewBookingViewModel() as LiveBookingViewModel)
 }
+
+*/

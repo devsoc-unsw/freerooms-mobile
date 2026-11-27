@@ -10,6 +10,34 @@ public import BookingModels
 import BookingServices
 public import Foundation
 import Observation
+public import VISOR
+public import FreeroomsNavigation
+
+@ViewModel
+@MainActor
+@Observable
+public final class BookingViewModel {
+  public final class State {
+    public private(set) var bookings: [WeeklyBooking] = []
+    public private(set) var isLoading: Bool = true
+  }
+  
+  public enum Action {
+    case loadMoreBookings
+  }
+  
+  @discardableResult
+  public func handle(_ action: Action) -> ActionCompletion {
+    switch action {
+    case .loadMoreBookings:
+      return .completed
+    }
+  }
+  
+  public let router: FreeroomsNavigationScene.Router
+}
+
+/*
 
 // MARK: - BookingPresentationError
 
@@ -116,3 +144,5 @@ public final class PreviewBookingViewModel: LiveBookingViewModel {
     super.init(interactor: BookingInteractor(service: PreviewBookingService()))
   }
 }
+
+*/
