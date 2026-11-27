@@ -50,7 +50,7 @@ struct ContentView: View {
       fullScreenContent: fullScreenContent(for:))
     {
       TabView(selection: $router.selectedRoot) {
-        BuildingsTabView()
+        BuildingsTabView(contentBuilder: contentBuilder)
           .tabItem {
             Label("Buildings", systemImage: "building")
           }
@@ -69,7 +69,7 @@ struct ContentView: View {
                 : "door.left.hand.closed")
           }
           .tag(FreeroomsTab.rooms)
-        BookingsTabView()
+        BookingsTabView(contentBuilder: contentBuilder)
           .tabItem {
             Label("Bookings", systemImage: "book.pages")
           }
@@ -77,6 +77,7 @@ struct ContentView: View {
       }
     }
     .environment(bookingViewModelFactory)
+    .environment(buildingViewModelFactory)
   }
 
   // MARK: Private
@@ -101,6 +102,13 @@ struct ContentView: View {
   @ViewBuilder
   private func fullScreenContent(for _: Scene.FullScreen) -> some View {
     sceneNotImplemented(forType: "FullScreen")
+  }
+  
+  private var contentBuilder: some FreeroomsContentBuilderProtocol {
+    FreeroomsContentBuilder(
+      pushContent: pushContent(for:),
+      sheetContent: sheetContent(for:),
+      fullScreenContent: fullScreenContent(for:))
   }
 
   private func sceneNotImplemented(

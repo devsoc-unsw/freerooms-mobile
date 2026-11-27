@@ -12,17 +12,25 @@ public import RoomModels
 import RoomViewModels
 public import SwiftUI
 public import VISOR
+public import FreeroomsNavigation
 
 @LazyViewModel(BuildingsViewModel.self)
-public struct BuildingsTabView: View {
+public struct BuildingsTabView<ContentBuilder: FreeroomsContentBuilderProtocol>: View {
+  let contentBuilder: ContentBuilder
   
-  public init() {
-    
+  public init(contentBuilder: ContentBuilder) {
+    self.contentBuilder = contentBuilder
   }
   
   @ViewBuilder
   public func readyContent(viewModel: BuildingsViewModel) -> some View {
-    Text("BuildingsTabView")
+    RouterStack(
+      parentRouter: viewModel.router,
+      root: .buildings,
+      pushContent: contentBuilder.pushContent)
+    {
+      Text("BuildingsTabView")
+    }
   }
   
 }

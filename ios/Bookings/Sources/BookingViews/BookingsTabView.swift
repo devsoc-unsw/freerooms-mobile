@@ -9,19 +9,24 @@ import BookingModels
 import BookingViewModels
 import CommonUI
 public import SwiftUI
-import FreeroomsNavigation
+public import FreeroomsNavigation
 import VISOR
 
 @LazyViewModel(BookingViewModel.self)
-public struct BookingsTabView: View {
+public struct BookingsTabView<ContentBuilder: FreeroomsContentBuilderProtocol>: View {
+  let contentBuilder: ContentBuilder
   
-  public init() {
-    
+  public init(contentBuilder: ContentBuilder) {
+    self.contentBuilder = contentBuilder
   }
   
   @ViewBuilder
   func readyContent(viewModel: BookingViewModel, state: BookingViewModel.State) -> some View {
-    RouterStack(parentRouter: viewModel.router, root: .bookings, pushContent: { _ in }) {
+    RouterStack(
+      parentRouter: viewModel.router,
+      root: .bookings,
+      pushContent: contentBuilder.pushContent)
+    {
       if state.isLoading, state.bookings.isEmpty {
         ProgressView("Loading this week's bookings…")
           .frame(maxWidth: .infinity, maxHeight: .infinity)
