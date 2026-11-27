@@ -20,14 +20,26 @@ import SwiftUI
 import VISOR
 import VISORObservation
 
+/// The root view for the application
+///
+/// There should only be one ``ContentView`` per `Scene`.
+/// This `View` manages the
 struct ContentView: View {
 
   // MARK: Internal
   
   init() {
+    
+    // MARK: ViewModel Factory setup
+    
+    buildingViewModelFactory = .routed { (router: Scene.Router) in
+      return BuildingsViewModel(router: router)
+    }
+    
     bookingViewModelFactory = .routed { (router: Scene.Router) in
       return BookingViewModel(router: router)
     }
+    
   }
 
   var body: some View {
@@ -38,7 +50,7 @@ struct ContentView: View {
       fullScreenContent: fullScreenContent(for:))
     {
       TabView(selection: $router.selectedRoot) {
-        Text("Buildings")
+        BuildingsTabView()
           .tabItem {
             Label("Buildings", systemImage: "building")
           }
@@ -101,6 +113,8 @@ struct ContentView: View {
   }
   
   // MARK: ViewModel Factories
+  
+  let buildingViewModelFactory: BuildingsViewModel.Factory
   let bookingViewModelFactory: BookingViewModel.Factory
 
 }

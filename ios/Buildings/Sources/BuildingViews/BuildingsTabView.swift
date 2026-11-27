@@ -6,11 +6,28 @@
 //
 
 public import BuildingModels
-import BuildingViewModels
+public import BuildingViewModels
 public import CommonUI
 public import RoomModels
 import RoomViewModels
 public import SwiftUI
+public import VISOR
+
+@LazyViewModel(BuildingsViewModel.self)
+public struct BuildingsTabView: View {
+  
+  public init() {
+    
+  }
+  
+  @ViewBuilder
+  public func readyContent(viewModel: BuildingsViewModel) -> some View {
+    Text("BuildingsTabView")
+  }
+  
+}
+
+/*
 
 // MARK: - BuildingsTabView
 
@@ -278,3 +295,5 @@ private struct PreviewWrapper: View {
 #Preview {
   PreviewWrapper()
 }
+
+*/

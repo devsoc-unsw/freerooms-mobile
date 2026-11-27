@@ -236,9 +236,13 @@ private struct PreviewWrapper: View {
   @State private var rowHeight: CGFloat?
 }
 
+/*
+
 #Preview {
   let viewModel: LiveRoomViewModel = PreviewRoomViewModel()
   return PreviewWrapper()
     .defaultTheme()
     .environment(viewModel)
 }
+ 
+ */

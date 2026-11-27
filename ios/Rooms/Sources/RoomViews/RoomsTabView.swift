@@ -13,6 +13,8 @@ public import RoomModels
 import RoomViewModels
 public import SwiftUI
 
+/*
+
 // MARK: - RoomsTabView
 
 public struct RoomsTabView<Destination: View>: View {
@@ -398,3 +400,5 @@ private struct PreviewWrapper: View {
 #Preview {
   PreviewWrapper()
 }
+
+*/

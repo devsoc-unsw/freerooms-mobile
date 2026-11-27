@@ -32,7 +32,7 @@ extension FetchBuildingsError {
 
 @GenerateStub
 public protocol BuildingService {
-  nonisolated(nonsending) func getBuildings() async -> GetBuildingsResult
+  func getBuildings() async -> GetBuildingsResult
 }
 
 // MARK: - LiveBuildingService

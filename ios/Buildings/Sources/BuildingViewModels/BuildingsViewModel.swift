@@ -1,5 +1,5 @@
 //
-//  BuildingViewModel.swift
+//  BuildingsViewModel.swift
 //  Buildings
 //
 //  Created by Yanlin Li  on 3/7/2025.
@@ -12,6 +12,35 @@ import Foundation
 import Location
 public import Observation
 public import RoomModels
+public import VISOR
+public import FreeroomsNavigation
+
+@ViewModel
+@MainActor
+@Observable
+public final class BuildingsViewModel {
+  public final class State {
+    public private(set) var isLoading: Bool = false
+    public private(set) var searchText: String = ""
+    public private(set) var sortOptions: Building.SortOptions = .alphabetical
+  }
+  
+  public enum Action {
+    case updateBuildings
+  }
+  
+  @discardableResult
+  public func handle(_ action: Action) -> ActionCompletion {
+    switch action {
+    case .updateBuildings:
+      return .completed
+    }
+  }
+  
+  public let router: FreeroomsNavigationScene.Router
+}
+
+/*
 
 // MARK: - BuildingViewModel
 
@@ -192,3 +221,5 @@ public class PreviewBuildingViewModel: LiveBuildingViewModel {
       locationService: LiveLocationService(locationManager: LiveLocationManager())))
   }
 }
+
+*/

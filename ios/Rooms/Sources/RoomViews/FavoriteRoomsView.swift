@@ -11,6 +11,8 @@ import RoomModels
 import RoomViewModels
 import SwiftUI
 
+/*
+
 // MARK: - FavoriteRoomsView
 
 struct FavoriteRoomsView: View {
@@ -143,3 +145,5 @@ struct FavoriteRoomsView: View {
     .scrollContentBackground(.hidden)
   }
 }
+
+*/
