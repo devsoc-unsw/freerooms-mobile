@@ -9,6 +9,7 @@ public import Foundation
 
 // MARK: - URLSessionHTTPClient
 
+@available(*, deprecated, message: "Use URLSession directly instead")
 public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
   // MARK: Lifecycle
@@ -38,10 +39,12 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
 // MARK: - HTTPSession
 
+@available(*, deprecated, message: "Use URLSession directly instead")
 public protocol HTTPSession: Sendable {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
 // MARK: - URLSession + HTTPSession
 
+@available(*, deprecated, message: "Use URLSession directly instead")
 extension URLSession: HTTPSession { }

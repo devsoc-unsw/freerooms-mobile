@@ -15,6 +15,7 @@ public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), any Er
 // MARK: - HTTPClient
 
 @GenerateSpy(.sendable)
+@available(*, deprecated, message: "Use URLSession directly instead")
 public protocol HTTPClient: Sendable {
   func get(from url: URL) async -> HTTPClientResult
 }

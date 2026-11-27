@@ -120,3 +120,43 @@ extension DevSoc {
   static let logger = Logger(subsystem: "app.devsoc.Freerooms.Networking", category: "DevSoc")
 
 }
+
+// MARK: - Serialization
+
+extension DevSoc {
+  
+  /// The shared `JSONDecoder` for the application
+  ///
+  /// Prefer to use the shared decoder to avoid allocating more `JSONDecoder`s.
+  ///
+  /// > Important:
+  /// > Do not modify
+  public static let jsonDecoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    return decoder
+  }()
+  
+  /// The shared `JSONEncoder` for the application
+  ///
+  /// Prefer to use the shared decoder to avoid allocating more `JSONEncoder`s.
+  ///
+  /// > Important:
+  /// > Do not modify
+  public static let jsonEncoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    return encoder
+  }()
+  
+}
+
+// MARK: - Network
+
+extension DevSoc {
+  
+  /// The shared `URLSession` for the application
+  ///
+  /// > Important:
+  /// > Do not modify
+  public static let urlSession: URLSession = .shared
+  
+}
