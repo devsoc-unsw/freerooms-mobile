@@ -34,11 +34,25 @@ struct ContentView: View {
     @Bindable var tabController = tabController
     TabView(selection: $tabController.currentTab) {
       BuildingsTabView(path: $buildingPath, selectedView: $selectedBuildingsView) { building in
-        RoomsListView(building: building, path: $buildingPath, imageProvider: {
-          BuildingImage[$0]
-        })
-        .task { await roomViewModel.onAppear() }
-        .environment(roomViewModel)
+        RoomsListView(
+          building: building,
+          path: $buildingPath,
+          imageProvider: { BuildingImage[$0] },
+          onRefresh: {
+            await buildingViewModel.loadNearbyBuildings(to: building)
+            await distanceViewModel.reload()
+          }) {
+            NearbyBuildingsSection(
+              nearbyBuildings: buildingViewModel.nearbyBuildingsByBuildingID[building.id] ?? [],
+              path: $buildingPath)
+          }
+          .task { await roomViewModel.onAppear() }
+          .task(id: building.id) {
+            await buildingViewModel.loadNearbyBuildings(to: building)
+            // Refreshes the distances on the room tiles, in case the GPS fix arrived after launch.
+            await distanceViewModel.reload()
+          }
+          .environment(roomViewModel)
       } _: { room in
         roomDetailsView(for: room)
       }
@@ -62,6 +76,29 @@ struct ContentView: View {
     }
     .environment(roomViewModel)
     .environment(buildingViewModel)
+    // Lets every room and building tile show how far away it is.
+    .environment(\.distanceFromUserByBuildingID, distanceViewModel.distanceFromUserByBuildingID)
+    .environment(\.distanceFromUserByRoomID, distanceViewModel.distanceFromUserByRoomID)
+    .task {
+      distanceViewModel.requestLocationPermission()
+      await distanceViewModel.keepLocationCurrent()
+    }
+    .onChange(of: distanceViewModel.userLocation) { _, userLocation in
+      buildingViewModel.updateNearestSort(near: userLocation)
+    }
+    // Distances are worked out from the buildings and rooms the app already has.
+    .onChange(of: buildingViewModel.allBuildings, initial: true) {
+      distanceViewModel.update(buildings: buildingViewModel.allBuildings)
+    }
+    .onChange(of: roomViewModel.rooms, initial: true) {
+      distanceViewModel.update(rooms: roomViewModel.rooms)
+    }
+    .onChange(of: scenePhase) { _, newPhase in
+      // The location permission prompt and the Settings app make Freerooms inactive.
+      // Reload once the user is back, in case they turned location on.
+      guard newPhase == .active else { return }
+      Task { await distanceViewModel.reload() }
+    }
     .tint(theme.accent.primary)
     .preferredColorScheme(theme.preferredColorScheme)
   }
@@ -83,6 +120,8 @@ struct ContentView: View {
   @State private var roomPath = NavigationPath()
 
   @Environment(Theme.self) private var theme
+  @Environment(LiveDistanceViewModel.self) private var distanceViewModel
+  @Environment(\.scenePhase) private var scenePhase
 }
 
 extension LiveBuildingViewModel {
@@ -113,6 +152,7 @@ extension EnvironmentValues {
     .environment(TabController())
     .environment(PreviewBookingViewModel() as LiveBookingViewModel)
     .environment(\.buildingViewModel, PreviewBuildingViewModel())
+    .environment(PreviewDistanceViewModel() as LiveDistanceViewModel)
     .environment(
       \.mapViewModel,
       MainActor.assumeIsolated {

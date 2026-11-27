@@ -187,3 +187,108 @@ struct GetUserLocationTest {
     }
   }
 }
+
+// MARK: - LocationDistanceTests
+
+struct LocationDistanceTests {
+
+  // MARK: Internal
+
+  @Test("Distance from a location to itself is zero")
+  func distanceToSelfIsZero() {
+    // Given
+    let location = unswCentre
+
+    // When
+    let distance = location.distance(to: location)
+
+    // Then
+    #expect(distance == 0)
+  }
+
+  @Test("A point 0.001° north is about 111 metres away")
+  func distanceForSmallLatitudeChange() {
+    // Given
+    let north = Location(latitude: unswCentre.latitude + 0.001, longitude: unswCentre.longitude)
+
+    // When
+    let distance = unswCentre.distance(to: north)
+
+    // Then
+    #expect((105...117).contains(distance))
+  }
+
+  @Test("A degree of longitude is shorter than a degree of latitude away from the equator")
+  func longitudeIsShorterThanLatitudeAtUNSW() {
+    // Given
+    let north = Location(latitude: unswCentre.latitude + 0.001, longitude: unswCentre.longitude)
+    let east = Location(latitude: unswCentre.latitude, longitude: unswCentre.longitude + 0.001)
+
+    // When
+    let northDistance = unswCentre.distance(to: north)
+    let eastDistance = unswCentre.distance(to: east)
+
+    // Then: at ~34° south, east-west degrees are about cos(34°) ≈ 0.83 times as long.
+    #expect(eastDistance < northDistance)
+    #expect((88...97).contains(eastDistance))
+  }
+
+  @Test("Distance is the same in both directions")
+  func distanceIsSymmetric() {
+    // Given
+    let library = Location(latitude: -33.9177, longitude: 151.2334)
+
+    // When
+    let there = unswCentre.distance(to: library)
+    let back = library.distance(to: unswCentre)
+
+    // Then
+    #expect(abs(there - back) < 0.001)
+  }
+
+  // MARK: Private
+
+  /// Roughly the middle of UNSW Kensington.
+  private let unswCentre = Location(latitude: -33.9173, longitude: 151.2312)
+}
+
+// MARK: - LocationChangeTests
+
+struct LocationChangeTests {
+
+  // MARK: Internal
+
+  @Test("No location before or after isn't a change")
+  func noLocationIsNotAChange() {
+    #expect(!Location.hasChanged(from: nil, to: nil, byAtLeast: 25))
+  }
+
+  @Test("A location appearing or disappearing is a change")
+  func appearingOrDisappearingIsAChange() {
+    #expect(Location.hasChanged(from: nil, to: unswCentre, byAtLeast: 25))
+    #expect(Location.hasChanged(from: unswCentre, to: nil, byAtLeast: 25))
+  }
+
+  @Test("Moving less than the threshold isn't a change")
+  func smallMoveIsNotAChange() {
+    // Given: 0.0001° of latitude is about 11 m.
+    let nearby = Location(latitude: unswCentre.latitude + 0.0001, longitude: unswCentre.longitude)
+
+    // Then
+    #expect(!Location.hasChanged(from: unswCentre, to: nearby, byAtLeast: 25))
+  }
+
+  @Test("Moving at least the threshold is a change")
+  func largeMoveIsAChange() {
+    // Given: 0.0003° of latitude is about 33 m.
+    let further = Location(latitude: unswCentre.latitude + 0.0003, longitude: unswCentre.longitude)
+
+    // Then
+    #expect(Location.hasChanged(from: unswCentre, to: further, byAtLeast: 25))
+  }
+
+  // MARK: Private
+
+  /// Roughly the middle of UNSW Kensington.
+  private let unswCentre = Location(latitude: -33.9173, longitude: 151.2312)
+}

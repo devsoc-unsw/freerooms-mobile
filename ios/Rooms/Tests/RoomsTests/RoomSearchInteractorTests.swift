@@ -164,9 +164,10 @@ struct RoomSearchAdapter {
   let interactor: RoomInteractor
 
   func filterRooms(by searchString: String) async -> Result<[Room], Error> {
-    switch await interactor.getRoomsSortedAlphabetically(inAscendingOrder: true) {
+    switch await interactor.getRooms() {
     case .success(let rooms):
-      let filtered = interactor.filterRoomsByQueryString(rooms, by: searchString)
+      let sorted = interactor.getRoomsSortedAlphabetically(rooms: rooms, inAscendingOrder: true)
+      let filtered = interactor.filterRoomsByQueryString(sorted, by: searchString)
       return .success(filtered)
 
     case .failure(let error):
@@ -189,7 +190,6 @@ func makeRoomSearchSUT(expect rooms: [Room]) -> RoomSearchAdapter {
     roomFilterService: StubFilterRoomService())
   let interactor = RoomInteractor(
     roomService: roomService,
-    locationService: LiveLocationService(locationManager: LiveLocationManager()),
     favouriteService: PreviewFavoriteRoomService())
 
   return RoomSearchAdapter(interactor: interactor)

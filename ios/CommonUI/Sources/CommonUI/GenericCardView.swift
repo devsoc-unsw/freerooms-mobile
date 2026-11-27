@@ -55,6 +55,12 @@ public struct GenericCardView<
               bottomLeadingRadius: 0,
               bottomTrailingRadius: 0,
               topTrailingRadius: GenericCardViewLayout.cornerRadius))
+          .overlay(alignment: .topTrailing) {
+            if let distanceInMetres {
+              DistanceBadge(metres: distanceInMetres)
+                .padding(DistanceLabelLayout.badgeInset)
+            }
+          }
 
         GenericCardViewItem<T>(
           cardWidth: $cardWidth,
@@ -102,6 +108,15 @@ public struct GenericCardView<
   // MARK: Private
 
   @Environment(Theme.self) private var theme
+  @Environment(\.distanceFromUserByBuildingID) private var distanceFromUserByBuildingID
+  @Environment(\.distanceFromUserByRoomID) private var distanceFromUserByRoomID
+
+  private var distanceInMetres: Double? {
+    distanceFromUser(
+      to: item,
+      roomDistances: distanceFromUserByRoomID,
+      buildingDistances: distanceFromUserByBuildingID)
+  }
 
 }
 

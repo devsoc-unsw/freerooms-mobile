@@ -132,20 +132,23 @@ extension Building {
           result = lhs.name.localizedStandardCompare(rhs.name)
 
         case .campus:
-          let lhs = lhs.gridReference.campusSection
-          let rhs = rhs.gridReference.campusSection
+          // Lower, then middle, then upper campus. `CampusSection`'s raw values are in that order.
+          let lhs = lhs.gridReference.campusSection.rawValue
+          let rhs = rhs.gridReference.campusSection.rawValue
 
           if lhs == rhs {
             result = .orderedSame
-          } else if lhs == .lower {
-            result = .orderedDescending
-          } else {
+          } else if lhs < rhs {
             result = .orderedAscending
+          } else {
+            result = .orderedDescending
           }
 
         case .nearest(let coordinates):
-          let lhsDist = abs(coordinates.latitude - lhs.latitude) + abs(coordinates.longitude - lhs.longitude)
-          let rhsDist = abs(coordinates.latitude - rhs.latitude) + abs(coordinates.longitude - rhs.longitude)
+          // Real distance in metres. Uses Apple's clLocation accounting for Earth curvature.
+          let origin = Location(latitude: coordinates.latitude, longitude: coordinates.longitude)
+          let lhsDist = origin.distance(to: lhs.location)
+          let rhsDist = origin.distance(to: rhs.location)
 
           if lhsDist == rhsDist {
             result = .orderedSame
@@ -204,14 +207,18 @@ extension Building {
         buildings.map(\.self)
 
       case .single(let option):
-        buildings.sorted {
-          let result = option.compare($0, $1)
-          switch result {
-          case .orderedDescending: return !isAscending
-          case .orderedAscending: return isAscending
-          case .orderedSame: return false
-          @unknown default:
-            result.reportUnknownCase()
+        if let origin = option.nearestOrigin {
+          sortedByDistance(buildings, from: origin, nearestFirst: option.isAscending == isAscending)
+        } else {
+          buildings.sorted {
+            let result = option.compare($0, $1)
+            switch result {
+            case .orderedDescending: return !isAscending
+            case .orderedAscending: return isAscending
+            case .orderedSame: return false
+            @unknown default:
+              result.reportUnknownCase()
+            }
           }
         }
 
@@ -378,16 +385,7 @@ extension Building.SortOptions.Option: Codable {
   // MARK: Private
 
   private static func encodedValue(for _case: borrowing _Case) -> String {
-    switch _case {
-    case .alphabetical:
-      "alphabetical"
-    case .campus:
-      "campus"
-    case .mostAvailable:
-      "mostAvailable"
-    case .nearest:
-      "nearest"
-    }
+    _case.kind.rawValue
   }
 
 }
@@ -479,4 +477,100 @@ extension Building.SortOptions: Codable {
     }
   }
 
+}
+
+// MARK: - Building.SortOptions + kind
+
+extension Building.SortOptions {
+
+  /// Which rule a ``Building/SortOptions`` sorts by, ignoring its direction and, for nearest,
+  /// the location it measures from. Lets a sort menu show which option is in use.
+  /// The raw values are the strings saved when sort options are encoded, so don't change them.
+  public enum Kind: String, Sendable {
+    case alphabetical
+    case mostAvailable
+    case nearest
+    case campus
+  }
+
+  /// The kind of the first (main) rule, or `nil` when these options don't sort.
+  public var kind: Kind? {
+    switch _storage {
+    case .none:
+      nil
+    case .single(let option):
+      option.kind
+    case .multiple(let options):
+      options.first?.kind
+    }
+  }
+
+  /// Sort options that sort by `kind` in the given direction. `nil` for ``Kind/nearest``
+  /// without a `coordinate` to measure from.
+  public static func sorting(
+    by kind: Kind,
+    isAscending: Bool,
+    near coordinate: CLLocationCoordinate2D?)
+    -> Building.SortOptions?
+  {
+    var options: Building.SortOptions
+    switch kind {
+    case .alphabetical:
+      options = .alphabetical
+    case .mostAvailable:
+      options = .mostAvailable
+    case .campus:
+      options = .campus
+    case .nearest:
+      guard let coordinate else { return nil }
+      options = .nearest(to: coordinate)
+    }
+    options.isAscending = isAscending
+    return options
+  }
+
+}
+
+extension Building.SortOptions {
+  /// Nearest first, or furthest first. Works out each building's distance once, rather than twice
+  /// in every comparison as ``Option/compare(_:_:)`` does.
+  fileprivate func sortedByDistance(
+    _ buildings: some Sequence<Building>,
+    from coordinate: CLLocationCoordinate2D,
+    nearestFirst: Bool)
+    -> [Building]
+  {
+    let origin = Location(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    return buildings
+      .map { (building: $0, distance: origin.distance(to: $0.location)) }
+      .sorted { nearestFirst ? $0.distance < $1.distance : $0.distance > $1.distance }
+      .map(\.building)
+  }
+}
+
+extension Building.SortOptions.Option {
+  fileprivate var kind: Building.SortOptions.Kind {
+    _case.kind
+  }
+
+  /// Where this option measures from, when it sorts by distance.
+  fileprivate var nearestOrigin: CLLocationCoordinate2D? {
+    if case .nearest(let coordinate) = _case { coordinate } else { nil }
+  }
+}
+
+extension Building.SortOptions.Option._Case {
+  /// The one place each case is named; also gives the string used when encoding.
+  var kind: Building.SortOptions.Kind {
+    switch self {
+    case .alphabetical:
+      .alphabetical
+    case .mostAvailable:
+      .mostAvailable
+    case .nearest:
+      .nearest
+    case .campus:
+      .campus
+    }
+  }
 }
