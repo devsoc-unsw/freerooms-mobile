@@ -9,6 +9,117 @@ public import BookingModels
 public import Foundation
 import VISOR
 public import VISORTestDoubles
+public import Apollo
+import DevSocAPI
+
+@GenerateSpy(.sendable)
+@GenerateStub(.sendable)
+public protocol BookingService: AnyObject, Sendable {
+  func getWeeklyBookings(in interval: DateInterval) async throws -> [WeeklyBooking]
+}
+
+public final actor ApolloBookingService: BookingService {
+  private let client: ApolloClient
+  
+  private var cachedBookings: [WeeklyBooking]?
+  
+  public init(client: ApolloClient) {
+    self.client = client
+  }
+  
+  public func getWeeklyBookings(in interval: DateInterval) async throws -> [WeeklyBooking] {
+    let dateFormat = Date.ISO8601FormatStyle()
+    
+    #warning(
+      """
+      Uses the first date interval provided, and then returns the same results.
+      This Loader should be full replaced with a backend implementation instead of calling Hasuragres directly.
+      """
+    )
+    
+    // Check if we have some saved bookings
+    if let cachedBookings {
+      return cachedBookings
+    }
+    
+    // Create the GraphQL Query
+    let query = WeeklyBookingsQuery(
+      weekStart: dateFormat.format(interval.start),
+      weekEnd: dateFormat.format(interval.end))
+    
+    let result: GraphQLResponse<WeeklyBookingsQuery>
+    do {
+      result = try await client.fetch(query: query)
+    } catch let error as CancellationError {
+      // Rethrow Swift Concurrency CancellationErrors
+      throw error
+    } catch ApolloClient.Error.noResults {
+      // Just return empty bookings in this case
+      return []
+    }
+    
+    // Convert fetched bookings into WeeklyBookings
+    guard let data = result.data else {
+      throw BookingServiceError.noBookings
+    }
+    
+    return data.bookings.compactMap {
+      
+      // Convert start and end timestamps if possible
+      guard let start = try? dateFormat.parse($0.start),
+            let end = try? dateFormat.parse($0.end) else { return nil }
+      
+      // Create WeeklyBooking from GraphQL bookings
+      return WeeklyBooking(
+        title: $0.name,
+        bookingType: $0.bookingType,
+        roomID: $0.roomId,
+        roomName: $0.room.name,
+        buildingID: $0.room.building.id,
+        buildingName: $0.room.building.name,
+        start: start,
+        end: end,
+        usage: $0.room.usage,
+        capacity: $0.room.capacity,
+        abbreviation: $0.room.abbr,
+        accessibility: $0.room.accessibility,
+        audioVisual: $0.room.audiovisual,
+        infoTechnology: $0.room.infotechnology,
+        microphone: $0.room.microphone,
+        service: $0.room.service,
+        writingMedia: $0.room.writingMedia)
+    }
+  }
+}
+
+public final class FixedBookingService: BookingService {
+  public let bookings: [WeeklyBooking]
+  
+  public init(bookings: [WeeklyBooking]) {
+    self.bookings = bookings
+  }
+  
+  public func getWeeklyBookings(in internal: DateInterval) async throws -> [WeeklyBooking] {
+    return bookings
+  }
+}
+
+/// Errors that can occur when fetching bookings
+public enum BookingServiceError: Error, LocalizedError {
+  
+  /// Could not find any ``WeeklyBooking``s
+  case noBookings
+  
+  public var errorDescription: String? {
+    switch self {
+    case .noBookings:
+      "No bookings found"
+    }
+  }
+  
+}
+
+/*
 
 public typealias GetWeeklyBookingsResult = Result<[WeeklyBooking], FetchWeeklyBookingsError>
 
@@ -185,3 +296,5 @@ extension FetchWeeklyBookingsError {
     }
   }
 }
+
+*/
