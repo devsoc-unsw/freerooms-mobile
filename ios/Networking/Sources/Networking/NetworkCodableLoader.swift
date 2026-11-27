@@ -9,6 +9,7 @@ public import Foundation
 
 // MARK: - CodableLoader
 
+@available(*, deprecated, message: "Use URLSession with DevSoc.jsonDecoder instead")
 public protocol CodableLoader {
   associatedtype Generic: Codable
 
@@ -23,6 +24,7 @@ public enum StatusCode: Int {
 
 // MARK: - NetworkCodableLoader
 
+@available(*, deprecated, message: "Use URLSession with DevSoc.jsonDecoder instead")
 public final class NetworkCodableLoader<T: Codable & Sendable>: CodableLoader {
 
   // MARK: Lifecycle

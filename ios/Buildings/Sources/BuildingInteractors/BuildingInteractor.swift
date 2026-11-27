@@ -12,6 +12,8 @@ public import Location
 import RoomModels
 import RoomServices
 
+/*
+
 // MARK: - BuildingInteractor
 
 /// Coordinates building-related operations including filtering, sorting, and room status integration.
@@ -193,3 +195,5 @@ public class BuildingInteractor {
   }
 
 }
+
+*/

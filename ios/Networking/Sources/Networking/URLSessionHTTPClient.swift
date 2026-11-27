@@ -39,12 +39,15 @@ public struct URLSessionHTTPClient: HTTPClient, Sendable {
 
 // MARK: - HTTPSession
 
-@available(*, deprecated, message: "Use URLSession directly instead")
-public protocol HTTPSession: Sendable {
+/// A protocol modeling the `data(from:)` method of `URLSession`
+///
+/// Conform custom mock classes to this `protocol` in order test server responses are correctly handled.
+///
+/// `URLSession` already conforms to this `protocol`.
+public protocol HTTPSession: AnyObject, Sendable {
   func data(from url: URL) async throws -> (Data, URLResponse)
 }
 
 // MARK: - URLSession + HTTPSession
 
-@available(*, deprecated, message: "Use URLSession directly instead")
 extension URLSession: HTTPSession { }

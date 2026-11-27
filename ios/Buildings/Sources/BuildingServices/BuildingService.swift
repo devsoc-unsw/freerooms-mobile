@@ -7,9 +7,55 @@
 
 public import BuildingModels
 import Foundation
-import Networking
+public import Networking
 import VISOR
+public import VISORObservation
 public import VISORTestDoubles
+public import Apollo
+
+/// Provides information about `Building`s
+@GenerateSpy(.sendable)
+@GenerateStub(.sendable)
+public protocol BuildingServiceProtocol: Sendable {
+  
+  /// An `ObservationChannel` that produces updates on when the list of buildings changes
+  ///
+  /// `ObservationChannel` conforms to `AsyncSequence`, but `ViewModel`s can also bind
+  /// to its `source` property in order to receive and consume building updates.
+  ///
+  /// To potentially update this value, call ``fetchBuildings()``.
+  var channel: ObservationChannel<[Building]?> { get }
+  
+  /// Fetches the latest status of buildings
+  ///
+  /// The result can be discarded, as the update can also be observed though ``channel``.
+  /// When an error occurs, a `nil` update to `channel` will be published.
+  @discardableResult
+  func fetchBuildings() async throws -> [Building]
+  
+}
+
+public final class BuildingService: BuildingServiceProtocol {
+  public let channel = ObservationChannel<[Building]?>(nil)
+  
+  private let httpSession: any HTTPSession
+  private let apolloClient: ApolloClient
+  
+  public init(
+    httpSession: any HTTPSession,
+    apolloClient: ApolloClient)
+  {
+    self.httpSession = httpSession
+    self.apolloClient = apolloClient
+  }
+  
+  @discardableResult
+  public func fetchBuildings() async throws -> [Building] {
+    return []
+  }
+}
+
+/*
 
 public typealias GetBuildingsResult = Swift.Result<[Building], FetchBuildingsError>
 
@@ -106,3 +152,5 @@ public final class PreviewBuildingService: BuildingService {
     getBuildings()
   }
 }
+
+*/

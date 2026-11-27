@@ -128,6 +128,7 @@ extension DevSoc {
   /// The shared `JSONDecoder` for the application
   ///
   /// Prefer to use the shared decoder to avoid allocating more `JSONDecoder`s.
+  /// Additionally, this alows for decoder options to be shared.
   ///
   /// > Important:
   /// > Do not modify
@@ -138,7 +139,8 @@ extension DevSoc {
   
   /// The shared `JSONEncoder` for the application
   ///
-  /// Prefer to use the shared decoder to avoid allocating more `JSONEncoder`s.
+  /// Prefer to use the shared encoder to avoid allocating more `JSONEncoder`s.
+  /// Additionally, this allows for encoder options to be shared.
   ///
   /// > Important:
   /// > Do not modify

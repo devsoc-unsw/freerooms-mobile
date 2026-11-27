@@ -10,6 +10,8 @@ import VISOR
 public import VISORTestDoubles
 
 // MARK: - HTTPClient
+
+@available(*, deprecated, message: "Use URLSession directly instead")
 public typealias HTTPClientResult = Swift.Result<(Data, HTTPURLResponse), any Error>
 
 // MARK: - HTTPClient
@@ -22,6 +24,7 @@ public protocol HTTPClient: Sendable {
 
 // MARK: - HTTPClientError
 
+@available(*, deprecated, message: "Use URLSession directly instead")
 public enum HTTPClientError: Error {
   case networkFailure
   case invalidHTTPResponse
