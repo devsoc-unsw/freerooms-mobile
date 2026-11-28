@@ -9,6 +9,8 @@ import CommonUI
 import MapKit
 public import SwiftUI
 
+/*
+
 public struct SheetDirectionDetails: View {
 
   // MARK: Public
@@ -56,3 +58,5 @@ public struct SheetDirectionDetails: View {
     unsafe String(format: "%.0f", floor(viewModel.currentRoute?.distance ?? 0)) + "m"
   }
 }
+
+*/

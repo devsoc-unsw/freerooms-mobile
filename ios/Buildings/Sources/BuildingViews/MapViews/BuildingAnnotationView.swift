@@ -15,7 +15,8 @@ struct BuildingAnnotationView: View {
 
   var body: some View {
     Circle()
-      .fill(building.availabilityColor)
+//      .fill(building.availabilityColor)
+      .fill(Color.red)
       .frame(
         width: isSelected ? MapLayoutConstants.selectedAnnotationSize : MapLayoutConstants.defaultAnnotationSize,
         height: isSelected ? MapLayoutConstants.selectedAnnotationSize : MapLayoutConstants.defaultAnnotationSize)

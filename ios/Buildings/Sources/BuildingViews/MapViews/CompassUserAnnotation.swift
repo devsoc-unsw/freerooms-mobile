@@ -9,6 +9,8 @@ import BuildingViewModels
 import CoreLocation
 import SwiftUI
 
+/*
+
 // MARK: - CompassUserAnnotation
 
 struct CompassUserAnnotation: View {
@@ -103,3 +105,5 @@ nonisolated struct DirectionalArrow: Shape {
   private static let outerXRatio = 1.2
   private static let wingYRatio = 0.7
 }
+
+*/

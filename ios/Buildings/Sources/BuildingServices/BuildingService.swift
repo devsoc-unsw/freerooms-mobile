@@ -6,25 +6,27 @@
 //
 
 public import BuildingModels
-import Foundation
+public import Foundation
 public import Networking
 import VISOR
 public import VISORObservation
 public import VISORTestDoubles
 public import Apollo
+import DevSocAPI
 
 /// Provides information about `Building`s
 @GenerateSpy(.sendable)
 @GenerateStub(.sendable)
 public protocol BuildingServiceProtocol: Sendable {
   
-  /// An `ObservationChannel` that produces updates on when the list of buildings changes
+  /// An `ObservationSource` that produces updates on when the list of buildings changes
   ///
   /// `ObservationChannel` conforms to `AsyncSequence`, but `ViewModel`s can also bind
-  /// to its `source` property in order to receive and consume building updates.
+  /// to it to update UI.
   ///
   /// To potentially update this value, call ``fetchBuildings()``.
-  var channel: ObservationChannel<[Building]?> { get }
+  @DefaultValue(ObservationSource<[Building]?>.constant(nil))
+  var source: ObservationSource<[Building]?> { get }
   
   /// Fetches the latest status of buildings
   ///
@@ -36,23 +38,136 @@ public protocol BuildingServiceProtocol: Sendable {
 }
 
 public final class BuildingService: BuildingServiceProtocol {
-  public let channel = ObservationChannel<[Building]?>(nil)
-  
+  private let channel = ObservationChannel<[Building]?>(nil)
+  private let endpoints: FreeroomsEndpoints
   private let httpSession: any HTTPSession
   private let apolloClient: ApolloClient
   
   public init(
+    endpoints: FreeroomsEndpoints,
     httpSession: any HTTPSession,
     apolloClient: ApolloClient)
   {
+    self.endpoints = endpoints
     self.httpSession = httpSession
     self.apolloClient = apolloClient
   }
   
+  public var source: ObservationSource<[Building]?> {
+    channel.source
+  }
+  
   @discardableResult
   public func fetchBuildings() async throws -> [Building] {
-    return []
+    #warning("TODO: Reimplement building caching")
+    
+    // Refetch from the server if required
+    let buildings = try await fetchBuildingsFromServer()
+    channel.publish(buildings)
+    return buildings
   }
+  
+  private func fetchBuildingsFromServer() async throws -> [Building] {
+    
+    // Fetch building information from GraphQL
+    let query = AllBuildingsQuery()
+    let graphQLBuildings: [DevSocAPI.AllBuildingsQuery.Data.Building]
+    
+    // Fetch building list
+    do {
+      let result = try await apolloClient.fetch(query: query)
+      guard let data = result.data else {
+        throw BuildingServiceError.invalidResponse
+      }
+      graphQLBuildings = data.buildings
+    }
+    
+    // Convert buildings from GraphQL rep
+    var buildings = graphQLBuildings.compactMap(Building.init(from:))
+    
+    // Update buildings with ratings
+    await fetchBuildingRatings(into: &buildings)
+    
+    return buildings
+  }
+  
+  private func fetchBuildingStatuses(into buildings: inout [Building]) async {
+    let statusEndpoint = endpoints.backend
+      .appending(component: "rooms")
+      .appending(component: "status")
+    
+    
+    let status: [String : Int]
+    do {
+      let data = try await httpSession.data(from: statusEndpoint)
+      let remoteStatus = try DevSoc.jsonDecoder.decode(RemoteBuildingStatus.self, from: data)
+    } catch {
+      // Give up, don't update status
+    }
+    
+  }
+  
+  private func fetchBuildingRatings(into buildings: inout [Building]) async {
+    let ratingsEndpoint = endpoints.backend.appending(component: "buildingRating")
+    
+    // Fetch the rating for each building
+    let ratings = await withTaskGroup(of: RemoteBuildingRatingResponse?.self) { group in
+      for b in buildings {
+        group.addTask {
+          
+          // Create the endpoint for each building
+          let endpoint = ratingsEndpoint.appending(component: b.id)
+          do {
+            
+            // Fetch rating from the server and attempt to validate
+            let (data, _) = try await self.httpSession.data(from: endpoint)
+            let rating = try DevSoc.jsonDecoder.decode(RemoteBuildingRatingResponse.self, from: data)
+            assert(rating.buildingId == b.id, "Building id mismatch between response and request")
+            
+            return rating
+          } catch {
+            // If we can't fetch or decode the rating, just don't show it
+            return nil
+          }
+          
+        }
+      }
+      
+      // Combine rating requests
+      var ratings: [Building.ID : Double] = [:]
+      for await rating in group {
+        guard let rating else { continue }
+        assert(!ratings.keys.contains(rating.buildingId))
+        ratings[rating.buildingId] = rating.overallRating
+      }
+      
+      return ratings
+    }
+    
+    // Update buildings with fetched ratings
+    for i in buildings.indices {
+      if let rating = ratings[buildings[i].id] {
+        buildings[i].overallRating = rating
+      }
+    }
+    
+  }
+  
+}
+
+/// Errors that can occur when fetching `Building`s
+public enum BuildingServiceError: Error, LocalizedError {
+  
+  /// The `GraphQL` endpoint did not provide a valid response
+  case invalidResponse
+  
+  public var errorDescription: String? {
+    switch self {
+    case .invalidResponse:
+      return "Invalid response from server"
+    }
+  }
+  
 }
 
 /*

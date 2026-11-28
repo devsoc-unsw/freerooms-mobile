@@ -23,6 +23,7 @@ nonisolated public /* namespace */ enum DevSoc {
   /// ```swift
   /// URL(string: "https://graphql.devsoc.app/v1/graphql")
   /// ```
+  @available(*, deprecated, renamed: "FreeroomsEndpoints.production.hasurages")
   public static let defaultLiveUrl = URL(string: "https://graphql.devsoc.app/v1/graphql")!
 
   /// Creates a live DevSoc `ApolloClient` for GraphQL requests.
@@ -43,9 +44,9 @@ nonisolated public /* namespace */ enum DevSoc {
   /// - Returns:
   ///   The `ApolloClient` to make GraphQL requests to.
   public static func createLiveApolloClient(
-    for url: URL = DevSoc.defaultLiveUrl,
+    for url: URL,
     using store: ApolloStore,
-    urlSession: any ApolloURLSession = URLSession.shared)
+    urlSession: any ApolloURLSession)
     -> ApolloClient
   {
     // Create the network transport

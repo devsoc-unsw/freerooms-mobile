@@ -19,6 +19,8 @@ public import RoomModels
 import RoomServices
 public import SwiftUI
 
+/*
+
 // MARK: - MapViewModel
 @MainActor
 public protocol MapViewModel {
@@ -610,3 +612,5 @@ public class PreviewMapViewModel: LiveMapViewModel {
     }
   }
 }
+
+*/

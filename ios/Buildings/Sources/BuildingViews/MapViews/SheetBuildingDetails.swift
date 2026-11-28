@@ -9,6 +9,8 @@ public import CommonUI
 public import RoomModels
 public import SwiftUI
 
+/*
+
 // MARK: - SheetBuildingDetails
 
 public struct SheetBuildingDetails: View {
@@ -263,3 +265,5 @@ private enum SheetBuildingDetailsMetrics {
       status: .available)
   }
 }
+
+*/

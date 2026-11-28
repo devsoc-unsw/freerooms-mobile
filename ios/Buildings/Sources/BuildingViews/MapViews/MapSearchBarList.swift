@@ -9,6 +9,8 @@ import BuildingViewModels
 import CommonUI
 public import SwiftUI
 
+/*
+
 public struct MapSearchBarList: View {
 
   // MARK: Public
@@ -54,3 +56,5 @@ public struct MapSearchBarList: View {
   @Environment(LiveMapViewModel.self) private var viewModel
   @Environment(Theme.self) private var theme
 }
+
+*/

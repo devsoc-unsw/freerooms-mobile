@@ -14,6 +14,8 @@ import MapKit
 public import RoomModels
 public import SwiftUI
 
+/*
+
 extension View {
   func hideKeyboard() {
     UIApplication.shared.sendAction(
@@ -207,3 +209,5 @@ private struct PreviewWrapper: View {
 #Preview {
   PreviewWrapper()
 }
+
+*/
