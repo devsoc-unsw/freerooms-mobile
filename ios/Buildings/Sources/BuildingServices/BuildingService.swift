@@ -6,12 +6,9 @@
 //
 
 public import BuildingModels
-public import Foundation
-public import Networking
 import VISOR
 public import VISORObservation
 public import VISORTestDoubles
-public import Apollo
 import DevSocAPI
 
 /// Provides information about `Building`s
@@ -54,7 +51,7 @@ public final class BuildingService: BuildingServiceProtocol {
   @discardableResult
   public func fetchBuildings() async throws -> [Building] {
     do {
-      let buildings = try await buildingLoader.fetch().get()
+      let buildings = try await buildingLoader.fetch()
       channel.publish(buildings)
       return buildings
     } catch {

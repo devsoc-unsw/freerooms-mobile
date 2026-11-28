@@ -8,12 +8,13 @@
 public import Apollo
 public import BuildingModels
 import DevSocAPI
-import Foundation
+public import Foundation
 import OSLog
 import RoomModels
 public import RoomServices
 import VISOR
 public import VISORTestDoubles
+public import Networking
 
 // MARK: - BuildingLoaderError
 
@@ -26,7 +27,7 @@ public enum BuildingLoaderError: Error {
 
 @GenerateStub(.sendable)
 public protocol BuildingLoader: Sendable {
-  func fetch() async -> Result<[Building], BuildingLoaderError>
+  func fetch() async throws -> [Building]
 }
 
 // MARK: - LiveGraphQLBuildingLoader
@@ -37,22 +38,24 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
   public init(
     client: ApolloClient,
+    session: any HTTPSession,
+    baseURL: URL,
     roomStatusLoader: any RoomStatusLoader,
-    buildingRatingLoader: any BuildingRatingLoader,
     buildingsCache: (any BuildingsCache)?)
   {
     self.client = client
+    self.session = session
+    self.roomRatingsEndpoint = baseURL.appending(component: "ratings")
     self.roomStatusLoader = roomStatusLoader
-    self.buildingRatingLoader = buildingRatingLoader
     self.buildingsCache = buildingsCache
   }
 
   // MARK: Public
 
-  public func fetch() async -> Result<[Building], BuildingLoaderError> {
+  public func fetch() async throws -> [Building] {
     // Check if we have a cache
     guard let buildingsCache else {
-      return await _fetchBuildingsFromServer()
+      return try await _fetchBuildingsFromServer()
     }
 
     // Check if we can use the cache.
@@ -65,16 +68,16 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
         logger.trace("Fetching buildings from cache...")
         guard let cacheBuildings = try await buildingsCache.getBuildings() else {
           logger.debug("No buildings in cache, falling back to server")
-          return await _fetchBuildingsFromServer()
+          return try await _fetchBuildingsFromServer()
         }
         buildings = cacheBuildings
       } else {
         logger.debug("Cache is too old, falling back to server")
-        return await _fetchBuildingsFromServer()
+        return try await _fetchBuildingsFromServer()
       }
     } catch let error {
       logger.warning("Failed to load from cache, refetching buildings: \(error)")
-      return await _fetchBuildingsFromServer()
+      return try await _fetchBuildingsFromServer()
     }
 
     // Get availability statuses for buildings
@@ -84,14 +87,15 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
     // Fetch the building statuses, this is not cached on purpose
     await _updateBuildingStatuses(&buildings)
 
-    return .success(buildings)
+    return buildings
   }
 
   // MARK: Internal
 
   let client: ApolloClient
+  let session: any HTTPSession
+  let roomRatingsEndpoint: URL
   let roomStatusLoader: any RoomStatusLoader
-  let buildingRatingLoader: any BuildingRatingLoader
   let buildingsCache: (any BuildingsCache)?
 
   // MARK: Private
@@ -106,7 +110,7 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
   private var logger: Logger { Self.logger }
 
-  private func _fetchBuildingsFromServer() async -> Result<[Building], BuildingLoaderError> {
+  private func _fetchBuildingsFromServer() async throws -> [Building] {
     // Fetch the buildings if required.
     // The buildings may be stored
     logger.trace("Fetching buildings from GraphQL")
@@ -115,12 +119,12 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
       let response = try await client.fetch(query: AllBuildingsQuery())
       guard let buildings = response.data?.buildings else {
         logger.error("Data for buildings is missing from GraphQL response")
-        return .failure(.noDataAvailable)
+        throw BuildingLoaderError.noDataAvailable
       }
       graphQLBuildings = buildings
     } catch {
       logger.warning("Could not fetch buildings from GraphQL: \(error)")
-      return .failure(.connectivity)
+      throw BuildingLoaderError.connectivity
     }
 
     // Turn the GraphQL buildings into useable buildings
@@ -150,7 +154,7 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
     // Update buildings with their statuses, if they are available
     await _updateBuildingStatuses(&buildings)
 
-    return .success(buildings)
+    return buildings
   }
 
   private func _updateBuildingStatuses(_ buildings: inout [Building]) async {
@@ -182,27 +186,30 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
     // Can fetch ratings concurrently
     logger.trace("Fetching building ratings...")
-    let buildingRatingLoader = buildingRatingLoader
-    await withTaskGroup(of: (String, Double)?.self) { group in
+    await withTaskGroup(of: RemoteBuildingRatingResponse?.self) { group in
       // Get the rating for each building
       for building in buildings {
         // If the building rating is unavailable, we return nil
         group.addTask {
           do {
-            let result = try await buildingRatingLoader.fetch(buildingID: building.id).get()
-            return (building.id, result)
+            
+            // Fetch building ratings
+            let (data, _) = try await self.session.data(from: self.roomRatingsEndpoint.appending(component: building.id))
+            let rating = try DevSoc.jsonDecoder.decode(RemoteBuildingRatingResponse.self, from: data)
+
+            return rating
           } catch {
             logger.trace("Failed to fetch building rating for building with ID: \(building.id)")
             return nil
           }
         }
 
-        for await pair in group {
-          guard let (buildingID, rating) = pair else {
+        for await rating in group {
+          guard let rating else {
             continue
           }
-          assert(!ratingsByID.keys.contains(buildingID), "Made two requests for building with ID: \(buildingID)")
-          ratingsByID[buildingID] = rating
+          assert(!ratingsByID.keys.contains(rating.buildingId), "Made two requests for building with ID: \(rating.buildingId)")
+          ratingsByID[rating.buildingId] = rating.overallRating
         }
       }
     }

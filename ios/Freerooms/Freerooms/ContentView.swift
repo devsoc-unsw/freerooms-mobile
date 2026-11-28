@@ -10,6 +10,7 @@ import BookingViews
 import BuildingModels
 import BuildingViewModels
 import BuildingViews
+import BuildingServices
 import CommonUI
 import FreeroomsNavigation
 import OSLog
@@ -28,12 +29,14 @@ struct ContentView: View {
 
   // MARK: Internal
   
-  init() {
+  init(services: FreeroomsServices) {
     
     // MARK: ViewModel Factory setup
     
     buildingViewModelFactory = .routed { (router: Scene.Router) in
-      return BuildingsViewModel(router: router)
+      return BuildingsViewModel(
+        router: router,
+        buildingService: services.buildingService)
     }
     
     bookingViewModelFactory = .routed { (router: Scene.Router) in
@@ -127,9 +130,9 @@ struct ContentView: View {
 
 }
 
-#Preview {
-  ContentView()
-}
+//#Preview {
+//  ContentView()
+//}
 
 // // MARK: - ContentView
 //

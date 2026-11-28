@@ -34,14 +34,20 @@ import SwiftUI
 
 @main
 struct FreeroomsApp: App {
+  
+  let services: FreeroomsServices
 
   // MARK: Lifecycle
 
   init() {
+    
     // UI setup
     Theme.registerFont(named: .ttCommonsPro)
     setFontOnToolbars(.ttCommonsPro)
     UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(Theme.default.accent.primary)
+    
+    // Create services
+    self.services = FreeroomsServices.makeDefault()
 
     // // Shared infrastructure
     // let locationService = FreeroomsApp.makeLocationService()
@@ -86,7 +92,7 @@ struct FreeroomsApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      ContentView(services: services)
         .environment(Theme.default)
         .environment(\.font, Font.custom(.ttCommonsPro, size: 14))
 //        .environment(\.buildingViewModel, buildingViewModel)

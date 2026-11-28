@@ -31,8 +31,8 @@ public final class LiveRoomStatusLoader: RoomStatusLoader, Sendable {
 
   // MARK: Lifecycle
 
-  public init(client: any HTTPClient, baseURL: URL, statusEndpointPath: String = "/api/rooms/status") {
-    self.client = client
+  public init(session: any HTTPSession, baseURL: URL, statusEndpointPath: String = "/api/rooms/status") {
+    self.session = session
     self.baseURL = baseURL
     self.statusEndpointPath = statusEndpointPath
   }
@@ -43,20 +43,26 @@ public final class LiveRoomStatusLoader: RoomStatusLoader, Sendable {
     guard let url = URL(string: statusEndpointPath, relativeTo: baseURL) else {
       return .failure(.invalidData)
     }
-
-    let loader = NetworkCodableLoader<RemoteRoomStatus>(client: client, url: url)
-
-    switch await loader.fetch() {
-    case .success(let response):
-      return .success(response)
-    case .failure:
+    
+    let data: Data
+    do {
+      let (d, _) = try await session.data(from: url)
+      data = d
+    } catch {
       return .failure(.connectivity)
     }
+    
+    do {
+      return .success(try DevSoc.jsonDecoder.decode(RemoteRoomStatus.self, from: data))
+    } catch {
+      return .failure(.invalidData)
+    }
+    
   }
 
   // MARK: Private
 
-  private let client: any HTTPClient
+  private let session: any HTTPSession
   private let baseURL: URL
   private let statusEndpointPath: String
 }

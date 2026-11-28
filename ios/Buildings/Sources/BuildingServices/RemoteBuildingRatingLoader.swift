@@ -14,12 +14,14 @@ public import VISORTestDoubles
 // MARK: - BuildingRatingLoader
 
 @GenerateStub(.sendable)
+@available(*, deprecated, message: "Use BuildingLoader directly")
 public protocol BuildingRatingLoader: Sendable {
   func fetch(buildingID: String) async -> Result<Double, BuildingRatingLoaderError>
 }
 
 // MARK: - BuildingRatingLoaderError
 
+@available(*, deprecated, message: "Use BuildingLoader directly")
 public enum BuildingRatingLoaderError: Error {
   case connectivity
   case invalidURL
@@ -27,6 +29,7 @@ public enum BuildingRatingLoaderError: Error {
 
 // MARK: - RemoteBuildingRatingLoader
 
+@available(*, deprecated, message: "Use BuildingLoader directly")
 public struct RemoteBuildingRatingLoader: BuildingRatingLoader {
 
   // MARK: Lifecycle

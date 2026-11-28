@@ -7,7 +7,7 @@
 
 public import BuildingInteractors
 public import BuildingModels
-import BuildingServices
+public import BuildingServices
 import Foundation
 import Location
 public import Observation
@@ -38,6 +38,7 @@ public final class BuildingsViewModel {
   }
   
   public let router: FreeroomsNavigationScene.Router
+  public let buildingService: any BuildingServiceProtocol
 }
 
 /*

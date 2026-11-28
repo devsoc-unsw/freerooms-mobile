@@ -56,7 +56,12 @@ let package = Package(
       swiftSettings: swiftSettings),
     .target(
       name: "BookingViewModels",
-      dependencies: ["BookingModels", "BookingServices", "BookingInteractors"],
+      dependencies: [
+        "BookingModels",
+        "BookingServices",
+        "BookingInteractors",
+        .product(name: "FreeroomsNavigation", package: "CommonUI"),
+      ],
       swiftSettings: swiftSettings),
     .target(
       name: "BookingViews",
