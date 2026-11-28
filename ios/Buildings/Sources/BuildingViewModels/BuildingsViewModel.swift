@@ -23,6 +23,9 @@ public final class BuildingsViewModel {
     public private(set) var isLoading: Bool = false
     public private(set) var searchText: String = ""
     public private(set) var sortOptions: Building.SortOptions = .alphabetical
+    
+    @Bound(source: \BuildingsViewModel.buildingService.source)
+    public private(set) var buildings: [Building]?
   }
   
   public enum Action {
