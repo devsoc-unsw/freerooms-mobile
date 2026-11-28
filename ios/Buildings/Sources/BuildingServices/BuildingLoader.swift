@@ -24,8 +24,8 @@ public enum BuildingLoaderError: Error {
 
 // MARK: - BuildingLoader
 
-@GenerateStub
-public protocol BuildingLoader {
+@GenerateStub(.sendable)
+public protocol BuildingLoader: Sendable {
   func fetch() async -> Result<[Building], BuildingLoaderError>
 }
 
@@ -52,7 +52,7 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
   public func fetch() async -> Result<[Building], BuildingLoaderError> {
     // Check if we have a cache
     guard let buildingsCache else {
-      return await _fetchBuildings_slowpath()
+      return await _fetchBuildingsFromServer()
     }
 
     // Check if we can use the cache.
@@ -64,17 +64,17 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
       if let lastUpdated, lastUpdated > oldestAllowedCache {
         logger.trace("Fetching buildings from cache...")
         guard let cacheBuildings = try await buildingsCache.getBuildings() else {
-          logger.debug("No buildings in cache, falling back to slowpath")
-          return await _fetchBuildings_slowpath()
+          logger.debug("No buildings in cache, falling back to server")
+          return await _fetchBuildingsFromServer()
         }
         buildings = cacheBuildings
       } else {
-        logger.debug("Cache is too old, falling back to slowpath")
-        return await _fetchBuildings_slowpath()
+        logger.debug("Cache is too old, falling back to server")
+        return await _fetchBuildingsFromServer()
       }
     } catch let error {
       logger.warning("Failed to load from cache, refetching buildings: \(error)")
-      return await _fetchBuildings_slowpath()
+      return await _fetchBuildingsFromServer()
     }
 
     // Get availability statuses for buildings
@@ -106,7 +106,7 @@ public final actor LiveGraphQLBuildingLoader: BuildingLoader, Sendable {
 
   private var logger: Logger { Self.logger }
 
-  private func _fetchBuildings_slowpath() async -> Result<[Building], BuildingLoaderError> {
+  private func _fetchBuildingsFromServer() async -> Result<[Building], BuildingLoaderError> {
     // Fetch the buildings if required.
     // The buildings may be stored
     logger.trace("Fetching buildings from GraphQL")
